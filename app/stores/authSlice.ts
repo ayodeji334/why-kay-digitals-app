@@ -68,6 +68,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        console.log("log user out ......");
         set({
           token: null,
           refreshToken: null,

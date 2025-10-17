@@ -120,7 +120,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { patch, get } = useApiClient();
+  const { patch, apiGet } = useApiClient();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -139,7 +139,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (token && savedUser) {
           try {
             // Verify token is still valid
-            const res = await get("users/current-user");
+            const res = await apiGet("users/current-user");
             if (res?.status === 200 && res.data?.success) {
               const userData = res.data.data;
               setUser(userData);
@@ -171,7 +171,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const loadBiometricStatus = async (userUuid: string) => {
     try {
-      const response = await get(`biometrics/devices`);
+      const response = await apiGet(`biometrics/devices`);
       if (response.data?.success) {
         const { devices, biometric_enabled } = response.data.data;
         setIsBiometricEnabled(biometric_enabled);

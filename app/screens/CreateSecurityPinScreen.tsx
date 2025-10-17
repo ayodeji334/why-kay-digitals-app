@@ -9,8 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import VerificationForm from "../components/forms/VerificationForm";
-import { normalize, width } from "../constants/settings";
+import { normalize } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -29,7 +28,7 @@ const schema = yup.object().shape({
 });
 
 export default function CreateSecurityPinScreen() {
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
   const { control, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: { pin: "" },
@@ -65,7 +64,12 @@ export default function CreateSecurityPinScreen() {
           </Text>
         </View>
 
-        <OtpInputField control={control} name="pin" boxes={4} />
+        <OtpInputField
+          isSecuredText={true}
+          control={control}
+          name="pin"
+          boxes={4}
+        />
 
         <TouchableOpacity
           style={styles.button}

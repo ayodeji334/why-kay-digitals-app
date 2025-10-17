@@ -8,6 +8,7 @@ import {
   StatusBar,
   TouchableOpacity,
   Image,
+  Alert,
   // Share as ShareLib,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -139,7 +140,12 @@ const TransactionDetailScreen = () => {
 
         <View style={styles.header}>
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() =>
+              Alert.alert(
+                "Coming soon",
+                "The feature is not available. Kindly check back later ",
+              )
+            }
             style={styles.headerButton}
           >
             <ArrowLeft size={20} color="#000" variant="Bold" />

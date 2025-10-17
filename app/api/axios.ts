@@ -5,7 +5,7 @@ import { showError } from "../utlis/toast";
 import { Platform } from "react-native";
 import { useAuthStore } from "../stores/authSlice";
 
-const URL = Platform.OS === "android" ? "10.161.38.57" : "localhost";
+const URL = Platform.OS === "android" ? "10.136.225.101" : "localhost";
 export const BASE_URL = `http://${URL}:8000/v1`;
 
 const NETWORK_ERROR_MESSAGE = "Network error. Please check your connection.";
@@ -109,7 +109,7 @@ export default function useAxios() {
 
         // Handle other errors
         if (badRequestStatusCodes.includes(error?.response?.status)) {
-          console.log(error?.response?.data?.message);
+          console.log(error?.response?.status);
 
           if (
             Array.isArray(error?.response?.data?.error?.detailsArray) &&
@@ -147,7 +147,7 @@ export default function useAxios() {
     );
 
     return instance;
-  }, []); // No dependencies needed!
+  }, []);
 
   const getInstance = useCallback((): AxiosInstance => {
     if (!axiosInstanceRef.current) {

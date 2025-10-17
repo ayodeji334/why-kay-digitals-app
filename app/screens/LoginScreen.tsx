@@ -4,9 +4,11 @@ import { COLORS } from "../constants/colors";
 import LoginForm from "../components/forms/LoginForm";
 import { normalize } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
+import { useAuthStore } from "../stores/authSlice";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
+  const user = useAuthStore(state => state.user);
 
   const handleNavigate = () => {
     navigation.navigate("SignUp" as never);
@@ -17,7 +19,9 @@ export default function LoginScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Welcome Back, Philip</Text>
+          <Text style={styles.title}>
+            Welcome Back, {user?.first_name ?? "User"}
+          </Text>
           <Text
             style={[
               styles.title,

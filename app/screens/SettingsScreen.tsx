@@ -66,7 +66,6 @@ const MenuItem = ({
   IconComponent = ArrowRight2,
 }: MenuItemProps) => {
   const bgColor = isDangerous ? "#DC262611" : "#EFF7EC";
-
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -122,6 +121,7 @@ export default function SettingsScreen() {
   const appVersion = DeviceInfo.getVersion();
   const buildNumber = DeviceInfo.getBuildNumber();
   const { user: userData, logout } = useAuthStore(state => state);
+  console.log(userData);
 
   const handleEditInfo = () => {
     navigation.navigate("EditProfile" as never);

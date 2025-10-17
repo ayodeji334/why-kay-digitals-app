@@ -165,7 +165,7 @@ import {
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import { height, normalize, width } from "../constants/settings";
+import { normalize } from "../constants/settings";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -185,7 +185,7 @@ const WelcomeScreen = () => {
       >
         <View style={styles.imageWrapper}>
           <Image
-            source={require("../assets/splash_logo.png")}
+            source={require("../assets/welcome_illustration.png")}
             style={styles.image}
             resizeMode="contain"
           />

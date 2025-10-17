@@ -65,7 +65,7 @@ const TextInputField: React.FC<Props> = ({
             placeholderTextColor={placeholderTextColor}
             onBlur={onBlur}
             onChangeText={onChange}
-            value={value?.toString()} // important for numeric values
+            value={value?.toString()}
             keyboardType={keyboardType}
             secureTextEntry={secureTextEntry}
             autoCapitalize={autoCapitalize}
@@ -99,13 +99,13 @@ const styles = StyleSheet.create({
   errorText: {
     color: "#FF3B30",
     marginTop: 6,
-    fontSize: normalize(12),
+    fontSize: normalize(13),
     fontWeight: "500",
     marginLeft: 4,
   },
   label: {
-    fontSize: normalize(12),
-    fontWeight: "600",
+    fontSize: normalize(13),
+    fontWeight: "700",
     marginBottom: 8,
     color: "#333333",
   },

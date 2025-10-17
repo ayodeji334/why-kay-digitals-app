@@ -233,14 +233,14 @@ const styles = StyleSheet.create({
     minHeight: 100,
   },
   deleteButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: 38,
     alignItems: "center",
     marginTop: 40,
   },
   deleteButtonText: {
-    color: "white",
+    color: "black",
     fontWeight: "600",
     fontSize: normalize(11),
   },

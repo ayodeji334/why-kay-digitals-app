@@ -50,7 +50,7 @@ export default function EditProfileScreen() {
   const { user, setUser, token } = useAuthStore(state => state);
   const { patch, post } = useAxios();
   const [loading, setLoading] = useState(false);
-  const [imageUri, setImageUri] = useState(user?.profilePicture);
+  const [imageUri, setImageUri] = useState(user?.profile_picture);
 
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(profileSchema),
@@ -63,72 +63,126 @@ export default function EditProfileScreen() {
     },
   });
 
+  // const handleUpdateProfile = async (data: any) => {
+  //   setLoading(true);
+
+  //   try {
+  //     // Upload the image if it exists
+  //     let uploadedImageUrl = imageUri;
+
+  //     const formData = new FormData();
+
+  //     formData.append("file", {
+  //       uri: Platform.OS === "ios" ? imageUri.replace("file://", "") : imageUri,
+  //       type: "image/jpeg",
+  //       name: `profile_${Date.now()}.jpg`,
+  //     } as any);
+
+  //     const res = await fetch(`${BASE_URL}/files/upload`, {
+  //       method: "POST",
+  //       body: formData,
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     const result = await res.json();
+
+  //     if (res.ok && result?.success && result?.data?.url) {
+  //       uploadedImageUrl = result.data.url;
+  //     } else {
+  //       console.log("Upload failed:", result);
+  //       showError(result?.message || "Failed to upload image");
+  //       setLoading(false);
+  //       return;
+  //     }
+  //     // Update profile with uploaded image URL
+  //     const response = await patch("/users/update-user-profile", {
+  //       ...data,
+  //       profile_picture_url: uploadedImageUrl,
+  //     });
+
+  //     if (response.data?.success) {
+  //       if (response?.data?.data) {
+  //         setUser(response.data?.data);
+  //       }
+  //       showSuccess("Profile updated successfully");
+  //       navigation.goBack();
+  //     } else {
+  //       showError(response.data?.message || "Failed to update profile");
+  //     }
+  //   } catch (error: any) {
+  //     console.log(error?.response);
+  //     if (error.response) {
+  //       showError(
+  //         error.response.data?.message ||
+  //           "An error occurred while updating profile",
+  //       );
+  //     } else if (error.request) {
+  //       showError(
+  //         "No response from server. Please check your internet connection.",
+  //       );
+  //     } else {
+  //       showError("Something went wrong. Please try again.");
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleUpdateProfile = async (data: any) => {
     setLoading(true);
 
     try {
-      // Upload the image if it exists
       let uploadedImageUrl = imageUri;
 
-      const formData = new FormData();
+      if (imageUri) {
+        const formData = new FormData();
+        formData.append("file", {
+          uri: uploadedImageUrl,
+          type: "image/jpeg",
+          name: `profile_${Date.now()}.jpg`,
+        } as any);
 
-      formData.append("file", {
-        uri: Platform.OS === "ios" ? imageUri.replace("file://", "") : imageUri,
-        type: "image/jpeg",
-        name: `profile_${Date.now()}.jpg`,
-      } as any);
+        console.log("FormData: ", formData);
 
-      console.log(token);
+        const res = await post(`${BASE_URL}/files/upload`, formData, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+            // "cache-control": "no-cache",
+          },
+        });
 
-      const res = await fetch(`${BASE_URL}/files/upload`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          Accept: "multipart/form",
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        const result = res.data;
+        console.log("Upload result:", result);
 
-      const result = await res.json();
-
-      if (res.ok && result?.success && result?.data?.url) {
-        uploadedImageUrl = result.data.url;
-      } else {
-        console.log("Upload failed:", result);
-        showError(result?.message || "Failed to upload image");
-        setLoading(false);
-        return;
+        if (result?.success && result?.data?.secure_url) {
+          uploadedImageUrl = result.data.secure_url;
+        } else {
+          showError(result?.message || "Failed to upload image");
+          setLoading(false);
+          return;
+        }
       }
-      // Update profile with uploaded image URL
+
       const response = await patch("/users/update-user-profile", {
         ...data,
         profile_picture_url: uploadedImageUrl,
       });
 
       if (response.data?.success) {
-        if (response?.data?.data) {
-          setUser(response.data?.data);
-        }
+        setUser(response.data?.data);
         showSuccess("Profile updated successfully");
         navigation.goBack();
       } else {
         showError(response.data?.message || "Failed to update profile");
       }
     } catch (error: any) {
-      console.log(error?.response);
-      if (error.response) {
-        showError(
-          error.response.data?.message ||
-            "An error occurred while updating profile",
-        );
-      } else if (error.request) {
-        showError(
-          "No response from server. Please check your internet connection.",
-        );
-      } else {
-        showError("Something went wrong. Please try again.");
-      }
+      console.log("Upload error:", error.response?.data || error.message);
+      showError("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -205,7 +259,7 @@ export default function EditProfileScreen() {
             />
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={showImagePickerOptions}
+              // onPress={showImagePickerOptions}
               style={styles.changePhotoText}
             >
               <CardEdit size={16} color={COLORS.primary} />

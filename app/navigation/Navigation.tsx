@@ -45,6 +45,8 @@ export default function NavigationRoot() {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const user = getItem("user");
 
+  console.log(isAuthenticated);
+
   const RootStack = createNativeStackNavigator({
     initialRouteName: isAuthenticated ? "Dashboard" : user ? "SignIn" : "Intro",
     screens: {

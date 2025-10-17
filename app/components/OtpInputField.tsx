@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     textAlign: "center",
     fontWeight: "600",
-    fontSize: normalize(15),
+    fontSize: normalize(19),
   },
 });
 

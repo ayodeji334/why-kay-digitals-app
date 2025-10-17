@@ -83,7 +83,10 @@ export default function IntroModalScreen() {
   };
 
   return (
-    <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
+    <SafeAreaView
+      edges={["bottom", "left", "right", "top"]}
+      style={styles.container}
+    >
       <StatusBar barStyle="dark-content" backgroundColor={"white"} />
       <FlatList
         ref={flatListRef}

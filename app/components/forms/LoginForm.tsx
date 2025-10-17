@@ -49,6 +49,8 @@ const LoginForm: React.FC = () => {
 
       const authData = response.data?.data?.auth;
 
+      console.log(response);
+
       if (authData?.accessToken && authData?.refreshToken) {
         setItem("auth_token", authData.accessToken);
         setItem("refresh_token", authData.refreshToken);
@@ -130,7 +132,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#00",
     fontWeight: "600",
-    fontSize: normalize(10),
+    fontSize: normalize(13),
     textAlign: "center",
   },
   modalBackground: {
@@ -152,3 +154,5 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 });
+
+// 9f602fb0be2b2f09baeeb8946cb006cb

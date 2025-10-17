@@ -176,7 +176,7 @@ const TransactionHistoryScreen: React.FC = () => {
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-      <View style={styles.searchContainer}>
+      {/* <View style={styles.searchContainer}>
         <View style={styles.searchInput}>
           <SearchNormal size={14} color="#6B7280" variant="Outline" />
           <TextInput
@@ -205,7 +205,7 @@ const TransactionHistoryScreen: React.FC = () => {
         >
           <Calendar size={18} color="#000" variant="Linear" />
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {transactions.length === 0 && !isLoading ? (
         <View style={styles.emptyContainer}>

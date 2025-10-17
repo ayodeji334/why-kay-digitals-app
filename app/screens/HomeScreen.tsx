@@ -19,11 +19,11 @@ import { useAuthStore } from "../stores/authSlice";
 import useAxios from "../api/axios";
 import AssetsSection from "../components/Dashboard/AssetsSection";
 import CustomLoading from "../components/CustomLoading";
+import { getItem } from "../utlis/storage";
 
 const HomeScreen = () => {
   const { apiGet } = useAxios();
-  const userData = useAuthStore(state => state.user);
-  const setUser = useAuthStore(state => state.setUser);
+  const { user: userData, setUser } = useAuthStore(state => state);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -35,16 +35,16 @@ const HomeScreen = () => {
     return [];
   }, [userData?.bank_accounts]);
 
-  // Fetch user accounts data
   const fetchUserAccounts = async () => {
     try {
       setLoading(true);
+      const restoreUser = JSON.parse(getItem("user") as string);
       const response = await apiGet("users/user/accounts");
+
       if (response.data?.success) {
+        setUser(restoreUser);
         setUser(response.data.data);
       }
-    } catch (error) {
-      console.error("Failed to fetch user accounts:", error);
     } finally {
       setLoading(false);
       setRefreshing(false);

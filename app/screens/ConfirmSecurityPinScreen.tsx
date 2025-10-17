@@ -9,7 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { normalize } from "../constants/settings";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -35,10 +35,11 @@ const schema = yup.object().shape({
 });
 
 export default function ConfirmSecurityPinScreen() {
-  const { setIsAuthenticated } = useAuthStore();
+  const { setIsAuthenticated } = useAuthStore(state => state);
   const { post } = useAxios();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const route: any = useRoute();
+  const navigation = useNavigation();
   const { pin } = route.params;
   const { control, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
@@ -59,7 +60,9 @@ export default function ConfirmSecurityPinScreen() {
       });
 
       setIsAuthenticated(true);
+      setTimeout(() => navigation.navigate("Dashboard" as never), 1000);
     } catch (err: unknown) {
+      console.log(err);
       if (err instanceof AxiosError) {
         const errorMessage =
           err.response?.data?.message || "Registration failed. Try again.";
@@ -90,7 +93,12 @@ export default function ConfirmSecurityPinScreen() {
           </Text>
         </View>
 
-        <OtpInputField control={control} name="pin" boxes={4} />
+        <OtpInputField
+          isSecuredText={true}
+          control={control}
+          name="pin"
+          boxes={4}
+        />
 
         <TouchableOpacity
           style={styles.button}
