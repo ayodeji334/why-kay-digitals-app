@@ -25,7 +25,7 @@ const slides = [
     highlight: "consectetur",
     subtitle:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    image: require("../assets/splash_logo.png"),
+    image: require("../assets/slide_1.png"),
   },
   {
     id: "2",
@@ -34,7 +34,7 @@ const slides = [
     highlight: "consectetur",
     subtitle:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    image: require("../assets/splash_logo.png"),
+    image: require("../assets/welcome_illustration.png"),
   },
   {
     id: "3",
@@ -43,7 +43,7 @@ const slides = [
     highlight: "consectetur",
     subtitle:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    image: require("../assets/splash_logo.png"),
+    image: require("../assets/security_illustration.png"),
   },
 ];
 
