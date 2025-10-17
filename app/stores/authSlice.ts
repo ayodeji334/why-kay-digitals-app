@@ -19,7 +19,6 @@ interface AuthState {
   disableBiometric: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
   setIsGoogleAuthenticatorEnabled: (enabled: boolean) => void;
-  // completeOnboarding: () => void;
   clearAuth: () => void;
   initializeAuth: () => Promise<void>;
 }
@@ -68,12 +67,13 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
-        console.log("log user out ......");
-        set({
+        console.log("log out...");
+        set(state => ({
+          ...state,
           token: null,
           refreshToken: null,
           isAuthenticated: false,
-        });
+        }));
 
         removeItem("auth_token");
         removeItem("refresh_token");
