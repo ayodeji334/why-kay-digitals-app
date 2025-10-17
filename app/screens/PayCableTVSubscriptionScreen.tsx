@@ -93,7 +93,6 @@ export default function PayCableTVSubscriptionScreen() {
     setLoading(true);
     apiGet(`/bills/cable-tv-plans/${selectedNetwork}`)
       .then(res => {
-        console.log(res.data);
         setTvPlans(res.data?.data || []);
       })
       .catch(() => setTvPlans([]))

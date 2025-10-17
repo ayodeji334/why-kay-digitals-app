@@ -9,7 +9,6 @@ import {
   Alert,
   ActivityIndicator,
   StatusBar,
-  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
@@ -145,8 +144,6 @@ export default function EditProfileScreen() {
           name: `profile_${Date.now()}.jpg`,
         } as any);
 
-        console.log("FormData: ", formData);
-
         const res = await post(`${BASE_URL}/files/upload`, formData, {
           headers: {
             Accept: "application/json",
@@ -157,7 +154,6 @@ export default function EditProfileScreen() {
         });
 
         const result = res.data;
-        console.log("Upload result:", result);
 
         if (result?.success && result?.data?.secure_url) {
           uploadedImageUrl = result.data.secure_url;

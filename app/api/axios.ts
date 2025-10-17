@@ -109,8 +109,6 @@ export default function useAxios() {
 
         // Handle other errors
         if (badRequestStatusCodes.includes(error?.response?.status)) {
-          console.log(error?.response?.status);
-
           if (
             Array.isArray(error?.response?.data?.error?.detailsArray) &&
             error?.response?.data?.error?.detailsArray.length > 0

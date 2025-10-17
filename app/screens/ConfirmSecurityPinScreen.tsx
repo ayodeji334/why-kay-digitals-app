@@ -39,7 +39,6 @@ export default function ConfirmSecurityPinScreen() {
   const { post } = useAxios();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const route: any = useRoute();
-  const navigation = useNavigation();
   const { pin } = route.params;
   const { control, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
@@ -60,7 +59,6 @@ export default function ConfirmSecurityPinScreen() {
       });
 
       setIsAuthenticated(true);
-      setTimeout(() => navigation.navigate("Dashboard" as never), 1000);
     } catch (err: unknown) {
       console.log(err);
       if (err instanceof AxiosError) {

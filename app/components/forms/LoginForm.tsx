@@ -49,8 +49,6 @@ const LoginForm: React.FC = () => {
 
       const authData = response.data?.data?.auth;
 
-      console.log(response);
-
       if (authData?.accessToken && authData?.refreshToken) {
         setItem("auth_token", authData.accessToken);
         setItem("refresh_token", authData.refreshToken);

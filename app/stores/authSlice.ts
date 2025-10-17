@@ -87,8 +87,8 @@ export const useAuthStore = create<AuthState>()(
         set({ isBiometricEnabled: true });
       },
 
-      setIsAuthenticated: () => {
-        set({ isBiometricEnabled: true });
+      setIsAuthenticated: (value: boolean) => {
+        set({ isAuthenticated: value });
       },
 
       disableBiometric: () => {
