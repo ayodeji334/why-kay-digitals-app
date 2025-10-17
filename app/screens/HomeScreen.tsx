@@ -1,336 +1,194 @@
-import React from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import {
   Text,
   StyleSheet,
-  Dimensions,
   ScrollView,
   StatusBar,
   View,
   TouchableOpacity,
   Image,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getItem, removeItem } from "../utlis/storage";
-import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "../context/AppContext";
 import Entypo from "@react-native-vector-icons/entypo";
-
-const { width } = Dimensions.get("window");
+import ServicesSection from "../components/Dashboard/ServicesSection";
+import { Notification } from "iconsax-react-nativejs";
+import BalanceCard from "../components/Dashboard/BalanceCard";
+import { getFontFamily, normalize } from "../constants/settings";
+import { useAuthStore } from "../stores/authSlice";
+import useAxios from "../api/axios";
+import AssetsSection from "../components/Dashboard/AssetsSection";
+import CustomLoading from "../components/CustomLoading";
 
 const HomeScreen = () => {
-  const { setIsAuthenticated } = useAuth();
-  const user = getItem("user");
-  const userData = JSON.parse(user as string);
-  const navigation = useNavigation();
+  const { apiGet } = useAxios();
+  const userData = useAuthStore(state => state.user);
+  const setUser = useAuthStore(state => state.setUser);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleLogout = async () => {
-    removeItem("auth_token");
-    removeItem("refresh_token");
-    setIsAuthenticated(false);
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "SignIn" as never }],
-    });
+  const userAccounts = useMemo(() => {
+    if (Array.isArray(userData?.bank_accounts)) {
+      return userData?.bank_accounts;
+    }
+
+    return [];
+  }, [userData?.bank_accounts]);
+
+  // Fetch user accounts data
+  const fetchUserAccounts = async () => {
+    try {
+      setLoading(true);
+      const response = await apiGet("users/user/accounts");
+      if (response.data?.success) {
+        setUser(response.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user accounts:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   };
 
-  const cryptoData = [
-    {
-      id: 1,
-      name: "Bitcoin",
-      symbol: "BTC",
-      amount: "$119k",
-      rate: "₦1,515.00/$",
-      icon: "₿",
-      color: "#F7931A",
-      change: "up",
-    },
-    {
-      id: 2,
-      name: "Ethereum",
-      symbol: "ETH",
-      amount: "$4.30k",
-      rate: "₦1,515.00/$",
-      icon: "♦",
-      color: "#627EEA",
-      change: "up",
-    },
-    {
-      id: 3,
-      name: "Litecoin",
-      symbol: "LTC",
-      amount: "$120k",
-      rate: "₦145.00/$",
-      icon: "Ł",
-      color: "#345D9D",
-      change: "up",
-    },
-  ];
+  useEffect(() => {
+    fetchUserAccounts();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchUserAccounts();
+  };
+
+  const fiatWallet = useMemo(() => {
+    if (userData?.wallets) {
+      return userData.wallets.find((wallet: any) => wallet?.type === "fiat");
+    }
+    return null;
+  }, [userData]);
+
+  const needsVerification = useMemo(() => {
+    return (
+      userData?.tier_level === "TIER_0" ||
+      !userAccounts?.bank_accounts?.length ||
+      userAccounts?.bank_accounts?.length === 0
+    );
+  }, [userData, userAccounts]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={["left", "right", "top"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#df8b0cff"]}
+            tintColor="#e28b0aff"
+          />
+        }
       >
-        {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Image
               source={{
-                uri: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+                uri: userData?.profile_picture || "",
               }}
               style={styles.profileImage}
             />
             <View style={styles.welcomeText}>
               <Text style={styles.welcomeBack}>Welcome back</Text>
-              <Text style={styles.userName}>Hi, {userData?.fullName}</Text>
+              <Text style={styles.userName}>
+                Hi, {userData?.firstName || userData?.first_name || "User"}
+              </Text>
             </View>
           </View>
           <TouchableOpacity style={styles.notificationButton}>
-            <Entypo name="bell" size={24} color="#333" />
+            <Notification size={20} color="#333" />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.balanceCard}>
-          <View style={styles.balanceHeader}>
-            <Text style={styles.availableBalance}>Available balance</Text>
-            <TouchableOpacity activeOpacity={0.9} style={styles.seeTransaction}>
-              <Text style={styles.seeTransactionText}>See Transaction</Text>
-              <Entypo name="chevron-right" size={16} color="#FFA726" />
-            </TouchableOpacity>
-          </View>
+        <BalanceCard
+          balance={fiatWallet?.balance || 0}
+          showTransactionsButton={true}
+        />
 
-          <View style={styles.balanceAmount}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={styles.currency}>₦</Text>
-              <Text style={styles.amount}>5,886.32</Text>
-            </View>
-            <TouchableOpacity activeOpacity={0.8} style={styles.eyeIcon}>
-              <Entypo name="eye" size={20} color="rgba(255,255,255,0.8)" />
-            </TouchableOpacity>
-          </View>
+        <AssetsSection />
 
-          <View style={styles.actionButtons}>
-            <TouchableOpacity activeOpacity={0.89} style={styles.depositButton}>
-              <Entypo name="plus" size={20} color="#000" />
-              <Text style={styles.depositText}>Deposit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.9} style={styles.withdrawButton}>
-              <Entypo name="arrow-down" size={20} color="#333" />
-              <Text style={styles.withdrawText}>Withdraw</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Sell Rate Section */}
-        <View style={styles.sellRateSection}>
-          <View style={styles.sellRateHeader}>
-            <Text style={styles.sellRateTitle}>Sell Rate:</Text>
-            <TouchableOpacity style={styles.sellAllButton}>
-              <Text style={styles.sellAllText}>Sell all</Text>
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.cryptoList}
+        {needsVerification && (
+          <TouchableOpacity
+            activeOpacity={0.9}
+            style={styles.verificationBanner}
           >
-            {cryptoData.map(crypto => (
-              <View key={crypto.id} style={styles.cryptoCard}>
-                <View style={styles.cryptoHeader}>
-                  <View
-                    style={[
-                      styles.cryptoIcon,
-                      { backgroundColor: crypto.color },
-                    ]}
-                  >
-                    <Text style={styles.cryptoSymbol}>{crypto.icon}</Text>
-                  </View>
-                  <View style={styles.cryptoInfo}>
-                    <View style={styles.cryptoAmount}>
-                      <Text style={styles.cryptoName}>{crypto.name}</Text>
-                      <Text style={[styles.rateValue, { fontWeight: "400" }]}>
-                        {crypto.amount}
-                      </Text>
-                    </View>
+            <View style={styles.verificationIcon}>
+              <Entypo name="user" size={normalize(16)} color="#22C55E" />
+            </View>
+            <View style={styles.verificationText}>
+              <Text style={styles.verificationTitle}>
+                Kindly verify your identity to unlock all the features of the
+                app.
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
 
-                    {crypto.rate && (
-                      <View style={styles.rateSection}>
-                        <Text style={styles.rateLabel}>Rate:</Text>
-                        <Text style={styles.rateValue}>{crypto.rate}</Text>
-                      </View>
-                    )}
-                  </View>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
-        </View>
-
-        <TouchableOpacity activeOpacity={0.9} style={styles.verificationBanner}>
-          <View style={styles.verificationIcon}>
-            <Entypo name="user" size={19} color="#22C55E" />
-          </View>
-          <View style={styles.verificationText}>
-            <Text style={styles.verificationTitle}>
-              Kindly verify your identity to unlock all the features of the app.
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Logout & return to login</Text>
-        </TouchableOpacity>
+        <ServicesSection />
       </ScrollView>
+      <CustomLoading loading={loading} />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F8F9FA",
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
+  container: { flex: 1, backgroundColor: "white" },
+  scrollContainer: { flex: 1, paddingHorizontal: 20 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: 20,
   },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
+  headerLeft: { flexDirection: "row", alignItems: "center" },
   profileImage: {
-    width: 50,
-    height: 50,
+    width: 43,
+    height: 43,
     borderRadius: 25,
     marginRight: 12,
-    backgroundColor: "green",
+    backgroundColor: "#f0f0f0",
   },
-  welcomeText: {
-    justifyContent: "center",
-  },
+  welcomeText: { justifyContent: "center" },
   welcomeBack: {
-    fontSize: 14,
-    color: "#666",
+    fontSize: normalize(12),
     marginBottom: 2,
+    fontWeight: 300,
+    color: "#353535ff",
   },
   userName: {
-    fontSize: width * 0.048,
-    fontWeight: "600",
+    fontSize: normalize(17),
+    fontWeight: 600,
     color: "#333",
   },
   notificationButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#BBBBBB",
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  balanceCard: {
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 30,
-    overflow: "hidden",
-    backgroundColor: "green",
-  },
-  balanceHeader: {
+  cryptoSection: { marginBottom: 30 },
+  sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 15,
-  },
-  availableBalance: {
-    color: "#fff",
-    fontSize: width * 0.0342,
-  },
-  seeTransaction: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  seeTransactionText: {
-    color: "#FFA726",
-    fontSize: 14,
-    marginRight: 4,
-  },
-  balanceAmount: {
-    flexDirection: "row",
-    gap: 29,
-    // alignItems: "baseline",
-    marginBottom: 20,
-  },
-  currency: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "600",
-    marginRight: 5,
-  },
-  amount: {
-    color: "#fff",
-    fontSize: 30,
-    fontWeight: "bold",
-  },
-  eyeIcon: {
-    marginLeft: 0,
-  },
-  actionButtons: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  depositButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "white",
-    borderRadius: 25,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  depositText: {
-    color: "#000",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  withdrawButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FFA726",
-    borderRadius: 25,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  withdrawText: {
-    color: "#333",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  sellRateSection: {
     marginBottom: 30,
   },
-  sellRateHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  sellRateTitle: {
-    fontSize: 18,
+  sectionTitle: {
+    fontSize: normalize(16),
     fontWeight: "600",
     color: "#333",
   },
@@ -343,22 +201,18 @@ const styles = StyleSheet.create({
   },
   sellAllText: {
     color: "#FFA726",
-    fontSize: 14,
-    fontWeight: "500",
+    fontSize: normalize(13),
+    fontFamily: getFontFamily(500),
   },
-  cryptoList: {
-    gap: 12,
-  },
+  cryptoList: { gap: 12 },
   cryptoCard: {
     backgroundColor: "#EFF7EC",
     borderRadius: 12,
     padding: 16,
     marginRight: 12,
+    minWidth: 200,
   },
-  cryptoHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
+  cryptoHeader: { flexDirection: "row", alignItems: "center" },
   cryptoIcon: {
     width: 32,
     height: 32,
@@ -369,26 +223,28 @@ const styles = StyleSheet.create({
   },
   cryptoSymbol: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("900"),
   },
   cryptoInfo: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 49,
   },
   cryptoName: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: normalize(14),
+    fontFamily: getFontFamily(600),
     color: "#000",
-    marginBottom: 2,
+    marginBottom: 4,
+  },
+  cryptoBalance: {
+    fontSize: normalize(16),
+    fontFamily: getFontFamily(700),
+    color: "#333",
   },
   cryptoAmount: {
-    flex: 1,
     flexDirection: "column",
     alignItems: "flex-start",
-    fontSize: 40,
   },
   rateSection: {
     flexDirection: "column",
@@ -396,12 +252,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   rateLabel: {
-    fontSize: width * 0.033,
+    fontSize: normalize(11),
     color: "#666",
+    fontFamily: getFontFamily(400),
   },
   rateValue: {
-    fontSize: width * 0.039,
-    fontWeight: "700",
+    fontSize: normalize(11),
+    fontFamily: getFontFamily(600),
     color: "#333",
   },
   verificationBanner: {
@@ -416,35 +273,60 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 20,
-    backgroundColor: "green",
+    backgroundColor: "#22C55E20",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 16,
   },
-  verificationText: {
-    flex: 1,
-  },
+  verificationText: { flex: 1 },
   verificationTitle: {
     color: "#fff",
-    fontSize: width * 0.035,
-    fontWeight: "500",
-    marginBottom: 2,
+    fontSize: normalize(14),
+    fontWeight: 600,
   },
-  verificationSubtitle: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 16,
-  },
-  // Debug styles - remove in production
-  logoutButton: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: "#ff4444",
-    borderRadius: 8,
+  emptyState: {
+    borderRadius: 12,
+    paddingHorizontal: 24,
     alignItems: "center",
   },
-  logoutText: {
+  emptyIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#6c757d",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  emptyIconText: {
     color: "#fff",
-    fontWeight: "500",
+    fontSize: normalize(20),
+    fontFamily: getFontFamily(700),
+  },
+  emptyTitle: {
+    fontSize: normalize(14),
+    fontFamily: getFontFamily(600),
+    color: "#333",
+    textAlign: "center",
+  },
+  emptyDescription: {
+    fontSize: normalize(12),
+    fontFamily: getFontFamily(400),
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 16,
+    lineHeight: 16,
+  },
+  emptyButton: {
+    backgroundColor: "#FFA726",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  emptyButtonText: {
+    color: "#fff",
+    fontSize: normalize(12),
+    fontFamily: getFontFamily(600),
   },
 });
 

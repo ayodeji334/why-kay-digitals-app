@@ -4,16 +4,23 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  StatusBar,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Entypo from "@react-native-vector-icons/entypo";
+import { ArrowLeft2 } from "iconsax-react-nativejs";
+import { normalize } from "../constants/settings";
 
 type Props = {
-  title: string;
+  title?: string;
   showBack?: boolean;
   showTitle?: boolean;
 };
+
+const marginTop = Platform.select({
+  android: 0,
+  ios: 46,
+  default: 0,
+});
 
 const CustomHeader: React.FC<Props> = ({
   title,
@@ -29,7 +36,7 @@ const CustomHeader: React.FC<Props> = ({
           onPress={() => navigation.goBack()}
           style={styles.backBtn}
         >
-          <Entypo name="chevron-left" size={30} />
+          <ArrowLeft2 size={20} />
         </TouchableOpacity>
       ) : (
         <View style={{ width: 24 }} />
@@ -47,8 +54,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 12,
+    paddingVertical: 12,
     backgroundColor: "white",
-    paddingTop: (StatusBar.currentHeight as number) + 50,
+    marginTop: marginTop,
   },
   backBtn: {
     paddingVertical: 5,
@@ -56,7 +64,8 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     textAlign: "center",
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: normalize(14),
+    fontWeight: "700",
+    paddingVertical: 18,
   },
 });

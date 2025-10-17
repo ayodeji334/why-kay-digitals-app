@@ -2,7 +2,7 @@ import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import LoginForm from "../components/forms/LoginForm";
-import { height, width } from "../constants/settings";
+import { normalize } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 
 export default function LoginScreen() {
@@ -13,8 +13,8 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
           <Text style={styles.title}>Welcome Back, Philip</Text>
@@ -23,7 +23,7 @@ export default function LoginScreen() {
               styles.title,
               {
                 fontWeight: "300",
-                fontSize: width * 0.0434,
+                fontSize: normalize(11),
                 marginTop: 6,
                 marginLeft: 1,
               },
@@ -34,7 +34,7 @@ export default function LoginScreen() {
         </View>
 
         <LoginForm />
-        <Text style={{ textAlign: "center" }}>
+        <Text style={{ textAlign: "center", fontSize: normalize(11) }}>
           Don’t have an account?
           <Text onPress={handleNavigate} style={{ color: "blue" }}>
             {" "}
@@ -54,13 +54,12 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    marginTop: -20,
   },
   header: {
-    marginBottom: height * 0,
+    marginBottom: 10,
   },
   title: {
-    fontSize: width * 0.0644,
+    fontSize: normalize(15),
     fontWeight: "700",
   },
   highlight: {

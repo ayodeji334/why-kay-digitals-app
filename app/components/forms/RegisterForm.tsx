@@ -12,6 +12,8 @@ import CustomLoading from "../CustomLoading";
 import { showError, useToastHelpers } from "../../utlis/toast";
 import { AxiosError } from "axios";
 import { width } from "../../constants/settings";
+import { SelectInput } from "../SelectInputField";
+import useAxios from "../../api/axios";
 
 type RegisterFormInputs = {
   first_name: string;
@@ -48,6 +50,7 @@ const registerSchema = yup.object().shape({
 });
 
 const RegisterForm: React.FC = () => {
+  const { post } = useAxios();
   const { showSuccess } = useToastHelpers();
   const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
@@ -64,11 +67,14 @@ const RegisterForm: React.FC = () => {
     try {
       setLoading(true);
 
-      await apiClient.post("/auth/register", values);
+      await post("/auth/register", values);
 
       showSuccess("Registration successful! Please verify your email.");
 
-      navigation.navigate("VerifyCode", { email: values.email });
+      navigation.navigate(
+        "VerifyCode" as never,
+        { email: values.email } as never,
+      );
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         const errorMessage =
@@ -115,6 +121,7 @@ const RegisterForm: React.FC = () => {
       <PasswordInputField
         label="Password"
         control={control}
+        showHints={true}
         name="password"
         placeholder="Enter your password"
       />
@@ -124,7 +131,14 @@ const RegisterForm: React.FC = () => {
         name="password_confirmation"
         placeholder="Confirm your password"
       />
-      <TextInputField
+      <SelectInput
+        options={[
+          {
+            label: "Social Media",
+
+            value: "Social",
+          },
+        ]}
         label="How did you hear about us?"
         control={control}
         name="how_do_heard_about_us"
@@ -132,7 +146,7 @@ const RegisterForm: React.FC = () => {
       />
 
       <TouchableOpacity
-        activeOpacity={0.6}
+        activeOpacity={0.8}
         style={styles.button}
         onPress={handleSubmit(handleRegister)}
       >

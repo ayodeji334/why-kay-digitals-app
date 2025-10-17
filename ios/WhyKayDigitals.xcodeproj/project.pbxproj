@@ -7,28 +7,70 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C80B921A6F3F58F76C31292 /* libPods-WhyKayDigitals.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-WhyKayDigitals.a */; };
+		0450DC4CE4414D098B6BD69B /* Zain-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB6EF0B386FA4097BE760C45 /* Zain-Light.ttf */; };
 		0D5135E9498049D2A46E9CF8 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF9B3A33E93A4893A8247B58 /* Colors.xcassets */; };
+		136A03B305F94400A326D865 /* Inter-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 95A732FFF196412592437497 /* Inter-Italic.ttf */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		1576D0C3EEBD424396866498 /* Zain-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1171A2E3F96D44119AA4321C /* Zain-Black.ttf */; };
+		1DF2B602848A4C73BBE6234D /* Inter-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0244D361304C4E34BF9D802E /* Inter-Light.ttf */; };
+		46E63341401F4E7B95BC6024 /* Zain-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 084A9CC3739F4CF3AF557D81 /* Zain-Italic.ttf */; };
 		49F4964F1F9B48711E32D0E6 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
+		4DE07A4C48D74C85875F016F /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 16061CDA16F9468AACFEB742 /* Inter-Regular.ttf */; };
+		66C6DDBFC5D04E6492E43C52 /* Zain-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B3B2E1ADF8C64D0F8E677AAA /* Zain-ExtraBold.ttf */; };
 		689A7298031A414BAFA7CE74 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A99FA71178664676A52CBC27 /* BootSplash.storyboard */; };
+		6C53F07A88084A109C44656C /* Inter-VariableFont_opsz,wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 88F3E5FCB24E430FBA795E60 /* Inter-VariableFont_opsz,wght.ttf */; };
+		6EAC5CAEBB905747A994FEFF /* libPods-WhyKayDigitals.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2900CB9051AA65048439F9C5 /* libPods-WhyKayDigitals.a */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
+		8090B2A5595546CCAE03711E /* Zain-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7E52F932C2D34A0A996CC8CC /* Zain-ExtraLight.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		89277B77BEC149F48748E8EB /* Zain-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 45DD358C137149E9BF9DA6F3 /* Zain-Bold.ttf */; };
+		A3D0A37440B94E0395326697 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2314998AC4EB443EBFC0386C /* OFL.txt */; };
+		B2B4D8A59B174418B8BBB1C1 /* Inter-Italic-VariableFont_opsz,wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 100C152325744E38B1EEE4F9 /* Inter-Italic-VariableFont_opsz,wght.ttf */; };
+		C04799BBFFC64D40ABAF4ABE /* Zain-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 200CDBB42D32476C915FC050 /* Zain-LightItalic.ttf */; };
+		CE5B2738EE4B432E9C296930 /* Zain-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 284260D0C71546F591CC3576 /* Zain-Regular.ttf */; };
+		D00B5BEF36D74B2D8D0262D8 /* Inter-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D142FEE60A9C41B5A4034600 /* Inter-Thin.ttf */; };
+		E57CF3355FBF48A0B47F775B /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EF3E2A57A9A7484B9B5F5BFA /* Inter-Bold.ttf */; };
+		E65A0997F9434224BDAF6C1A /* Inter-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 84E7AD1A99744F298394B5DE /* Inter-Black.ttf */; };
+		E815028DF4B7427A8CA488CF /* Inter-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3117C233181441439B7F5206 /* Inter-ExtraBold.ttf */; };
+		EDC3A9AA97EF4CBB83AE6D30 /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DC58011E0D844D02978007BB /* Inter-SemiBold.ttf */; };
+		EFA81F3510F74E4699ABA3E6 /* Inter-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ACE7EB1E8286463FA43030E9 /* Inter-ExtraLight.ttf */; };
+		F525C4E7BAFF484CB7CD96A7 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B466029B3DA34E649A78897F /* Inter-Medium.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0244D361304C4E34BF9D802E /* Inter-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Light.ttf"; path = "../app/assets/fonts/Inter/static/Inter-Light.ttf"; sourceTree = "<group>"; };
+		084A9CC3739F4CF3AF557D81 /* Zain-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Italic.ttf"; path = "../app/assets/fonts/Zain/Zain-Italic.ttf"; sourceTree = "<group>"; };
+		100C152325744E38B1EEE4F9 /* Inter-Italic-VariableFont_opsz,wght.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Italic-VariableFont_opsz,wght.ttf"; path = "../app/assets/fonts/Inter/Inter-Italic-VariableFont_opsz,wght.ttf"; sourceTree = "<group>"; };
+		1171A2E3F96D44119AA4321C /* Zain-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Black.ttf"; path = "../app/assets/fonts/Zain/Zain-Black.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* WhyKayDigitals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WhyKayDigitals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = WhyKayDigitals/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = WhyKayDigitals/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = WhyKayDigitals/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		3B4392A12AC88292D35C810B /* Pods-WhyKayDigitals.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WhyKayDigitals.debug.xcconfig"; path = "Target Support Files/Pods-WhyKayDigitals/Pods-WhyKayDigitals.debug.xcconfig"; sourceTree = "<group>"; };
-		5709B34CF0A7D63546082F79 /* Pods-WhyKayDigitals.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WhyKayDigitals.release.xcconfig"; path = "Target Support Files/Pods-WhyKayDigitals/Pods-WhyKayDigitals.release.xcconfig"; sourceTree = "<group>"; };
-		5DCACB8F33CDC322A6C60F78 /* libPods-WhyKayDigitals.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WhyKayDigitals.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		16061CDA16F9468AACFEB742 /* Inter-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Regular.ttf"; path = "../app/assets/fonts/Inter/static/Inter-Regular.ttf"; sourceTree = "<group>"; };
+		200CDBB42D32476C915FC050 /* Zain-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-LightItalic.ttf"; path = "../app/assets/fonts/Zain/Zain-LightItalic.ttf"; sourceTree = "<group>"; };
+		2314998AC4EB443EBFC0386C /* OFL.txt */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = OFL.txt; path = ../app/assets/fonts/Inter/OFL.txt; sourceTree = "<group>"; };
+		284260D0C71546F591CC3576 /* Zain-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Regular.ttf"; path = "../app/assets/fonts/Zain/Zain-Regular.ttf"; sourceTree = "<group>"; };
+		2900CB9051AA65048439F9C5 /* libPods-WhyKayDigitals.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WhyKayDigitals.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3117C233181441439B7F5206 /* Inter-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraBold.ttf"; path = "../app/assets/fonts/Inter/static/Inter-ExtraBold.ttf"; sourceTree = "<group>"; };
+		45DD358C137149E9BF9DA6F3 /* Zain-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Bold.ttf"; path = "../app/assets/fonts/Zain/Zain-Bold.ttf"; sourceTree = "<group>"; };
+		4E740282D5E275767FC92B2F /* Pods-WhyKayDigitals.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WhyKayDigitals.debug.xcconfig"; path = "Target Support Files/Pods-WhyKayDigitals/Pods-WhyKayDigitals.debug.xcconfig"; sourceTree = "<group>"; };
+		51ACBA4527A11C0DC66369F1 /* Pods-WhyKayDigitals.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WhyKayDigitals.release.xcconfig"; path = "Target Support Files/Pods-WhyKayDigitals/Pods-WhyKayDigitals.release.xcconfig"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = WhyKayDigitals/AppDelegate.swift; sourceTree = "<group>"; };
+		7E52F932C2D34A0A996CC8CC /* Zain-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-ExtraLight.ttf"; path = "../app/assets/fonts/Zain/Zain-ExtraLight.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = WhyKayDigitals/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		84E7AD1A99744F298394B5DE /* Inter-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Black.ttf"; path = "../app/assets/fonts/Inter/static/Inter-Black.ttf"; sourceTree = "<group>"; };
+		88F3E5FCB24E430FBA795E60 /* Inter-VariableFont_opsz,wght.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-VariableFont_opsz,wght.ttf"; path = "../app/assets/fonts/Inter/Inter-VariableFont_opsz,wght.ttf"; sourceTree = "<group>"; };
+		95A732FFF196412592437497 /* Inter-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Italic.ttf"; path = "../app/assets/fonts/Inter/static/Inter-Italic.ttf"; sourceTree = "<group>"; };
 		A99FA71178664676A52CBC27 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = WhyKayDigitals/BootSplash.storyboard; sourceTree = "<group>"; };
+		ACE7EB1E8286463FA43030E9 /* Inter-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLight.ttf"; path = "../app/assets/fonts/Inter/static/Inter-ExtraLight.ttf"; sourceTree = "<group>"; };
+		B3B2E1ADF8C64D0F8E677AAA /* Zain-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-ExtraBold.ttf"; path = "../app/assets/fonts/Zain/Zain-ExtraBold.ttf"; sourceTree = "<group>"; };
+		B466029B3DA34E649A78897F /* Inter-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.ttf"; path = "../app/assets/fonts/Inter/static/Inter-Medium.ttf"; sourceTree = "<group>"; };
+		BB6EF0B386FA4097BE760C45 /* Zain-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Light.ttf"; path = "../app/assets/fonts/Zain/Zain-Light.ttf"; sourceTree = "<group>"; };
 		CF9B3A33E93A4893A8247B58 /* Colors.xcassets */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = WhyKayDigitals/Colors.xcassets; sourceTree = "<group>"; };
+		D142FEE60A9C41B5A4034600 /* Inter-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Thin.ttf"; path = "../app/assets/fonts/Inter/static/Inter-Thin.ttf"; sourceTree = "<group>"; };
+		DC58011E0D844D02978007BB /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.ttf"; path = "../app/assets/fonts/Inter/static/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		EF3E2A57A9A7484B9B5F5BFA /* Inter-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.ttf"; path = "../app/assets/fonts/Inter/static/Inter-Bold.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,7 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C80B921A6F3F58F76C31292 /* libPods-WhyKayDigitals.a in Frameworks */,
+				6EAC5CAEBB905747A994FEFF /* libPods-WhyKayDigitals.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,7 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				5DCACB8F33CDC322A6C60F78 /* libPods-WhyKayDigitals.a */,
+				2900CB9051AA65048439F9C5 /* libPods-WhyKayDigitals.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -81,6 +123,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				8ADB2044AD6744C590A62CA2 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -95,11 +138,40 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		8ADB2044AD6744C590A62CA2 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				100C152325744E38B1EEE4F9 /* Inter-Italic-VariableFont_opsz,wght.ttf */,
+				88F3E5FCB24E430FBA795E60 /* Inter-VariableFont_opsz,wght.ttf */,
+				2314998AC4EB443EBFC0386C /* OFL.txt */,
+				84E7AD1A99744F298394B5DE /* Inter-Black.ttf */,
+				EF3E2A57A9A7484B9B5F5BFA /* Inter-Bold.ttf */,
+				3117C233181441439B7F5206 /* Inter-ExtraBold.ttf */,
+				ACE7EB1E8286463FA43030E9 /* Inter-ExtraLight.ttf */,
+				95A732FFF196412592437497 /* Inter-Italic.ttf */,
+				B466029B3DA34E649A78897F /* Inter-Medium.ttf */,
+				16061CDA16F9468AACFEB742 /* Inter-Regular.ttf */,
+				DC58011E0D844D02978007BB /* Inter-SemiBold.ttf */,
+				D142FEE60A9C41B5A4034600 /* Inter-Thin.ttf */,
+				0244D361304C4E34BF9D802E /* Inter-Light.ttf */,
+				1171A2E3F96D44119AA4321C /* Zain-Black.ttf */,
+				45DD358C137149E9BF9DA6F3 /* Zain-Bold.ttf */,
+				B3B2E1ADF8C64D0F8E677AAA /* Zain-ExtraBold.ttf */,
+				7E52F932C2D34A0A996CC8CC /* Zain-ExtraLight.ttf */,
+				084A9CC3739F4CF3AF557D81 /* Zain-Italic.ttf */,
+				BB6EF0B386FA4097BE760C45 /* Zain-Light.ttf */,
+				200CDBB42D32476C915FC050 /* Zain-LightItalic.ttf */,
+				284260D0C71546F591CC3576 /* Zain-Regular.ttf */,
+			);
+			name = Resources;
+			path = "";
+			sourceTree = "<group>";
+		};
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				3B4392A12AC88292D35C810B /* Pods-WhyKayDigitals.debug.xcconfig */,
-				5709B34CF0A7D63546082F79 /* Pods-WhyKayDigitals.release.xcconfig */,
+				4E740282D5E275767FC92B2F /* Pods-WhyKayDigitals.debug.xcconfig */,
+				51ACBA4527A11C0DC66369F1 /* Pods-WhyKayDigitals.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -111,13 +183,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "WhyKayDigitals" */;
 			buildPhases = (
-				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
+				1CC06E36D413410EFCB2849D /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
-				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				0CA2E964416259085C5DD4AD /* [CP] Embed Pods Frameworks */,
+				5F70B70286DBC9887517353C /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -169,6 +241,27 @@
 				49F4964F1F9B48711E32D0E6 /* PrivacyInfo.xcprivacy in Resources */,
 				689A7298031A414BAFA7CE74 /* BootSplash.storyboard in Resources */,
 				0D5135E9498049D2A46E9CF8 /* Colors.xcassets in Resources */,
+				B2B4D8A59B174418B8BBB1C1 /* Inter-Italic-VariableFont_opsz,wght.ttf in Resources */,
+				6C53F07A88084A109C44656C /* Inter-VariableFont_opsz,wght.ttf in Resources */,
+				A3D0A37440B94E0395326697 /* OFL.txt in Resources */,
+				E65A0997F9434224BDAF6C1A /* Inter-Black.ttf in Resources */,
+				E57CF3355FBF48A0B47F775B /* Inter-Bold.ttf in Resources */,
+				E815028DF4B7427A8CA488CF /* Inter-ExtraBold.ttf in Resources */,
+				EFA81F3510F74E4699ABA3E6 /* Inter-ExtraLight.ttf in Resources */,
+				136A03B305F94400A326D865 /* Inter-Italic.ttf in Resources */,
+				F525C4E7BAFF484CB7CD96A7 /* Inter-Medium.ttf in Resources */,
+				4DE07A4C48D74C85875F016F /* Inter-Regular.ttf in Resources */,
+				EDC3A9AA97EF4CBB83AE6D30 /* Inter-SemiBold.ttf in Resources */,
+				D00B5BEF36D74B2D8D0262D8 /* Inter-Thin.ttf in Resources */,
+				1DF2B602848A4C73BBE6234D /* Inter-Light.ttf in Resources */,
+				1576D0C3EEBD424396866498 /* Zain-Black.ttf in Resources */,
+				89277B77BEC149F48748E8EB /* Zain-Bold.ttf in Resources */,
+				66C6DDBFC5D04E6492E43C52 /* Zain-ExtraBold.ttf in Resources */,
+				8090B2A5595546CCAE03711E /* Zain-ExtraLight.ttf in Resources */,
+				46E63341401F4E7B95BC6024 /* Zain-Italic.ttf in Resources */,
+				0450DC4CE4414D098B6BD69B /* Zain-Light.ttf in Resources */,
+				C04799BBFFC64D40ABAF4ABE /* Zain-LightItalic.ttf in Resources */,
+				CE5B2738EE4B432E9C296930 /* Zain-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,7 +284,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
+		0CA2E964416259085C5DD4AD /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -208,7 +301,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-WhyKayDigitals/Pods-WhyKayDigitals-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
+		1CC06E36D413410EFCB2849D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -230,7 +323,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
+		5F70B70286DBC9887517353C /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -263,7 +356,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-WhyKayDigitals.debug.xcconfig */;
+			baseConfigurationReference = 4E740282D5E275767FC92B2F /* Pods-WhyKayDigitals.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -291,7 +384,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-WhyKayDigitals.release.xcconfig */;
+			baseConfigurationReference = 51ACBA4527A11C0DC66369F1 /* Pods-WhyKayDigitals.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

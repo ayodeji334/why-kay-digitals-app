@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { width } from "../constants/settings";
+import { normalize } from "../constants/settings";
 import { useRoute } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -20,6 +20,8 @@ import { showError } from "../utlis/toast";
 import { AxiosError } from "axios";
 import CustomLoading from "../components/CustomLoading";
 import { useAuth } from "../context/AppContext";
+import { useAuthStore } from "../stores/authSlice";
+import useAxios from "../api/axios";
 
 type FormData = {
   pin: string;
@@ -33,7 +35,8 @@ const schema = yup.object().shape({
 });
 
 export default function ConfirmSecurityPinScreen() {
-  const { setIsAuthenticated } = useAuth();
+  const { setIsAuthenticated } = useAuthStore();
+  const { post } = useAxios();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const route: any = useRoute();
   const { pin } = route.params;
@@ -50,7 +53,7 @@ export default function ConfirmSecurityPinScreen() {
     try {
       setIsLoading(true);
 
-      await apiClient.post("/auth/security-pin/create", {
+      await post("/auth/security-pin/create", {
         security_pin: pin,
         security_pin_confirmation: pin,
       });
@@ -68,17 +71,16 @@ export default function ConfirmSecurityPinScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
           <Text style={styles.title}>Confirm your Security Pin</Text>
           <Text
             style={[
-              styles.title,
               {
                 fontWeight: "300",
-                fontSize: width * 0.0434,
+                fontSize: normalize(11),
                 marginTop: 6,
                 marginLeft: 1,
               },
@@ -114,17 +116,21 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 80,
   },
-  buttonText: { color: "#000", fontWeight: "bold", textAlign: "center" },
+  buttonText: {
+    color: "#000",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: normalize(12),
+  },
   scrollContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    marginTop: -40,
   },
   header: {
     marginBottom: 23,
   },
   title: {
-    fontSize: width * 0.0644,
+    fontSize: normalize(15),
     fontWeight: "700",
   },
   highlight: {

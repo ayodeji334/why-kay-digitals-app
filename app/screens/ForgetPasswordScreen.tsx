@@ -1,19 +1,12 @@
-import {
-  Dimensions,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import ForgotPasswordForm from "../components/forms/ForgotPasswordForm";
-import { height, width } from "../constants/settings";
+import { normalize } from "../constants/settings";
 
 export default function ForgetPasswordScreen() {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
@@ -23,7 +16,7 @@ export default function ForgetPasswordScreen() {
               styles.title,
               {
                 fontWeight: "300",
-                fontSize: width * 0.0374,
+                fontSize: normalize(12),
                 marginTop: 6,
                 marginLeft: 1,
               },
@@ -48,13 +41,12 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    marginTop: -40,
   },
   header: {
-    marginBottom: height * 0,
+    marginBottom: 10,
   },
   title: {
-    fontSize: width * 0.0544,
+    fontSize: normalize(15),
     fontWeight: "700",
   },
   highlight: {

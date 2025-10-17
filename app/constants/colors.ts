@@ -3,5 +3,8 @@ export const COLORS = {
   secondary: "#F9B233",
   darkBackground: "#000",
   whiteBackground: "#fff",
-  gray: "#C4C4C4",
+  gray: "#717171ff",
+  error: "#DC2626",
+  lightGray: "#E0E0E0",
+  dark: "#03001A",
 };

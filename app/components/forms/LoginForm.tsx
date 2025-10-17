@@ -7,13 +7,13 @@ import TextInputField from "../TextInputField";
 import PasswordInputField from "../PaswordInputField";
 import { COLORS } from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
-import apiClient from "../../api/axios";
 import { setItem } from "../../utlis/storage";
-import { width } from "../../constants/settings";
+import { normalize } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { showError } from "../../utlis/toast";
 import { AxiosError } from "axios";
-import { useAuth } from "../../context/AppContext";
+import useAxios from "../../api/axios";
+import { useAuthStore } from "../../stores/authSlice";
 
 const loginSchema = yup.object().shape({
   login: yup.string().required("Email or Username is required"),
@@ -26,7 +26,10 @@ type LoginFormInputs = {
 };
 
 const LoginForm: React.FC = () => {
-  const { setIsAuthenticated } = useAuth();
+  const { post } = useAxios();
+  const { setUser, setToken, setIsAuthenticated } = useAuthStore(
+    state => state,
+  );
   const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -42,17 +45,19 @@ const LoginForm: React.FC = () => {
     try {
       setLoading(true);
 
-      const response = await apiClient.post("/auth/login", { login, password });
+      const response = await post("/auth/login", { login, password });
 
       const authData = response.data?.data?.auth;
 
       if (authData?.accessToken && authData?.refreshToken) {
         setItem("auth_token", authData.accessToken);
         setItem("refresh_token", authData.refreshToken);
+        setToken(authData.accessToken);
       }
 
       if (response.data?.data?.user) {
         setItem("user", JSON.stringify(response.data?.data?.user));
+        setUser(response.data?.data?.user);
       }
 
       setIsAuthenticated(true);
@@ -90,7 +95,7 @@ const LoginForm: React.FC = () => {
 
       <Text
         onPress={() => navigation.navigate("ForgetPassword" as never)}
-        style={{ paddingVertical: 10, fontSize: width * 0.0354, color: "blue" }}
+        style={{ paddingVertical: 10, fontSize: normalize(11), color: "blue" }}
       >
         Forget Password
       </Text>
@@ -119,12 +124,14 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 100,
     marginTop: 30,
-    alignItems: "center",
+    justifyContent: "center",
+    alignContent: "center",
   },
   buttonText: {
     color: "#00",
     fontWeight: "600",
-    fontSize: width * 0.0345,
+    fontSize: normalize(10),
+    textAlign: "center",
   },
   modalBackground: {
     flex: 1,

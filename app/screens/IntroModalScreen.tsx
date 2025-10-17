@@ -8,14 +8,20 @@ import {
   Pressable,
   FlatList,
   ViewToken,
+  StatusBar,
+  Platform,
+  Dimensions,
 } from "react-native";
 import { COLORS } from "../constants/colors";
-import { width } from "../constants/settings";
+import { height, normalize } from "../constants/settings";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ArrowRight2 } from "iconsax-react-nativejs";
 
 const slides = [
   {
     id: "1",
-    title: "Lorem ipsum dolor sit amet,",
+    title: "Lorem ipsum dolor",
+    title2: "sit amet,",
     highlight: "consectetur",
     subtitle:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -23,7 +29,8 @@ const slides = [
   },
   {
     id: "2",
-    title: "Lorem ipsum dolor sit amet 22,",
+    title: "Lorem ipsum dolor",
+    title2: "sit amet,",
     highlight: "consectetur",
     subtitle:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -31,13 +38,22 @@ const slides = [
   },
   {
     id: "3",
-    title: "Lorem ipsum dolor sit amet 33,",
+    title: "Lorem ipsum dolor",
+    title2: "sit amet,",
     highlight: "consectetur",
     subtitle:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     image: require("../assets/splash_logo.png"),
   },
 ];
+
+const marginTop = Platform.select({
+  android: 0,
+  ios: 46,
+  default: 0,
+});
+
+const { width: screenWidth } = Dimensions.get("window");
 
 export default function IntroModalScreen() {
   const navigation = useNavigation();
@@ -58,7 +74,7 @@ export default function IntroModalScreen() {
     if (currentIndex < slides.length - 1) {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
     } else {
-      navigation.navigate("Welcome");
+      navigation.navigate("Welcome" as never);
     }
   };
 
@@ -67,7 +83,8 @@ export default function IntroModalScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={"white"} />
       <FlatList
         ref={flatListRef}
         data={slides}
@@ -78,20 +95,19 @@ export default function IntroModalScreen() {
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewConfig}
         renderItem={({ item }) => (
-          <View style={{ width, paddingHorizontal: 24 }}>
+          <View style={styles.slide}>
             <View style={styles.imageWrapper}>
-              <Image
-                source={item.image}
-                style={styles.image}
-                resizeMode="contain"
-              />
+              <Image source={item.image} style={styles.image} />
             </View>
 
-            <View style={{ marginTop: 20 }}>
-              <Text style={styles.title}>
-                {item.title}{" "}
-                <Text style={styles.highlight}>{item.highlight}</Text>
-              </Text>
+            <View style={styles.textContainer}>
+              <View>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.title}>
+                  {item.title2}
+                  <Text style={styles.highlight}> {item.highlight}</Text>
+                </Text>
+              </View>
               <Text style={styles.subtitle}>{item.subtitle}</Text>
             </View>
           </View>
@@ -108,60 +124,68 @@ export default function IntroModalScreen() {
         ))}
       </View>
 
-      {/* Bottom Nav */}
       <View style={styles.bottomNav}>
         <Pressable
           style={{ paddingHorizontal: 10, paddingVertical: 4 }}
-          onPress={() => navigation.navigate("Welcome")}
+          onPress={() => navigation.navigate("Welcome" as never)}
         >
           <Text style={styles.skip}>Skip</Text>
         </Pressable>
         <Pressable style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextIcon}>
-            {currentIndex === slides.length - 1 ? "✔" : ">"}
-          </Text>
+          <ArrowRight2 size={15} />
         </Pressable>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
-    backgroundColor: COLORS.whiteBackground,
+    backgroundColor: "white",
+    marginTop: marginTop,
+  },
+  slide: {
+    width: screenWidth,
   },
   imageWrapper: {
-    alignItems: "center",
+    marginVertical: 20,
+    height: Math.min(height * 0.6, 320),
+    width: "100%",
     justifyContent: "center",
-    marginBottom: 30,
-    marginTop: 40,
+    alignItems: "center",
+    paddingHorizontal: 17,
   },
   image: {
-    width: width * 0.9,
-    height: width * 0.9,
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  textContainer: {
+    marginTop: 10,
+    paddingHorizontal: 17,
   },
   title: {
-    fontSize: 26,
+    fontSize: normalize(23),
     fontWeight: "700",
     textAlign: "left",
-    marginBottom: 12,
+    marginBottom: 2,
   },
   highlight: {
     color: COLORS.primary,
   },
   subtitle: {
-    fontSize: 15,
-    color: "#555",
-    lineHeight: 20,
+    fontSize: normalize(13),
+    fontWeight: "400",
     marginTop: 10,
+    lineHeight: 20,
   },
   dotsContainer: {
     flexDirection: "row",
+    justifyContent: "flex-start",
     alignItems: "center",
-    marginBottom: 50,
-    paddingHorizontal: 24,
+    marginBottom: 40,
+    paddingHorizontal: 17,
   },
   dot: {
     width: 15,
@@ -178,12 +202,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: "auto",
-    marginBottom: 50,
-    paddingHorizontal: 24,
+    marginVertical: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 17,
   },
   skip: {
-    fontSize: 16,
+    fontSize: normalize(13),
     fontWeight: "600",
   },
   nextButton: {
@@ -194,9 +218,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  nextIcon: {
-    color: COLORS.whiteBackground,
-    fontSize: 14,
-    fontWeight: "700",
-  },
+  // nextIcon: {
+  //   color: COLORS.whiteBackground,
+  //   fontSize: 14,
+  //   fontWeight: "700",
+  // },
 });

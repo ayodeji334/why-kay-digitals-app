@@ -1,7 +1,14 @@
 import React from "react";
 import { Controller } from "react-hook-form";
-import { TextInput, View, Text, StyleSheet } from "react-native";
-import { width } from "../constants/settings";
+import {
+  TextInput,
+  View,
+  Text,
+  StyleSheet,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
+import { normalize } from "../constants/settings";
 
 interface Props {
   control: any;
@@ -11,6 +18,9 @@ interface Props {
   label?: string;
   showLabel?: boolean;
   maxLength?: number;
+  style?: TextStyle;
+  containerStyle?: ViewStyle;
+  placeholderTextColor?: string;
 }
 
 const NumberInputField: React.FC<Props> = ({
@@ -21,6 +31,8 @@ const NumberInputField: React.FC<Props> = ({
   label,
   showLabel = true,
   maxLength,
+  style,
+  placeholderTextColor,
 }) => {
   return (
     <Controller
@@ -34,13 +46,13 @@ const NumberInputField: React.FC<Props> = ({
         <View style={styles.container}>
           {showLabel && label && <Text style={styles.label}>{label}</Text>}
           <TextInput
-            style={[styles.input, error && styles.errorBorder]}
+            style={[styles.input, error && styles.errorBorder, style]}
             placeholder={placeholder}
+            placeholderTextColor={placeholderTextColor}
             keyboardType="numeric"
             onBlur={onBlur}
             maxLength={maxLength}
             onChangeText={text => {
-              // Only allow digits
               const numericValue = text.replace(/[^0-9]/g, "");
               onChange(numericValue);
             }}
@@ -61,8 +73,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     paddingHorizontal: 12,
-    paddingVertical: 20,
+    paddingVertical: 16,
     borderRadius: 8,
+    fontSize: normalize(11),
   },
   errorBorder: {
     borderColor: "red",
@@ -70,11 +83,11 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     marginTop: 4,
-    fontSize: 12,
+    fontSize: normalize(10),
   },
   label: {
-    fontSize: width * 0.0353,
-    fontWeight: "500",
+    fontSize: normalize(12),
+    fontWeight: "600",
     marginBottom: 6,
     color: "#333",
   },

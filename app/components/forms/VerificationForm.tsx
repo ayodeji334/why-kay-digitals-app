@@ -7,12 +7,13 @@ import OtpInputField from "../OtpInputField";
 import { COLORS } from "../../constants/colors";
 import { useCountdown } from "../../hooks/useCountdown";
 import { useNavigation } from "@react-navigation/native";
-import { width } from "../../constants/settings";
+import { normalize } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { showError, showSuccess } from "../../utlis/toast";
 import { AxiosError } from "axios";
 import apiClient from "../../api/axios";
 import { setItem } from "../../utlis/storage";
+import useAxios from "../../api/axios";
 
 const otpSchema = yup.object().shape({
   otp: yup
@@ -27,6 +28,7 @@ type FormData = {
 
 const VerificationForm = ({ email }: { email: string }) => {
   const navigation = useNavigation();
+  const { post } = useAxios();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { control, handleSubmit, watch } = useForm<FormData>({
     resolver: yupResolver(otpSchema),
@@ -39,7 +41,7 @@ const VerificationForm = ({ email }: { email: string }) => {
     try {
       setIsLoading(true);
 
-      const response = await apiClient.post("/auth/verify-email", {
+      const response = await post("/auth/verify-email", {
         token: values?.otp,
         email,
       });
@@ -71,7 +73,7 @@ const VerificationForm = ({ email }: { email: string }) => {
     try {
       setIsLoading(true);
 
-      await apiClient.post("/auth/resend-verify-email", {
+      await post("/auth/resend-verify-email", {
         email,
       });
 
@@ -142,11 +144,11 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
   },
   infoText: {
-    fontSize: width * 0.0433,
+    fontSize: normalize(12),
     color: COLORS.darkBackground,
   },
   resendText: {
-    fontSize: width * 0.0433,
+    fontSize: normalize(12),
     fontWeight: "500",
     color: COLORS.secondary,
   },
@@ -163,6 +165,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: COLORS.darkBackground,
     fontWeight: "600",
-    fontSize: 16,
+    fontSize: normalize(12),
   },
 });

@@ -2,14 +2,14 @@ import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import VerificationForm from "../components/forms/VerificationForm";
-import { width } from "../constants/settings";
+import { normalize, width } from "../constants/settings";
 
 export default function VerificationCodeScreen({ route }: any) {
   const { email } = route.params;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={"white"} />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
           <Text style={styles.title}>Verification Code</Text>
@@ -18,7 +18,7 @@ export default function VerificationCodeScreen({ route }: any) {
               styles.title,
               {
                 fontWeight: "300",
-                fontSize: width * 0.0434,
+                fontSize: normalize(12),
                 marginTop: 6,
                 marginLeft: 1,
               },
@@ -44,13 +44,12 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    marginTop: -40,
   },
   header: {
     marginBottom: 23,
   },
   title: {
-    fontSize: width * 0.0644,
+    fontSize: normalize(16),
     fontWeight: "700",
   },
   highlight: {

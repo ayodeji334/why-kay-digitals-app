@@ -2,17 +2,20 @@
 import React, { useRef } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Controller } from "react-hook-form";
+import { normalize } from "../constants/settings";
 
 interface OtpInputFieldProps {
   control: any;
   name: string;
   boxes?: number;
+  isSecuredText?: boolean;
 }
 
 const OtpInputField: React.FC<OtpInputFieldProps> = ({
   control,
   name,
   boxes = 6,
+  isSecuredText = false,
 }) => {
   // create array of refs
   const inputs = useRef<TextInput[]>([]);
@@ -71,6 +74,7 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                 ref={el => {
                   if (el) inputs.current[index] = el;
                 }}
+                secureTextEntry={isSecuredText}
                 style={[styles.box, error ? styles.errorBorder : null]}
                 keyboardType="number-pad"
                 maxLength={1}
@@ -101,7 +105,8 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 8,
     textAlign: "center",
-    fontSize: 20,
+    fontWeight: "600",
+    fontSize: normalize(15),
   },
 });
 

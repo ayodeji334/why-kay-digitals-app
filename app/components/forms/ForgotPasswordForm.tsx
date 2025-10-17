@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import TextInputField from "../TextInputField";
 import { COLORS } from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
-import { width } from "../../constants/settings";
+import { normalize, width } from "../../constants/settings";
 import { AxiosError } from "axios";
 import { showError } from "../../utlis/toast";
 import apiClient from "../../api/axios";
@@ -92,6 +92,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#00",
     fontWeight: "600",
-    fontSize: width * 0.0345,
+    fontSize: normalize(11),
   },
 });

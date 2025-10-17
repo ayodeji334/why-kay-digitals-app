@@ -3,62 +3,99 @@ import {
   Modal,
   View,
   Text,
-  Image,
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  ImageSourcePropType,
 } from "react-native";
 import { COLORS } from "../constants/colors";
+import { normalize } from "../constants/settings";
 
 const { width } = Dimensions.get("window");
 
-interface Prop {
+interface HalfScreenModalProps {
   isVisible: boolean;
   onClose: () => void;
   title: string;
   description: string;
   buttonText: string;
-  iconSource?: ImageSourcePropType | undefined;
+  actionButton?: () => void;
+  secondaryButtonText?: string;
+  secondaryAction?: () => void;
+  IconComponent?: React.ComponentType<any>;
+  iconBackgroundColor?: string;
+  iconColor?: string;
+  iconSize?: number;
+  isDangerous?: boolean;
 }
 
 const HalfScreenModal = ({
   isVisible,
   onClose,
-  title = "Password Recovery",
-  description = "Return to the login screen to enter the Home Screen",
-  buttonText = "Return to Sign In",
-  iconSource = require("../assets/splash_logo.png"),
-}: Prop) => {
+  title,
+  description,
+  buttonText,
+  actionButton,
+  secondaryButtonText,
+  secondaryAction,
+  IconComponent,
+  iconBackgroundColor = "#E0F7FA",
+  iconColor = COLORS.primary,
+  iconSize = normalize(22),
+  isDangerous = false,
+}: HalfScreenModalProps) => {
   return (
-    <Modal
-      visible={isVisible}
-      transparent
-      animationType="fade"
-      onRequestClose={() => {}}
-    >
+    <Modal visible={isVisible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            {/* Success Icon */}
-            <View style={styles.iconContainer}>
-              <Image
-                source={iconSource}
-                style={styles.successIcon}
-                resizeMode="contain"
-              />
-            </View>
+            {IconComponent && (
+              <View
+                style={[
+                  styles.iconContainer,
+                  { backgroundColor: iconBackgroundColor },
+                ]}
+              >
+                <IconComponent size={iconSize} color={iconColor} />
+              </View>
+            )}
 
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.description}>{description}</Text>
 
+            {/* Primary Button */}
             <TouchableOpacity
               activeOpacity={0.7}
-              style={styles.button}
-              onPress={onClose}
+              style={[
+                styles.button,
+                {
+                  backgroundColor: isDangerous
+                    ? COLORS.error
+                    : COLORS.secondary,
+                },
+              ]}
+              onPress={actionButton ? actionButton : onClose}
             >
-              <Text style={styles.buttonText}>{buttonText}</Text>
+              <Text
+                style={[
+                  styles.buttonText,
+                  { color: isDangerous ? "white" : "black" },
+                ]}
+              >
+                {buttonText}
+              </Text>
             </TouchableOpacity>
+
+            {secondaryButtonText && secondaryAction && (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={[styles.button, styles.secondaryButton]}
+                onPress={secondaryAction}
+              >
+                <Text style={[styles.buttonText, styles.secondaryButtonText]}>
+                  {secondaryButtonText}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
@@ -82,10 +119,7 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
     alignItems: "center",
     shadowColor: "red",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
@@ -96,51 +130,45 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   iconContainer: {
-    width: 90,
-    height: 90,
-    borderRadius: 40,
+    borderRadius: 45,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
-  },
-  successIcon: {
-    width: 50,
-    height: 50,
-    tintColor: "#4CAF50", // Green color for the icon
+    padding: 10,
   },
   title: {
-    fontSize: width * 0.06,
+    fontSize: normalize(11),
     fontWeight: "bold",
     color: "#333",
     marginBottom: 8,
     textAlign: "center",
   },
-  successMessage: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#4CAF50", // Green color for success message
-    marginBottom: 16,
-    textAlign: "center",
-  },
   description: {
-    fontSize: width * 0.04,
+    fontSize: normalize(11),
     color: "#666",
     textAlign: "center",
     marginBottom: 24,
     lineHeight: 22,
+    fontWeight: "400",
   },
   button: {
-    backgroundColor: COLORS.secondary,
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 100,
     width: "100%",
     alignItems: "center",
+    marginTop: 10,
   },
   buttonText: {
-    color: "black",
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: normalize(11),
+    fontWeight: "600",
+  },
+  secondaryButton: {
+    backgroundColor: "#F0F0F0",
+  },
+  secondaryButtonText: {
+    color: "#333",
+    fontSize: normalize(11),
   },
 });
 

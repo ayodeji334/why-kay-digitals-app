@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import VerificationForm from "../components/forms/VerificationForm";
-import { width } from "../constants/settings";
+import { normalize, width } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -45,7 +45,7 @@ export default function CreateSecurityPinScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
@@ -55,7 +55,7 @@ export default function CreateSecurityPinScreen() {
               styles.title,
               {
                 fontWeight: "300",
-                fontSize: width * 0.0434,
+                fontSize: normalize(11),
                 marginTop: 6,
                 marginLeft: 1,
               },
@@ -93,13 +93,12 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    marginTop: -40,
   },
   header: {
     marginBottom: 23,
   },
   title: {
-    fontSize: width * 0.0644,
+    fontSize: normalize(15),
     fontWeight: "700",
   },
   highlight: {

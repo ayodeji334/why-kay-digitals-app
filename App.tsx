@@ -1,29 +1,46 @@
-import { StatusBar, StyleSheet, useColorScheme, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import NavigationRoot from "./app/navigation/Navigation";
 import SplashScreen from "./app/screens/SplashScreen";
 import { RootSiblingParent } from "react-native-root-siblings";
-import { AuthProvider, useAuth } from "./app/context/AppContext";
+import { useEffect, useState } from "react";
+import { useAuthStore } from "./app/stores/authSlice";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./app/libs/queryClient";
 
 function App() {
   return (
-    <RootSiblingParent>
-      <AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <RootSiblingParent>
         <MainApp />
-      </AuthProvider>
-    </RootSiblingParent>
+      </RootSiblingParent>
+    </QueryClientProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    fontFamily: Platform.select({
+      ios: "System",
+      android: "Roboto",
+      default: "System",
+    }),
   },
 });
 
 function MainApp() {
-  const isDarkMode = useColorScheme() === "dark";
-  const { isLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const initializeAuth = useAuthStore(state => state.initializeAuth);
+
+  useEffect(() => {
+    const initializeApp = async () => {
+      await initializeAuth();
+      setIsLoading(false);
+    };
+
+    initializeApp();
+  }, [initializeAuth]);
 
   if (isLoading) {
     return <SplashScreen />;
@@ -31,7 +48,6 @@ function MainApp() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} />
       <View style={styles.container}>
         <NavigationRoot />
       </View>
