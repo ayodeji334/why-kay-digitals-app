@@ -157,7 +157,7 @@ export default function SettingsScreen() {
           >
             <Image
               source={{
-                uri: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+                uri: userData?.profile_picture || "",
               }}
               style={styles.profileImage}
             />
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     marginRight: 12,
-    backgroundColor: "green",
+    backgroundColor: "#f0f0f0",
   },
   title: {
     fontSize: normalize(14),
