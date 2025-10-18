@@ -6,8 +6,8 @@ import { Platform } from "react-native";
 import { useAuthStore } from "../stores/authSlice";
 
 const URL = Platform.OS === "android" ? "10.136.225.101" : "localhost";
-// export const BASE_URL = `https://wk.micakin.com/v1`;
-export const BASE_URL = `http://${URL}:8000/v1`;
+export const BASE_URL = `https://wk.micakin.com/v1`;
+// export const BASE_URL = `http://${URL}:8000/v1`;
 
 const NETWORK_ERROR_MESSAGE = "Network error. Please check your connection.";
 const SERVER_ERROR_MESSAGE = "Something went wrong. Please try again.";
