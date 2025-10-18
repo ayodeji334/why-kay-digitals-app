@@ -32,7 +32,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs access to camera to take photos for your profile</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -57,18 +57,8 @@
 	<array>
 		<string>Entypo.ttf</string>
 		<string>Octicons.ttf</string>
-		<string>Inter-Italic-VariableFont_opsz,wght.ttf</string>
-		<string>Inter-VariableFont_opsz,wght.ttf</string>
-		<string>Inter-Black.ttf</string>
-		<string>Inter-Bold.ttf</string>
-		<string>Inter-ExtraBold.ttf</string>
-		<string>Inter-ExtraLight.ttf</string>
-		<string>Inter-Italic.ttf</string>
-		<string>Inter-Medium.ttf</string>
-		<string>Inter-Regular.ttf</string>
-		<string>Inter-SemiBold.ttf</string>
-		<string>Inter-Thin.ttf</string>
-		<string>Inter-Light.ttf</string>
+		<string>Montserrat-BlackItalic.ttf</string>
+		<string>Montserrat-ExtraBold.ttf</string>
 		<string>Zain-Black.ttf</string>
 		<string>Zain-Bold.ttf</string>
 		<string>Zain-ExtraBold.ttf</string>
@@ -77,6 +67,16 @@
 		<string>Zain-Light.ttf</string>
 		<string>Zain-LightItalic.ttf</string>
 		<string>Zain-Regular.ttf</string>
+		<string>Inter-Black.ttf</string>
+		<string>Inter-Bold.ttf</string>
+		<string>Inter-ExtraBold.ttf</string>
+		<string>Inter-ExtraLight.ttf</string>
+		<string>Inter-Italic.ttf</string>
+		<string>Inter-Light.ttf</string>
+		<string>Inter-Medium.ttf</string>
+		<string>Inter-Regular.ttf</string>
+		<string>Inter-SemiBold.ttf</string>
+		<string>Inter-Thin.ttf</string>
 	</array>
 </dict>
 </plist>

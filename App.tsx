@@ -1,12 +1,12 @@
 import { Platform, StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import NavigationRoot from "./app/navigation/Navigation";
-import SplashScreen from "./app/screens/SplashScreen";
+import NavigationRoot from "./navigation/Navigation";
+import SplashScreen from "./screens/SplashScreen";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { useEffect, useState } from "react";
-import { useAuthStore } from "./app/stores/authSlice";
+import { useAuthStore } from "./stores/authSlice";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./app/libs/queryClient";
+import { queryClient } from "./libs/queryClient";
 
 function App() {
   return (
