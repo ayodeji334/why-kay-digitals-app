@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   RefreshControl,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Entypo from "@react-native-vector-icons/entypo";
@@ -114,7 +115,16 @@ const HomeScreen = () => {
               </Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.notificationButton}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() =>
+              Alert.alert(
+                "Coming Soon!",
+                "This feature is not available yet. Kindly check back later",
+              )
+            }
+            style={styles.notificationButton}
+          >
             <Notification size={20} color="#333" />
           </TouchableOpacity>
         </View>
