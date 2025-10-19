@@ -214,6 +214,7 @@ export default function EditProfileScreen() {
         mediaType: "photo",
         includeBase64: false,
         saveToPhotos: true,
+        presentationStyle: "formSheet",
       };
 
       launchCamera(options, response => {
@@ -258,7 +259,7 @@ export default function EditProfileScreen() {
             />
             <TouchableOpacity
               activeOpacity={0.7}
-              // onPress={showImagePickerOptions}
+              onPress={showImagePickerOptions}
               style={styles.changePhotoText}
             >
               <CardEdit size={16} color={COLORS.primary} />

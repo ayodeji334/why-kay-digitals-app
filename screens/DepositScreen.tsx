@@ -282,14 +282,14 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
   },
   emptyTitle: {
-    fontSize: normalize(14),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#333",
     marginBottom: 8,
     textAlign: "center",
   },
   emptyDescription: {
-    fontSize: 12,
+    fontSize: normalize(800),
     color: "#666",
     textAlign: "center",
     marginBottom: 16,

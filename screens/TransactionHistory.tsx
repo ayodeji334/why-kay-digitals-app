@@ -274,7 +274,14 @@ const TransactionHistoryScreen: React.FC = () => {
       <Modal visible={isDatePickerVisible} transparent animationType="slide">
         <View style={styles.overlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Filter Transactions</Text>
+            <TouchableOpacity
+              style={styles.closeButtonTopRight}
+              onPress={toggleDateRangeModal}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.modalTitle}>Filter</Text>
 
             <DateTimePicker
               value={new Date()}
@@ -282,13 +289,6 @@ const TransactionHistoryScreen: React.FC = () => {
               display="calendar"
               onChange={handleDateChange}
             />
-
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={toggleDateRangeModal}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -389,12 +389,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     backgroundColor: "rgba(0, 0, 0, 0.4)",
   },
-  modalContainer: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 24,
-  },
+  // modalContainer: {
+  //   backgroundColor: "#fff",
+  //   borderTopLeftRadius: 20,
+  //   borderTopRightRadius: 20,
+  //   padding: 24,
+  // },
   modalTitle: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
@@ -416,6 +416,20 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 24,
+    position: "relative", // needed for absolute positioning inside
+  },
+  closeButtonTopRight: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+    zIndex: 10,
+    padding: 8,
   },
 });
 

@@ -16,11 +16,12 @@ import { showError, showSuccess } from "../utlis/toast";
 import useAxios from "../api/axios";
 import TextInputField from "../components/TextInputField";
 import { SelectInput } from "../components/SelectInputField";
-import { normalize } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 
 // Validation Schema
 const schema = yup.object({
@@ -89,6 +90,7 @@ export default function BuyDataScreen() {
         type: "DATA",
         biller_name: selectedPlan.biller_code || values.network,
         url: "/bills/buy-data",
+        save_as_beneficiary: saveBeneficiary,
       };
 
       // const response = await post("/bills/buy-data", payload);
@@ -194,17 +196,11 @@ export default function BuyDataScreen() {
           placeholder="Select Data Plan"
         />
 
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Save as beneficiary</Text>
-          <Switch
-            value={saveBeneficiary}
-            onValueChange={setSaveBeneficiary}
-            trackColor={{ false: "#D1D5DB", true: COLORS.secondary }}
-            thumbColor="#fff"
-            style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] }}
-            disabled={loading}
-          />
-        </View>
+        <SaveAsBeneficiarySwitch
+          value={saveBeneficiary}
+          onValueChange={setSaveBeneficiary}
+          disabled={loading}
+        />
 
         <View style={styles.buttonWrapper}>
           <TouchableOpacity
@@ -239,15 +235,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   header: {
-    fontSize: 22,
-    fontWeight: "700",
+    fontSize: normalize(22),
+    fontFamily: getFontFamily("700"),
     color: "#000",
     marginBottom: 16,
   },
   subHeader: {
     marginTop: 20,
-    fontSize: normalize(13),
-    fontWeight: "600",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("600"),
     marginBottom: 8,
     color: "#1A1A1A",
   },
@@ -255,19 +251,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 8,
-  },
-  switchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 16,
-    marginBottom: 30,
-    paddingHorizontal: 4,
-  },
-  switchLabel: {
-    fontSize: normalize(15),
-    color: "#1A1A1A",
-    fontWeight: "500",
   },
   networkButton: {
     padding: 8,
@@ -296,8 +279,8 @@ const styles = StyleSheet.create({
   },
   checkIcon: {
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "bold",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily(900),
   },
   networkLogo: {
     width: 70,
@@ -327,8 +310,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#00",
-    fontWeight: "600",
-    fontSize: normalize(10),
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
     textAlign: "center",
   },
 });

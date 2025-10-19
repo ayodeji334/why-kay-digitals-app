@@ -113,14 +113,14 @@ const styles = StyleSheet.create({
   },
   errorTitle: {
     fontSize: 20,
-    fontWeight: getFontFamily("800"),
+    fontFamily: getFontFamily("800"),
     color: "#000",
     marginBottom: 10,
     textAlign: "center",
   },
   errorText: {
     fontSize: 16,
-    fontWeight: getFontFamily("700"),
+    fontFamily: getFontFamily("700"),
     color: "#000",
     textAlign: "center",
     marginBottom: 20,
@@ -135,6 +135,6 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: getFontFamily("700"),
+    fontFamily: getFontFamily("700"),
   },
 });

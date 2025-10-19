@@ -16,11 +16,12 @@ import { showError } from "../utlis/toast";
 import useAxios from "../api/axios";
 import TextInputField from "../components/TextInputField";
 import { SelectInput } from "../components/SelectInputField";
-import { normalize } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 
 // Validation Schema
 const schema = yup.object({
@@ -72,6 +73,7 @@ export default function PayCableTVSubscriptionScreen() {
         item_code: values.plan,
         customer: values.smartcard_number,
         amount: selectedPlan.amount,
+        save_as_beneficiary: saveBeneficiary,
         type: "CABLE-TV",
         biller_name: selectedPlan.biller_code || values.network,
         url: "/bills/pay-cable-tv",
@@ -167,17 +169,11 @@ export default function PayCableTVSubscriptionScreen() {
           placeholder="Select Subscription Plan"
         />
 
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Save as beneficiary</Text>
-          <Switch
-            value={saveBeneficiary}
-            onValueChange={setSaveBeneficiary}
-            trackColor={{ false: "#D1D5DB", true: COLORS.secondary }}
-            thumbColor="#fff"
-            disabled={loading}
-            style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] }}
-          />
-        </View>
+        <SaveAsBeneficiarySwitch
+          value={saveBeneficiary}
+          onValueChange={setSaveBeneficiary}
+          disabled={loading}
+        />
 
         <View style={styles.buttonWrapper}>
           <TouchableOpacity
@@ -214,23 +210,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
-  switchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 16,
-    marginBottom: 30,
-    paddingHorizontal: 4,
-  },
-  switchLabel: {
-    fontSize: normalize(15),
-    color: "#1A1A1A",
-    fontWeight: "500",
-  },
   subHeader: {
     marginTop: 20,
-    fontSize: normalize(13),
-    fontWeight: "600",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
     marginBottom: 8,
     color: "#1A1A1A",
   },
@@ -272,7 +255,7 @@ const styles = StyleSheet.create({
   checkIcon: {
     color: "#fff",
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: getFontFamily("900"),
   },
   beneficiaryContainer: {
     flexDirection: "row",
@@ -295,19 +278,20 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     color: "#FFFFFF",
-    fontSize: 12,
-    fontWeight: "bold",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("900"),
   },
   beneficiaryText: {
-    fontSize: normalize(13),
+    fontSize: normalize(18),
     color: "#374151",
-    fontWeight: "500",
+    fontFamily: getFontFamily("700"),
   },
   errorText: {
     color: "#EF4444",
     marginTop: 4,
     marginBottom: 10,
-    fontSize: normalize(13),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
   },
   buttonWrapper: {
     marginTop: 32,
@@ -322,8 +306,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#000",
-    fontWeight: "600",
-    fontSize: normalize(14),
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
     textAlign: "center",
   },
 });

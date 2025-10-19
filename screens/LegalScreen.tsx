@@ -150,13 +150,13 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     fontSize: normalize(17),
-    fontWeight: getFontFamily("700"),
+    fontFamily: getFontFamily("700"),
     color: COLORS.darkBackground,
     marginBottom: 8,
   },
   screenDescription: {
     fontSize: normalize(18),
-    fontWeight: getFontFamily("300"),
+    fontFamily: getFontFamily("300"),
     color: COLORS.dark,
     lineHeight: 20,
   },

@@ -13,6 +13,7 @@ import TransactionHistoryScreen from "../screens/TransactionHistory";
 import RatesScreen from "../screens/Rates";
 import WalletScreen from "../screens/WalletScreen";
 import CustomHeader from "../components/CustomHeader";
+import { getFontFamily, normalize } from "../constants/settings";
 
 const Tab = createBottomTabNavigator();
 
@@ -23,6 +24,10 @@ export default function AppTabs() {
         tabBarActiveTintColor: "#03001A",
         tabBarInactiveTintColor: "gray",
         tabBarStyle: { paddingBottom: 5, height: 90 },
+        headerTitleStyle: {
+          fontFamily: getFontFamily(700),
+          fontSize: normalize(18),
+        },
       }}
     >
       <Tab.Screen
@@ -36,7 +41,6 @@ export default function AppTabs() {
               color={color}
             />
           ),
-          header: () => <CustomHeader title="Forget Password" />,
           headerShown: false,
         }}
       />

@@ -13,12 +13,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import TextInputField from "../components/TextInputField";
 import { SelectInput } from "../components/SelectInputField";
-import { normalize } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import CustomLoading from "../components/CustomLoading";
 import useAxios from "../api/axios";
+import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
+import NumberInputField from "../components/NumberInputField";
 
 // Validation schema
 const schema = yup.object({
@@ -122,13 +124,11 @@ export default function PayElectricityBillsScreen() {
           options={providerOptions}
         />
 
-        {/* Meter Number Input */}
-        <TextInputField
+        <NumberInputField
           placeholder="Enter Meter Number"
           label="Meter Number"
           name="meter_number"
           control={control}
-          keyboardType="numeric"
         />
 
         {/* Payment Type Selection */}
@@ -170,27 +170,18 @@ export default function PayElectricityBillsScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Amount Input */}
-        <TextInputField
+        <NumberInputField
           placeholder="Enter the amount you want to buy"
           label="Enter Amount"
           name="amount"
           control={control}
-          keyboardType="numeric"
         />
 
-        {/* Save Beneficiary Toggle */}
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Save as beneficiary</Text>
-          <Switch
-            value={saveBeneficiary}
-            onValueChange={setSaveBeneficiary}
-            trackColor={{ false: "#D1D5DB", true: COLORS.secondary }}
-            thumbColor="#fff"
-            disabled={loading}
-            style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] }}
-          />
-        </View>
+        <SaveAsBeneficiarySwitch
+          value={saveBeneficiary}
+          onValueChange={setSaveBeneficiary}
+          disabled={loading}
+        />
 
         {/* Submit Button */}
         <TouchableOpacity
@@ -223,8 +214,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   header: {
-    fontSize: normalize(18),
-    fontWeight: "700",
+    fontSize: normalize(23),
+    fontFamily: getFontFamily("700"),
     color: "#000",
     marginBottom: 24,
     textAlign: "center",
@@ -250,26 +241,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF8E1",
   },
   paymentTypeText: {
-    fontSize: normalize(14),
+    fontSize: normalize(18),
     color: "#6B7280",
-    fontWeight: "500",
+    fontFamily: getFontFamily("700"),
   },
   paymentTypeTextActive: {
     color: COLORS.secondary,
-    fontWeight: "600",
-  },
-  switchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 16,
-    marginBottom: 30,
-    paddingHorizontal: 4,
-  },
-  switchLabel: {
-    fontSize: normalize(15),
-    color: "#1A1A1A",
-    fontWeight: "500",
+    fontFamily: getFontFamily("700"),
   },
   button: {
     backgroundColor: COLORS.secondary,
@@ -289,8 +267,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#000",
-    fontWeight: "600",
-    fontSize: normalize(13),
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
     textAlign: "center",
   },
 });

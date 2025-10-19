@@ -12,13 +12,14 @@ import {
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { normalize } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TextInputField from "../components/TextInputField";
 import { formatAmount } from "../libs/formatNumber";
+import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 
 // Validation Schema
 const schema = yup.object({
@@ -75,7 +76,7 @@ export default function BuyAirtimeScreen() {
         amount: parseFloat(values.amount),
         type: "AIRTIME",
         biller_name: values.network,
-        save_beneficiary: saveBeneficiary,
+        save_as_beneficiary: saveBeneficiary,
         url: "/bills/buy-airtime",
       };
 
@@ -191,17 +192,11 @@ export default function BuyAirtimeScreen() {
           </View>
         </View>
 
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Save as beneficiary</Text>
-          <Switch
-            value={saveBeneficiary}
-            onValueChange={setSaveBeneficiary}
-            trackColor={{ false: "#D1D5DB", true: COLORS.secondary }}
-            thumbColor="#fff"
-            disabled={loading}
-            style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] }}
-          />
-        </View>
+        <SaveAsBeneficiarySwitch
+          value={saveBeneficiary}
+          onValueChange={setSaveBeneficiary}
+          disabled={loading}
+        />
 
         <View style={styles.buttonWrapper}>
           <TouchableOpacity
@@ -229,19 +224,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-  switchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 16,
-    marginBottom: 30,
-    paddingHorizontal: 4,
-  },
-  switchLabel: {
-    fontSize: normalize(15),
-    color: "#1A1A1A",
-    fontWeight: "500",
-  },
   scrollView: {
     flex: 1,
     backgroundColor: "#FFFFFF",
@@ -252,15 +234,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   header: {
-    fontSize: 24,
-    fontWeight: "700",
+    fontSize: normalize(24),
+    fontFamily: getFontFamily("700"),
     color: "#000",
     marginBottom: 24,
     textAlign: "center",
   },
   subHeader: {
-    fontSize: normalize(14),
-    fontWeight: "600",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
     marginBottom: 12,
     color: "#1A1A1A",
   },
@@ -293,8 +275,8 @@ const styles = StyleSheet.create({
   },
   checkIcon: {
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "bold",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("900"),
   },
   networkButtonActive: {
     borderColor: "#1d1d1dff",
@@ -318,8 +300,8 @@ const styles = StyleSheet.create({
     height: 56,
   },
   currencySymbol: {
-    fontSize: normalize(15),
-    fontWeight: "600",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
     color: "#000",
     marginRight: 8,
   },
@@ -333,7 +315,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   quickAmountButton: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 12,
     borderWidth: 1,
     borderColor: "#E5E7EB",
@@ -346,14 +328,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondary + "20",
   },
   quickAmountText: {
-    fontSize: normalize(12),
-    fontWeight: "600",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
     color: "#374151",
     textAlign: "center",
   },
   quickAmountTextActive: {
     color: "black",
-    fontWeight: "600",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
   },
   beneficiaryContainer: {
     flexDirection: "row",
@@ -377,12 +360,12 @@ const styles = StyleSheet.create({
   checkmark: {
     color: "#FFFFFF",
     fontSize: 12,
-    fontWeight: "bold",
+    fontFamily: getFontFamily("900"),
   },
   beneficiaryText: {
-    fontSize: normalize(13),
+    fontSize: normalize(18),
     color: "#374151",
-    fontWeight: "500",
+    fontFamily: getFontFamily("700"),
   },
   buttonWrapper: {
     marginTop: 8,
@@ -399,15 +382,15 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#000",
-    fontWeight: "600",
+    fontFamily: getFontFamily("700"),
     fontSize: normalize(14),
     textAlign: "center",
   },
   errorText: {
     color: "#FF3B30",
     marginTop: 6,
-    fontSize: normalize(12),
-    fontWeight: "500",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
     marginLeft: 4,
   },
 });
