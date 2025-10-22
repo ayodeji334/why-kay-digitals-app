@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import PasswordInputField from "../PaswordInputField";
 import { COLORS } from "../../constants/colors";
 import NumberInputField from "../NumberInputField";
-import { width } from "../../constants/settings";
+import { getFontFamily, normalize, width } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { AxiosError } from "axios";
 import { showError } from "../../utlis/toast";
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#00",
-    fontWeight: "600",
-    fontSize: width * 0.0345,
+    fontFamily: getFontFamily(700),
+    fontSize: normalize(18),
   },
 });

@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import TextInputField from "../TextInputField";
 import { COLORS } from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
-import { normalize } from "../../constants/settings";
+import { getFontFamily, normalize } from "../../constants/settings";
 import { AxiosError } from "axios";
 import { showError } from "../../utlis/toast";
 import CustomLoading from "../CustomLoading";
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#00",
-    fontWeight: "600",
-    fontSize: normalize(11),
+    fontFamily: getFontFamily(700),
+    fontSize: normalize(18),
   },
 });

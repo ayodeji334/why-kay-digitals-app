@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: normalize(13),
-    fontWeight: "600",
+    fontFamily: getFontFamily("700"),
     textAlign: "center",
     color: COLORS.dark,
   },
@@ -185,7 +185,6 @@ const styles = StyleSheet.create({
   userEmail: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
-    fontWeight: 300,
     color: COLORS.dark,
   },
   detailsSection: {

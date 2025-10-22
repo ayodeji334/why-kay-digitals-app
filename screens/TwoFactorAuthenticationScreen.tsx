@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   enabledBadgeText: {
     color: "#FFF",
     fontSize: normalize(8),
-    fontWeight: "500",
+    fontFamily: getFontFamily("500"),
   },
   qrContainer: {
     marginVertical: 20,

@@ -38,7 +38,6 @@ const TextInputField: React.FC<Props> = ({
   control,
   name,
   placeholder,
-  secureTextEntry,
   rules,
   label,
   showLabel = true,
@@ -67,7 +66,6 @@ const TextInputField: React.FC<Props> = ({
             onChangeText={onChange}
             value={value?.toString()}
             keyboardType={keyboardType}
-            secureTextEntry={secureTextEntry}
             autoCapitalize={autoCapitalize}
           />
           {error && <Text style={styles.errorText}>{error.message}</Text>}
@@ -101,7 +99,6 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
-    fontWeight: "500",
     marginLeft: 4,
   },
   label: {

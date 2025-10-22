@@ -111,8 +111,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   helpText: {
-    fontSize: 14,
-    fontWeight: "500",
+    fontSize: normalize(17),
+    fontFamily: getFontFamily("400"),
     color: "#007AFF",
     textAlign: "center",
   },

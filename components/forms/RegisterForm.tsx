@@ -22,6 +22,7 @@ type RegisterFormInputs = {
   email: string;
   phone_number: string;
   password: string;
+  referral_code: string;
   password_confirmation: string;
   how_do_heard_about_us: string;
 };
@@ -55,11 +56,7 @@ const RegisterForm: React.FC = () => {
   const navigation: any = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterFormInputs>({
+  const { control, handleSubmit } = useForm<any>({
     resolver: yupResolver(registerSchema),
   });
 
@@ -94,13 +91,13 @@ const RegisterForm: React.FC = () => {
         label="First Name"
         control={control}
         name="first_name"
-        placeholder="Your first_name"
+        placeholder="Your first name"
       />
       <TextInputField
         label="Last Name"
         control={control}
         name="last_name"
-        placeholder="Your last_name"
+        placeholder="Your last name"
       />
       <TextInputField
         label="Create Username"
@@ -118,7 +115,7 @@ const RegisterForm: React.FC = () => {
         label="Phone Number"
         control={control}
         name="phone_number"
-        placeholder="+234 ___"
+        placeholder="+234"
       />
       <PasswordInputField
         label="Password"
@@ -132,6 +129,12 @@ const RegisterForm: React.FC = () => {
         control={control}
         name="password_confirmation"
         placeholder="Confirm your password"
+      />
+      <TextInputField
+        label="Referral Code (Optional)"
+        control={control}
+        name="referral_code"
+        placeholder="Enter referral code"
       />
       <SelectInput
         options={[

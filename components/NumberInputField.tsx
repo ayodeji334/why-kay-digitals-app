@@ -32,7 +32,7 @@ const NumberInputField: React.FC<Props> = ({
   showLabel = true,
   maxLength,
   style,
-  placeholderTextColor,
+  placeholderTextColor = "#aeaeaeff",
 }) => {
   return (
     <Controller
@@ -89,7 +89,6 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
-    fontWeight: "500",
     marginLeft: 4,
   },
   label: {

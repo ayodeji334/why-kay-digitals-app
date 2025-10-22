@@ -371,6 +371,5 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    fontWeight: "600",
   },
 });

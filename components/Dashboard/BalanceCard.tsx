@@ -99,7 +99,13 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         }}
         buttonText="Fiat Wallet (Naira Wallet)"
         secondaryButtonText="Crypto Wallet"
-        secondaryAction={() => setDepositModalVisible(false)}
+        secondaryAction={() => {
+          Alert.alert(
+            "Coming Soon!",
+            "The feature is not available for now. Kindly check back later",
+          );
+        }}
+        showCloseButton={true}
         iconBackgroundColor="#FF4D4D1A"
         iconColor={COLORS.error}
         iconSize={30}
@@ -115,7 +121,12 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         }}
         buttonText="Fiat Wallet (Naira Wallet)"
         secondaryButtonText="Crypto Wallet"
-        secondaryAction={() => setWithdrawModalVisible(false)}
+        secondaryAction={() => {
+          Alert.alert(
+            "Coming Soon!",
+            "The feature is not available for now. Kindly check back later",
+          );
+        }}
         iconBackgroundColor="#FF4D4D1A"
         iconColor={COLORS.error}
         iconSize={30}
@@ -185,7 +196,6 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: normalize(18),
     fontFamily: getFontFamily(700),
-    fontWeight: "500",
   },
   withdrawButton: {
     flex: 1,
@@ -201,7 +211,6 @@ const styles = StyleSheet.create({
     color: "#333",
     fontSize: normalize(18),
     fontFamily: getFontFamily(700),
-    fontWeight: "500",
   },
 });
 

@@ -70,12 +70,26 @@ export function SelectInput({
           <Modal visible={visible} animationType="slide" transparent={true}>
             <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
-                <TextInput
-                  placeholder="Search..."
-                  style={styles.search}
-                  value={search}
-                  onChangeText={setSearch}
-                />
+                <View style={{ marginBottom: 10 }}>
+                  <Text
+                    style={[
+                      styles.label,
+                      {
+                        fontFamily: getFontFamily(900),
+                        fontSize: normalize(19),
+                      },
+                    ]}
+                  >
+                    Select an options
+                  </Text>
+                  <TextInput
+                    placeholder="Search..."
+                    style={styles.search}
+                    value={search}
+                    placeholderTextColor={"#b3b3b3ff"}
+                    onChangeText={setSearch}
+                  />
+                </View>
                 <FlatList
                   data={options.filter(opt =>
                     opt.label.toLowerCase().includes(search.toLowerCase()),
@@ -174,6 +188,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     fontFamily: getFontFamily("700"),
     fontSize: normalize(19),
+    color: "red",
   },
   option: {
     paddingVertical: 12,

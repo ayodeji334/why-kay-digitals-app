@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: normalize(23),
-    fontWeight: "700",
     fontFamily: getFontFamily(700),
   },
   highlight: {

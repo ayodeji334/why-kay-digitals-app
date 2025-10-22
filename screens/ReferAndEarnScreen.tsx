@@ -250,7 +250,6 @@ const styles = StyleSheet.create({
   menuItemTitle: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
-    fontWeight: "500",
     color: "#000",
   },
   menuItemSubtitle: {
@@ -282,7 +281,6 @@ const styles = StyleSheet.create({
   referralCodeName: {
     fontSize: normalize(28),
     fontFamily: getFontFamily("800"),
-    fontWeight: "700",
     color: "#000",
     marginBottom: 4,
   },
@@ -308,7 +306,6 @@ const styles = StyleSheet.create({
   referralButtonText: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    fontWeight: "500",
     color: "#000",
   },
   stepsContainer: {
@@ -338,13 +335,11 @@ const styles = StyleSheet.create({
   stepNumberText: {
     fontSize: normalize(20),
     fontFamily: getFontFamily("700"),
-    fontWeight: "600",
     color: "#fff",
   },
   stepTitle: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
-    fontWeight: "600",
     color: "#000",
     marginBottom: 8,
   },
@@ -367,7 +362,6 @@ const styles = StyleSheet.create({
   historyButtonText: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    fontWeight: "600",
     color: "#000",
   },
 });

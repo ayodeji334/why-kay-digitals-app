@@ -1,17 +1,7 @@
 import React from "react";
-import {
-  Modal,
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
-
-const { width } = Dimensions.get("window");
-
 interface HalfScreenModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -26,6 +16,7 @@ interface HalfScreenModalProps {
   iconColor?: string;
   iconSize?: number;
   isDangerous?: boolean;
+  showCloseButton?: boolean;
 }
 
 const HalfScreenModal = ({
@@ -42,11 +33,29 @@ const HalfScreenModal = ({
   iconColor = COLORS.primary,
   iconSize = normalize(22),
   isDangerous = false,
+  showCloseButton = false,
 }: HalfScreenModalProps) => {
   return (
     <Modal visible={isVisible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
+          {showCloseButton && (
+            <TouchableOpacity
+              style={styles.closeButton}
+              activeOpacity={0.7}
+              onPress={onClose}
+            >
+              <Text
+                style={{
+                  paddingHorizontal: 10,
+                  fontFamily: getFontFamily(900),
+                }}
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          )}
+
           <View style={styles.modalContent}>
             {IconComponent && (
               <View
@@ -108,7 +117,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.4)",
     justifyContent: "flex-end",
-    alignItems: "baseline",
   },
   modalContainer: {
     width: "100%",
@@ -118,16 +126,24 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingBottom: 50,
     alignItems: "center",
-    shadowColor: "red",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    position: "relative",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+    zIndex: 10,
+    backgroundColor: "#f2f2f2",
+    borderRadius: 50,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginBottom: 20,
   },
   modalContent: {
     alignItems: "center",
     width: "100%",
     paddingBottom: 20,
+    marginTop: 30,
   },
   iconContainer: {
     borderRadius: 45,

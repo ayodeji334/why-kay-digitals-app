@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { getFontFamily, normalize } from "../constants/settings";
 
 export default function ErrorState({
   error,
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontFamily: getFontFamily("700"),
     color: "#333",
   },
   sellAllButton: {
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
   sellAllText: {
     color: "#FFA726",
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: getFontFamily("400"),
   },
   assetsList: {
     gap: 12,
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   assetSymbol: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "900",
+    fontFamily: getFontFamily("900"),
   },
   assetInfo: {
     flex: 1,
@@ -85,13 +86,13 @@ const styles = StyleSheet.create({
   },
   assetName: {
     fontSize: 14,
-    fontWeight: "600",
+    fontFamily: getFontFamily("700"),
     color: "#000",
     marginBottom: 4,
   },
   assetBalance: {
     fontSize: 16,
-    fontWeight: "700",
+    fontFamily: getFontFamily("700"),
     color: "#333",
   },
   assetStats: {
@@ -102,17 +103,17 @@ const styles = StyleSheet.create({
   assetLabel: {
     fontSize: 11,
     color: "#666",
-    fontWeight: "400",
+    fontFamily: getFontFamily("400"),
   },
   assetValue: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: getFontFamily("700"),
     color: "#333",
     marginBottom: 4,
   },
   assetChange: {
-    fontSize: 10,
-    fontWeight: "500",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("500"),
   },
   // Loading State
   loadingContainer: {
@@ -122,9 +123,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: normalize(18),
     color: "#666",
-    fontWeight: "500",
+    fontFamily: getFontFamily("500"),
   },
   // Error State
   errorContainer: {
@@ -136,9 +137,9 @@ const styles = StyleSheet.create({
     borderColor: "#fecaca",
   },
   errorText: {
-    fontSize: 14,
+    fontSize: normalize(18),
     color: "#dc2626",
-    fontWeight: "500",
+    fontFamily: getFontFamily("500"),
     marginBottom: 12,
     textAlign: "center",
   },
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: "#fff",
     fontSize: 12,
-    fontWeight: "600",
+    fontFamily: getFontFamily("700"),
   },
   // Empty State
   emptyState: {
@@ -164,14 +165,14 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
   },
   emptyTitle: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: normalize(20),
+    fontFamily: getFontFamily("700"),
     color: "#333",
     marginBottom: 8,
     textAlign: "center",
   },
   emptyDescription: {
-    fontSize: 12,
+    fontSize: normalize(18),
     color: "#666",
     textAlign: "center",
     marginBottom: 16,
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
   },
   emptyButtonText: {
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
   },
 });

@@ -40,7 +40,7 @@ const AssetsSection = () => {
           "Crypto",
         symbol: ["BTC", "ETH", "LTC", "ADA", "DOT"][index] || "CRYPTO",
         balance: Math.random() * 10000,
-        price: Math.random() * 50000,
+        price: Math.random() * 40000,
         change: Math.random() > 0.5 ? "up" : "down",
         changePercentage: (Math.random() * 20 - 10).toFixed(2),
         color:
@@ -240,7 +240,6 @@ const styles = StyleSheet.create({
     fontSize: normalize(20),
     fontFamily: getFontFamily("700"),
     color: "#666",
-    fontWeight: "400",
     marginBottom: 4,
   },
   assetValue: {
@@ -249,8 +248,8 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   assetChange: {
-    fontSize: 10,
-    fontWeight: "500",
+    fontSize: normalize(10),
+    fontFamily: getFontFamily("400"),
   },
   // Loading State
   loadingContainer: {
@@ -260,9 +259,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: normalize(14),
     color: "#666",
-    fontWeight: "500",
+    fontFamily: getFontFamily("400"),
   },
   // Error State
   errorContainer: {
@@ -274,9 +273,9 @@ const styles = StyleSheet.create({
     borderColor: "#fecaca",
   },
   errorText: {
-    fontSize: 14,
+    fontSize: normalize(14),
     color: "#dc2626",
-    fontWeight: "500",
+    fontFamily: getFontFamily("400"),
     marginBottom: 12,
     textAlign: "center",
   },
@@ -288,8 +287,8 @@ const styles = StyleSheet.create({
   },
   retryButtonText: {
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: normalize(12),
+    fontFamily: getFontFamily("600"),
   },
   // Empty State
   emptyState: {
@@ -302,14 +301,14 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
   },
   emptyTitle: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("600"),
     color: "#333",
     marginBottom: 8,
     textAlign: "center",
   },
   emptyDescription: {
-    fontSize: 12,
+    fontSize: normalize(12),
     color: "#666",
     textAlign: "center",
     marginBottom: 16,
@@ -323,8 +322,8 @@ const styles = StyleSheet.create({
   },
   emptyButtonText: {
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: normalize(12),
+    fontFamily: getFontFamily("600"),
   },
 });
 

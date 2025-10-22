@@ -1,7 +1,7 @@
 import Entypo from "@react-native-vector-icons/entypo";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { width } from "../../constants/settings";
+import { getFontFamily, normalize, width } from "../../constants/settings";
 import { Eye, EyeSlash } from "iconsax-react-nativejs";
 
 type BalanceProps = {
@@ -49,14 +49,14 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   currency: {
-    fontSize: width * 0.05876,
-    fontWeight: "700",
+    fontSize: normalize(13),
+    fontFamily: getFontFamily("700"),
     color: "#fff",
     marginRight: 4,
   },
   amount: {
-    fontSize: width * 0.065878,
-    fontWeight: "800",
+    fontSize: normalize(13),
+    fontFamily: getFontFamily("800"),
     color: "#fff",
   },
   eyeIcon: {

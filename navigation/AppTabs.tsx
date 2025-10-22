@@ -28,6 +28,10 @@ export default function AppTabs() {
           fontFamily: getFontFamily(700),
           fontSize: normalize(18),
         },
+        tabBarLabelStyle: {
+          fontFamily: getFontFamily(700),
+          fontSize: normalize(15),
+        },
       }}
     >
       <Tab.Screen

@@ -20,7 +20,11 @@ export default function LoginScreen() {
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
           <Text style={styles.title}>
-            Welcome Back, {user?.first_name ?? "User"}
+            Welcome Back,{" "}
+            {(user?.first_name
+              ? user.first_name.charAt(0).toUpperCase() +
+                user.first_name.slice(1)
+              : "") || "User"}
           </Text>
           <Text
             style={[

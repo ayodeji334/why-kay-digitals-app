@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     fontSize: normalize(14),
-    fontWeight: "bold",
+    fontFamily: getFontFamily("900"),
     color: "#333",
     marginBottom: 12,
   },

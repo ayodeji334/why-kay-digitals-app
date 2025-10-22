@@ -102,7 +102,7 @@ export default function DeleteAccountScreen() {
           styles.reasonText,
           selectedReason === item && {
             color: COLORS.primary,
-            fontWeight: "600",
+            fontFamily: getFontFamily("600"),
           },
         ]}
       >
@@ -235,7 +235,6 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: {
     color: "black",
-    fontWeight: "600",
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
   },

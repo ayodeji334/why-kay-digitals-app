@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Controller, Control, FieldValues } from "react-hook-form";
 import { COLORS } from "../constants/colors";
-import { width } from "../constants/settings";
+import { getFontFamily, normalize, width } from "../constants/settings";
 
 interface TextAreaInputProps extends TextInputProps {
   name: string;
@@ -58,8 +58,8 @@ const TextAreaInput = ({
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: width * 0.033,
-    fontWeight: "500",
+    fontSize: normalize(13),
+    fontFamily: getFontFamily("500"),
     marginBottom: 4,
     color: COLORS.darkBackground,
   },

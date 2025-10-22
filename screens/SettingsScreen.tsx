@@ -361,7 +361,6 @@ const styles = StyleSheet.create({
     color: COLORS.darkBackground,
     fontSize: normalize(14),
     fontFamily: getFontFamily("700"),
-    fontWeight: "500",
   },
   menuItem: {
     flexDirection: "row",
@@ -386,9 +385,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   arrow: {
-    fontSize: 18,
+    fontSize: normalize(18),
     color: COLORS.gray,
-    fontWeight: "bold",
+    fontFamily: getFontFamily("800"),
   },
   divider: {
     height: 1,

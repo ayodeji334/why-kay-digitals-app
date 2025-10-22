@@ -115,7 +115,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#00",
-    fontWeight: "600",
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
   },
