@@ -7,14 +7,12 @@ import {
   Image,
   StyleSheet,
   StatusBar,
-  Switch,
 } from "react-native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { showError } from "../utlis/toast";
 import useAxios from "../api/axios";
-import TextInputField from "../components/TextInputField";
 import { SelectInput } from "../components/SelectInputField";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
@@ -22,6 +20,7 @@ import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
+import NumberInputField from "../components/NumberInputField";
 
 // Validation Schema
 const schema = yup.object({
@@ -123,7 +122,7 @@ export default function PayCableTVSubscriptionScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.content}
       >
-        <TextInputField
+        <NumberInputField
           placeholder="Enter your Smartcard/IUC Number"
           label="Smartcard/IUC Number"
           name="smartcard_number"

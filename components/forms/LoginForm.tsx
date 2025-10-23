@@ -63,6 +63,7 @@ const LoginForm: React.FC = () => {
       setTimeout(() => setIsAuthenticated(true), 1000);
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
+        console.log(err.response);
         const errorMessage =
           err.response?.data?.message || "Something went wrong. Try again.";
         showError(errorMessage);

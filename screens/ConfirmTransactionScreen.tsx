@@ -88,7 +88,7 @@ export default function ConfirmTransactionScreen() {
           control={control}
           name="pin"
           boxes={4}
-          isSecuredText={true}
+          isSecuredText={false}
         />
 
         <TouchableOpacity

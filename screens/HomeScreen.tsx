@@ -21,6 +21,7 @@ import useAxios from "../api/axios";
 import AssetsSection from "../components/Dashboard/AssetsSection";
 import CustomLoading from "../components/CustomLoading";
 import { getItem } from "../utlis/storage";
+import { useNavigation } from "@react-navigation/native";
 
 const HomeScreen = () => {
   const { apiGet } = useAxios();
@@ -28,7 +29,7 @@ const HomeScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const restoreUser = JSON.parse(getItem("user") as string);
-  // const userData = user || restoreUser;
+  const navigation = useNavigation();
 
   const userAccounts = useMemo(() => {
     if (Array.isArray(userData?.bank_accounts)) {
@@ -59,6 +60,8 @@ const HomeScreen = () => {
   useEffect(() => {
     fetchUserAccounts();
   }, []);
+
+  console.log(userData.first_name);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -138,6 +141,7 @@ const HomeScreen = () => {
 
         {needsVerification && (
           <TouchableOpacity
+            onPress={() => navigation.navigate("Verification" as never)}
             activeOpacity={0.9}
             style={styles.verificationBanner}
           >
@@ -300,7 +304,7 @@ const styles = StyleSheet.create({
   verificationText: { flex: 1 },
   verificationTitle: {
     color: "#fff",
-    fontSize: normalize(15),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
   },
   emptyState: {

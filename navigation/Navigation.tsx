@@ -77,7 +77,7 @@ export default function NavigationRoot() {
         screen: VerificationCodeScreen,
         options: {
           headerBackTitle: ".",
-          header: () => <CustomHeader title="Verification" />,
+          header: () => <CustomHeader showTitle={true} title="Verification" />,
         },
       },
       ForgetPassword: {
@@ -91,7 +91,7 @@ export default function NavigationRoot() {
         screen: SetNewPasswordScreen,
         options: {
           headerBackTitle: ".",
-          header: () => <CustomHeader title="New Password" />,
+          header: () => <CustomHeader showTitle={true} title="New Password" />,
         },
       },
       CreatePin: {
@@ -105,7 +105,12 @@ export default function NavigationRoot() {
         screen: ConfirmSecurityPinScreen,
         options: {
           headerBackTitle: ".",
-          header: () => <CustomHeader title="New Password" />,
+          header: () => (
+            <CustomHeader showTitle={true} title="Confirm Security Pin" />
+          ),
+        },
+        screenOptions: {
+          presentation: "modal",
         },
       },
       WebView: {

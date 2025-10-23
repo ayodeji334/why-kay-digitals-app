@@ -7,14 +7,12 @@ import {
   Image,
   StyleSheet,
   StatusBar,
-  Switch,
 } from "react-native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { showError, showSuccess } from "../utlis/toast";
+import { showError } from "../utlis/toast";
 import useAxios from "../api/axios";
-import TextInputField from "../components/TextInputField";
 import { SelectInput } from "../components/SelectInputField";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
@@ -231,7 +229,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   content: {
-    flex: 1,
     paddingHorizontal: 16,
     paddingVertical: 10,
   },

@@ -13,7 +13,7 @@ export default function SetNewPasswordScreen({ route }: any) {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    marginTop: -40,
   },
   header: {
     marginBottom: 23,

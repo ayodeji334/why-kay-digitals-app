@@ -7,7 +7,6 @@ import {
   Image,
   StyleSheet,
   StatusBar,
-  Switch,
 } from "react-native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -228,9 +227,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   content: {
-    flex: 1,
     paddingHorizontal: 16,
     paddingVertical: 10,
+    paddingBottom: 20,
   },
   header: {
     fontSize: normalize(24),
@@ -358,7 +357,7 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     color: "#FFFFFF",
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("900"),
   },
   beneficiaryText: {
@@ -382,7 +381,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#000",
     fontFamily: getFontFamily("700"),
-    fontSize: normalize(14),
+    fontSize: normalize(18),
     textAlign: "center",
   },
   errorText: {

@@ -55,12 +55,14 @@ const TransactionItem: React.FC<{ item: any }> = ({ item }) => {
                   item?.status.toLowerCase() !== "failed"
                     ? "#059669"
                     : "#DC2626",
-                fontSize: normalize(11),
-                fontFamily: getFontFamily(600),
+                fontSize: normalize(17),
+                fontFamily: getFontFamily(700),
               },
             ]}
           >
-            {item?.status}
+            {item?.status?.toUpperCase() === "CONFIRMED"
+              ? "Successful"
+              : item?.status}
           </Text>
         </View>
       </View>
@@ -365,11 +367,19 @@ const styles = StyleSheet.create({
     maxWidth: "70%",
   },
   transactionAmount: {
-    fontSize: normalize(14),
-    fontFamily: getFontFamily("500"),
+    fontSize: normalize(17),
+    fontFamily: getFontFamily("800"),
   },
-  transactionDescription: { fontSize: normalize(13), color: "#6B7280" },
-  transactionTime: { fontSize: normalize(12), color: "#9CA3AF" },
+  transactionDescription: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
+    color: "#6B7280",
+  },
+  transactionTime: {
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("700"),
+    color: "#9CA3AF",
+  },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   emptyState: { alignItems: "center" },
   emptyTitle: {
@@ -422,7 +432,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 24,
-    position: "relative", // needed for absolute positioning inside
+    position: "relative",
   },
   closeButtonTopRight: {
     position: "absolute",

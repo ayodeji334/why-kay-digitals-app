@@ -57,6 +57,7 @@ const VerificationForm = ({ email }: { email: string }) => {
       if (response.data?.data?.user) {
         setItem("user", JSON.stringify(response.data?.data?.user));
       }
+
       navigation.navigate("CreatePin" as never);
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
