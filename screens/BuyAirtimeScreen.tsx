@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     color: "#FFFFFF",
-    fontSize: 12,
+    fontSize: normalize(17),
     fontFamily: getFontFamily("900"),
   },
   beneficiaryText: {

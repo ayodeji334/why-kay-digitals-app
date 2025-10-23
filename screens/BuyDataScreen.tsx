@@ -235,15 +235,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   header: {
-    fontSize: normalize(22),
+    fontSize: normalize(20),
     fontFamily: getFontFamily("700"),
     color: "#000",
     marginBottom: 16,
   },
   subHeader: {
     marginTop: 20,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("600"),
+    fontSize: normalize(20),
+    fontFamily: getFontFamily("700"),
     marginBottom: 8,
     color: "#1A1A1A",
   },
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   },
   checkIcon: {
     color: "#fff",
-    fontSize: normalize(18),
+    fontSize: normalize(20),
     fontFamily: getFontFamily(900),
   },
   networkLogo: {
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#00",
     fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
+    fontSize: normalize(20),
     textAlign: "center",
   },
 });

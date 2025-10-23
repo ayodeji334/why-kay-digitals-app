@@ -282,14 +282,15 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
   },
   emptyTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#333",
+    fontSize: normalize(20),
+    fontFamily: getFontFamily("800"),
+    color: "#000",
     marginBottom: 8,
     textAlign: "center",
   },
   emptyDescription: {
-    fontSize: normalize(800),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("400"),
     color: "#666",
     textAlign: "center",
     marginBottom: 16,
@@ -299,7 +300,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 20,
+    borderRadius: 10,
   },
   emptyButtonText: {
     color: "#fff",
