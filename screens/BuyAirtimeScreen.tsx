@@ -20,6 +20,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import TextInputField from "../components/TextInputField";
 import { formatAmount } from "../libs/formatNumber";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
+import NumberInputField from "../components/NumberInputField";
 
 // Validation Schema
 const schema = yup.object({
@@ -114,13 +115,11 @@ export default function BuyAirtimeScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.content}
       >
-        <TextInputField
+        <NumberInputField
           control={control}
           name="phone"
           placeholder="Phone Number"
           label="Phone Number"
-          keyboardType="phone-pad"
-          autoCapitalize="none"
         />
 
         <View style={{ marginBottom: 20 }}>

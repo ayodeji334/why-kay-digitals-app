@@ -22,6 +22,7 @@ import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
+import NumberInputField from "../components/NumberInputField";
 
 // Validation Schema
 const schema = yup.object({
@@ -142,7 +143,7 @@ export default function BuyDataScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.content}
       >
-        <TextInputField
+        <NumberInputField
           placeholder="Enter the phone number"
           label="Phone Number"
           name="phone"
