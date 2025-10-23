@@ -58,7 +58,6 @@ export default function ConfirmSecurityPinScreen() {
 
       setIsAuthenticated(true);
     } catch (err: unknown) {
-      console.log(err);
       if (err instanceof AxiosError) {
         const errorMessage =
           err.response?.data?.message || "Registration failed. Try again.";

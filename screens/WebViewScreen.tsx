@@ -69,7 +69,6 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
             onLoadStart={() => setLoading(true)}
             onLoadEnd={() => setLoading(false)}
             onError={event => {
-              console.log(event);
               setLoading(false);
               setError(true);
             }}

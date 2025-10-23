@@ -85,7 +85,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               throw new Error("Invalid token");
             }
           } catch (error) {
-            console.log("Token validation failed:", error);
             clearAuthData();
           }
         }

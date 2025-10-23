@@ -56,8 +56,6 @@ export default function ConfirmTransactionScreen() {
         ...rest,
       });
 
-      console.log(response);
-
       navigation.navigate("TransactionDetail" as never, {
         transaction: response?.data?.data,
       });

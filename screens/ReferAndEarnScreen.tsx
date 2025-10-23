@@ -68,13 +68,11 @@ const ReferralAndEarnScreen: React.FC = () => {
       });
 
       if (result.action === ShareElement.sharedAction) {
-        if (result.activityType) {
-          console.log("Shared via:", result.activityType);
-        } else {
-          console.log("Referral code shared");
-        }
+        // if (result.activityType) {
+        // } else {
+        // }
       } else if (result.action === ShareElement.dismissedAction) {
-        console.log("Share dismissed");
+        // console.log("Share dismissed");
       }
     } catch (error: any) {
       Alert.alert("Error", error.message);

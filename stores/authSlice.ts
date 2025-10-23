@@ -68,7 +68,6 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
-        console.log("log out...");
         set(state => ({
           ...state,
           token: null,
@@ -140,7 +139,6 @@ export const useAuthStore = create<AuthState>()(
                 throw new Error("Invalid token");
               }
             } catch (error) {
-              console.log("Token validation failed:", error);
               get().logout(); // Use the existing logout action
             }
           } else {
