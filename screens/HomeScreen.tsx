@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ServicesSection from "../components/Dashboard/ServicesSection";
-import { Notification } from "iconsax-react-nativejs";
+import { Notification, Scan } from "iconsax-react-nativejs";
 import BalanceCard from "../components/Dashboard/BalanceCard";
 import { getFontFamily, normalize } from "../constants/settings";
 import { useAuthStore } from "../stores/authSlice";
@@ -143,7 +143,7 @@ const HomeScreen = () => {
         {needsVerification && (
           <View style={styles.verificationBanner}>
             <View style={styles.verificationIcon}>
-              <User size={normalize(16)} color="#22C55E" />
+              <Scan size={normalize(16)} color="#22C55E" />
             </View>
             <View style={styles.verificationText}>
               <Text style={styles.verificationTitle}>
@@ -165,7 +165,7 @@ const HomeScreen = () => {
               <Text
                 style={{
                   color: COLORS.secondary,
-                  fontSize: normalize(17),
+                  fontSize: normalize(15),
                   fontFamily: getFontFamily("400"),
                 }}
               >
@@ -309,21 +309,19 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 30,
-    gap: 3,
+    gap: 7,
   },
   verificationIcon: {
-    width: 30,
-    height: 30,
     borderRadius: 20,
-    backgroundColor: "#22C55E20",
+    backgroundColor: "#09f25f20",
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 16,
+    padding: 10,
   },
   verificationText: { flex: 1, flexDirection: "row", gap: 5 },
   verificationTitle: {
     color: "#fff",
-    fontSize: normalize(14),
+    fontSize: normalize(15),
     fontFamily: getFontFamily("700"),
   },
   emptyState: {

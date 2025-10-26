@@ -259,7 +259,12 @@ export default function EditProfileScreen() {
             />
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={showImagePickerOptions}
+              onPress={() => {
+                Alert.alert(
+                  "Coming Soon!",
+                  "The feature is not available for now. Kindly check back later",
+                );
+              }}
               style={styles.changePhotoText}
             >
               <CardEdit size={16} color={COLORS.primary} />
