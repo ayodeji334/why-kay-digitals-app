@@ -2,12 +2,12 @@ import { useCallback, useRef } from "react";
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { getItem } from "../utlis/storage";
 import { showError } from "../utlis/toast";
-// import { Platform } from "react-native";
+import { Platform } from "react-native";
 import { useAuthStore } from "../stores/authSlice";
 
-// const URL = Platform.OS === "android" ? "10.172.115.101" : "localhost";
-export const BASE_URL = `https://wk.micakin.com/v1`;
-// export const BASE_URL = `http://${URL}:8000/v1`;
+const URL = Platform.OS === "android" ? "10.177.170.101" : "localhost";
+// export const BASE_URL = `https://wk.micakin.com/v1`;
+export const BASE_URL = `http://${URL}:8000/v1`;
 
 const NETWORK_ERROR_MESSAGE = "Network error. Please check your connection.";
 const SERVER_ERROR_MESSAGE = "Something went wrong. Please try again.";

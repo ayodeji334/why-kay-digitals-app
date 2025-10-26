@@ -1,7 +1,6 @@
-import Entypo from "@react-native-vector-icons/entypo";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { getFontFamily, normalize, width } from "../../constants/settings";
+import { getFontFamily, normalize } from "../../constants/settings";
 import { Eye, EyeSlash } from "iconsax-react-nativejs";
 
 type BalanceProps = {

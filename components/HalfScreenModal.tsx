@@ -2,6 +2,7 @@ import React from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
+import { X } from "lucide-react-native";
 interface HalfScreenModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -45,14 +46,7 @@ const HalfScreenModal = ({
               activeOpacity={0.7}
               onPress={onClose}
             >
-              <Text
-                style={{
-                  paddingHorizontal: 10,
-                  fontFamily: getFontFamily(900),
-                }}
-              >
-                Close
-              </Text>
+              <X size={20} color={"#000"} />
             </TouchableOpacity>
           )}
 

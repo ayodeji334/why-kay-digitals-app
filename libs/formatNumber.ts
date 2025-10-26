@@ -20,10 +20,13 @@ export const formatAmount = (
 export const formatNumber = (
   amount: number,
   isDivideValue: boolean = false,
+  decimalPlace?: number,
 ): string => {
   if (isDivideValue) {
-    return (amount / 100).toLocaleString();
-  } else {
-    return amount.toLocaleString();
+    amount = amount / 100;
   }
+
+  return new Intl.NumberFormat("en-NG", {
+    minimumFractionDigits: decimalPlace ?? 4,
+  }).format(amount);
 };

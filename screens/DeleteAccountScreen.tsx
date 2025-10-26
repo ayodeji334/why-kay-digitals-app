@@ -102,7 +102,7 @@ export default function DeleteAccountScreen() {
           styles.reasonText,
           selectedReason === item && {
             color: COLORS.primary,
-            fontFamily: getFontFamily("600"),
+            fontFamily: getFontFamily("700"),
           },
         ]}
       >
@@ -223,6 +223,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlignVertical: "top",
     fontSize: normalize(11),
+    fontFamily: getFontFamily("700"),
     color: COLORS.dark,
     minHeight: 100,
   },

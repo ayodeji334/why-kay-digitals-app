@@ -145,7 +145,6 @@ const TransactionHistoryScreen: React.FC = () => {
   };
 
   const handleRefresh = () => refetch();
-
   const toggleFilterModal = () => setIsFilterVisible(!isFilterVisible);
   const toggleDateRangeModal = () =>
     setIsDatePickerVisible(!isDatePickerVisible);

@@ -1864,9 +1864,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-vector-icons-entypo (12.3.0)
-  - react-native-vector-icons-feather (12.3.0)
-  - react-native-vector-icons-octicons (20.3.0)
   - react-native-webview (13.16.0):
     - boost
     - DoubleConversion
@@ -2706,9 +2703,6 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
-  - "react-native-vector-icons-entypo (from `../node_modules/@react-native-vector-icons/entypo`)"
-  - "react-native-vector-icons-feather (from `../node_modules/@react-native-vector-icons/feather`)"
-  - "react-native-vector-icons-octicons (from `../node_modules/@react-native-vector-icons/octicons`)"
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
@@ -2845,12 +2839,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-mmkv"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
-  react-native-vector-icons-entypo:
-    :path: "../node_modules/@react-native-vector-icons/entypo"
-  react-native-vector-icons-feather:
-    :path: "../node_modules/@react-native-vector-icons/feather"
-  react-native-vector-icons-octicons:
-    :path: "../node_modules/@react-native-vector-icons/octicons"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-NativeModulesApple:
@@ -2977,9 +2965,6 @@ SPEC CHECKSUMS:
   react-native-image-picker: 43e6cd4231e670030fe09b079d696fa5a634ccfc
   react-native-mmkv: 31524b627cc06d5099f45c9128d8e918e0a4a71d
   react-native-safe-area-context: 6d8a7b750e496e37bda47c938320bf2c734d441f
-  react-native-vector-icons-entypo: 884e623c9b041803269b27ef57d6cde614f8ae1f
-  react-native-vector-icons-feather: 14d6f3e1af2acefb0b4d976b226bb15b19e1db58
-  react-native-vector-icons-octicons: cc1b6b6586a0c734a49b7929ca8027ff72b372cb
   react-native-webview: 8b9097e270a99ee8798449f191a7ea27c790fa1c
   React-NativeModulesApple: 3f9e97a4a90eeec1ceade511f973b277632650bb
   React-oscompat: 34f3d3c06cadcbc470bc4509c717fb9b919eaa8b
@@ -3009,7 +2994,7 @@ SPEC CHECKSUMS:
   React-timing: 25e8229ad1cf6874e9f0711515213cb2bc322215
   React-utils: 7ea6e4d300c43a763e4e08091413aec962588f93
   ReactAppDependencyProvider: 562d731311d0524a577cf8a01faa97874bacbdfe
-  ReactCodegen: a5d5626f71299d374b87e9a7dc92f968a963b4ef
+  ReactCodegen: 3f5afd6d8d57175c4be2dc461433d2e41f545a7f
   ReactCommon: c235ebd26d63fde9a2dfa72cee9f8294b910fee1
   RNBootSplash: fb818d0053315b81fccd5437da42ca460eda6017
   RNCClipboard: 962296f7af77f6c039b683e21c2e2255af9c05df
@@ -3020,8 +3005,8 @@ SPEC CHECKSUMS:
   RNSVG: 4a4f7d4897abbfdc6dfe30be5d6cc5ffee23ea43
   RNVectorIcons: 6acc19c833be864e9c70894e101a587fe491150a
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Yoga: 00013dd9cde63a2d98e8002fcc4f5ddb66c10782
+  Yoga: b01392348aeea02064c21a2762a42893d82b60a7
 
 PODFILE CHECKSUM: 9b7bfbeccefe4a823141190ead326286b3fedf4e
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2

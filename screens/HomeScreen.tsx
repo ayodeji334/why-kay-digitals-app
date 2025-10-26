@@ -11,7 +11,6 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Entypo from "@react-native-vector-icons/entypo";
 import ServicesSection from "../components/Dashboard/ServicesSection";
 import { Notification } from "iconsax-react-nativejs";
 import BalanceCard from "../components/Dashboard/BalanceCard";
@@ -22,6 +21,8 @@ import AssetsSection from "../components/Dashboard/AssetsSection";
 import CustomLoading from "../components/CustomLoading";
 import { getItem } from "../utlis/storage";
 import { useNavigation } from "@react-navigation/native";
+import { User } from "lucide-react-native";
+import { COLORS } from "../constants/colors";
 
 const HomeScreen = () => {
   const { apiGet } = useAxios();
@@ -140,13 +141,9 @@ const HomeScreen = () => {
         <AssetsSection />
 
         {needsVerification && (
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Verification" as never)}
-            activeOpacity={0.9}
-            style={styles.verificationBanner}
-          >
+          <View style={styles.verificationBanner}>
             <View style={styles.verificationIcon}>
-              <Entypo name="user" size={normalize(16)} color="#22C55E" />
+              <User size={normalize(16)} color="#22C55E" />
             </View>
             <View style={styles.verificationText}>
               <Text style={styles.verificationTitle}>
@@ -154,7 +151,28 @@ const HomeScreen = () => {
                 app.
               </Text>
             </View>
-          </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.83}
+              onPress={() => navigation.navigate("Verification" as never)}
+              style={{
+                borderColor: COLORS.secondary,
+                borderWidth: 1,
+                borderRadius: 20,
+                paddingHorizontal: 10,
+                paddingVertical: 7,
+              }}
+            >
+              <Text
+                style={{
+                  color: COLORS.secondary,
+                  fontSize: normalize(17),
+                  fontFamily: getFontFamily("400"),
+                }}
+              >
+                View Identity
+              </Text>
+            </TouchableOpacity>
+          </View>
         )}
 
         <ServicesSection />
@@ -291,6 +309,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 30,
+    gap: 3,
   },
   verificationIcon: {
     width: 30,
@@ -301,10 +320,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 16,
   },
-  verificationText: { flex: 1 },
+  verificationText: { flex: 1, flexDirection: "row", gap: 5 },
   verificationTitle: {
     color: "#fff",
-    fontSize: normalize(18),
+    fontSize: normalize(14),
     fontFamily: getFontFamily("700"),
   },
   emptyState: {

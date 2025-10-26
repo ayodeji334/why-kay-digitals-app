@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { AddCircle, ArrowRight2, Eye, EyeSlash } from "iconsax-react-nativejs";
-import Entypo from "@react-native-vector-icons/entypo";
 import { useNavigation } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../../constants/settings";
 import HalfScreenModal from "../HalfScreenModal";
 import { COLORS } from "../../constants/colors";
 import { formatAmount } from "../../libs/formatNumber";
+import { ArrowDownLeft } from "lucide-react-native";
 interface BalanceCardProps {
   balance?: number;
   onDeposit?: () => void;
@@ -83,7 +83,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
             )
           }
         >
-          <Entypo name="arrow-down" size={20} color="#333" />
+          <ArrowDownLeft size={20} color="#333" />
           <Text style={styles.withdrawText}>Withdraw</Text>
         </TouchableOpacity>
       </View>
