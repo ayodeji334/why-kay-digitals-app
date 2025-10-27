@@ -29,7 +29,7 @@ const schema = yup.object({
     .required("Smartcard/IUC number is required")
     .matches(/^[0-9]{6,15}$/, "Invalid Smartcard/IUC Number"),
   network: yup.string().required("Please select a Cable TV provider"),
-  plan: yup.string().nullable(),
+  plan: yup.string().required("Select a plan"),
 });
 
 export default function PayCableTVSubscriptionScreen() {
@@ -159,12 +159,16 @@ export default function PayCableTVSubscriptionScreen() {
           control={control}
           name="plan"
           label="Subscription Plan"
-          options={tvPlans.map(plan => ({
-            label: `${
-              plan.biller_name || plan.name
-            } - ₦${plan.amount.toLocaleString()}`,
-            value: plan.item_code,
-          }))}
+          options={
+            tvPlans.length
+              ? tvPlans.map(plan => ({
+                  label: `${
+                    plan.biller_name || plan.name
+                  } - ₦${plan.amount.toLocaleString()}`,
+                  value: plan.item_code,
+                }))
+              : []
+          }
           placeholder="Select Subscription Plan"
         />
 

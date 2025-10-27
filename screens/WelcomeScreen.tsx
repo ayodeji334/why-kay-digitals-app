@@ -25,7 +25,7 @@ const WelcomeScreen = () => {
       edges={["right", "bottom", "left", "top"]}
       style={styles.container}
     >
-      <StatusBar barStyle="light-content" backgroundColor={"black"} />
+      <StatusBar barStyle="light-content" backgroundColor={"#03001A"} />
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}

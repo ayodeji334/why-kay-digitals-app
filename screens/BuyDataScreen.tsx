@@ -92,11 +92,6 @@ export default function BuyDataScreen() {
         save_as_beneficiary: saveBeneficiary,
       };
 
-      // const response = await post("/bills/buy-data", payload);
-
-      // showSuccess("Data purchase successful!");
-      // reset();
-
       navigation.navigate("ConfirmTransaction" as never, {
         payload,
       });
@@ -178,7 +173,6 @@ export default function BuyDataScreen() {
         <SelectInput
           control={control}
           name="plan"
-          rules={[]}
           label="Data Plan"
           options={dataPlans.map(plan => ({
             label: `${plan.biller_name} ${

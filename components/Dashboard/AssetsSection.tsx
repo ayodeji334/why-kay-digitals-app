@@ -1,67 +1,67 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
 import ErrorState from "../ErrorState";
 import { getFontFamily, normalize } from "../../constants/settings";
 import { formatAmount } from "../../libs/formatNumber";
+import { useQuery } from "@tanstack/react-query";
+import useAxios from "../../api/axios";
+
+interface Asset {
+  id: number;
+  uuid: string;
+  name: string;
+  symbol: string;
+  logo_url: string;
+  balance: number;
+  rate: number;
+  change: "up" | "down";
+  changePercentage: string;
+  color: string;
+}
 
 const AssetsSection = () => {
-  const [assets, setAssets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const fetchAssets = async () => {
+  const { apiGet } = useAxios();
+  const fetchAssets = async (): Promise<Asset[]> => {
     try {
-      setLoading(true);
-      setError(null);
-
-      // Using JSONPlaceholder as a free mock API, simulating crypto assets
-      const response = await fetch(
-        "https://jsonplaceholder.typicode.com/users",
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch assets");
-      }
-
-      const users = await response.json();
-
-      // Transform users data to simulate crypto assets
-      const mockAssets = users.slice(0, 5).map((user: any, index: number) => ({
-        id: user.id,
-        uuid: `asset-${user.id}`,
-        name:
-          ["Bitcoin", "Ethereum", "Litecoin", "Cardano", "Polkadot"][index] ||
-          "Crypto",
-        symbol: ["BTC", "ETH", "LTC", "ADA", "DOT"][index] || "CRYPTO",
-        balance: Math.random() * 10000,
-        price: Math.random() * 40000,
-        change: Math.random() > 0.5 ? "up" : "down",
-        changePercentage: (Math.random() * 20 - 10).toFixed(2),
-        color:
-          ["#F7931A", "#627EEA", "#345D9D", "#0033AD", "#E6007A"][index] ||
-          "#666666",
-      }));
-
-      setAssets(mockAssets);
-    } catch (err: any) {
-      setError(err.message);
-      console.error("Error fetching assets:", err);
-    } finally {
-      setLoading(false);
+      const response = await apiGet("/crypto-assets/");
+      return response.data?.data?.assets.map((asset: any) => {
+        const sellRate = asset.rates.find((r: any) => r.type === "sell");
+        return {
+          id: asset.id,
+          uuid: asset.uuid,
+          name: asset.name,
+          symbol: asset.symbol,
+          logo_url: asset.logo_url,
+          balance: asset.market_current_value ?? 0,
+          rate: parseFloat(sellRate?.default_value ?? 0),
+          change: Math.random() > 0.5 ? "up" : "down",
+          changePercentage: (Math.random() * 20 - 10).toFixed(2),
+        };
+      });
+    } catch (error) {
+      console.error("Failed to fetch assets:", error);
+      throw error;
     }
   };
 
-  useEffect(() => {
-    fetchAssets();
-  }, []);
+  const {
+    data: assets = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["assets"],
+    queryFn: fetchAssets,
+  });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
@@ -74,8 +74,7 @@ const AssetsSection = () => {
     );
   }
 
-  // Error state
-  if (error) {
+  if (isError && error) {
     return (
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
@@ -123,13 +122,14 @@ const AssetsSection = () => {
           {assets.map((asset: any) => (
             <View key={asset.uuid} style={styles.assetCard}>
               <View style={styles.assetHeader}>
-                <View
-                  style={[styles.assetIcon, { backgroundColor: asset.color }]}
-                >
-                  <Text style={styles.assetSymbol}>
-                    {asset.symbol.charAt(0)}
-                  </Text>
-                </View>
+                {asset.logo_url && (
+                  <Image
+                    key={asset.logo_url}
+                    source={{ uri: asset.logo_url }}
+                    resizeMode="contain"
+                    style={styles.assetIcon}
+                  />
+                )}
                 <View style={styles.assetInfo}>
                   <View style={styles.assetDetails}>
                     <Text style={styles.assetName}>{asset.name}</Text>
@@ -140,7 +140,7 @@ const AssetsSection = () => {
                   <View style={styles.assetStats}>
                     <Text style={styles.assetLabel}>Rate:</Text>
                     <Text style={styles.assetValue}>
-                      {formatAmount(asset.balance, false)} /$
+                      {formatAmount(asset.rate, false, "NGN", 2)} /$
                     </Text>
                   </View>
                 </View>

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Switch,
   Image,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
@@ -223,7 +224,12 @@ export default function SettingsScreen() {
             title="Theme (Dark Mode)"
             showSwitch={true}
             switchValue={darkMode}
-            onSwitchChange={setDarkMode}
+            onSwitchChange={() => {
+              Alert.alert(
+                "Coming soon",
+                "The feature is not available for now. Kindly check back later",
+              );
+            }}
             IconComponent={Sun1}
           />
         </Section>

@@ -23,14 +23,14 @@ export default function AppTabs() {
       screenOptions={{
         tabBarActiveTintColor: "#03001A",
         tabBarInactiveTintColor: "gray",
-        tabBarStyle: { paddingBottom: 5, height: 90 },
+        tabBarStyle: { height: 60 },
         headerTitleStyle: {
           fontFamily: getFontFamily(700),
           fontSize: normalize(18),
         },
         tabBarLabelStyle: {
-          fontFamily: getFontFamily(700),
-          fontSize: normalize(15),
+          fontFamily: getFontFamily(800),
+          fontSize: normalize(14),
         },
       }}
     >

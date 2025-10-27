@@ -49,14 +49,21 @@ export default function ProfileScreen() {
         style={[styles.fieldContainer, isLast && styles.fieldWithOutSeparator]}
       >
         <Text style={styles.fieldLabel}>{label}</Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 2,
+            paddingLeft: 10,
+          }}
+        >
           <Text style={styles.fieldValue}>{value || "Not set"}</Text>
           {isCopy && value && (
             <TouchableOpacity onPress={handleCopy} style={styles.copyButton}>
               {isCopied ? (
-                <CopySuccess variant="Bold" size={19} color="#0a580dff" />
+                <CopySuccess variant="Bold" size={16} color="#0a580dff" />
               ) : (
-                <Copy size={19} color="#4CAF50" />
+                <Copy size={16} color="#4CAF50" />
               )}
             </TouchableOpacity>
           )}
@@ -177,13 +184,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   userName: {
-    fontSize: normalize(25),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(23),
+    fontFamily: getFontFamily("800"),
     color: COLORS.dark,
-    marginBottom: 4,
   },
   userEmail: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
     color: COLORS.dark,
   },
@@ -202,10 +208,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.lightGray,
+    gap: 10,
   },
   fieldLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("700"),
     color: COLORS.dark,
   },
   fieldWithOutSeparator: {
@@ -213,7 +220,7 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.lightGray,
   },
   fieldValue: {
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("700"),
     color: COLORS.dark,
   },

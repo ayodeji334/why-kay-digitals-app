@@ -145,7 +145,6 @@ export const useAuthStore = create<AuthState>()(
             get().logout(); // Ensure clean state
           }
         } catch (err) {
-          console.error("Auth initialization failed:", err);
           get().logout();
         }
       },

@@ -62,8 +62,6 @@ const HomeScreen = () => {
     fetchUserAccounts();
   }, []);
 
-  console.log(userData.first_name);
-
   const onRefresh = () => {
     setRefreshing(true);
     fetchUserAccounts();

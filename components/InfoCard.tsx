@@ -71,7 +71,13 @@ const InfoCard: React.FC<InfoCardProps> = ({
             </View>
           ) : null}
           {buttonText && onButtonPress && (
-            <View style={{ width: buttonWidth, marginTop: 8 }}>
+            <View
+              style={{
+                maxWidth: buttonWidth,
+                width: "auto",
+                marginTop: 8,
+              }}
+            >
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.editButton}
@@ -123,7 +129,7 @@ const styles = StyleSheet.create({
   },
   editButtonText: {
     color: "#fff",
-    fontSize: normalize(18),
+    fontSize: normalize(15),
     fontFamily: getFontFamily("700"),
     textAlign: "center",
   },

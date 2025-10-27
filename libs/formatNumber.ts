@@ -27,6 +27,6 @@ export const formatNumber = (
   }
 
   return new Intl.NumberFormat("en-NG", {
-    minimumFractionDigits: decimalPlace ?? 4,
+    minimumFractionDigits: decimalPlace ?? 3,
   }).format(amount);
 };

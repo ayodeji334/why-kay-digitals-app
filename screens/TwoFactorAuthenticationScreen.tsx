@@ -44,7 +44,6 @@ const TwoFactorAuthenticationScreen = () => {
         "Secret fetched successfully. Scan the QR code in Google Authenticator.",
       );
     } catch (error) {
-      console.error("Generate QR error:", error);
       showError("Failed to fetch 2FA secret.");
     } finally {
       setIsLoading(false);

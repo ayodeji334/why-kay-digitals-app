@@ -8,6 +8,7 @@ import {
   ScrollView,
   RefreshControl,
   Alert,
+  Image,
 } from "react-native";
 import CustomLoading from "../components/CustomLoading";
 import { useQuery } from "@tanstack/react-query";
@@ -195,7 +196,7 @@ export default function CryptoRatesScreen() {
           title="Select Crypto Wallet"
         />
 
-        <View style={{ marginVertical: 12 }}>
+        <View style={{ marginBottom: 12 }}>
           <Text style={styles.label}>Amount in USD ($)</Text>
           <TextInput
             style={styles.input}
@@ -209,7 +210,7 @@ export default function CryptoRatesScreen() {
         {rateBreakdown ? (
           <Text
             style={{
-              marginTop: 6,
+              marginBottom: 5,
               fontSize: normalize(18),
               fontFamily: getFontFamily("700"),
             }}
@@ -218,23 +219,22 @@ export default function CryptoRatesScreen() {
           </Text>
         ) : null}
 
-        {/* Current Rate */}
         <View style={{ marginVertical: 12 }}>
           <Text style={styles.label}>Current Rate (₦)</Text>
           <View style={styles.rateBox}>
             <Text style={styles.rateText}>{formatAmount(currentRate)}</Text>
           </View>
-          {/* {activeTab === "sell" && ( */}
-          <Text
-            style={{
-              marginTop: 6,
-              fontSize: normalize(18),
-              fontFamily: getFontFamily("700"),
-            }}
-          >
-            {formatNumber(coinAmount, false)} {crypto?.symbol}
-          </Text>
-          {/* )} */}
+          {!!amount && (
+            <Text
+              style={{
+                marginTop: 6,
+                fontSize: normalize(18),
+                fontFamily: getFontFamily("700"),
+              }}
+            >
+              {formatNumber(coinAmount, false, 9)} {crypto?.symbol}
+            </Text>
+          )}
         </View>
 
         <TouchableOpacity
@@ -250,8 +250,13 @@ export default function CryptoRatesScreen() {
           <Text style={styles.tradeButtonText}>Trade Crypto</Text>
         </TouchableOpacity>
 
-        <Text style={[styles.label, { textAlign: "center" }]}>
-          Note: This an estimated rate. Actual rate may differ.
+        <Text
+          style={[
+            styles.label,
+            { textAlign: "center", fontFamily: getFontFamily("400") },
+          ]}
+        >
+          Note: This is an estimated rate. Actual rate may differ.
         </Text>
       </ScrollView>
 
@@ -269,6 +274,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F4F6",
     padding: 5,
     borderRadius: 10,
+    top: -10,
   },
   tab: { flex: 1, padding: 12, alignItems: "center" },
   activeTab: { backgroundColor: COLORS.primary, borderRadius: 8 },
@@ -315,7 +321,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#D1D5DB",
     borderRadius: 8,
-    padding: 12,
+    padding: 15,
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
   },

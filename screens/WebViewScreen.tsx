@@ -65,7 +65,6 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
           )}
           <WebView
             source={{ uri: url }}
-            onHttpError={e => console.log(e)}
             onLoadStart={() => setLoading(true)}
             onLoadEnd={() => setLoading(false)}
             onError={event => {

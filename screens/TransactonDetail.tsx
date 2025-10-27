@@ -56,9 +56,7 @@ const TransactionDetailScreen = () => {
         index: 0,
         routes: [{ name: "Dashboard" as never }],
       });
-    } catch (error) {
-      console.error("Error sharing transaction:", error);
-    }
+    } catch (error) {}
   };
 
   const getDirectionColor = () => {
