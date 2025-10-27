@@ -1,6 +1,6 @@
 export const formatAmount = (
   amount: number,
-  isDivideValue: boolean = true,
+  isDivideValue: boolean = false,
   currency: string = "NGN",
   decimalPlace?: number,
 ): string => {

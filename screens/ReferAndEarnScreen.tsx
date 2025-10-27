@@ -18,9 +18,10 @@ import {
 } from "iconsax-react-nativejs";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import { getFontFamily, normalize, width } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { showSuccess } from "../utlis/toast";
+import { useAuthStore } from "../stores/authSlice";
 
 interface StepCardProps {
   step: number;
@@ -50,10 +51,10 @@ const StepCard: React.FC<StepCardProps> = ({
 const ReferralAndEarnScreen: React.FC = () => {
   const navigation = useNavigation();
   const [isCopied, setIsCopied] = React.useState(false);
-  const referralCode = "XHDU4563ER";
+  const user = useAuthStore(state => state.user);
 
   const handleCopyCode = () => {
-    Clipboard.setString(referralCode);
+    Clipboard.setString(user?.referral_code);
     showSuccess("Copied to clipboard!");
     setIsCopied(true);
     setTimeout(() => {
@@ -64,7 +65,7 @@ const ReferralAndEarnScreen: React.FC = () => {
   const handleShareCode = async () => {
     try {
       const result = await ShareElement.share({
-        message: `Hey! Use my referral code *${referralCode}* to sign up and enjoy rewards! 🎉`,
+        message: `Hey! Use my referral code *${user?.referral_code}* to sign up and enjoy rewards! 🎉`,
       });
 
       if (result.action === ShareElement.sharedAction) {
@@ -105,7 +106,9 @@ const ReferralAndEarnScreen: React.FC = () => {
             >
               <Text style={styles.sectionTitle}>Referral Code</Text>
               <View style={styles.referralCodeInfo}>
-                <Text style={styles.referralCodeName}>{referralCode}</Text>
+                <Text style={styles.referralCodeName}>
+                  {user?.referral_code}
+                </Text>
               </View>
               <View style={styles.referralActions}>
                 <TouchableOpacity
