@@ -33,7 +33,7 @@ const AccountLimitsScreen = () => {
   const accountTiers = [
     {
       id: 11,
-      name: "Tier 0 Account",
+      name: "Level 0 Account",
       status: user.tier_level === "TIER_0",
       limits: [
         {
@@ -51,7 +51,7 @@ const AccountLimitsScreen = () => {
     },
     {
       id: 1,
-      name: "Tier 1 Account",
+      name: "Level 1 Account",
       status: user.tier_level === "TIER_1",
       limits: [
         {
@@ -69,7 +69,7 @@ const AccountLimitsScreen = () => {
     },
     {
       id: 2,
-      name: "Tier 2 Account",
+      name: "Level 2 Account",
       status: user.tier_level === "TIER_2",
       limits: [
         {
@@ -90,7 +90,7 @@ const AccountLimitsScreen = () => {
     },
     {
       id: 3,
-      name: "Tier 3 Account",
+      name: "Level 3 Account",
       status: user.tier_level === "TIER_3",
       limits: [
         {
@@ -190,7 +190,7 @@ const AccountLimitsScreen = () => {
         </View>
 
         <InfoCard
-          IconComponent={InfoCircle}
+          IconComponent={<InfoCircle size={20} color={COLORS.primary} />}
           title="Important Notice!"
           description={[
             "Limits may vary based on account verification status",
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   accordionItem: {
     borderRadius: 8,
     overflow: "hidden",
-    backgroundColor: "#f3f3f3ff",
+    backgroundColor: "#F9FAFB",
   },
   accordionHeader: {
     flexDirection: "row",
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     borderRadius: 0,
   },
   accordionHeaderExpanded: {
-    backgroundColor: "#e8e8e8ff",
+    backgroundColor: "#F9FAFB",
   },
   accordionHeaderContent: {
     flexDirection: "row",
@@ -295,9 +295,8 @@ const styles = StyleSheet.create({
   },
   currentBadge: {
     fontSize: normalize(15),
-    fontFamily: getFontFamily("700"),
-    color: "black",
-    backgroundColor: "#d1efdaff",
+    fontFamily: getFontFamily("800"),
+    color: COLORS.primary,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -310,7 +309,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   upgradeButtonText: {
-    color: "black",
+    color: "white",
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
   },

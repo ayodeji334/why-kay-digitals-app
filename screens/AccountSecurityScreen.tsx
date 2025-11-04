@@ -10,17 +10,18 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
-import {
-  ArrowRight2,
-  FingerScan,
-  Key,
-  Lock,
-  ShieldTick,
-} from "iconsax-react-nativejs";
+import { ArrowRight2 } from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import InfoCard from "../components/InfoCard";
 import { useAuthStore } from "../stores/authSlice";
+import {
+  EyeIcon,
+  FingerprintIcon,
+  KeyIcon,
+  PadlockIcon,
+  ShieldCheckIcon,
+} from "../assets";
+import CustomIcon from "../components/CustomIcon";
+import { useState } from "react";
 
 interface MenuItemProps {
   title: string;
@@ -32,7 +33,8 @@ interface MenuItemProps {
   onSwitchChange?: () => void;
   color?: string;
   isDangerous?: boolean;
-  IconComponent?: React.ComponentType<any>;
+  IconComponent?: React.JSX.Element;
+  disable?: boolean;
 }
 
 const MenuItem = ({
@@ -44,22 +46,20 @@ const MenuItem = ({
   switchValue,
   isDangerous = false,
   color = "#000",
-  IconComponent = ArrowRight2,
+  IconComponent = <ArrowRight2 />,
   onSwitchChange,
+  disable = false,
 }: MenuItemProps) => {
-  const bgColor = isDangerous ? "#DC262611" : "#EFF7EC";
-
   return (
     <TouchableOpacity
       activeOpacity={0.7}
       style={[styles.menuItem]}
       onPress={onPress}
-      disabled={switchValue}
+      disabled={disable}
     >
       <View
         style={{
-          marginRight: 12,
-          backgroundColor: bgColor,
+          marginRight: 2,
           height: 40,
           width: 40,
           borderRadius: 100,
@@ -67,11 +67,7 @@ const MenuItem = ({
           alignItems: "center",
         }}
       >
-        <IconComponent
-          variant="Outline"
-          size={19}
-          color={isDangerous ? "red" : "#E89E00"}
-        />
+        {IconComponent}
       </View>
       <View style={styles.menuItemContent}>
         <Text
@@ -102,6 +98,8 @@ export default function AccountSecurityScreen() {
     state => state,
   );
   const navigation = useNavigation();
+  const setIsShowBalance = useAuthStore(state => state.setIsShowBalance);
+  const isShowBalance = useAuthStore(state => state.isShowBalance);
   const isBiometricEnabled =
     userData?.biometric_enabled ||
     useAuthStore(state => state.isBiometricEnabled);
@@ -113,36 +111,32 @@ export default function AccountSecurityScreen() {
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        <InfoCard
-          title="Keep Your Money Safe"
-          description="Update your password, set a transaction PIN, and enable two-factor authentication to secure your account."
-          IconComponent={ShieldTick}
-          iconColor="#0a611fff"
-        />
-
         <View style={{ marginTop: 20 }}>
           <MenuItem
-            title="Password"
+            title="Change Password"
             subtitle="Update your login password to keep your account secure"
             onPress={() => navigation.navigate("ChangePassword" as never)}
-            IconComponent={Key}
+            IconComponent={<CustomIcon source={KeyIcon} size={20} />}
           />
           <MenuItem
             title="Transaction Pin"
             subtitle="Set or update your 4-digit PIN for faster transactions"
             onPress={() => navigation.navigate("ChangeTransactionPin" as never)}
-            IconComponent={Lock}
+            IconComponent={<CustomIcon source={PadlockIcon} size={20} />}
           />
           <MenuItem
-            title="Authenticator"
+            title="Google Authentication"
             subtitle="Enable Google Authenticator for extra protection"
             onPress={() =>
               navigation.navigate("TwoFactorAuthentication" as never)
             }
-            IconComponent={ShieldTick}
-            onSwitchChange={() => {
-              navigation.navigate("TwoFactorAuthentication" as never);
-            }}
+            IconComponent={
+              <CustomIcon
+                source={ShieldCheckIcon}
+                size={20}
+                overrideColor={false}
+              />
+            }
             showSwitch={true}
             switchValue={isGoogleAuthenticatorEnabled}
           />
@@ -152,11 +146,24 @@ export default function AccountSecurityScreen() {
             onPress={() => {
               navigation.navigate("BiometricSettings" as never);
             }}
-            IconComponent={FingerScan}
+            IconComponent={<CustomIcon source={FingerprintIcon} size={20} />}
             showSwitch={true}
             switchValue={isBiometricEnabled}
-            onSwitchChange={() => {
+          />
+          <MenuItem
+            title="Show Balance"
+            subtitle="Display or hide your account balance for privacy"
+            onPress={() => {
               navigation.navigate("BiometricSettings" as never);
+            }}
+            IconComponent={
+              <CustomIcon source={EyeIcon} size={20} overrideColor={false} />
+            }
+            showSwitch={true}
+            switchValue={isShowBalance}
+            disable={true}
+            onSwitchChange={() => {
+              setIsShowBalance(!isShowBalance);
             }}
           />
         </View>
@@ -189,7 +196,6 @@ const styles = StyleSheet.create({
   },
   menuItemContent: {
     flex: 1,
-    gap: 2,
   },
   menuItemTitle: {
     fontSize: normalize(18),
@@ -197,8 +203,8 @@ const styles = StyleSheet.create({
   },
   menuItemSubtitle: {
     fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.gray,
+    fontFamily: getFontFamily("400"),
+    color: "#000",
     marginTop: 2,
   },
 });

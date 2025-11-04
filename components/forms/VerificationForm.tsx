@@ -14,6 +14,7 @@ import { AxiosError } from "axios";
 import apiClient from "../../api/axios";
 import { setItem } from "../../utlis/storage";
 import useAxios from "../../api/axios";
+import { useAuthStore } from "../../stores/authSlice";
 
 const otpSchema = yup.object().shape({
   otp: yup
@@ -28,6 +29,7 @@ type FormData = {
 
 const VerificationForm = ({ email }: { email: string }) => {
   const navigation = useNavigation();
+  const { setUser, setToken } = useAuthStore(state => state);
   const { post } = useAxios();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { control, handleSubmit, watch } = useForm<FormData>({
@@ -47,15 +49,19 @@ const VerificationForm = ({ email }: { email: string }) => {
       });
 
       showSuccess("Token verified!");
+
       const authData = response.data?.data?.auth;
+      console.log("authData", authData);
 
       if (authData?.accessToken && authData?.refreshToken) {
         setItem("auth_token", authData.accessToken);
         setItem("refresh_token", authData.refreshToken);
+        setToken(authData.accessToken);
       }
 
       if (response.data?.data?.user) {
         setItem("user", JSON.stringify(response.data?.data?.user));
+        setUser(response.data?.data?.user);
       }
 
       navigation.navigate("CreatePin" as never);
@@ -122,7 +128,7 @@ const VerificationForm = ({ email }: { email: string }) => {
         style={styles.button}
         onPress={handleSubmit(handleVerify)}
       >
-        <Text style={styles.buttonText}>Verify OTP</Text>
+        <Text style={styles.buttonText}>Continue</Text>
       </TouchableOpacity>
 
       <CustomLoading loading={isLoading} />
@@ -169,7 +175,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: COLORS.darkBackground,
+    color: COLORS.whiteBackground,
     fontSize: normalize(18),
     fontFamily: getFontFamily(700),
   },

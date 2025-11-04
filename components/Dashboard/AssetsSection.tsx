@@ -12,6 +12,9 @@ import { getFontFamily, normalize } from "../../constants/settings";
 import { formatAmount } from "../../libs/formatNumber";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../api/axios";
+import { COLORS } from "../../constants/colors";
+import { useNavigation } from "@react-navigation/native";
+import { ArrowDown, ArrowUp } from "iconsax-react-nativejs";
 
 interface Asset {
   id: number;
@@ -27,6 +30,7 @@ interface Asset {
 }
 
 const AssetsSection = () => {
+  const navigation = useNavigation();
   const { apiGet } = useAxios();
   const fetchAssets = async (): Promise<Asset[]> => {
     try {
@@ -53,9 +57,10 @@ const AssetsSection = () => {
 
   const {
     data: assets = [],
-    isLoading,
+    isFetching: isLoading,
     isError,
     error,
+    refetch,
   } = useQuery({
     queryKey: ["assets"],
     queryFn: fetchAssets,
@@ -68,7 +73,7 @@ const AssetsSection = () => {
           <Text style={styles.sectionTitle}>Sell Rate:</Text>
         </View>
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading your assets...</Text>
+          <Text style={styles.loadingText}>Loading assets...</Text>
         </View>
       </View>
     );
@@ -80,10 +85,7 @@ const AssetsSection = () => {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Sell Rate:</Text>
         </View>
-        <ErrorState
-          error={`Failed to load assets: ${error}`}
-          handleOnPress={fetchAssets}
-        />
+        <ErrorState error={`Failed to load assets`} handleOnPress={refetch} />
       </View>
     );
   }
@@ -91,13 +93,17 @@ const AssetsSection = () => {
   // Empty state
   const EmptyAssetsState = () => (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyTitle}>No Assets Found</Text>
+      <Text style={styles.emptyTitle}>No Data Found</Text>
       <Text style={styles.emptyDescription}>
-        You don't have any cryptocurrency assets yet. Start by purchasing your
-        first crypto.
+        There are no asset report available at the moment. Please try again
+        later.
       </Text>
-      <TouchableOpacity style={styles.emptyButton}>
-        <Text style={styles.emptyButtonText}>Buy Crypto</Text>
+      <TouchableOpacity
+        onPress={() => refetch()}
+        activeOpacity={0.9}
+        style={styles.emptyButton}
+      >
+        <Text style={styles.emptyButtonText}>Refresh</Text>
       </TouchableOpacity>
     </View>
   );
@@ -107,8 +113,12 @@ const AssetsSection = () => {
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Sell Rate:</Text>
         {assets.length > 0 && (
-          <TouchableOpacity activeOpacity={0.8} style={styles.sellAllButton}>
-            <Text style={styles.sellAllText}>Sell all</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Rates" as never)}
+            activeOpacity={0.8}
+            style={styles.sellAllButton}
+          >
+            <Text style={styles.sellAllText}>View all</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -133,9 +143,28 @@ const AssetsSection = () => {
                 <View style={styles.assetInfo}>
                   <View style={styles.assetDetails}>
                     <Text style={styles.assetName}>{asset.name}</Text>
-                    <Text style={styles.assetBalance}>
-                      {formatAmount(asset.balance, false, "USD")}
-                    </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 1,
+                      }}
+                    >
+                      <Text style={styles.assetBalance}>
+                        {formatAmount(
+                          parseFloat(asset.balance),
+                          false,
+                          "USD",
+                          2,
+                          true,
+                        )}
+                      </Text>
+                      {asset.change === "up" ? (
+                        <ArrowUp size={12} color={COLORS.primary} />
+                      ) : (
+                        <ArrowDown size={12} color={COLORS.error} />
+                      )}
+                    </View>
                   </View>
                   <View style={styles.assetStats}>
                     <Text style={styles.assetLabel}>Rate:</Text>
@@ -157,7 +186,7 @@ const AssetsSection = () => {
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: 30,
+    marginBottom: 20,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -172,13 +201,13 @@ const styles = StyleSheet.create({
   },
   sellAllButton: {
     borderWidth: 1,
-    borderColor: "#f79d17ff",
+    borderColor: COLORS.primary,
     borderRadius: 20,
     paddingHorizontal: 19,
     paddingVertical: 7,
   },
   sellAllText: {
-    color: "#c47b0eff",
+    color: COLORS.primary,
     fontSize: normalize(19),
     fontFamily: getFontFamily("700"),
   },
@@ -259,15 +288,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loadingText: {
-    fontSize: normalize(14),
-    color: "#666",
+    fontSize: normalize(18),
+    color: "#000",
     fontFamily: getFontFamily("400"),
   },
   // Error State
   errorContainer: {
     backgroundColor: "#fef2f2",
     borderRadius: 12,
-    padding: 24,
+    // padding: 24,
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#fecaca",
@@ -288,42 +317,42 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: "#fff",
     fontSize: normalize(12),
-    fontFamily: getFontFamily("600"),
+    fontFamily: getFontFamily("400"),
   },
   // Empty State
   emptyState: {
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#f4f7f3ff",
     borderRadius: 12,
     padding: 24,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#e9ecef",
-    borderStyle: "dashed",
+    borderColor: "#4A9237",
   },
   emptyTitle: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("600"),
+    fontSize: normalize(20),
+    fontFamily: getFontFamily("700"),
     color: "#333",
     marginBottom: 8,
     textAlign: "center",
   },
   emptyDescription: {
-    fontSize: normalize(12),
-    color: "#666",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("400"),
+    color: "#898989ff",
     textAlign: "center",
     marginBottom: 16,
     lineHeight: 16,
   },
   emptyButton: {
-    backgroundColor: "#FFA726",
+    backgroundColor: COLORS.secondary,
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 6,
     borderRadius: 20,
   },
   emptyButtonText: {
     color: "#fff",
-    fontSize: normalize(12),
-    fontFamily: getFontFamily("600"),
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("700"),
   },
 });
 

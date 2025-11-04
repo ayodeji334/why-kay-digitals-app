@@ -22,7 +22,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
 
-// Validation Schema
 const schema = yup.object({
   phone: yup
     .string()
@@ -102,7 +101,6 @@ export default function BuyDataScreen() {
     }
   };
 
-  // Fetch data plans when a network is selected
   useEffect(() => {
     if (!selectedNetwork) return;
     setLoading(true);
@@ -301,7 +299,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
   },
   buttonText: {
-    color: "#00",
+    color: "#fff",
     fontFamily: getFontFamily("700"),
     fontSize: normalize(20),
     textAlign: "center",

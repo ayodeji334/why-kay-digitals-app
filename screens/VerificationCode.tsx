@@ -12,7 +12,7 @@ export default function VerificationCodeScreen({ route }: any) {
       <StatusBar barStyle="dark-content" backgroundColor={"white"} />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Verification Code</Text>
+          <Text style={styles.title}>Verify your email address</Text>
           <Text
             style={[
               {
@@ -23,9 +23,9 @@ export default function VerificationCodeScreen({ route }: any) {
               },
             ]}
           >
-            Enter the verification code sent to your email address{" "}
-            <Text style={{ color: "blue" }}>({email})</Text> to verify your
-            account recovery
+            We sent you a 4 digit code to verify your email address
+            <Text style={{ color: "blue" }}>({email})</Text>. Enter in the field
+            below. Enter the verification code sent to your email address
           </Text>
         </View>
 
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     marginBottom: 23,
   },
   title: {
-    fontSize: normalize(23),
+    fontSize: normalize(29),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

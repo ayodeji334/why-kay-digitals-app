@@ -8,17 +8,20 @@ import {
   Alert,
 } from "react-native";
 import { getFontFamily, normalize } from "../../constants/settings";
-import {
-  ArrowDown,
-  ArrowUp,
-  CallCalling,
-  Flash,
-  Gift,
-  Monitor,
-  TickCircle,
-  Wifi,
-} from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
+import { COLORS } from "../../constants/colors";
+import CustomIcon from "../CustomIcon";
+import {
+  SellCryptoIcon,
+  BuyCryptoIcon,
+  SwapIcon,
+  GiftCardIcon,
+  AirtimeIcon,
+  DataIcon,
+  ElectricityBillIcon,
+  CableTVIcon,
+  TransferIcon,
+} from "../../assets";
 
 const ServicesSection = () => {
   const navigation = useNavigation();
@@ -31,50 +34,74 @@ const ServicesSection = () => {
     {
       id: 3,
       title: "Sell Crypto",
-      icon: <ArrowUp size="19" />,
+      icon: (
+        <CustomIcon source={SellCryptoIcon} size={20} color={COLORS.primary} />
+      ),
       screenName: "",
     },
     {
       id: 4,
       title: "Buy Crypto",
-      icon: <ArrowDown size="19" />,
+      icon: (
+        <CustomIcon source={BuyCryptoIcon} size={24} color={COLORS.primary} />
+      ),
+      screenName: "",
+    },
+    {
+      id: 40,
+      title: "Transfer",
+      icon: (
+        <CustomIcon source={TransferIcon} size={24} color={COLORS.primary} />
+      ),
       screenName: "",
     },
     {
       id: 5,
       title: "Swap",
       screenName: "",
-      icon: <TickCircle size="19" color="#000" />,
+      icon: <CustomIcon source={SwapIcon} size={20} color={COLORS.primary} />,
     },
     {
       id: 6,
       title: "Buy Giftcards",
-      icon: <Gift size="19" color="#000" />,
+      icon: (
+        <CustomIcon source={GiftCardIcon} size={23} color={COLORS.primary} />
+      ),
       screenName: "",
     },
     {
       id: 7,
       title: "Airtime",
       screenName: "BuyAirtime",
-      icon: <CallCalling size="19" color="#000" />,
+      icon: (
+        <CustomIcon source={AirtimeIcon} size={28} color={COLORS.primary} />
+      ),
     },
     {
       id: 73,
       title: "Data",
       screenName: "BuyData",
-      icon: <Wifi size="19" color="#000" />,
+      icon: <CustomIcon source={DataIcon} size={20} color={COLORS.primary} />,
     },
     {
       id: 790,
       screenName: "PayElectricityBills",
       title: "Electricity Bills",
-      icon: <Flash size="19" color="#000" />,
+      icon: (
+        <CustomIcon
+          source={ElectricityBillIcon}
+          size={23}
+          color={COLORS.primary}
+        />
+      ),
     },
     {
       id: 8,
       title: "Cable Tv",
       screenName: "PayCableTVSubscription",
-      icon: <Monitor size="19" color="#000" />,
+      icon: (
+        <CustomIcon source={CableTVIcon} size={25} color={COLORS.primary} />
+      ),
     },
   ];
 
@@ -116,20 +143,19 @@ const ServicesSection = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginBottom: 20,
   },
   servicesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "flex-start",
-    marginBottom: 20,
-    gap: 14,
-    rowGap: 0,
+    columnGap: 15,
+    rowGap: 15,
   },
   serviceItem: {
-    width: "30%",
+    minWidth: "30%",
     alignItems: "center",
-    marginBottom: 20,
-    backgroundColor: "#EFF7EC",
+    backgroundColor: "#EFF7EC80",
     padding: 5,
     borderRadius: 10,
     justifyContent: "space-between",

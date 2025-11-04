@@ -61,7 +61,7 @@ const MenuItem = ({
         <IconComponent
           variant="Outline"
           size={20}
-          color={isDangerous ? "red" : "#E89E00"}
+          color={isDangerous ? "red" : COLORS.primary}
         />
       </View>
       <View style={styles.menuItemContent}>
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   screenDescription: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("300"),
+    fontFamily: getFontFamily("400"),
     color: COLORS.dark,
     lineHeight: 20,
   },

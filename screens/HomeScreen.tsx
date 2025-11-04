@@ -21,8 +21,8 @@ import AssetsSection from "../components/Dashboard/AssetsSection";
 import CustomLoading from "../components/CustomLoading";
 import { getItem } from "../utlis/storage";
 import { useNavigation } from "@react-navigation/native";
-import { User } from "lucide-react-native";
 import { COLORS } from "../constants/colors";
+import NewsBanner from "../components/NewBanner";
 
 const HomeScreen = () => {
   const { apiGet } = useAxios();
@@ -100,19 +100,23 @@ const HomeScreen = () => {
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Image
-              source={{
-                uri:
-                  userData?.profile_picture || "https://placehold.co/600x400",
-              }}
+              source={
+                userData?.profile_picture_url
+                  ? {
+                      uri: userData?.profile_picture_url || undefined,
+                    }
+                  : require("../assets/avatar.png")
+              }
               style={styles.profileImage}
+              resizeMode="center"
             />
             <View style={styles.welcomeText}>
               <Text style={styles.welcomeBack}>Welcome back</Text>
               <Text style={styles.userName}>
                 Hi,{" "}
-                {(userData?.first_name
-                  ? userData.first_name.charAt(0).toUpperCase() +
-                    userData.first_name.slice(1)
+                {(userData?.username
+                  ? userData.username.charAt(0).toUpperCase() +
+                    userData.username.slice(1)
                   : "") || "User"}
               </Text>
             </View>
@@ -141,7 +145,7 @@ const HomeScreen = () => {
         {needsVerification && (
           <View style={styles.verificationBanner}>
             <View style={styles.verificationIcon}>
-              <Scan size={normalize(16)} color="#22C55E" />
+              <Scan size={normalize(22)} color={COLORS.whiteBackground} />
             </View>
             <View style={styles.verificationText}>
               <Text style={styles.verificationTitle}>
@@ -153,8 +157,7 @@ const HomeScreen = () => {
               activeOpacity={0.83}
               onPress={() => navigation.navigate("Verification" as never)}
               style={{
-                borderColor: COLORS.secondary,
-                borderWidth: 1,
+                backgroundColor: COLORS.whiteBackground,
                 borderRadius: 20,
                 paddingHorizontal: 10,
                 paddingVertical: 7,
@@ -174,6 +177,7 @@ const HomeScreen = () => {
         )}
 
         <ServicesSection />
+        <NewsBanner />
       </ScrollView>
       <CustomLoading loading={loading} />
     </SafeAreaView>
@@ -182,7 +186,7 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "white" },
-  scrollContainer: { flex: 1, paddingHorizontal: 20 },
+  scrollContainer: { flex: 1, paddingHorizontal: 20, paddingBottom: 30 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -303,23 +307,28 @@ const styles = StyleSheet.create({
   verificationBanner: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#333",
+    backgroundColor: COLORS.primary,
     borderRadius: 16,
-    padding: 20,
-    marginBottom: 30,
-    gap: 7,
+    padding: 18,
+    gap: 12,
+    marginBottom: 20,
   },
   verificationIcon: {
     borderRadius: 20,
-    backgroundColor: "#09f25f20",
+    borderColor: "#fff",
+    borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 10,
+    padding: 7,
   },
-  verificationText: { flex: 1, flexDirection: "row", gap: 5 },
+  verificationText: {
+    flex: 1,
+    flexDirection: "row",
+    gap: 5,
+  },
   verificationTitle: {
     color: "#fff",
-    fontSize: normalize(15),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("700"),
   },
   emptyState: {

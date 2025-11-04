@@ -2,87 +2,27 @@
   "migIndex": 1,
   "data": [
     {
-      "path": "assets/fonts/Inter-Black.ttf",
-      "sha1": "1a88281108c184915828226c768844e63e09b3f9"
-    },
-    {
-      "path": "assets/fonts/Inter-Bold.ttf",
-      "sha1": "38827ef0e3ed2ffe35747e4debd073cd923d3353"
-    },
-    {
-      "path": "assets/fonts/Inter-ExtraBold.ttf",
-      "sha1": "0f4e77952476d538c57dc3cff12926581f82c3a8"
-    },
-    {
-      "path": "assets/fonts/Inter-ExtraLight.ttf",
-      "sha1": "80da6a4be8894c6481dc4465b884c4c161b4d3a8"
-    },
-    {
-      "path": "assets/fonts/Inter-Italic.ttf",
-      "sha1": "a431bf3e3b06d12ad9e2a1e0c9ff2056b272a61f"
-    },
-    {
-      "path": "assets/fonts/Inter-Light.ttf",
-      "sha1": "6b041e6fc61656b930d8ef638a0b9d6a0ac8e084"
-    },
-    {
-      "path": "assets/fonts/Inter-Medium.ttf",
-      "sha1": "d135ba8c8d7b74a8878a4a73794ddfa739fa7348"
-    },
-    {
-      "path": "assets/fonts/Inter-Regular.ttf",
-      "sha1": "6177ac91c6fb7df9b09beda7802ea15699a88703"
-    },
-    {
-      "path": "assets/fonts/Inter-SemiBold.ttf",
-      "sha1": "49c4ab71faa7118520a21452906e04f1340c864c"
-    },
-    {
-      "path": "assets/fonts/Inter-Thin.ttf",
-      "sha1": "dfe9285979c848f94da3d3f7c7e4d13a5680143c"
-    },
-    {
-      "path": "assets/fonts/Montserrat-BlackItalic.ttf",
-      "sha1": "3f86120ed3d28bb9aac0fed7a0290a0cfbeff531"
-    },
-    {
-      "path": "assets/fonts/Montserrat-ExtraBold.ttf",
-      "sha1": "84f16776e2099d3b57d8ed239b76e6fa3284b2e7"
-    },
-    {
-      "path": "assets/fonts/Zain/OFL.txt",
-      "sha1": "386919b1ca4284d172e83da5a3f62a7974a4fa4e"
-    },
-    {
-      "path": "assets/fonts/Zain/Zain-Black.ttf",
+      "path": "assets/fonts/Zain-Black.ttf",
       "sha1": "ba6a285c49b68484e1ea93a0ae716f8e09eb4532"
     },
     {
-      "path": "assets/fonts/Zain/Zain-Bold.ttf",
+      "path": "assets/fonts/Zain-Bold.ttf",
       "sha1": "7b46f8b84bd6c694ba48ff76cf2d4dbe1b763089"
     },
     {
-      "path": "assets/fonts/Zain/Zain-ExtraBold.ttf",
+      "path": "assets/fonts/Zain-ExtraBold.ttf",
       "sha1": "5a1d02cfb0d3dbcc30d4a2cab8a28cfd705e0126"
     },
     {
-      "path": "assets/fonts/Zain/Zain-ExtraLight.ttf",
+      "path": "assets/fonts/Zain-ExtraLight.ttf",
       "sha1": "c4003d158a3ba156742bbb63178e4455fd80d8be"
     },
     {
-      "path": "assets/fonts/Zain/Zain-Italic.ttf",
-      "sha1": "4e96f235de5d59c66be52d1cb65abf1ff4e89e05"
-    },
-    {
-      "path": "assets/fonts/Zain/Zain-Light.ttf",
+      "path": "assets/fonts/Zain-Light.ttf",
       "sha1": "de0e961db26e88076860de9077e6f6d0aae7f306"
     },
     {
-      "path": "assets/fonts/Zain/Zain-LightItalic.ttf",
-      "sha1": "e4a1f948916ea6efbe76366a969cbb9f097fe395"
-    },
-    {
-      "path": "assets/fonts/Zain/Zain-Regular.ttf",
+      "path": "assets/fonts/Zain-Regular.ttf",
       "sha1": "f59cd4a8f16839a21dccfa00f2e28d9236644420"
     }
   ]

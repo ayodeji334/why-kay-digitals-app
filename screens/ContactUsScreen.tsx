@@ -6,22 +6,20 @@ import {
   ScrollView,
   Linking,
   StyleSheet,
-  Switch,
 } from "react-native";
 import {
   ArrowRight2,
-  Message,
   Call,
   Sms,
   Instagram,
   Facebook,
   Global,
   Clock,
+  Whatsapp,
 } from "iconsax-react-nativejs";
-import { getFontFamily, normalize, width } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 
-// Types
 interface SectionProps {
   title: string;
   children: React.ReactNode;
@@ -41,7 +39,6 @@ interface MenuItemProps {
   IconComponent?: React.ComponentType<any>;
 }
 
-// Components
 const Section: React.FC<SectionProps> = ({ title, children, style }) => (
   <View style={[styles.section, style]}>
     <Text style={styles.sectionTitle}>{title}</Text>
@@ -53,13 +50,11 @@ const MenuItem: React.FC<MenuItemProps> = ({
   title,
   subtitle,
   onPress,
-  showArrow = true,
   showSwitch = false,
-  switchValue,
-  onSwitchChange,
   isDangerous = false,
   color = "#000",
   IconComponent = ArrowRight2,
+  showArrow = true,
 }) => {
   return (
     <TouchableOpacity
@@ -72,7 +67,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
         <IconComponent
           variant="Outline"
           size={18}
-          color={isDangerous ? "#DC2626" : "#E89E00"}
+          color={isDangerous ? "#DC2626" : COLORS.primary}
         />
       </View>
       <View style={styles.menuItemContent}>
@@ -99,14 +94,14 @@ const MenuItem: React.FC<MenuItemProps> = ({
       </View>
       <View style={{ alignSelf: "center" }}>
         {showArrow && !showSwitch && <ArrowRight2 size={16} color={color} />}
-        {showSwitch && (
+        {/* {showSwitch && (
           <Switch
             value={switchValue}
             onValueChange={onSwitchChange}
             trackColor={{ false: "#D1D5DB", true: "#10B981" }}
             style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] }}
           />
-        )}
+        )} */}
       </View>
     </TouchableOpacity>
   );
@@ -158,7 +153,7 @@ const HelpSupportScreen: React.FC = () => {
           title="WhatsApp"
           subtitle={["Chat with a support agent", "Response time: 1-5 mins"]}
           onPress={handleWhatsApp}
-          IconComponent={Message}
+          IconComponent={Whatsapp}
         />
         <MenuItem
           title="Call Us (070 1234 5678)"
@@ -284,7 +279,7 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("400"),
   },
   contactButton: {
-    backgroundColor: "#E89E00",
+    backgroundColor: COLORS.primary,
     marginHorizontal: 20,
     marginTop: 20,
     paddingVertical: 16,
@@ -293,7 +288,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   contactButtonText: {
-    color: "#000",
+    color: "#fff",
     fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
   },

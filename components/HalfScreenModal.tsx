@@ -2,7 +2,9 @@ import React from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
-import { X } from "lucide-react-native";
+import CustomIcon from "./CustomIcon";
+import { CloseIcon, SellCryptoIcon } from "../assets";
+
 interface HalfScreenModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -12,7 +14,7 @@ interface HalfScreenModalProps {
   actionButton?: () => void;
   secondaryButtonText?: string;
   secondaryAction?: () => void;
-  IconComponent?: React.ComponentType<any>;
+  IconComponent?: React.JSX.Element;
   iconBackgroundColor?: string;
   iconColor?: string;
   iconSize?: number;
@@ -31,8 +33,8 @@ const HalfScreenModal = ({
   secondaryAction,
   IconComponent,
   iconBackgroundColor = "#E0F7FA",
-  iconColor = COLORS.primary,
-  iconSize = normalize(22),
+  // iconColor = COLORS.primary,
+  // iconSize = normalize(22),
   isDangerous = false,
   showCloseButton = false,
 }: HalfScreenModalProps) => {
@@ -46,7 +48,13 @@ const HalfScreenModal = ({
               activeOpacity={0.7}
               onPress={onClose}
             >
-              <X size={20} color={"#000"} />
+              <CustomIcon
+                source={CloseIcon}
+                color={COLORS.primary}
+                fill={COLORS.primary}
+                overrideColor
+                size={18}
+              />
             </TouchableOpacity>
           )}
 
@@ -58,14 +66,13 @@ const HalfScreenModal = ({
                   { backgroundColor: iconBackgroundColor },
                 ]}
               >
-                <IconComponent size={iconSize} color={iconColor} />
+                {IconComponent}
               </View>
             )}
 
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.description}>{description}</Text>
 
-            {/* Primary Button */}
             <TouchableOpacity
               activeOpacity={0.7}
               style={[
@@ -81,7 +88,7 @@ const HalfScreenModal = ({
               <Text
                 style={[
                   styles.buttonText,
-                  { color: isDangerous ? "white" : "black" },
+                  { color: isDangerous ? "white" : "white" },
                 ]}
               >
                 {buttonText}
@@ -127,7 +134,6 @@ const styles = StyleSheet.create({
     top: 16,
     right: 16,
     zIndex: 10,
-    backgroundColor: "#f2f2f2",
     borderRadius: 50,
     paddingVertical: 6,
     paddingHorizontal: 12,
@@ -172,14 +178,17 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
+    color: COLORS.whiteBackground,
   },
   secondaryButton: {
-    backgroundColor: "#F0F0F0",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: COLORS.darkBackground,
   },
   secondaryButtonText: {
-    color: "#333",
+    color: COLORS.dark,
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
   },
 });
 

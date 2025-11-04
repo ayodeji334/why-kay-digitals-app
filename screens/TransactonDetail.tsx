@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ArrowLeft, CloseCircle, Share, Verify } from "iconsax-react-nativejs";
+import { CloseCircle } from "iconsax-react-nativejs";
 import {
   View,
   Text,
@@ -17,6 +17,8 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { formatDate } from "../libs/formatDate";
 import { formatAmount } from "../libs/formatNumber";
 import { COLORS } from "../constants/colors";
+import CustomIcon from "../components/CustomIcon";
+import { ShareIcon } from "../assets";
 
 const DetailRow: React.FC<{
   label: string;
@@ -33,17 +35,16 @@ const TransactionDetailScreen = () => {
   const navigation: any = useNavigation();
   const route = useRoute();
   const { transaction }: any = route.params;
-  // const viewShotRef = useRef<any>(null);
 
   const isSuccess = useMemo(
-    () => transaction.status?.toLowerCase() === "confirmed",
+    () => transaction.status?.toLowerCase() === "successful",
     [transaction.status],
   );
 
   const StatusIcon = () =>
     isSuccess ? (
       <Image
-        source={require("../assets/success-icon.png")}
+        source={require("../assets/success.png")}
         style={styles.networkLogo}
       />
     ) : (
@@ -72,26 +73,34 @@ const TransactionDetailScreen = () => {
           <StatusIcon />
         </View>
 
-        <View style={{ marginBottom: 24, gap: 4 }}>
-          <Text style={styles.statusText}>
-            {isSuccess ? "Successful" : "Failed"}
+        <View style={{ marginBottom: 20, gap: 0 }}>
+          <Text
+            allowFontScaling={false}
+            maxFontSizeMultiplier={0}
+            style={styles.amount}
+          >
+            {formatAmount(transaction.amount, false, "NGN", 2)}
           </Text>
           <Text
             style={{
-              fontSize: normalize(21),
+              fontSize: normalize(18),
               fontFamily: getFontFamily("400"),
               textAlign: "center",
             }}
           >
             {isSuccess
-              ? transaction?.service_type == "CABLETV"
+              ? transaction?.category === "CABLETV"
                 ? "Your TV bill payment was successful"
-                : transaction?.service_type == "MOBILEDATA"
+                : transaction?.category === "MOBILEDATA"
                 ? "Your data purchase was successful"
-                : transaction?.service_type == "AIRTIME"
+                : transaction?.category === "AIRTIME"
                 ? "Your airtime purchase was successful"
-                : "Service delivered successfully"
-              : "Service not delivered"}
+                : transaction?.category === "REFERRAL_BONUS"
+                ? "You’ve received a referral bonus"
+                : transaction?.category === "BANK_TRANSFER"
+                ? "Your deposit was successful"
+                : "Transaction completed successfully"
+              : "Transaction failed"}
           </Text>
         </View>
 
@@ -136,10 +145,6 @@ const TransactionDetailScreen = () => {
             label="Occurred At"
             value={formatDate(transaction.occurred_at)}
           />
-          {/* <DetailRow
-            label="Confirmed At"
-            value={formatDate(transaction.confirmed_at)}
-          /> */}
         </View>
 
         <View style={styles.header}>
@@ -152,12 +157,18 @@ const TransactionDetailScreen = () => {
             }
             style={styles.headerButton}
           >
-            <ArrowLeft size={20} color="#000" variant="Bold" />
-            <Text style={styles.headerTitle}>Share Receipt</Text>
+            <CustomIcon source={ShareIcon} size={18} color={COLORS.primary} />
+            <Text maxFontSizeMultiplier={0} style={styles.headerTitle}>
+              Share Receipt
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleGoBack} style={styles.headerButton}>
-            <Share size={20} color="#000" />
-            <Text style={styles.headerTitle}>Go back</Text>
+          <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton}>
+            <Text
+              maxFontSizeMultiplier={0}
+              style={[styles.headerTitle, { color: "white" }]}
+            >
+              Done
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -180,15 +191,24 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
     gap: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
   },
   networkLogo: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
+    width: 70,
+    height: 70,
+    resizeMode: "contain",
   },
   headerButton: {
+    borderColor: COLORS.secondary,
+    borderWidth: 1,
+    padding: 11,
+    flex: 1,
+    gap: 6,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+  },
+  goBackButton: {
     backgroundColor: COLORS.secondary,
     padding: 11,
     flex: 1,
@@ -201,11 +221,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    color: "#000",
+    color: COLORS.primary,
   },
-  statusText: {
+  amount: {
     textAlign: "center",
-    fontSize: normalize(25),
+    marginTop: 4,
+    fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
     color: "#000",
   },

@@ -8,11 +8,11 @@ import {
   StatusBar,
   Share as ShareElement,
   Alert,
+  ImageBackground,
 } from "react-native";
 import {
   ArrowRight2,
   Copy,
-  Share,
   DocumentDownload,
   Coin,
 } from "iconsax-react-nativejs";
@@ -22,6 +22,9 @@ import { getFontFamily, normalize } from "../constants/settings";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { showSuccess } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
+import { COLORS } from "../constants/colors";
+import CustomIcon from "../components/CustomIcon";
+import { ShareIcon } from "../assets";
 
 interface StepCardProps {
   step: number;
@@ -37,12 +40,12 @@ const StepCard: React.FC<StepCardProps> = ({
   IconComponent,
 }) => (
   <View style={styles.stepCard}>
-    <View style={styles.stepHeader}>
+    {/* <View style={styles.stepHeader}>
       <View style={styles.stepNumber}>
         <Text style={styles.stepNumberText}>{step}</Text>
       </View>
       <IconComponent variant="Outline" size={18} color="#E89E00" />
-    </View>
+    </View> */}
     <Text style={styles.stepTitle}>{title}</Text>
     <Text style={styles.stepDescription}>{description}</Text>
   </View>
@@ -88,53 +91,57 @@ const ReferralAndEarnScreen: React.FC = () => {
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.balanceCard}>
-          <Text style={[styles.sectionTitle, { color: "white" }]}>
-            Reward balance
-          </Text>
-          <Text style={styles.balanceAmount}>₦0.00</Text>
-        </View>
+        <ImageBackground
+          source={require("../assets/wallet-banner.png")}
+          style={styles.balanceCard}
+        >
+          <View style={styles.balanceAmountContainer}>
+            <Text style={[styles.sectionTitle, { color: "white" }]}>
+              Reward balance
+            </Text>
+            <Text style={styles.balanceAmount}>₦0.00</Text>
+          </View>
+        </ImageBackground>
 
-        <View style={styles.section}>
-          <View style={styles.referralCodeContainer}>
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                flex: 1,
-              }}
-            >
-              <Text style={styles.sectionTitle}>Referral Code</Text>
-              <View style={styles.referralCodeInfo}>
-                <Text style={styles.referralCodeName}>
-                  {user?.referral_code}
+        <View style={styles.referralCodeContainer}>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              flex: 1,
+            }}
+          >
+            <Text style={styles.sectionTitle}>Referral Code</Text>
+            <View style={styles.referralCodeInfo}>
+              <Text style={styles.referralCodeName}>{user?.referral_code}</Text>
+            </View>
+            <View style={styles.referralActions}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.referralButton}
+                onPress={handleCopyCode}
+              >
+                <Copy size={13} color={COLORS.primary} />
+                <Text style={styles.referralButtonText}>
+                  {isCopied ? "Copied" : "Copy"}
                 </Text>
-              </View>
-              <View style={styles.referralActions}>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={styles.referralButton}
-                  onPress={handleCopyCode}
-                >
-                  <Copy size={10} color="#000" />
-                  <Text style={styles.referralButtonText}>
-                    {isCopied ? "Copied" : "Copy"}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={styles.referralButton}
-                  onPress={handleShareCode}
-                >
-                  <Share size={10} color="#000" />
-                  <Text style={styles.referralButtonText}>Share</Text>
-                </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.referralButton}
+                onPress={handleShareCode}
+              >
+                <CustomIcon
+                  source={ShareIcon}
+                  size={18}
+                  color={COLORS.primary}
+                />
+                <Text style={styles.referralButtonText}>Share</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
 
-        {/* How to Refer Section */}
         <View style={[styles.section, { marginVertical: 40 }]}>
           <Text
             style={[styles.sectionTitle, { fontFamily: getFontFamily(800) }]}
@@ -156,21 +163,20 @@ const ReferralAndEarnScreen: React.FC = () => {
             />
             <StepCard
               step={3}
-              title="You Earn ₦NNN"
-              description="Then you your rewards 💬💬💬"
+              title="You Earn ₦₦₦"
+              description="Then you your rewards 🤑🤑🤑"
               IconComponent={Coin}
             />
           </View>
         </View>
 
-        {/* View Referral History Button */}
         <TouchableOpacity
           activeOpacity={0.8}
           style={styles.historyButton}
           onPress={handleViewReferralHistory}
         >
           <Text style={styles.historyButtonText}>View Referral History</Text>
-          <ArrowRight2 size={12} color="#000" />
+          <ArrowRight2 size={12} color="#fff" />
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -204,14 +210,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   balanceCard: {
-    borderRadius: 10,
+    borderRadius: 20,
     padding: 20,
     marginVertical: 20,
-    backgroundColor: "green",
-    gap: 14,
+    overflow: "hidden",
+    gap: 10,
   },
   balanceAmountContainer: {
     marginTop: 8,
+    borderRadius: 20,
   },
   balanceAmount: {
     fontSize: normalize(24),
@@ -268,12 +275,13 @@ const styles = StyleSheet.create({
   },
   referralCodeContainer: {
     borderWidth: 1,
-    borderColor: "#dbdbdbff",
+    borderColor: "#4A9237",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     borderRadius: 10,
     paddingVertical: 20,
+    backgroundColor: "#EFF7EC",
   },
   referralCodeInfo: {
     flex: 1,
@@ -297,7 +305,6 @@ const styles = StyleSheet.create({
   referralButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#E89E0015",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
@@ -307,17 +314,18 @@ const styles = StyleSheet.create({
   referralButtonText: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    color: "#000",
+    color: COLORS.primary,
   },
   stepsContainer: {
-    gap: 16,
-  },
-  stepCard: {
-    backgroundColor: "#F8F9FA",
-    padding: 16,
+    gap: 1,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#F3F4F6",
+    borderColor: "#373737ff",
+    backgroundColor: "#F9FAFB",
+    padding: 5,
+  },
+  stepCard: {
+    padding: 10,
   },
   stepHeader: {
     flexDirection: "row",
@@ -347,14 +355,14 @@ const styles = StyleSheet.create({
   stepDescription: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
-    color: "#6B7280",
+    color: "#565466",
     lineHeight: 20,
   },
   historyButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#E89E00",
+    backgroundColor: COLORS.secondary,
     marginVertical: 20,
     paddingVertical: 16,
     borderRadius: 40,
@@ -363,7 +371,7 @@ const styles = StyleSheet.create({
   historyButtonText: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    color: "#000",
+    color: "#fff",
   },
 });
 

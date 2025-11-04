@@ -90,7 +90,7 @@ const ChangePasswordForm: React.FC<{}> = () => {
         style={styles.button}
         onPress={handleSubmit(onSubmit)}
       >
-        <Text style={styles.buttonText}>Save Changes</Text>
+        <Text style={styles.buttonText}>Change Password</Text>
       </TouchableOpacity>
 
       <CustomLoading loading={loading} />
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#00",
+    color: "#fff",
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
     textAlign: "center",

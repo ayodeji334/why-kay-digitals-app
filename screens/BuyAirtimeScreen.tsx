@@ -21,12 +21,11 @@ import { formatAmount } from "../libs/formatNumber";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
 
-// Validation Schema
 const schema = yup.object({
   phone: yup
     .string()
     .required("Phone number is required")
-    .matches(/^(?:\+234|0)\d{10}$/, "Invalid Phone Number"),
+    .matches(/^(?:\+234|0)\d{10}$/, "Please provide a valid phone number"),
   network: yup.string().required("Please select a network provider"),
   amount: yup
     .number()
@@ -379,7 +378,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#9CA3AF",
   },
   buttonText: {
-    color: "#000",
+    color: "#fff",
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
     textAlign: "center",

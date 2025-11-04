@@ -77,7 +77,7 @@ const TextInputField: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   input: {
     borderWidth: 1,
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
-    marginBottom: 8,
+    marginBottom: 6,
     color: "#000",
   },
 });

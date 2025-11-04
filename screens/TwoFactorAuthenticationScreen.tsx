@@ -246,12 +246,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondary,
   },
   primaryButtonText: {
-    color: "#000000",
+    color: "#fff",
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
   },
   disableButtonText: {
-    color: "#000",
+    color: "#fff",
   },
   secondaryButton: {
     width: "100%",
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
-    color: "#666666",
+    color: "#000",
   },
 });
 

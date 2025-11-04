@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     borderRadius: 80,
   },
   buttonText: {
-    color: "#000",
+    color: "#fff",
     textAlign: "center",
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),

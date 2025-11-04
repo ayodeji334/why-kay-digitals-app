@@ -17,6 +17,8 @@ import { Copy, CopySuccess } from "iconsax-react-nativejs";
 import { showSuccess } from "../utlis/toast";
 import { getFontFamily, normalize } from "../constants/settings";
 import { useAuthStore } from "../stores/authSlice";
+import CustomIcon from "../components/CustomIcon";
+import { CopyIcon, DeleteIcon } from "../assets";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
@@ -48,26 +50,28 @@ export default function ProfileScreen() {
       <View
         style={[styles.fieldContainer, isLast && styles.fieldWithOutSeparator]}
       >
-        <Text style={styles.fieldLabel}>{label}</Text>
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
             gap: 2,
             paddingLeft: 10,
           }}
         >
+          <Text style={styles.fieldLabel}>{label}</Text>
           <Text style={styles.fieldValue}>{value || "Not set"}</Text>
-          {isCopy && value && (
-            <TouchableOpacity onPress={handleCopy} style={styles.copyButton}>
-              {isCopied ? (
-                <CopySuccess variant="Bold" size={16} color="#0a580dff" />
-              ) : (
-                <Copy size={16} color="#4CAF50" />
-              )}
-            </TouchableOpacity>
-          )}
         </View>
+        {isCopy && value && (
+          <TouchableOpacity
+            activeOpacity={0.87}
+            onPress={handleCopy}
+            style={styles.copyButton}
+          >
+            {isCopied ? (
+              <CustomIcon source={CopyIcon} size={16} color="#0a580dff" />
+            ) : (
+              <CustomIcon source={CopyIcon} size={16} color="#0a580dff" />
+            )}
+          </TouchableOpacity>
+        )}
       </View>
     );
   };
@@ -81,21 +85,22 @@ export default function ProfileScreen() {
       >
         <View style={styles.profileHeader}>
           <Image
-            source={{
-              uri: userData?.profile_picture || "",
-            }}
+            source={
+              userData?.profile_picture_url
+                ? {
+                    uri: userData?.profile_picture_url || undefined,
+                  }
+                : require("../assets/avatar.png")
+            }
             style={styles.profileImage}
+            resizeMode="center"
           />
           <View style={styles.profileInfo}>
             <Text style={styles.userName}>
-              {userData?.first_name
-                ? userData.first_name.charAt(0).toUpperCase() +
-                  userData.first_name.slice(1)
+              {userData?.username
+                ? userData.username.charAt(0).toUpperCase() +
+                  userData.username.slice(1)
                 : ""}{" "}
-              {userData?.last_name
-                ? userData.last_name.charAt(0).toUpperCase() +
-                  userData.last_name.slice(1)
-                : ""}
             </Text>
             <Text style={styles.userEmail}>{userData?.email}</Text>
           </View>
@@ -103,11 +108,11 @@ export default function ProfileScreen() {
 
         {/* Profile Details */}
         <View style={styles.detailsSection}>
-          <ProfileField label="Firstname" value={userData?.first_name} />
+          {/* <ProfileField label="Firstname" value={userData?.first_name} />
           <ProfileField
             label="Lastname (Surname)"
             value={userData?.last_name}
-          />
+          /> */}
           <ProfileField
             label="Username"
             value={userData?.username}
@@ -127,16 +132,15 @@ export default function ProfileScreen() {
           />
         </View>
 
-        {/* Action Buttons */}
         <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
           <Text style={styles.editButtonText}>Edit Details</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={styles.deleteButton}
           onPress={handleDeleteAccount}
         >
           <Text style={styles.deleteButtonText}>Delete account</Text>
+          <CustomIcon source={DeleteIcon} color={COLORS.error} size={16} />
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -174,10 +178,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   profileImage: {
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
     borderRadius: 40,
     marginBottom: 12,
+    padding: 4,
     backgroundColor: COLORS.lightGray,
   },
   profileInfo: {
@@ -212,7 +217,7 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("400"),
     color: COLORS.dark,
   },
   fieldWithOutSeparator: {
@@ -220,8 +225,8 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.lightGray,
   },
   fieldValue: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
     color: COLORS.dark,
   },
   editButton: {
@@ -233,7 +238,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   editButtonText: {
-    color: "black",
+    color: "white",
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
   },
@@ -246,6 +251,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: COLORS.error,
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 8,
   },
   deleteButtonText: {
     color: COLORS.error,

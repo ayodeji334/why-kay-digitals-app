@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F4F6",
     padding: 5,
     borderRadius: 10,
-    top: -10,
+    top: -15,
   },
   tab: { flex: 1, padding: 12, alignItems: "center" },
   activeTab: { backgroundColor: COLORS.primary, borderRadius: 8 },
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   tradeButtonText: {
-    color: "#111827",
+    color: "#fff",
     fontFamily: getFontFamily("900"),
     fontSize: normalize(18),
   },

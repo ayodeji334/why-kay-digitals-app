@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   buttonText: {
-    color: "#000",
+    color: "#fff",
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
     textAlign: "center",

@@ -172,7 +172,7 @@ const DepositScreen = () => {
               {(user?.tier_level === "TIER_1" ||
                 user?.tier_level === "TIER_2") && (
                 <InfoCard
-                  IconComponent={InfoCircle}
+                  IconComponent={<InfoCircle />}
                   title="Want higher limits?"
                   description="Complete additional verification to increase your transaction limits up to ₦1,000,000"
                 />
@@ -268,12 +268,12 @@ const styles = StyleSheet.create({
   },
   continueButtonDisabled: { backgroundColor: "#ccc" },
   continueButtonText: {
-    color: "#000",
+    color: "#fff",
     fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
   },
   emptyState: {
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#EFF7EC",
     borderRadius: 12,
     padding: 24,
     alignItems: "center",
@@ -297,10 +297,10 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   emptyButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 10,
+    borderRadius: 110,
   },
   emptyButtonText: {
     color: "#fff",

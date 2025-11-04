@@ -23,6 +23,13 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
 import InfoCard from "../components/InfoCard";
+import CustomIcon from "../components/CustomIcon";
+import {
+  LocationIcon,
+  ShieldCheckIcon,
+  UserIdCardIcon,
+  UserVerificationShieldIcon,
+} from "../assets";
 
 interface MenuItemProps {
   title: string;
@@ -31,8 +38,8 @@ interface MenuItemProps {
   showArrow?: boolean;
   isDangerous?: boolean;
   color?: string;
-  IconComponent?: React.ComponentType<any>;
-  isVerified?: boolean; // ✅ New prop
+  IconComponent?: React.JSX.Element;
+  isVerified?: boolean;
 }
 
 const MenuItem = ({
@@ -42,7 +49,7 @@ const MenuItem = ({
   showArrow = true,
   isDangerous = false,
   color = "#000",
-  IconComponent = ArrowRight2,
+  IconComponent = <ArrowRight2 />,
   isVerified = false,
 }: MenuItemProps) => {
   return (
@@ -62,7 +69,7 @@ const MenuItem = ({
           alignItems: "center",
         }}
       >
-        <IconComponent variant="Outline" size={20} color={"#E89E00"} />
+        {IconComponent}
       </View>
 
       <View style={styles.menuItemContent}>
@@ -88,7 +95,7 @@ const MenuItem = ({
         >
           <Text
             style={{
-              color: "#044b1eff",
+              color: COLORS.primary,
               fontSize: normalize(15),
               fontFamily: getFontFamily(800),
             }}
@@ -115,7 +122,13 @@ export default function KYCVerificationScreen() {
         showsVerticalScrollIndicator={false}
       >
         <InfoCard
-          IconComponent={UserSquare}
+          IconComponent={
+            <CustomIcon
+              source={UserIdCardIcon}
+              size={20}
+              color={COLORS.primary}
+            />
+          }
           title="Complete Your KYC!"
           description={
             "Verify your identity to unlock all features and enjoy a seamless, secure experience."
@@ -127,20 +140,38 @@ export default function KYCVerificationScreen() {
             title="BVN Verification"
             subtitle="Link your BVN for account security"
             onPress={() => navigation.navigate("BVNVerification" as never)}
-            IconComponent={TagUser}
+            IconComponent={
+              <CustomIcon
+                source={UserVerificationShieldIcon}
+                size={20}
+                color={COLORS.primary}
+              />
+            }
             isVerified={!!user?.bvn}
           />
           <MenuItem
             title="Proof of Identity"
             subtitle="Link your government-issued ID"
             onPress={() => navigation.navigate("IdentityVerification" as never)}
-            IconComponent={ShieldTick}
+            IconComponent={
+              <CustomIcon
+                source={ShieldCheckIcon}
+                size={20}
+                fill={COLORS.primary}
+              />
+            }
           />
           <MenuItem
             title="Proof of Address"
             subtitle="Provide utility bill or similar document"
             onPress={() => navigation.navigate("Proof Of Address" as never)}
-            IconComponent={Location}
+            IconComponent={
+              <CustomIcon
+                source={LocationIcon}
+                size={20}
+                color={COLORS.primary}
+              />
+            }
             isVerified={true}
           />
           {/* <MenuItem
@@ -192,7 +223,7 @@ const styles = StyleSheet.create({
   },
   menuItemSubtitle: {
     fontSize: normalize(16),
-    color: COLORS.dark,
+    color: COLORS.primary,
     fontFamily: getFontFamily("400"),
     marginTop: 2,
   },

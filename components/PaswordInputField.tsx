@@ -80,6 +80,7 @@ const PasswordInputField: React.FC<Props> = ({
               {showPassword ? <Eye size={20} /> : <EyeSlash size={20} />}
             </TouchableOpacity>
           </View>
+          {error && <Text style={styles.errorText}>{error.message}</Text>}
 
           {showHints && value !== "" && (
             <View style={styles.hintsWrapper}>
@@ -99,8 +100,6 @@ const PasswordInputField: React.FC<Props> = ({
               })}
             </View>
           )}
-
-          {error && <Text style={styles.errorText}>{error.message}</Text>}
         </View>
       )}
     />
@@ -109,7 +108,7 @@ const PasswordInputField: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   label: {
     fontFamily: getFontFamily("700"),
@@ -143,7 +142,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    marginTop: 4,
+    marginVertical: 4,
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
   },

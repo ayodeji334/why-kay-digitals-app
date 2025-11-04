@@ -7,12 +7,14 @@ import { BASE_URL } from "../api/axios";
 interface AuthState {
   token: string | null;
   refreshToken: string | null;
+  isShowBalance: boolean;
   user: any | null;
   isAuthenticated: boolean;
   isBiometricEnabled: boolean;
   isGoogleAuthenticatorEnabled: boolean;
   setToken: (token: string | null, refreshToken?: string | null) => void;
   setUser: (user: any) => void;
+  setIsShowBalance: (show: boolean) => void;
   logout: () => void;
   enableBiometric: () => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
@@ -32,15 +34,16 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isGoogleAuthenticatorEnabled: false,
       isBiometricEnabled: false,
+      isShowBalance: true,
 
       setToken: (token, refreshToken = null) => {
         set({
           token,
           refreshToken,
-          isAuthenticated: !!token,
+          // isAuthenticated: !!token,
         });
 
-        // Also update MMKV for axios interceptor access
+        // axios interceptor access
         if (token) {
           setItem("auth_token", token);
         } else {
@@ -53,7 +56,9 @@ export const useAuthStore = create<AuthState>()(
           removeItem("refresh_token");
         }
       },
-
+      setIsShowBalance: (show: boolean) => {
+        set({ isShowBalance: show });
+      },
       setUser: user => {
         set(state => ({
           ...state,
@@ -66,7 +71,6 @@ export const useAuthStore = create<AuthState>()(
           removeItem("user");
         }
       },
-
       logout: () => {
         set(state => ({
           ...state,
@@ -78,31 +82,21 @@ export const useAuthStore = create<AuthState>()(
         removeItem("auth_token");
         removeItem("refresh_token");
       },
-
       setIsGoogleAuthenticatorEnabled: (value: boolean) => {
         set({ isGoogleAuthenticatorEnabled: value });
       },
-
       enableBiometric: () => {
         set({ isBiometricEnabled: true });
       },
-
       setIsAuthenticated: (value: boolean) => {
         set({ isAuthenticated: value });
       },
-
       disableBiometric: () => {
         set({ isBiometricEnabled: false });
       },
-
       setBiometricEnabled: (enabled: boolean) => {
         set({ isBiometricEnabled: enabled });
       },
-
-      // completeOnboarding: () => {
-      //   set({ isOnboardingCompleted: true });
-      // },
-
       clearAuth: () => {
         get().logout();
         set({
@@ -110,6 +104,10 @@ export const useAuthStore = create<AuthState>()(
           // isOnboardingCompleted: false,
         });
       },
+
+      // completeOnboarding: () => {
+      //   set({ isOnboardingCompleted: true });
+      // },
 
       initializeAuth: async () => {
         try {

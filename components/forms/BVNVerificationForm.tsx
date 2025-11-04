@@ -49,6 +49,8 @@ const BVNForm = () => {
       reset();
 
       showSuccess("BVN Verified successful");
+    } catch (error: any) {
+      console.log(error?.response);
     } finally {
       setLoading(false);
     }
@@ -64,13 +66,15 @@ const BVNForm = () => {
         maxLength={11}
       />
 
+      <Text style={styles.instruction}>Dial *565*0# to get your BVN</Text>
+
       <InfoCard
-        IconComponent={InfoCircle}
+        IconComponent={<InfoCircle size={17} />}
         title="Why BVN Verification is Required?"
         description={[
-          "BVN verification helps us comply with financial regulations and maintain the highest security standards for your account.",
+          "For security reasons and to comply with CBN policy, your BVN is required to complete your KYC proces",
           "It ensures that only you have access to your account and prevents unauthorized transactions.",
-          "Verified accounts enjoy higher transaction limits and additional security features.",
+          "Note: Contact our support team if you have issues with the verification",
         ]}
       />
 
@@ -101,10 +105,16 @@ const styles = StyleSheet.create({
     alignContent: "center",
   },
   buttonText: {
-    color: "#00",
+    color: "#fff",
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
     textAlign: "center",
+  },
+  instruction: {
+    color: COLORS.primary,
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    textAlign: "left",
   },
   helpLink: {
     marginTop: 12,

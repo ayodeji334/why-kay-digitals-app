@@ -26,36 +26,53 @@ import { CardEdit } from "iconsax-react-nativejs";
 import { SelectInput } from "../components/SelectInputField";
 import { getFontFamily, normalize } from "../constants/settings";
 import CustomLoading from "../components/CustomLoading";
-import useAxios, { BASE_URL } from "../api/axios";
+import useAxios from "../api/axios";
 import { useAuthStore } from "../stores/authSlice";
 import { useNavigation } from "@react-navigation/native";
+import PhoneNumberInputField from "../components/PhoneNumberInputField";
+import parsePhoneNumberFromString from "libphonenumber-js";
 
 const profileSchema = yup.object().shape({
-  first_name: yup.string().required("First name is required"),
-  last_name: yup.string().required("Last name is required"),
   username: yup.string().required("Username is required"),
   gender: yup.string().required("Gender is required"),
   phone_number: yup
     .string()
-    .matches(
-      /^234\d{10}$/,
-      "Phone number must start with 234 and be followed by 10 digits",
-    )
-    .required("Phone number is required"),
+    .required("Phone number is required")
+    .test(
+      "is-valid-phone",
+      "Please provide a valid phone number",
+      function (value) {
+        if (!value) return false;
+
+        try {
+          // Remove any non-digit characters except + at the beginning
+          const cleanedValue = value.replace(/(?!^\+)[^\d]/g, "");
+
+          // Parse the phone number with Nigeria as default country
+          const phoneNumber = parsePhoneNumberFromString(cleanedValue, "NG");
+
+          // Return true if valid, false if invalid
+          return phoneNumber ? phoneNumber.isValid() : false;
+        } catch (error) {
+          console.log("Phone number parsing error:", error);
+          return false;
+        }
+      },
+    ),
 });
 
 export default function EditProfileScreen() {
   const navigation = useNavigation();
   const { user, setUser, token } = useAuthStore(state => state);
-  const { patch, post } = useAxios();
+  const { patch } = useAxios();
   const [loading, setLoading] = useState(false);
-  const [imageUri, setImageUri] = useState(user?.profile_picture);
+  // const [imageUri, setImageUri] = useState(user?.profile_picture);
 
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(profileSchema),
     defaultValues: {
-      first_name: user?.first_name || "",
-      last_name: user?.last_name || "",
+      // first_name: user?.first_name || "",
+      // last_name: user?.last_name || "",
       username: user?.username || "",
       gender: user?.gender || "",
       phone_number: user?.phone_number || "",
@@ -134,39 +151,39 @@ export default function EditProfileScreen() {
     setLoading(true);
 
     try {
-      let uploadedImageUrl = imageUri;
+      // let uploadedImageUrl = imageUri;
 
-      if (imageUri) {
-        const formData = new FormData();
-        formData.append("file", {
-          uri: uploadedImageUrl,
-          type: "image/jpeg",
-          name: `profile_${Date.now()}.jpg`,
-        } as any);
+      // if (imageUri) {
+      //   const formData = new FormData();
+      //   formData.append("file", {
+      //     uri: uploadedImageUrl,
+      //     type: "image/jpeg",
+      //     name: `profile_${Date.now()}.jpg`,
+      //   } as any);
 
-        const res = await post(`${BASE_URL}/files/upload`, formData, {
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-            // "cache-control": "no-cache",
-          },
-        });
+      //   const res = await post(`${BASE_URL}/files/upload`, formData, {
+      //     headers: {
+      //       Accept: "application/json",
+      //       Authorization: `Bearer ${token}`,
+      //       "Content-Type": "multipart/form-data",
+      //       // "cache-control": "no-cache",
+      //     },
+      //   });
 
-        const result = res.data;
+      //   const result = res.data;
 
-        if (result?.success && result?.data?.secure_url) {
-          uploadedImageUrl = result.data.secure_url;
-        } else {
-          showError(result?.message || "Failed to upload image");
-          setLoading(false);
-          return;
-        }
-      }
+      //   if (result?.success && result?.data?.secure_url) {
+      //     uploadedImageUrl = result.data.secure_url;
+      //   } else {
+      //     showError(result?.message || "Failed to upload image");
+      //     setLoading(false);
+      //     return;
+      //   }
+      // }
 
       const response = await patch("/users/update-user-profile", {
         ...data,
-        profile_picture_url: uploadedImageUrl,
+        // profile_picture_url: uploadedImageUrl,
       });
 
       if (response.data?.success) {
@@ -199,8 +216,8 @@ export default function EditProfileScreen() {
           return showError(response.errorMessage ?? "Failed to pick image");
 
         if (response.assets && response.assets[0].uri) {
-          const uri = response.assets[0].uri;
-          setImageUri(uri);
+          // const uri = response.assets[0].uri;
+          // setImageUri(uri);
         }
       });
     } catch (error) {
@@ -223,7 +240,7 @@ export default function EditProfileScreen() {
           return showError(response.errorMessage ?? "Failed to take photo");
 
         if (response.assets && response.assets[0].uri) {
-          setImageUri(response.assets[0].uri);
+          // setImageUri(response.assets[0].uri);
         }
       });
     } catch (error) {
@@ -249,13 +266,15 @@ export default function EditProfileScreen() {
         <View style={styles.profilePictureSection}>
           <View>
             <Image
-              source={{
-                uri:
-                  imageUri ||
-                  user?.profile_picture ||
-                  "https://placehold.co/600x400",
-              }}
+              source={
+                user?.profile_picture_url
+                  ? {
+                      uri: user?.profile_picture_url || undefined,
+                    }
+                  : require("../assets/avatar.png")
+              }
               style={styles.profileImage}
+              resizeMode="center"
             />
             <TouchableOpacity
               activeOpacity={0.7}
@@ -279,26 +298,23 @@ export default function EditProfileScreen() {
         </View>
 
         <View style={styles.formSection}>
-          <TextInputField
+          {/* <TextInputField
             label="First Name"
             control={control}
             name="first_name"
             placeholder="Enter first name"
-            // error={errors.first_name?.message}
           />
           <TextInputField
             label="Last Name"
             control={control}
             name="last_name"
             placeholder="Enter last name"
-            // error={errors.last_name?.message}
-          />
+          /> */}
           <TextInputField
             label="Username"
             control={control}
             name="username"
             placeholder="Choose a username"
-            // error={errors.username?.message}
           />
           <SelectInput
             control={control}
@@ -308,14 +324,12 @@ export default function EditProfileScreen() {
               { label: "Male", value: "MALE" },
               { label: "Female", value: "FEMALE" },
             ]}
-            // error={errors.gender?.message}
           />
-          <TextInputField
+          <PhoneNumberInputField
             label="Phone Number"
             control={control}
             name="phone_number"
-            placeholder="234XXXXXXXXXX"
-            // error={errors.phone_number?.message}
+            placeholder="Enter your phone number"
           />
         </View>
 
@@ -338,8 +352,8 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   profilePictureSection: { alignItems: "center", padding: 20 },
   profileImage: {
-    width: 100,
-    height: 100,
+    width: 70,
+    height: 70,
     borderRadius: 50,
     backgroundColor: "#e7e7e7",
   },
@@ -373,7 +387,7 @@ const styles = StyleSheet.create({
   },
   updateButtonDisabled: { opacity: 0.6 },
   updateButtonText: {
-    color: "black",
+    color: "white",
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
   },

@@ -64,8 +64,10 @@ const NINVerificationForm = () => {
         maxLength={11}
       />
 
+      <Text style={styles.instruction}>Dial *346# to get your NIN</Text>
+
       <InfoCard
-        IconComponent={InfoCircle}
+        IconComponent={<InfoCircle color={COLORS.primary} size={18} />}
         title="Why NIN Verification is Required?"
         description={[
           "NIN verification helps us comply with national identity regulations and maintain the highest security standards for your account.",
@@ -93,15 +95,21 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.primary,
     paddingVertical: 14,
     borderRadius: 100,
     marginTop: 30,
     justifyContent: "center",
     alignContent: "center",
   },
+  instruction: {
+    color: COLORS.primary,
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    textAlign: "left",
+  },
   buttonText: {
-    color: "#00",
+    color: "#fff",
     fontFamily: getFontFamily(700),
     fontSize: normalize(18),
     textAlign: "center",

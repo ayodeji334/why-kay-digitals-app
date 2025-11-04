@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
-    color: "#000000",
+    color: "#fff",
     marginBottom: 12,
     textAlign: "center",
   },
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondary,
   },
   primaryButtonText: {
-    color: "#000000",
+    color: "#fff",
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
   },

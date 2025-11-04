@@ -19,6 +19,8 @@ import { showError } from "../utlis/toast";
 import CustomLoading from "../components/CustomLoading";
 import useAxios from "../api/axios";
 import { useAuthStore } from "../stores/authSlice";
+import CustomIcon from "../components/CustomIcon";
+import { AccountDeleteIcon } from "../assets";
 
 const deleteReasons = [
   "I no longer need the account",
@@ -173,12 +175,15 @@ export default function DeleteAccountScreen() {
           setModalVisible(false);
           setTimeout(() => handleConfirmDelete(), 600);
         }}
-        secondaryButtonText="Cancel"
+        secondaryButtonText="Close"
         secondaryAction={() => setModalVisible(false)}
         iconBackgroundColor="#FF4D4D1A"
         iconColor={COLORS.error}
-        IconComponent={UserRemove}
+        IconComponent={
+          <CustomIcon source={AccountDeleteIcon} size={24} color="#0a580dff" />
+        }
         iconSize={30}
+        isDangerous={true}
       />
 
       <CustomLoading loading={loading} />
@@ -235,7 +240,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   deleteButtonText: {
-    color: "black",
+    color: "white",
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
   },

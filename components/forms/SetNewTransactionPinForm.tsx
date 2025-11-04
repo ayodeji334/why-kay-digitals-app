@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#00",
+    color: "#fff",
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
   },

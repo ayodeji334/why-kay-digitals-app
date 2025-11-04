@@ -4,8 +4,8 @@ import { getItem } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 
-export const BASE_URL = `https://wk.micakin.com/v1`;
-// export const BASE_URL = `https://13a45b1a5403.ngrok-free.app/v1`;
+// export const BASE_URL = `https://wk.micakin.com/v1`;
+export const BASE_URL = `http://localhost:8000/v1`;
 
 const NETWORK_ERROR_MESSAGE = "Network error. Please check your connection.";
 const SERVER_ERROR_MESSAGE = "Something went wrong. Please try again.";

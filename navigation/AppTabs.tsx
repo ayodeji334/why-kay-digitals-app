@@ -60,7 +60,11 @@ export default function AppTabs() {
             />
           ),
           header: () => (
-            <CustomHeader showBack={false} showTitle={true} title="Wallets" />
+            <CustomHeader
+              showBack={false}
+              showTitle={true}
+              title="My Wallets"
+            />
           ),
         }}
       />

@@ -7,70 +7,40 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00C4D91E7BDA4E1085851959 /* Montserrat-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E3B8D600C2D54F61829A25E1 /* Montserrat-ExtraBold.ttf */; };
-		04C4E0066FDB4319ABA28890 /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 953BB4CBF3A441A78B4FCC32 /* Inter-SemiBold.ttf */; };
 		0D5135E9498049D2A46E9CF8 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF9B3A33E93A4893A8247B58 /* Colors.xcassets */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		13BBD1BA06C04C12AB63E6B7 /* Zain-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D9E592F76EB84F29B12C7834 /* Zain-Bold.ttf */; };
-		258747D24B28458996485F1F /* Zain-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F02FD6ECFA164969A7BD610C /* Zain-Light.ttf */; };
-		2662BDBC726C4FF393BAF0E9 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1E0113799EEA4CF0B8968DCE /* Inter-Bold.ttf */; };
-		3BD017A4F78541BCB0784374 /* Zain-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AAD299C2CE9049E58FD0B1BC /* Zain-LightItalic.ttf */; };
-		3C235C4184BD459783852B1E /* Zain-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0D0E79865EB8416FAE28885D /* Zain-Italic.ttf */; };
-		3D9950BC68224E43B4AEBBA9 /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 177FA8D6434D417A96151021 /* Inter-Regular.ttf */; };
-		42ADEB5F82FA43DD897F1E76 /* Zain-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5FB71D46F9574144BF8AC663 /* Zain-ExtraBold.ttf */; };
-		47AF22F6A9FA47B9A0A1A901 /* Zain-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4EDCC235668849EEB11419BD /* Zain-ExtraLight.ttf */; };
 		49F4964F1F9B48711E32D0E6 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
-		4C0634E7796D4BEBBD2A3F9E /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D33F05CB71444A0A0066EFC /* OFL.txt */; };
-		4D2EDC24FF06452FB92864F0 /* Inter-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 335A1D18E99846F1B6D50CFF /* Inter-ExtraLight.ttf */; };
-		63B218FEA1DD4E378F4A1B9A /* Inter-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 006AB5283B0B48D9AEEEAAC6 /* Inter-Thin.ttf */; };
 		689A7298031A414BAFA7CE74 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A99FA71178664676A52CBC27 /* BootSplash.storyboard */; };
 		6EAC5CAEBB905747A994FEFF /* libPods-WhyKayDigitals.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2900CB9051AA65048439F9C5 /* libPods-WhyKayDigitals.a */; };
-		6EF13FD976E64CDE9DF96743 /* Montserrat-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7FD8F8DA3B7D4811BFD4DE74 /* Montserrat-BlackItalic.ttf */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		96406223C5F945F5B4AB11E7 /* Inter-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 359EFCFA99CC417391708718 /* Inter-Light.ttf */; };
-		B495BC45F7B1471F82F5979A /* Inter-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 35B1FE34A3974E13B58D1ADC /* Inter-ExtraBold.ttf */; };
-		C3772FA12FE143C39D036F08 /* Zain-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DE073D76FF5047DFAA035F09 /* Zain-Black.ttf */; };
-		C3FD3021FDF04F2B9F761369 /* Zain-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05B3B575DF3F42C7B6C14492 /* Zain-Regular.ttf */; };
-		CC99B30CE91F437EB1093BD0 /* Inter-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B709F759A61E4CAE877F43C9 /* Inter-Italic.ttf */; };
-		D8E1BA280970455E8D44F863 /* Inter-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 72BC35A94E774D70AE09AC6D /* Inter-Black.ttf */; };
-		F481F23145F8423EABE63981 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C28C6A375EAA4EEFBE545513 /* Inter-Medium.ttf */; };
+		1724103E4CFA4F12A5E1B959 /* Zain-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 46F35B4DFC0343209D2285AD /* Zain-Black.ttf */; };
+		EFE1867333F3434483CE44BF /* Zain-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E8AA564DC9ED4591B1586C10 /* Zain-Bold.ttf */; };
+		560EF2FD1199418C90F9B287 /* Zain-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D43AE21FC2654C3AA4A27C4A /* Zain-ExtraBold.ttf */; };
+		31DCCD3DC32141C990B0C038 /* Zain-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 084BEA0041F3479A9CE2E1B4 /* Zain-ExtraLight.ttf */; };
+		E3F2D993DC66449C8627A689 /* Zain-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E14E2275DC9144B4A271FB47 /* Zain-Light.ttf */; };
+		8CF7F3E3431041D197235D93 /* Zain-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 16414B1FC79E47CDB32457DC /* Zain-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		006AB5283B0B48D9AEEEAAC6 /* Inter-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Thin.ttf"; path = "../assets/fonts/Inter-Thin.ttf"; sourceTree = "<group>"; };
-		05B3B575DF3F42C7B6C14492 /* Zain-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Regular.ttf"; path = "../assets/fonts/Zain/Zain-Regular.ttf"; sourceTree = "<group>"; };
-		0D0E79865EB8416FAE28885D /* Zain-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Italic.ttf"; path = "../assets/fonts/Zain/Zain-Italic.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* WhyKayDigitals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WhyKayDigitals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = WhyKayDigitals/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = WhyKayDigitals/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = WhyKayDigitals/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		177FA8D6434D417A96151021 /* Inter-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Regular.ttf"; path = "../assets/fonts/Inter-Regular.ttf"; sourceTree = "<group>"; };
-		1E0113799EEA4CF0B8968DCE /* Inter-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.ttf"; path = "../assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; };
 		2900CB9051AA65048439F9C5 /* libPods-WhyKayDigitals.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WhyKayDigitals.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		335A1D18E99846F1B6D50CFF /* Inter-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLight.ttf"; path = "../assets/fonts/Inter-ExtraLight.ttf"; sourceTree = "<group>"; };
-		359EFCFA99CC417391708718 /* Inter-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Light.ttf"; path = "../assets/fonts/Inter-Light.ttf"; sourceTree = "<group>"; };
-		35B1FE34A3974E13B58D1ADC /* Inter-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraBold.ttf"; path = "../assets/fonts/Inter-ExtraBold.ttf"; sourceTree = "<group>"; };
 		4E740282D5E275767FC92B2F /* Pods-WhyKayDigitals.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WhyKayDigitals.debug.xcconfig"; path = "Target Support Files/Pods-WhyKayDigitals/Pods-WhyKayDigitals.debug.xcconfig"; sourceTree = "<group>"; };
-		4EDCC235668849EEB11419BD /* Zain-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-ExtraLight.ttf"; path = "../assets/fonts/Zain/Zain-ExtraLight.ttf"; sourceTree = "<group>"; };
 		51ACBA4527A11C0DC66369F1 /* Pods-WhyKayDigitals.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WhyKayDigitals.release.xcconfig"; path = "Target Support Files/Pods-WhyKayDigitals/Pods-WhyKayDigitals.release.xcconfig"; sourceTree = "<group>"; };
-		5FB71D46F9574144BF8AC663 /* Zain-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-ExtraBold.ttf"; path = "../assets/fonts/Zain/Zain-ExtraBold.ttf"; sourceTree = "<group>"; };
-		72BC35A94E774D70AE09AC6D /* Inter-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Black.ttf"; path = "../assets/fonts/Inter-Black.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = WhyKayDigitals/AppDelegate.swift; sourceTree = "<group>"; };
-		7FD8F8DA3B7D4811BFD4DE74 /* Montserrat-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-BlackItalic.ttf"; path = "../assets/fonts/Montserrat-BlackItalic.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = WhyKayDigitals/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8D33F05CB71444A0A0066EFC /* OFL.txt */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = OFL.txt; path = ../assets/fonts/Zain/OFL.txt; sourceTree = "<group>"; };
-		953BB4CBF3A441A78B4FCC32 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.ttf"; path = "../assets/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		A99FA71178664676A52CBC27 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = WhyKayDigitals/BootSplash.storyboard; sourceTree = "<group>"; };
-		AAD299C2CE9049E58FD0B1BC /* Zain-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-LightItalic.ttf"; path = "../assets/fonts/Zain/Zain-LightItalic.ttf"; sourceTree = "<group>"; };
-		B709F759A61E4CAE877F43C9 /* Inter-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Italic.ttf"; path = "../assets/fonts/Inter-Italic.ttf"; sourceTree = "<group>"; };
-		C28C6A375EAA4EEFBE545513 /* Inter-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.ttf"; path = "../assets/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; };
 		CF9B3A33E93A4893A8247B58 /* Colors.xcassets */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = WhyKayDigitals/Colors.xcassets; sourceTree = "<group>"; };
-		D9E592F76EB84F29B12C7834 /* Zain-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Bold.ttf"; path = "../assets/fonts/Zain/Zain-Bold.ttf"; sourceTree = "<group>"; };
-		DE073D76FF5047DFAA035F09 /* Zain-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Black.ttf"; path = "../assets/fonts/Zain/Zain-Black.ttf"; sourceTree = "<group>"; };
-		E3B8D600C2D54F61829A25E1 /* Montserrat-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ExtraBold.ttf"; path = "../assets/fonts/Montserrat-ExtraBold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F02FD6ECFA164969A7BD610C /* Zain-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Light.ttf"; path = "../assets/fonts/Zain/Zain-Light.ttf"; sourceTree = "<group>"; };
+		46F35B4DFC0343209D2285AD /* Zain-Black.ttf */ = {isa = PBXFileReference; name = "Zain-Black.ttf"; path = "../assets/fonts/Zain-Black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		E8AA564DC9ED4591B1586C10 /* Zain-Bold.ttf */ = {isa = PBXFileReference; name = "Zain-Bold.ttf"; path = "../assets/fonts/Zain-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D43AE21FC2654C3AA4A27C4A /* Zain-ExtraBold.ttf */ = {isa = PBXFileReference; name = "Zain-ExtraBold.ttf"; path = "../assets/fonts/Zain-ExtraBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		084BEA0041F3479A9CE2E1B4 /* Zain-ExtraLight.ttf */ = {isa = PBXFileReference; name = "Zain-ExtraLight.ttf"; path = "../assets/fonts/Zain-ExtraLight.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		E14E2275DC9144B4A271FB47 /* Zain-Light.ttf */ = {isa = PBXFileReference; name = "Zain-Light.ttf"; path = "../assets/fonts/Zain-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		16414B1FC79E47CDB32457DC /* Zain-Regular.ttf */ = {isa = PBXFileReference; name = "Zain-Regular.ttf"; path = "../assets/fonts/Zain-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,27 +111,12 @@
 		8ADB2044AD6744C590A62CA2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				7FD8F8DA3B7D4811BFD4DE74 /* Montserrat-BlackItalic.ttf */,
-				E3B8D600C2D54F61829A25E1 /* Montserrat-ExtraBold.ttf */,
-				DE073D76FF5047DFAA035F09 /* Zain-Black.ttf */,
-				D9E592F76EB84F29B12C7834 /* Zain-Bold.ttf */,
-				5FB71D46F9574144BF8AC663 /* Zain-ExtraBold.ttf */,
-				4EDCC235668849EEB11419BD /* Zain-ExtraLight.ttf */,
-				0D0E79865EB8416FAE28885D /* Zain-Italic.ttf */,
-				F02FD6ECFA164969A7BD610C /* Zain-Light.ttf */,
-				AAD299C2CE9049E58FD0B1BC /* Zain-LightItalic.ttf */,
-				05B3B575DF3F42C7B6C14492 /* Zain-Regular.ttf */,
-				72BC35A94E774D70AE09AC6D /* Inter-Black.ttf */,
-				1E0113799EEA4CF0B8968DCE /* Inter-Bold.ttf */,
-				35B1FE34A3974E13B58D1ADC /* Inter-ExtraBold.ttf */,
-				335A1D18E99846F1B6D50CFF /* Inter-ExtraLight.ttf */,
-				B709F759A61E4CAE877F43C9 /* Inter-Italic.ttf */,
-				359EFCFA99CC417391708718 /* Inter-Light.ttf */,
-				C28C6A375EAA4EEFBE545513 /* Inter-Medium.ttf */,
-				177FA8D6434D417A96151021 /* Inter-Regular.ttf */,
-				953BB4CBF3A441A78B4FCC32 /* Inter-SemiBold.ttf */,
-				006AB5283B0B48D9AEEEAAC6 /* Inter-Thin.ttf */,
-				8D33F05CB71444A0A0066EFC /* OFL.txt */,
+				46F35B4DFC0343209D2285AD /* Zain-Black.ttf */,
+				E8AA564DC9ED4591B1586C10 /* Zain-Bold.ttf */,
+				D43AE21FC2654C3AA4A27C4A /* Zain-ExtraBold.ttf */,
+				084BEA0041F3479A9CE2E1B4 /* Zain-ExtraLight.ttf */,
+				E14E2275DC9144B4A271FB47 /* Zain-Light.ttf */,
+				16414B1FC79E47CDB32457DC /* Zain-Regular.ttf */,
 			);
 			name = Resources;
 			path = "";
@@ -241,27 +196,12 @@
 				49F4964F1F9B48711E32D0E6 /* PrivacyInfo.xcprivacy in Resources */,
 				689A7298031A414BAFA7CE74 /* BootSplash.storyboard in Resources */,
 				0D5135E9498049D2A46E9CF8 /* Colors.xcassets in Resources */,
-				6EF13FD976E64CDE9DF96743 /* Montserrat-BlackItalic.ttf in Resources */,
-				00C4D91E7BDA4E1085851959 /* Montserrat-ExtraBold.ttf in Resources */,
-				C3772FA12FE143C39D036F08 /* Zain-Black.ttf in Resources */,
-				13BBD1BA06C04C12AB63E6B7 /* Zain-Bold.ttf in Resources */,
-				42ADEB5F82FA43DD897F1E76 /* Zain-ExtraBold.ttf in Resources */,
-				47AF22F6A9FA47B9A0A1A901 /* Zain-ExtraLight.ttf in Resources */,
-				3C235C4184BD459783852B1E /* Zain-Italic.ttf in Resources */,
-				258747D24B28458996485F1F /* Zain-Light.ttf in Resources */,
-				3BD017A4F78541BCB0784374 /* Zain-LightItalic.ttf in Resources */,
-				C3FD3021FDF04F2B9F761369 /* Zain-Regular.ttf in Resources */,
-				D8E1BA280970455E8D44F863 /* Inter-Black.ttf in Resources */,
-				2662BDBC726C4FF393BAF0E9 /* Inter-Bold.ttf in Resources */,
-				B495BC45F7B1471F82F5979A /* Inter-ExtraBold.ttf in Resources */,
-				4D2EDC24FF06452FB92864F0 /* Inter-ExtraLight.ttf in Resources */,
-				CC99B30CE91F437EB1093BD0 /* Inter-Italic.ttf in Resources */,
-				96406223C5F945F5B4AB11E7 /* Inter-Light.ttf in Resources */,
-				F481F23145F8423EABE63981 /* Inter-Medium.ttf in Resources */,
-				3D9950BC68224E43B4AEBBA9 /* Inter-Regular.ttf in Resources */,
-				04C4E0066FDB4319ABA28890 /* Inter-SemiBold.ttf in Resources */,
-				63B218FEA1DD4E378F4A1B9A /* Inter-Thin.ttf in Resources */,
-				4C0634E7796D4BEBBD2A3F9E /* OFL.txt in Resources */,
+				1724103E4CFA4F12A5E1B959 /* Zain-Black.ttf in Resources */,
+				EFE1867333F3434483CE44BF /* Zain-Bold.ttf in Resources */,
+				560EF2FD1199418C90F9B287 /* Zain-ExtraBold.ttf in Resources */,
+				31DCCD3DC32141C990B0C038 /* Zain-ExtraLight.ttf in Resources */,
+				E3F2D993DC66449C8627A689 /* Zain-Light.ttf in Resources */,
+				8CF7F3E3431041D197235D93 /* Zain-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

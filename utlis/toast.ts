@@ -1,5 +1,6 @@
 import Toast from "react-native-root-toast";
 import { ToastType, useCustomToast } from "../hooks/useToast";
+import { getFontFamily, normalize } from "../constants/settings";
 
 export const useToastHelpers = () => {
   const showToast = useCustomToast();
@@ -27,6 +28,7 @@ const baseToastOptions = {
   containerStyle: {
     flex: 1,
     width: "90%",
+    minWidth: "90%",
     alignSelf: "stretch",
     paddingVertical: 14,
     paddingHorizontal: 16,
@@ -37,12 +39,14 @@ const baseToastOptions = {
   supportStyle: {
     flex: 1,
     width: "100%",
+    minWidth: "100%",
     alignSelf: "stretch",
   },
   textStyle: {
-    fontSize: 15,
+    fontSize: normalize(20),
     textAlign: "left",
     flexWrap: "wrap",
+    fontFamily: getFontFamily("700"),
   },
 } as const;
 

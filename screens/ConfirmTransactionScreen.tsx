@@ -69,7 +69,7 @@ export default function ConfirmTransactionScreen() {
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Confirm Transaction</Text>
+          <Text style={styles.title}>Enter Transaction PIN</Text>
           <Text
             style={[
               {
@@ -88,7 +88,7 @@ export default function ConfirmTransactionScreen() {
           control={control}
           name="pin"
           boxes={4}
-          isSecuredText={false}
+          isSecuredText={true}
         />
 
         <TouchableOpacity
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     borderRadius: 80,
   },
   buttonText: {
-    color: "#000",
+    color: "#fff",
     fontFamily: getFontFamily("700"),
     textAlign: "center",
     fontSize: normalize(18),
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: normalize(19),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
   },
   highlight: {
     color: COLORS.primary,

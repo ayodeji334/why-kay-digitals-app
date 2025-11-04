@@ -23,111 +23,8 @@ export default function ErrorState({
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: 30,
+    marginBottom: 0,
   },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontFamily: getFontFamily("700"),
-    color: "#333",
-  },
-  sellAllButton: {
-    borderWidth: 1,
-    borderColor: "#FFA726",
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  sellAllText: {
-    color: "#FFA726",
-    fontSize: 14,
-    fontFamily: getFontFamily("400"),
-  },
-  assetsList: {
-    gap: 12,
-  },
-  assetCard: {
-    backgroundColor: "#EFF7EC",
-    borderRadius: 12,
-    padding: 16,
-    marginRight: 12,
-    minWidth: 200,
-  },
-  assetHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  assetIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  assetSymbol: {
-    color: "#fff",
-    fontSize: 16,
-    fontFamily: getFontFamily("900"),
-  },
-  assetInfo: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  assetDetails: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
-  assetName: {
-    fontSize: 14,
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-    marginBottom: 4,
-  },
-  assetBalance: {
-    fontSize: 16,
-    fontFamily: getFontFamily("700"),
-    color: "#333",
-  },
-  assetStats: {
-    flexDirection: "column",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-  },
-  assetLabel: {
-    fontSize: 11,
-    color: "#666",
-    fontFamily: getFontFamily("400"),
-  },
-  assetValue: {
-    fontSize: 11,
-    fontFamily: getFontFamily("700"),
-    color: "#333",
-    marginBottom: 4,
-  },
-  assetChange: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("500"),
-  },
-  // Loading State
-  loadingContainer: {
-    backgroundColor: "#f8f9fa",
-    borderRadius: 12,
-    padding: 24,
-    alignItems: "center",
-  },
-  loadingText: {
-    fontSize: normalize(18),
-    color: "#666",
-    fontFamily: getFontFamily("500"),
-  },
-  // Error State
   errorContainer: {
     backgroundColor: "#fef2f2",
     borderRadius: 12,
@@ -139,7 +36,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: normalize(18),
     color: "#dc2626",
-    fontFamily: getFontFamily("500"),
+    fontFamily: getFontFamily("700"),
     marginBottom: 12,
     textAlign: "center",
   },
@@ -151,7 +48,7 @@ const styles = StyleSheet.create({
   },
   retryButtonText: {
     color: "#fff",
-    fontSize: 12,
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
   },
   // Empty State
@@ -165,7 +62,7 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
   },
   emptyTitle: {
-    fontSize: normalize(20),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#333",
     marginBottom: 8,

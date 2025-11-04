@@ -6,13 +6,13 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
-  ActivityIndicator,
+  // ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
-import useAxios from "../api/axios";
+// import useAxios from "../api/axios";
 import { showSuccess, showError } from "../utlis/toast";
 import Clipboard from "@react-native-clipboard/clipboard";
 import InfoCard from "../components/InfoCard";
@@ -22,15 +22,15 @@ import {
   InfoCircle,
   WalletAdd,
 } from "iconsax-react-nativejs";
-import CustomLoading from "../components/CustomLoading";
+// import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
 
 const BankTransferScreen = () => {
   const route = useRoute();
-  const { apiGet } = useAxios();
+  // const { apiGet } = useAxios();
   const navigation = useNavigation();
   const { amount }: any = route.params;
-  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  // const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   // Get user bank accounts from store
@@ -53,48 +53,46 @@ const BankTransferScreen = () => {
     }
   };
 
-  const checkPaymentStatus = async () => {
-    try {
-      setIsCheckingPayment(true);
-      const response = await apiGet("/payments/status");
+  // const checkPaymentStatus = async () => {
+  //   try {
+  //     setIsCheckingPayment(true);
+  //     const response = await apiGet("/payments/status");
 
-      if (response.data?.success) {
-        const paymentStatus = response.data.data.status;
+  //     if (response.data?.success) {
+  //       const paymentStatus = response.data.data.status;
 
-        if (paymentStatus === "successful") {
-          showSuccess("Payment received successfully!");
-          navigation.navigate("DepositSuccess" as never);
-        } else if (paymentStatus === "pending") {
-          showError("Payment is still processing. Please wait a few minutes.");
-        } else {
-          showError("Payment not found. Please try again.");
-        }
-      } else {
-        showError("Unable to check payment status");
-      }
-    } catch (error) {
-      showError("Failed to check payment status");
-    } finally {
-      setIsCheckingPayment(false);
-    }
-  };
+  //       if (paymentStatus === "successful") {
+  //         showSuccess("Payment received successfully!");
+  //         navigation.navigate("DepositSuccess" as never);
+  //       } else if (paymentStatus === "pending") {
+  //         showError("Payment is still processing. Please wait a few minutes.");
+  //       } else {
+  //         showError("Payment not found. Please try again.");
+  //       }
+  //     } else {
+  //       showError("Unable to check payment status");
+  //     }
+  //   } catch (error) {
+  //     showError("Failed to check payment status");
+  //   } finally {
+  //     setIsCheckingPayment(false);
+  //   }
+  // };
 
   const handleIHaveMadeDeposit = () => {
     Alert.alert(
-      "Confirm Deposit",
-      `Have you transferred exactly ₦${parseFloat(
-        amount,
-      ).toLocaleString()} to your virtual account?`,
-      [
-        {
-          text: "No, Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Yes, I have",
-          onPress: checkPaymentStatus,
-        },
-      ],
+      "Confirm Soon",
+      `Features coming soon! In the meantime, please wait for automatic verification of your deposit.`,
+      // [
+      //   {
+      //     text: "No, Cancel",
+      //     style: "cancel",
+      //   },
+      //   {
+      //     text: "Yes, I have",
+      //     onPress: checkPaymentStatus,
+      //   },
+      // ],
     );
   };
 
@@ -255,7 +253,7 @@ const BankTransferScreen = () => {
         )}
 
         <InfoCard
-          IconComponent={InfoCircle}
+          IconComponent={<InfoCircle />}
           title="Important Notes:"
           description={[
             "Transfers typically reflect within 5-10 minutes",
@@ -269,18 +267,18 @@ const BankTransferScreen = () => {
             activeOpacity={0.8}
             style={styles.primaryButton}
             onPress={handleIHaveMadeDeposit}
-            disabled={isCheckingPayment}
+            // disabled={isCheckingPayment}
           >
-            {isCheckingPayment ? (
+            {/* {isCheckingPayment ? (
               <ActivityIndicator color="#FFFFFF" size="small" />
-            ) : (
-              <Text style={styles.primaryButtonText}>I have made deposit</Text>
-            )}
+            ) : ( */}
+            <Text style={styles.primaryButtonText}>I have made deposit</Text>
+            {/* )} */}
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      <CustomLoading loading={isCheckingPayment} />
+      {/* <CustomLoading loading={isCheckingPayment} /> */}
     </SafeAreaView>
   );
 };
@@ -355,42 +353,18 @@ const styles = StyleSheet.create({
     color: "#666666",
   },
   accountSection: {
-    backgroundColor: "#F8F9FA",
+    backgroundColor: "#addea11a",
     borderRadius: 12,
     marginVertical: 24,
-    borderWidth: 1,
-    borderColor: "#E9ECEF",
+    borderWidth: 0.5,
+    borderColor: "#c8c8c8ff",
     overflow: "hidden",
-  },
-  accountHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E9ECEF",
-  },
-  accountTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#000000",
-  },
-  primaryBadge: {
-    backgroundColor: "#22C55E",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  primaryBadgeText: {
-    color: "#FFFFFF",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
   },
   detailItem: {
     paddingVertical: 12,
     paddingHorizontal: 20,
+    borderWidth: 0.5,
+    borderColor: "#c8c8c8ff",
   },
   detailLabel: {
     marginBottom: 4,
@@ -478,7 +452,7 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   primaryButtonText: {
-    color: "#000",
+    color: "#fff",
     fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
   },

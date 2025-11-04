@@ -25,7 +25,7 @@ const slides = [
     highlight: "Your Gateway to Digital Wealth",
     subtitle:
       "Buy, sell, and manage cryptocurrencies with confidence. Join thousands of users taking control of their financial future through smart, secure crypto investing.",
-    image: require("../assets/slide_1.png"),
+    image: require("../assets/slide-1.png"),
   },
   {
     id: "2",
@@ -34,7 +34,7 @@ const slides = [
     highlight: "With Real Insights",
     subtitle:
       "Access real-time market data, price alerts, and intelligent tools designed to help you make better trading decisions anytime, anywhere.",
-    image: require("../assets/welcome_illustration.png"),
+    image: require("../assets/welcome-illustration.png"),
   },
   {
     id: "3",
@@ -105,7 +105,7 @@ export default function IntroModalScreen() {
 
             <View style={styles.textContainer}>
               <View>
-                <Text style={styles.title}>{item.title}</Text>
+                {/* <Text style={styles.title}>{item.title}</Text> */}
                 <Text style={styles.title}>
                   {item.title2}
                   <Text style={styles.highlight}> {item.highlight}</Text>
@@ -135,7 +135,7 @@ export default function IntroModalScreen() {
           <Text style={styles.skip}>Skip</Text>
         </Pressable>
         <Pressable style={styles.nextButton} onPress={handleNext}>
-          <ArrowRight2 size={15} />
+          <ArrowRight2 color="white" size={15} />
         </Pressable>
       </View>
     </SafeAreaView>
@@ -152,21 +152,20 @@ const styles = StyleSheet.create({
     width: screenWidth,
   },
   imageWrapper: {
-    marginVertical: 20,
-    height: Math.min(height * 0.6, 320),
+    height: Math.min(height * 0.8, 390),
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 17,
     fontFamily: getFontFamily(700),
+    paddingHorizontal: 17,
   },
   image: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover",
+    resizeMode: "contain",
   },
   textContainer: {
-    marginTop: 10,
+    marginTop: 20,
     paddingHorizontal: 17,
   },
   title: {
@@ -178,7 +177,7 @@ const styles = StyleSheet.create({
   },
   highlight: {
     color: COLORS.primary,
-    fontFamily: getFontFamily(800),
+    fontFamily: getFontFamily(900),
   },
   subtitle: {
     fontSize: normalize(22),
@@ -202,7 +201,7 @@ const styles = StyleSheet.create({
   },
   activeDot: {
     width: 30,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.primary,
   },
   bottomNav: {
     flexDirection: "row",
@@ -220,7 +219,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 28,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.primary,
     justifyContent: "center",
     alignItems: "center",
   },

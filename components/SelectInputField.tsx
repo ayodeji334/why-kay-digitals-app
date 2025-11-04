@@ -11,8 +11,11 @@ import {
   Image,
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
-import { ChevronDown, X } from "lucide-react-native";
 import { formatAmount } from "../libs/formatNumber";
+import { ArrowDown2 } from "iconsax-react-nativejs";
+import CustomIcon from "./CustomIcon";
+import { CloseIcon } from "../assets";
+import { COLORS } from "../constants/colors";
 
 interface Option {
   label: string;
@@ -67,7 +70,7 @@ export function SelectInput({
     errorMessage?: string,
   ) => {
     const selectedOption = options.find(opt => opt.value === value) ?? null;
-    console.log(errorMessage);
+
     return (
       <>
         {label && <Text style={styles.label}>{label}</Text>}
@@ -97,7 +100,7 @@ export function SelectInput({
                   : placeholder}
               </Text>
             </View>
-            <ChevronDown size={15} color="#374151" />
+            <ArrowDown2 size={15} color="#374151" />
           </View>
         </Pressable>
         {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
@@ -115,7 +118,13 @@ export function SelectInput({
               >
                 <Text style={styles.modalTitle}>{title}</Text>
                 <Pressable onPress={() => setVisible(false)}>
-                  <X size={20} />
+                  <CustomIcon
+                    source={CloseIcon}
+                    color={COLORS.primary}
+                    fill={COLORS.primary}
+                    overrideColor
+                    size={18}
+                  />
                 </Pressable>
               </View>
 
@@ -191,7 +200,7 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
-    marginBottom: 8,
+    marginBottom: 6,
   },
   input: {
     borderWidth: 1,

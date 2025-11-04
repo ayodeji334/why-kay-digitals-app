@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   FlatList,
   RefreshControl,
+  SectionList,
 } from "react-native";
 import { Wallet } from "iconsax-react-nativejs";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,6 +21,53 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { formatDate } from "../libs/formatDate";
 import { formatAmount } from "../libs/formatNumber";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { COLORS } from "../constants/colors";
+import TransactionSectionList from "../components/TransactionList";
+import CustomIcon from "../components/CustomIcon";
+import { NoResultIcon } from "../assets";
+
+const groupTransactionsByDate = (transactions: any[]) => {
+  const grouped: Record<string, any[]> = {};
+
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const formatDateLabel = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const isToday =
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear();
+
+    const isYesterday =
+      date.getDate() === yesterday.getDate() &&
+      date.getMonth() === yesterday.getMonth() &&
+      date.getFullYear() === yesterday.getFullYear();
+
+    if (isToday) return "Today";
+    if (isYesterday) return "Yesterday";
+
+    // e.g. "Wednesday, Oct 30, 2025"
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  transactions.forEach(tx => {
+    const label = formatDateLabel(tx.created_at || tx.occurred_at);
+    if (!grouped[label]) grouped[label] = [];
+    grouped[label].push(tx);
+  });
+
+  return Object.keys(grouped).map(label => ({
+    title: label,
+    data: grouped[label],
+  }));
+};
 
 const TransactionItem: React.FC<{ item: any }> = ({ item }) => {
   const navigation: any = useNavigation();
@@ -60,7 +108,7 @@ const TransactionItem: React.FC<{ item: any }> = ({ item }) => {
               },
             ]}
           >
-            {item?.status?.toUpperCase() === "CONFIRMED"
+            {item?.status?.toUpperCase() === "SUCCESSFUL"
               ? "Successful"
               : item?.status}
           </Text>
@@ -70,9 +118,9 @@ const TransactionItem: React.FC<{ item: any }> = ({ item }) => {
   );
 };
 
-const EmptyState: React.FC = () => (
+export const EmptyTransactionState: React.FC = () => (
   <View style={styles.emptyState}>
-    <Wallet size={40} color="#000" variant="Outline" />
+    <CustomIcon source={NoResultIcon} size={normalize(70)} color="#000" />
     <Text style={styles.emptyTitle}>No Transactions Yet!</Text>
     <Text style={styles.emptyDescription}>
       Any transactions you make will appear here. {"\n"}Let's trade!
@@ -82,8 +130,8 @@ const EmptyState: React.FC = () => (
 
 const TransactionHistoryScreen: React.FC = () => {
   const { apiGet } = useAxios();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [typedSearch, setTypedSearch] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
+  // const [typedSearch, setTypedSearch] = useState("");
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [dateType, setDateType] = useState<"startDate" | "endDate" | null>(
@@ -100,7 +148,7 @@ const TransactionHistoryScreen: React.FC = () => {
   const fetchTransactions = async ({ pageParam = 1 }) => {
     const params: any = {
       page: pageParam,
-      search: searchQuery,
+      // search: searchQuery,
       start_date: filters.startDate,
       end_date: filters.endDate,
       type: filters.type,
@@ -124,7 +172,7 @@ const TransactionHistoryScreen: React.FC = () => {
     refetch,
     isRefetching,
   } = useInfiniteQuery({
-    queryKey: ["transactions", searchQuery, filters],
+    queryKey: ["transactions", filters],
     queryFn: fetchTransactions,
     initialPageParam: 1,
     getNextPageParam: lastPage =>
@@ -138,7 +186,7 @@ const TransactionHistoryScreen: React.FC = () => {
     return data?.pages.flatMap(page => page.data) ?? [];
   }, [data?.pages]);
 
-  const handleSearch = () => setSearchQuery(typedSearch);
+  // const handleSearch = () => setSearchQuery(typedSearch);
 
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
@@ -164,13 +212,6 @@ const TransactionHistoryScreen: React.FC = () => {
     toggleFilterModal();
     refetch();
   };
-
-  const renderFooter = () =>
-    isFetchingNextPage ? (
-      <View style={{ paddingVertical: 20 }}>
-        <ActivityIndicator size="small" color="#E89E00" />
-      </View>
-    ) : null;
 
   useFocusEffect(
     useCallback(() => {
@@ -215,28 +256,19 @@ const TransactionHistoryScreen: React.FC = () => {
 
       {transactions.length === 0 && !isLoading ? (
         <View style={styles.emptyContainer}>
-          <EmptyState />
+          <EmptyTransactionState />
         </View>
       ) : (
-        <FlatList
-          data={transactions}
-          keyExtractor={item => {
-            return item.uuid;
-          }}
-          renderItem={({ item }) => <TransactionItem item={item} />}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.6}
-          ListFooterComponent={renderFooter}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={handleRefresh}
-              colors={["#E89E00"]}
-            />
-          }
-        />
+        <View style={{ paddingHorizontal: 17 }}>
+          <TransactionSectionList
+            transactions={transactions}
+            refreshing={isRefetching}
+            onRefresh={handleRefresh}
+            onLoadMore={handleLoadMore}
+            isFetchingMore={isFetchingNextPage}
+          />
+        </View>
       )}
-
       <CustomLoading loading={isLoading} />
 
       <Modal visible={isFilterVisible} transparent animationType="slide">
@@ -398,12 +430,14 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     backgroundColor: "rgba(0, 0, 0, 0.4)",
   },
-  // modalContainer: {
-  //   backgroundColor: "#fff",
-  //   borderTopLeftRadius: 20,
-  //   borderTopRightRadius: 20,
-  //   padding: 24,
-  // },
+  sectionHeader: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("800"),
+    color: "#353348",
+    textTransform: "uppercase",
+  },
   modalTitle: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),

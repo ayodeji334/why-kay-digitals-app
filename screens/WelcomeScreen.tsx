@@ -15,10 +15,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../constants/settings";
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const { height: screenHeight } = Dimensions.get("window");
 
 const WelcomeScreen = () => {
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
 
   return (
     <SafeAreaView
@@ -33,7 +33,7 @@ const WelcomeScreen = () => {
       >
         <View style={styles.imageWrapper}>
           <Image
-            source={require("../assets/welcome_illustration.png")}
+            source={require("../assets/welcome-illustration.png")}
             style={styles.image}
             resizeMode="contain"
           />
@@ -41,10 +41,9 @@ const WelcomeScreen = () => {
 
         <View style={styles.contentWrapper}>
           <View style={styles.header}>
-            <Text style={styles.title}>Welcome to Our Platform</Text>
             <Text style={styles.title}>
-              Empowering your{" "}
-              <Text style={styles.highlight}>financial journey</Text>
+              Lorem ipsum dolor sit amet,{" "}
+              <Text style={styles.highlight}>consectetur</Text>
             </Text>
             <Text style={styles.subtitle}>
               Experience seamless transactions, smart insights, and instant
@@ -72,10 +71,35 @@ const WelcomeScreen = () => {
           <Text style={styles.termsText}>
             By tapping <Text style={styles.termsHighlight}>Create account</Text>{" "}
             or <Text style={styles.termsHighlight}>Sign in</Text>, you agree to
-            our <Text style={styles.termsHighlight}>Term & Conditions</Text>.
-            {"\n"}
+            our{" "}
+            <Text
+              onPress={() =>
+                navigation.navigate(
+                  "WebView" as never,
+                  {
+                    url: "https://whykay.net/faq/",
+                  } as never,
+                )
+              }
+              style={styles.termsHighlight}
+            >
+              Term & Conditions
+            </Text>
+            .{"\n"}
             Learn more about how we process your data in our{" "}
-            <Text style={styles.termsHighlight}>Privacy Policy</Text>
+            <Text
+              onPress={() =>
+                navigation.navigate(
+                  "WebView" as never,
+                  {
+                    url: "https://whykay.net/faq/",
+                  } as never,
+                )
+              }
+              style={styles.termsHighlight}
+            >
+              Privacy Policy
+            </Text>
           </Text>
         </View>
       </ScrollView>
@@ -86,11 +110,11 @@ const WelcomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.darkBackground,
+    backgroundColor: "#03001A",
   },
   scrollContainer: {
     flex: 1,
-    backgroundColor: COLORS.darkBackground,
+    backgroundColor: "#03001A",
   },
   scrollContent: {
     flexGrow: 1,
@@ -105,10 +129,9 @@ const styles = StyleSheet.create({
     paddingTop: screenHeight * 0.05,
   },
   image: {
-    width: screenWidth * 0.7,
-    height: screenWidth * 0.7,
-    maxWidth: 300,
-    maxHeight: 300,
+    width: "100%",
+    height: "100%",
+    maxHeight: 500,
   },
   contentWrapper: {
     flex: 1,
@@ -124,8 +147,10 @@ const styles = StyleSheet.create({
     fontSize: normalize(40),
     color: COLORS.whiteBackground,
     textAlign: "center",
-    lineHeight: 32,
     fontFamily: getFontFamily(800),
+    maxWidth: "60%",
+    marginHorizontal: "auto",
+    lineHeight: 38,
   },
   highlight: {
     color: COLORS.primary,
@@ -135,7 +160,6 @@ const styles = StyleSheet.create({
     color: COLORS.whiteBackground,
     textAlign: "center",
     lineHeight: 24,
-    marginTop: 16,
     paddingHorizontal: 10,
     fontFamily: getFontFamily(400),
   },
@@ -154,9 +178,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   signInButton: {
-    backgroundColor: COLORS.secondary,
     borderWidth: 1,
-    borderColor: COLORS.secondary,
+    borderColor: COLORS.whiteBackground,
   },
   createButtonText: {
     color: COLORS.whiteBackground,
@@ -164,7 +187,7 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("700"),
   },
   signInButtonText: {
-    color: COLORS.darkBackground,
+    color: COLORS.whiteBackground,
     fontSize: normalize(20),
     fontFamily: getFontFamily("700"),
   },
@@ -177,7 +200,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   termsHighlight: {
-    color: COLORS.secondary,
+    color: "#72FFB0",
     fontFamily: getFontFamily("400"),
   },
 });

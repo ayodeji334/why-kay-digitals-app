@@ -44,32 +44,11 @@ const styles = StyleSheet.create({
   formSection: {
     marginBottom: 32,
   },
-  sectionLabel: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("600"),
-    color: "#000",
-    marginBottom: 12,
-  },
-  helpLink: {
-    marginTop: 12,
-  },
-  helpText: {
-    fontSize: normalize(14),
-    fontFamily: getFontFamily("500"),
-    color: "#007AFF",
-    textAlign: "center",
-  },
   infoSection: {
     backgroundColor: "#F8F9FA",
     borderRadius: 12,
     paddingVertical: 20,
     marginBottom: 20,
-  },
-  infoTitle: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("600"),
-    color: "#000",
-    marginBottom: 16,
   },
   bulletList: {
     gap: 12,

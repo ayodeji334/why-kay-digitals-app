@@ -1,12 +1,26 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import { AddCircle, ArrowRight2, Eye, EyeSlash } from "iconsax-react-nativejs";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ImageBackground,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../../constants/settings";
 import HalfScreenModal from "../HalfScreenModal";
 import { COLORS } from "../../constants/colors";
 import { formatAmount } from "../../libs/formatNumber";
-import { ArrowDownLeft } from "lucide-react-native";
+import CustomIcon from "../CustomIcon";
+import {
+  ChevronRightIcon,
+  PlusCircleIcon,
+  ArrowDownLeftIcon,
+} from "../../assets";
+import { ArrowRight, ArrowRight2, Eye, EyeSlash } from "iconsax-react-nativejs";
+import { useAuthStore } from "../../stores/authSlice";
+
 interface BalanceCardProps {
   balance?: number;
   onDeposit?: () => void;
@@ -14,22 +28,30 @@ interface BalanceCardProps {
   onSeeTransactions?: () => void;
   showTransactionsButton?: boolean;
   currency?: "NGN" | "USD";
+  title?: string | undefined;
+  showActionButtons?: boolean;
 }
 
 const BalanceCard: React.FC<BalanceCardProps> = ({
   balance,
   showTransactionsButton = false,
   currency = "NGN",
+  title = "Available Balance",
+  showActionButtons = true,
 }) => {
+  const isShowBalance = useAuthStore(state => state.isShowBalance);
   const [depositModalVisible, setDepositModalVisible] = useState(false);
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(isShowBalance);
   const navigation = useNavigation();
 
   return (
-    <View style={styles.balanceCard}>
+    <ImageBackground
+      source={require("../../assets/wallet-banner.png")}
+      style={styles.balanceCard}
+    >
       <View style={styles.balanceHeader}>
-        <Text style={styles.availableBalance}>Available balance</Text>
+        <Text style={styles.availableBalance}>{title}</Text>
         {showTransactionsButton && (
           <TouchableOpacity
             onPress={() => navigation.navigate("Transactions" as never)}
@@ -37,7 +59,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
             style={styles.seeTransaction}
           >
             <Text style={styles.seeTransactionText}>See Transaction</Text>
-            <ArrowRight2 size={12} color="#FFB74D" />
+            <ArrowRight2 size={12} color="#fff" />
           </TouchableOpacity>
         )}
       </View>
@@ -56,37 +78,39 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
           onPress={() => setVisible(!visible)}
         >
           {visible ? (
-            <EyeSlash size={20} variant="Outline" color="white" />
+            <EyeSlash variant="Linear" size={20} color="#fff" />
           ) : (
-            <Eye size={20} variant="Outline" color="white" />
+            <Eye variant="Linear" size={20} color="#fff" />
           )}
         </TouchableOpacity>
       </View>
 
-      <View style={styles.actionButtons}>
-        <TouchableOpacity
-          activeOpacity={0.85}
-          style={styles.depositButton}
-          onPress={() => setDepositModalVisible(true)}
-        >
-          <AddCircle variant="Bold" size={20} color="#000" />
-          <Text style={styles.depositText}>Deposit</Text>
-        </TouchableOpacity>
+      {showActionButtons && (
+        <View style={styles.actionButtons}>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.depositButton}
+            onPress={() => setDepositModalVisible(true)}
+          >
+            <CustomIcon source={PlusCircleIcon} size={20} />
+            <Text style={styles.depositText}>Deposit</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          activeOpacity={0.85}
-          style={styles.withdrawButton}
-          onPress={() =>
-            Alert.alert(
-              "Coming soon",
-              "The feature is not available. Kindly check back later",
-            )
-          }
-        >
-          <ArrowDownLeft size={20} color="#333" />
-          <Text style={styles.withdrawText}>Withdraw</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.withdrawButton}
+            onPress={() =>
+              Alert.alert(
+                "Coming soon",
+                "The feature is not available. Kindly check back later",
+              )
+            }
+          >
+            <CustomIcon source={ArrowDownLeftIcon} size={20} color="#333" />
+            <Text style={styles.withdrawText}>Withdraw</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <HalfScreenModal
         isVisible={depositModalVisible}
@@ -97,8 +121,8 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
           setDepositModalVisible(false);
           setTimeout(() => navigation.navigate("Deposit" as never), 600);
         }}
-        buttonText="Fiat Wallet (Naira Wallet)"
-        secondaryButtonText="Crypto Wallet"
+        buttonText="Deposit Fiat (Naira Wallet)"
+        secondaryButtonText="Crypto Deposit"
         secondaryAction={() => {
           Alert.alert(
             "Coming Soon!",
@@ -131,7 +155,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         iconColor={COLORS.error}
         iconSize={30}
       />
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -139,9 +163,8 @@ const styles = StyleSheet.create({
   balanceCard: {
     borderRadius: 20,
     padding: 20,
-    marginBottom: 30,
+    marginBottom: 20,
     overflow: "hidden",
-    backgroundColor: "green",
     gap: 25,
   },
   balanceHeader: {
@@ -159,7 +182,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   seeTransactionText: {
-    color: "#FFC954",
+    color: "#fff",
     fontSize: normalize(18),
     fontFamily: getFontFamily(700),
     marginRight: 4,
@@ -172,11 +195,15 @@ const styles = StyleSheet.create({
   },
   amount: {
     color: "#fff",
-    fontSize: normalize(30),
+    fontSize: normalize(40),
     fontFamily: getFontFamily(800),
   },
   eyeIcon: {
     marginLeft: 0,
+    borderWidth: 1,
+    borderColor: "#fff",
+    borderRadius: 25,
+    padding: 5,
   },
   actionButtons: {
     flexDirection: "row",
@@ -187,13 +214,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white",
+    borderColor: "white",
+    borderWidth: 1,
     borderRadius: 25,
     paddingVertical: 12,
     gap: 8,
   },
   depositText: {
-    color: "#000",
+    color: "#fff",
     fontSize: normalize(18),
     fontFamily: getFontFamily(700),
   },
@@ -202,7 +230,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFA726",
+    backgroundColor: "#fff",
     borderRadius: 25,
     paddingVertical: 12,
     gap: 8,

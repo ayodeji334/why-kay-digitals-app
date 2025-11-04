@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -8,19 +8,24 @@ import {
   StatusBar,
   Share as ShareElement,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import { formatAmount } from "../libs/formatNumber";
 import { useAuthStore } from "../stores/authSlice";
+import { useQuery } from "@tanstack/react-query";
+import useAxios from "../api/axios";
+import { formatDate } from "../libs/formatDate";
+import CustomLoading from "../components/CustomLoading";
 
 // Types
 interface ReferralItem {
-  id: string;
+  uuid: string;
   name: string;
   email: string;
-  date: string;
+  created_at: string;
   amount: string;
   status: "completed" | "pending";
 }
@@ -31,53 +36,6 @@ interface TabProps {
   count: number;
   onPress: () => void;
 }
-
-// Dummy Data
-const COMPLETED_REFERRALS: ReferralItem[] = [
-  // {
-  //   id: "1",
-  //   name: "John Smith",
-  //   email: "john.smith@example.com",
-  //   date: "24 Aug. 2025",
-  //   amount: "500.00",
-  //   status: "completed",
-  // },
-  // {
-  //   id: "2",
-  //   name: "Sarah Johnson",
-  //   email: "sarah.j@example.com",
-  //   date: "18 Aug. 2025",
-  //   amount: "500.00",
-  //   status: "completed",
-  // },
-  // {
-  //   id: "3",
-  //   name: "Michael Brown",
-  //   email: "m.brown@example.com",
-  //   date: "14 Aug. 2025",
-  //   amount: "500.00",
-  //   status: "completed",
-  // },
-];
-
-const PENDING_REFERRALS: ReferralItem[] = [
-  // {
-  //   id: "4",
-  //   name: "Emma Wilson",
-  //   email: "emma.w@example.com",
-  //   date: "22 Aug. 2025",
-  //   amount: "500.00",
-  //   status: "pending",
-  // },
-  // {
-  //   id: "5",
-  //   name: "Emma Wilson",
-  //   email: "emma.w@example.com",
-  //   date: "22 Aug. 2025",
-  //   amount: "500.00",
-  //   status: "pending",
-  // },
-];
 
 const Tab: React.FC<TabProps> = ({ active, title, count, onPress }) => (
   <TouchableOpacity
@@ -136,17 +94,20 @@ const EmptyState: React.FC<{ type: "signedUp" | "pending" }> = ({ type }) => {
   );
 };
 
+const capitalizeWords = (str: string) =>
+  str.replace(/\b\w/g, char => char.toUpperCase());
+
 const ReferralCard: React.FC<{ item: ReferralItem }> = ({ item }) => (
   <View style={styles.referralCard}>
     <View style={styles.referralHeader}>
       <View style={styles.userInfo}>
-        <Text style={styles.userName}>{item.name}</Text>
+        <Text style={styles.userName}>{capitalizeWords(item.name)}</Text>
         <Text style={styles.userEmail}>{item.email}</Text>
       </View>
-      <Text style={styles.amount}>₦{item.amount}</Text>
+      <Text style={styles.amount}>{formatAmount(parseFloat(item.amount))}</Text>
     </View>
     <View style={styles.referralFooter}>
-      <Text style={styles.date}>{item.date}</Text>
+      <Text style={styles.date}>{formatDate(item.created_at)}</Text>
       <View
         style={[
           styles.statusBadge,
@@ -204,31 +165,95 @@ const StatCard: React.FC<{
   </View>
 );
 
+interface Referral {
+  uuid: string;
+  name: string;
+  email: string;
+  status: "completed" | "pending";
+  amount: string;
+  created_at: string;
+}
+interface ReferralResponse {
+  success: boolean;
+  message: string;
+  data: {
+    total_bonus: number;
+    referrals: Referral[];
+  };
+}
+
+export const useReferralHistory = () => {
+  return;
+};
+
 const ReferralHistoryScreen: React.FC = () => {
+  const { apiGet } = useAxios();
   const [activeTab, setActiveTab] = useState<"signedUp" | "pending">(
     "signedUp",
   );
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const { data, isLoading, refetch } = useQuery<ReferralResponse>({
+    queryKey: ["referralHistory"],
+    queryFn: async () => {
+      const response = await apiGet<ReferralResponse>(
+        "/users/user/referral-history",
+      );
+      return response.data;
+    },
+    refetchOnWindowFocus: true,
+  });
+
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refetch();
+    } catch (error) {
+      console.error("Failed to refresh referrals:", error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const referrals = data?.data.referrals ?? [];
+  const totalBonus = data?.data.total_bonus ?? 0;
+
+  const completedReferrals = useMemo(
+    () => referrals.filter((r: any) => r.status === "completed"),
+    [referrals],
+  );
+  const pendingReferrals = useMemo(
+    () => referrals.filter((r: any) => r.status === "pending"),
+    [referrals],
+  );
+
   const currentReferrals =
-    activeTab === "signedUp" ? COMPLETED_REFERRALS : PENDING_REFERRALS;
-  const signedUpCount = COMPLETED_REFERRALS.length;
-  const pendingCount = PENDING_REFERRALS.length;
+    activeTab === "signedUp" ? completedReferrals : pendingReferrals;
+  const signedUpCount = completedReferrals.length;
+  const pendingCount = pendingReferrals.length;
   const hasReferrals = currentReferrals.length > 0;
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.statsSection}>
           <StatCard
             direction="left"
             title="Pending Referrals Earnings"
-            value="₦O.00"
+            value="₦0.00"
           />
           <StatCard
             direction="right"
             title="Total Earned"
-            value={formatAmount(100000)}
+            value={formatAmount(totalBonus)}
           />
         </View>
 
@@ -250,13 +275,15 @@ const ReferralHistoryScreen: React.FC = () => {
         <View style={styles.referralsList}>
           {hasReferrals ? (
             currentReferrals.map(item => (
-              <ReferralCard key={item.id} item={item} />
+              <ReferralCard key={item.uuid} item={item} />
             ))
           ) : (
             <EmptyState type={activeTab} />
           )}
         </View>
       </ScrollView>
+
+      <CustomLoading loading={isLoading} />
     </SafeAreaView>
   );
 };
@@ -301,7 +328,7 @@ const styles = StyleSheet.create({
   inviteButtonText: {
     fontSize: normalize(16),
     fontFamily: getFontFamily("700"),
-    color: "#000",
+    color: "#fff",
   },
   header: {
     paddingHorizontal: 20,
@@ -324,7 +351,7 @@ const styles = StyleSheet.create({
   statsSection: {
     flexDirection: "row",
     padding: 16,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: "#16A34A",
     borderWidth: 1,
     borderColor: "#e7e7e7",
     gap: 12,
@@ -341,11 +368,12 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily(400),
     marginBottom: 8,
     textAlign: "right",
+    color: "#fff",
   },
   statValue: {
     fontSize: normalize(20),
     fontFamily: getFontFamily(800),
-    color: "#000",
+    color: "#fff",
     textAlign: "right",
   },
   tabsContainer: {
@@ -413,13 +441,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userName: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily(800),
     color: "#000",
     marginBottom: 4,
   },
   userEmail: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
   },
   amount: {
@@ -432,7 +460,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   date: {
-    fontSize: normalize(18),
+    fontSize: normalize(15),
     fontFamily: getFontFamily(700),
     color: "#989da6ff",
   },
@@ -442,7 +470,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   statusText: {
-    fontSize: normalize(18),
+    fontSize: normalize(14),
     fontFamily: getFontFamily(700),
   },
   completedText: {

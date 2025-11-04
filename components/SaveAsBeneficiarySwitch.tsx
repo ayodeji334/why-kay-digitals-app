@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(18),
     color: "#1A1A1A",
     fontFamily: getFontFamily("700"),
+    marginBottom: 6,
   },
 });
 

@@ -16,7 +16,7 @@ interface InfoCardProps {
   description: string | string[];
   buttonText?: string;
   onButtonPress?: () => void;
-  IconComponent: React.ComponentType<any>;
+  IconComponent: React.JSX.Element;
   iconColor?: string;
   iconSize?: number;
   buttonWidth?: DimensionValue;
@@ -29,8 +29,8 @@ const InfoCard: React.FC<InfoCardProps> = ({
   buttonText,
   onButtonPress,
   IconComponent,
-  iconColor = "#0a611fff",
-  iconSize = 18,
+  // iconColor = "#0a611fff",
+  // iconSize = 18,
   buttonWidth = "40%",
   style,
 }) => {
@@ -56,7 +56,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
           gap: 9,
         }}
       >
-        <IconComponent size={iconSize} color={iconColor} />
+        {IconComponent}
         <View style={{ flex: 1, gap: 4 }}>
           <Text style={[styles.title]}>{title}</Text>
           {typeof description === "string" ? (

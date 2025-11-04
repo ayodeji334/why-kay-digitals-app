@@ -1,6 +1,12 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { useForm } from "react-hook-form";
+import React, { useState, useCallback, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import { useForm, useWatch } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import TextInputField from "../TextInputField";
@@ -13,32 +19,41 @@ import { AxiosError } from "axios";
 import { getFontFamily, normalize } from "../../constants/settings";
 import { SelectInput } from "../SelectInputField";
 import useAxios from "../../api/axios";
-import NumberInputField from "../NumberInputField";
-
-type RegisterFormInputs = {
-  first_name: string;
-  last_name: string;
-  username: string;
-  email: string;
-  phone_number: string;
-  password: string;
-  referral_code: string;
-  password_confirmation: string;
-  how_do_heard_about_us: string;
-};
+import parsePhoneNumberFromString from "libphonenumber-js";
+import PhoneNumberInputField from "../PhoneNumberInputField";
+import EmailInputField from "../EmailInputField";
 
 const registerSchema = yup.object().shape({
-  first_name: yup.string().required("First Name is required"),
-  last_name: yup.string().required("Last Name is required"),
-  username: yup.string().required("Username is required"),
+  username: yup
+    .string()
+    .min(5, "Your username is too short")
+    .max(30, "Your username is too long")
+    .required("Username is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
   phone_number: yup
     .string()
-    .matches(
-      /^234\d{10}$/,
-      "Phone number must start with 234 and be followed by 10 digits",
-    )
-    .required("The phone number is required"),
+    .required("Phone number is required")
+    .test(
+      "is-valid-phone",
+      "Please provide a valid phone number",
+      function (value) {
+        if (!value) return false;
+
+        try {
+          // Remove any non-digit characters except + at the beginning
+          const cleanedValue = value.replace(/(?!^\+)[^\d]/g, "");
+
+          // Parse the phone number with Nigeria as default country
+          const phoneNumber = parsePhoneNumberFromString(cleanedValue, "NG");
+
+          // Return true if valid, false if invalid
+          return phoneNumber ? phoneNumber.isValid() : false;
+        } catch (error) {
+          console.log("Phone number parsing error:", error);
+          return false;
+        }
+      },
+    ),
   password: yup
     .string()
     .min(6, "Password must be at least 6 characters")
@@ -50,24 +65,95 @@ const registerSchema = yup.object().shape({
   how_do_heard_about_us: yup.string().required("Please select an option"),
 });
 
+// src/utils/debounce.ts
+export function debounce<T extends (...args: any[]) => void>(
+  func: T,
+  delay: number,
+): (...args: Parameters<T>) => void {
+  let timeoutId: any;
+
+  return (...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+}
+
 const RegisterForm: React.FC = () => {
-  const { post } = useAxios();
+  const { apiGet, post } = useAxios();
   const { showSuccess } = useToastHelpers();
   const navigation: any = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
+  const [checkingUsername, setCheckingUsername] = useState<boolean>(false);
+  const [usernameStatus, setUsernameStatus] = useState<{
+    available?: boolean;
+    message?: string;
+  }>({});
 
-  const { control, handleSubmit } = useForm<any>({
-    resolver: yupResolver(registerSchema),
-  });
+  const { control, handleSubmit, setError, setValue, clearErrors, trigger } =
+    useForm<any>({
+      resolver: yupResolver(registerSchema),
+      mode: "onBlur",
+    });
 
-  const handleRegister = async (values: RegisterFormInputs) => {
+  const username = useWatch({ control, name: "username" });
+
+  const checkUsernameAvailability = useCallback(
+    debounce(async (usernameValue: string) => {
+      if (!usernameValue || usernameValue.length < 5) {
+        setUsernameStatus({});
+        clearErrors("username");
+        return;
+      }
+
+      setCheckingUsername(true);
+      try {
+        const res = await apiGet(
+          `/auth/check-username?username=${usernameValue}`,
+        );
+
+        setUsernameStatus({
+          available: res.data.available,
+          message: res.data.message,
+        });
+
+        if (res.data.available === false) {
+          // ❌ Username taken — set error message
+          setError("username", {
+            type: "manual",
+            message: "Username is already taken",
+          });
+        } else {
+          // ✅ Username available — clear previous error
+          clearErrors("username");
+        }
+
+        setValue("username", usernameValue.trim());
+      } catch (err) {
+        setUsernameStatus({
+          available: false,
+          message: "Error checking username",
+        });
+      } finally {
+        setCheckingUsername(false);
+      }
+    }, 400),
+    [],
+  );
+
+  useEffect(() => {
+    checkUsernameAvailability(username);
+  }, [username]);
+
+  const handleRegister = async (values: any) => {
     try {
       setLoading(true);
-
       await post("/auth/register", values);
-
       showSuccess("Registration successful! Please verify your email.");
-
       navigation.navigate(
         "VerifyCode" as never,
         { email: values.email } as never,
@@ -83,37 +169,43 @@ const RegisterForm: React.FC = () => {
     }
   };
 
+  const disableSubmit =
+    loading || checkingUsername || usernameStatus.available === false;
+
   return (
     <View style={styles.container}>
-      <TextInputField
-        label="First Name"
-        control={control}
-        name="first_name"
-        placeholder="Your first name"
-      />
-      <TextInputField
-        label="Last Name"
-        control={control}
-        name="last_name"
-        placeholder="Your last name"
-      />
       <TextInputField
         label="Create Username"
         control={control}
         name="username"
         placeholder="Choose a username"
       />
-      <TextInputField
+      {checkingUsername && (
+        <Text style={styles.checkingText}>Checking availability...</Text>
+      )}
+      {!checkingUsername && usernameStatus.available && (
+        <Text
+          style={[
+            styles.checkingText,
+            usernameStatus.available ? styles.available : styles.taken,
+          ]}
+        >
+          {usernameStatus.message}
+        </Text>
+      )}
+
+      <EmailInputField
         label="Email"
         control={control}
         name="email"
         placeholder="Enter your email address"
       />
-      <NumberInputField
+      <PhoneNumberInputField
         label="Phone Number"
         control={control}
+        trigger={trigger}
         name="phone_number"
-        placeholder="+234"
+        placeholder="Enter your phone number"
       />
       <PasswordInputField
         label="Password"
@@ -135,13 +227,7 @@ const RegisterForm: React.FC = () => {
         placeholder="Enter referral code"
       />
       <SelectInput
-        options={[
-          {
-            label: "Social Media",
-
-            value: "Social",
-          },
-        ]}
+        options={[{ label: "Social Media", value: "Social" }]}
         label="How did you hear about us?"
         control={control}
         name="how_do_heard_about_us"
@@ -150,10 +236,15 @@ const RegisterForm: React.FC = () => {
 
       <TouchableOpacity
         activeOpacity={0.8}
-        style={styles.button}
+        style={[styles.button, disableSubmit && { opacity: 0.6 }]}
         onPress={handleSubmit(handleRegister)}
+        disabled={disableSubmit}
       >
-        <Text style={styles.buttonText}>Continue</Text>
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Continue</Text>
+        )}
       </TouchableOpacity>
 
       <CustomLoading loading={loading} />
@@ -168,15 +259,26 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 20,
   },
+  checkingText: {
+    fontSize: normalize(13),
+    marginTop: -5,
+    marginBottom: 10,
+  },
+  available: {
+    color: "green",
+  },
+  taken: {
+    color: "red",
+  },
   button: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.primary,
     paddingVertical: 14,
     borderRadius: 100,
     marginTop: 30,
     alignItems: "center",
   },
   buttonText: {
-    color: "#000",
+    color: "#fff",
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
   },

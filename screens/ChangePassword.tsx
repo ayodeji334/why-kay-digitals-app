@@ -16,7 +16,7 @@ export default function ChangePasswordScreen() {
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={{ gap: 5 }}>
-          <Text style={styles.title}>Update Your Password</Text>
+          {/* <Text style={styles.title}>Update Your Password</Text> */}
           <Text style={styles.subtitle}>
             Your password protects your account and personal information.
             Updating it regularly helps keep your account secure. Choose a
