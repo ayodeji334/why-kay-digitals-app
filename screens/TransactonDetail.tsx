@@ -99,6 +99,8 @@ const TransactionDetailScreen = () => {
                 ? "You’ve received a referral bonus"
                 : transaction?.category === "BANK_TRANSFER"
                 ? "Your deposit was successful"
+                : transaction?.category === "WITHDRAWAL"
+                ? "Your withdrawal was successful"
                 : "Transaction completed successfully"
               : "Transaction failed"}
           </Text>

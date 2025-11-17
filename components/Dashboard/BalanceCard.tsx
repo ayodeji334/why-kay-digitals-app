@@ -13,12 +13,8 @@ import HalfScreenModal from "../HalfScreenModal";
 import { COLORS } from "../../constants/colors";
 import { formatAmount } from "../../libs/formatNumber";
 import CustomIcon from "../CustomIcon";
-import {
-  ChevronRightIcon,
-  PlusCircleIcon,
-  ArrowDownLeftIcon,
-} from "../../assets";
-import { ArrowRight, ArrowRight2, Eye, EyeSlash } from "iconsax-react-nativejs";
+import { PlusCircleIcon, ArrowDownLeftIcon } from "../../assets";
+import { ArrowRight2, Eye, EyeSlash } from "iconsax-react-nativejs";
 import { useAuthStore } from "../../stores/authSlice";
 
 interface BalanceCardProps {
@@ -99,12 +95,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
           <TouchableOpacity
             activeOpacity={0.85}
             style={styles.withdrawButton}
-            onPress={() =>
-              Alert.alert(
-                "Coming soon",
-                "The feature is not available. Kindly check back later",
-              )
-            }
+            onPress={() => setWithdrawModalVisible(true)}
           >
             <CustomIcon source={ArrowDownLeftIcon} size={20} color="#333" />
             <Text style={styles.withdrawText}>Withdraw</Text>
@@ -139,18 +130,20 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         isVisible={withdrawModalVisible}
         onClose={() => setWithdrawModalVisible(false)}
         title="Withdraw"
-        description="Which wallet do you want to withdraw from?"
+        description=""
         actionButton={() => {
           setWithdrawModalVisible(false);
+          setTimeout(() => navigation.navigate("Withdrawal" as never), 600);
         }}
-        buttonText="Fiat Wallet (Naira Wallet)"
-        secondaryButtonText="Crypto Wallet"
+        buttonText="Withdraw to Bank"
+        secondaryButtonText="Crypto Withdrawal"
         secondaryAction={() => {
           Alert.alert(
             "Coming Soon!",
             "The feature is not available for now. Kindly check back later",
           );
         }}
+        showCloseButton={true}
         iconBackgroundColor="#FF4D4D1A"
         iconColor={COLORS.error}
         iconSize={30}

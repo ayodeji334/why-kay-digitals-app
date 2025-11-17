@@ -22,7 +22,7 @@ import CustomLoading from "../components/CustomLoading";
 import { getItem } from "../utlis/storage";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
-import NewsBanner from "../components/NewBanner";
+import AdvertsBanner from "../components/AdvertsBanner";
 
 const HomeScreen = () => {
   const { apiGet } = useAxios();
@@ -177,7 +177,7 @@ const HomeScreen = () => {
         )}
 
         <ServicesSection />
-        <NewsBanner />
+        <AdvertsBanner />
       </ScrollView>
       <CustomLoading loading={loading} />
     </SafeAreaView>

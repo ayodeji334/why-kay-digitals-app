@@ -35,6 +35,7 @@ const baseToastOptions = {
     borderRadius: 5,
     marginTop: 40,
     justifyContent: "center",
+    zIndex: 9000,
   },
   supportStyle: {
     flex: 1,

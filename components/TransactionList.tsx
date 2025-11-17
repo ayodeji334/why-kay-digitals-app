@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("700"),
     color: "#868686",
     marginTop: 10,
-    // textTransform: "uppercase",
+    backgroundColor: "white",
   },
   sectionTitle: {
     fontSize: normalize(22),

@@ -41,9 +41,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   switchLabel: {
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     color: "#1A1A1A",
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     marginBottom: 6,
   },
 });

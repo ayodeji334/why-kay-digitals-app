@@ -46,7 +46,7 @@ const NumberInputField: React.FC<Props> = ({
         <View style={styles.container}>
           {showLabel && label && <Text style={styles.label}>{label}</Text>}
           <TextInput
-            style={[styles.input, error && styles.errorBorder, style]}
+            style={[style, error && styles.errorBorder, styles.input]}
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}
             keyboardType="numeric"
@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   label: {
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    fontSize: normalize(16),
     marginBottom: 8,
     color: "#000",
   },

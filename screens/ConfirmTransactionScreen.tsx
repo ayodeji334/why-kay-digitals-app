@@ -15,12 +15,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import OtpInputField from "../components/OtpInputField";
 import { useState } from "react";
-import apiClient from "../api/axios";
-import { showError } from "../utlis/toast";
-import { AxiosError } from "axios";
 import CustomLoading from "../components/CustomLoading";
-import { useAuth } from "../context/AppContext";
-import { useAuthStore } from "../stores/authSlice";
 import useAxios from "../api/axios";
 
 type FormData = {
@@ -92,10 +87,20 @@ export default function ConfirmTransactionScreen() {
         />
 
         <TouchableOpacity
+          activeOpacity={0.8}
           style={styles.button}
           onPress={handleSubmit(handleContinue)}
         >
           <Text style={styles.buttonText}>Continue</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{ marginTop: 40 }}
+          onPress={() => navigation.navigate("ChangeTransactionPin")}
+        >
+          <Text style={[styles.buttonText, { color: COLORS.primary }]}>
+            Forget Pin?
+          </Text>
         </TouchableOpacity>
       </ScrollView>
 

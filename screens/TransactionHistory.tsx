@@ -1,122 +1,412 @@
-import React, { useCallback, useMemo, useState } from "react";
+// import React, { useCallback, useMemo, useState } from "react";
+// import {
+//   View,
+//   Text,
+//   StyleSheet,
+//   StatusBar,
+//   TouchableOpacity,
+//   Pressable,
+// } from "react-native";
+// import { SafeAreaView } from "react-native-safe-area-context";
+// import { useInfiniteQuery } from "@tanstack/react-query";
+// import { Filter, DocumentDownload } from "iconsax-react-nativejs";
+// import useAxios from "../api/axios";
+// import TransactionSectionList from "../components/TransactionList";
+// import CustomLoading from "../components/CustomLoading";
+// import { COLORS } from "../constants/colors";
+// import { getFontFamily, normalize } from "../constants/settings";
+// import CustomIcon from "../components/CustomIcon";
+// import { NoResultIcon } from "../assets";
+// import { SelectInput } from "../components/SelectInputField";
+// import CustomModal from "../components/CustomModal";
+// import DatePicker from "../components/DatePicker";
+// import { showSuccess } from "../utlis/toast";
+
+// export const EmptyTransactionState: React.FC = () => (
+//   <View style={styles.emptyState}>
+//     <CustomIcon source={NoResultIcon} size={normalize(70)} color="#000" />
+//     <Text style={styles.emptyTitle}>No Transactions Yet!</Text>
+//     <Text style={styles.emptyDescription}>
+//       Any transactions you make will appear here. {"\n"}Let's trade!
+//     </Text>
+//   </View>
+// );
+
+// const TransactionHistoryScreen: React.FC = () => {
+//   const { apiGet } = useAxios();
+//   const [isFilterVisible, setIsFilterVisible] = useState(false);
+//   const [isDownloading, setIsDownloading] = useState(false);
+//   const [filterQuery, setFiltersQuery] = useState<{
+//     startDate: {
+//       display: string;
+//       iso: string;
+//     };
+//     endDate: {
+//       display: string;
+//       iso: string;
+//     };
+//     status: string;
+//     category: string;
+//   }>({
+//     startDate: { display: "", iso: "" },
+//     endDate: { display: "", iso: "" },
+//     status: "",
+//     category: "",
+//   });
+//   const [filters, setFilters] = useState<{
+//     startDate: {
+//       display: string;
+//       iso: string;
+//     };
+//     endDate: {
+//       display: string;
+//       iso: string;
+//     };
+//     status: string;
+//     category: string;
+//   }>({
+//     startDate: { display: "", iso: "" },
+//     endDate: { display: "", iso: "" },
+//     status: "",
+//     category: "",
+//   });
+
+//   const stableFilter = useMemo(() => filterQuery, [filterQuery]);
+
+//   const toggleFilterModal = () => {
+//     setIsFilterVisible(!isFilterVisible);
+//   };
+
+//   const fetchTransactions = async ({ pageParam = 1 }) => {
+//     const params: any = {
+//       page: pageParam,
+//       start_date: stableFilter.startDate.iso,
+//       end_date: stableFilter.endDate.iso,
+//       status: stableFilter.status,
+//       category: stableFilter.category,
+//     };
+
+//     const { data }: any = await apiGet("/transactions/user/transactions", {
+//       params,
+//     });
+
+//     return { data: data?.data.transactions, meta: data?.data?.pagination };
+//   };
+
+//   const {
+//     data,
+//     fetchNextPage,
+//     hasNextPage,
+//     isFetchingNextPage,
+//     isLoading,
+//     refetch,
+//     isRefetching,
+//   } = useInfiniteQuery({
+//     queryKey: ["transactions", stableFilter],
+//     queryFn: fetchTransactions,
+//     initialPageParam: 1,
+//     getNextPageParam: lastPage =>
+//       lastPage.meta?.current_page < lastPage.meta?.last_page
+//         ? lastPage.meta.current_page + 1
+//         : undefined,
+//   });
+
+//   const transactions = useMemo(
+//     () => data?.pages.flatMap(page => page.data) ?? [],
+//     [data?.pages],
+//   );
+
+//   const downloadAccountStatement = async () => {
+//     try {
+//       setIsDownloading(true);
+//       await apiGet("/transactions/user/account-statement");
+//       showSuccess("Account Statement sent to your email");
+//     } finally {
+//       setIsDownloading(false);
+//     }
+//   };
+
+//   const handleApplyFilter = () => {
+//     toggleFilterModal();
+//     refetch({ refetchPage: (_page, index) => index === 0 });
+
+//     setFiltersQuery(filters);
+//   };
+
+//   const handleClearFilter = () => {
+//     toggleFilterModal();
+//     setFilters({
+//       startDate: { display: "", iso: "" },
+//       endDate: { display: "", iso: "" },
+//       status: "",
+//       category: "",
+//     });
+//     setFiltersQuery({
+//       startDate: { display: "", iso: "" },
+//       endDate: { display: "", iso: "" },
+//       status: "",
+//       category: "",
+//     });
+//   };
+
+//   return (
+//     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
+//       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+
+//       <View style={styles.topRow}>
+//         <TouchableOpacity
+//           activeOpacity={0.8}
+//           style={styles.iconButton}
+//           onPress={toggleFilterModal}
+//         >
+//           <Filter size={15} color="#fff" variant="Linear" />
+//           <Text style={[styles.closeButtonText]}>Filter</Text>
+//         </TouchableOpacity>
+
+//         <TouchableOpacity
+//           activeOpacity={0.8}
+//           style={styles.iconButton}
+//           onPress={downloadAccountStatement}
+//         >
+//           <DocumentDownload size={15} color="#fff" variant="Linear" />
+//           <Text style={[styles.closeButtonText]}>Download Statement</Text>
+//         </TouchableOpacity>
+//       </View>
+
+//       {transactions.length === 0 && !isLoading ? (
+//         <View style={styles.emptyContainer}>
+//           <EmptyTransactionState />
+//         </View>
+//       ) : (
+//         <React.Fragment>
+//           <View style={{ paddingHorizontal: 17 }}>
+//             <TransactionSectionList
+//               transactions={transactions}
+//               refreshing={isRefetching}
+//               onRefresh={refetch}
+//               onLoadMore={() =>
+//                 hasNextPage && !isFetchingNextPage && fetchNextPage()
+//               }
+//               isFetchingMore={isFetchingNextPage}
+//             />
+//           </View>
+//         </React.Fragment>
+//       )}
+
+//       <CustomLoading loading={isLoading || isRefetching || isDownloading} />
+
+//       <CustomModal
+//         visible={isFilterVisible}
+//         title={"Filter Transactions"}
+//         showCloseButton={true}
+//         onClose={toggleFilterModal}
+//       >
+//         <View style={{ marginVertical: 4 }}>
+//           <Text style={styles.modalLabel}>Category</Text>
+//           <SelectInput
+//             onSelect={option =>
+//               setFilters(prev => ({
+//                 ...prev,
+//                 category: option.value,
+//               }))
+//             }
+//             options={[
+//               { label: "WITHDRAWAL", value: "WITHDRAWAL" },
+//               { label: "FIAT WALLET FUNDING", value: "BANK_TRANSFER" },
+//               { label: "AIRTIME", value: "AIRTIME" },
+//               { label: "CRYPTO", value: "CRYPTO" },
+//               { label: "CABLETV", value: "CABLETV" },
+//               { label: "DATA", value: "DATA" },
+//               { label: "ELECTRICITY BILL", value: "ELECTRICITY_BILL" },
+//             ]}
+//           />
+//         </View>
+//         <View style={{ marginVertical: 4 }}>
+//           <Text style={styles.modalLabel}>Status</Text>
+//           <SelectInput
+//             options={[
+//               { label: "SUCCESSFUL", value: "successful" },
+//               { label: "FAILED", value: "failed" },
+//               { label: "PROCESSING", value: "processing" },
+//               { label: "PENDING", value: "pending" },
+//             ]}
+//             onSelect={option =>
+//               setFilters(prev => ({
+//                 ...prev,
+//                 status: option.value,
+//               }))
+//             }
+//           />
+//         </View>
+//         <View style={{ marginBottom: 7 }}>
+//           <DatePicker
+//             label="Start Date"
+//             value={filters.startDate.display}
+//             onChange={dateObj =>
+//               setFilters(prev => ({
+//                 ...prev,
+//                 startDate: dateObj,
+//               }))
+//             }
+//           />
+//         </View>
+//         <View style={{ marginVertical: 6 }}>
+//           <DatePicker
+//             label="End Date"
+//             value={filters.endDate.display}
+//             onChange={dateObj =>
+//               setFilters(prev => ({
+//                 ...prev,
+//                 endDate: dateObj,
+//               }))
+//             }
+//           />
+//         </View>
+
+//         <TouchableOpacity
+//           style={styles.closeButton}
+//           onPress={handleApplyFilter}
+//           activeOpacity={0.8}
+//         >
+//           <Text style={styles.closeButtonText}>Apply Filter</Text>
+//         </TouchableOpacity>
+//         <Pressable
+//           style={[styles.closeButton, { backgroundColor: "#e7e7e7" }]}
+//           onPress={handleClearFilter}
+//         >
+//           <Text style={[styles.closeButtonText, { color: "#000" }]}>
+//             Clear Filter
+//           </Text>
+//         </Pressable>
+//       </CustomModal>
+//     </SafeAreaView>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: { flex: 1, backgroundColor: "#fff" },
+//   topRow: {
+//     paddingHorizontal: 20,
+//     marginTop: 7,
+//     marginBottom: 20,
+//     flexDirection: "row",
+//     alignItems: "center",
+//     gap: 10,
+//   },
+//   // searchInput: {
+//   //   flex: 1,
+//   //   flexDirection: "row",
+//   //   alignItems: "center",
+//   //   backgroundColor: "#F9FAFB",
+//   //   paddingHorizontal: 16,
+//   //   paddingVertical: 12,
+//   //   borderRadius: 9,
+//   //   borderWidth: 1,
+//   //   borderColor: "#E5E7EB",
+//   // },
+//   // searchTextInput: {
+//   //   flex: 1,
+//   //   marginLeft: 8,
+//   //   fontSize: normalize(15),
+//   //   fontFamily: getFontFamily(400),
+//   //   color: "#000",
+//   // },
+//   iconButton: {
+//     paddingVertical: 8,
+//     paddingHorizontal: 20,
+//     borderRadius: 100,
+//     borderWidth: 1,
+//     flexDirection: "row",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     borderColor: "#D2D2D2",
+//     backgroundColor: COLORS.primary,
+//     gap: 5,
+//     flex: 1,
+//   },
+//   overlay: {
+//     flex: 1,
+//     justifyContent: "flex-end",
+//     backgroundColor: "rgba(0, 0, 0, 0.4)",
+//   },
+//   modalContainer: {
+//     backgroundColor: "#fff",
+//     borderTopLeftRadius: 20,
+//     borderTopRightRadius: 20,
+//     padding: 24,
+//   },
+//   modalTitle: {
+//     fontSize: normalize(20),
+//     fontFamily: getFontFamily("800"),
+//     marginBottom: 16,
+//   },
+//   modalLabel: {
+//     fontSize: normalize(18),
+//     fontFamily: getFontFamily("700"),
+//     color: "#383838ff",
+//     marginBottom: 6,
+//   },
+//   filterOption: {
+//     paddingVertical: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: "#E5E7EB",
+//   },
+//   closeButton: {
+//     backgroundColor: COLORS.primary,
+//     paddingVertical: 12,
+//     borderRadius: 48,
+//     marginTop: 15,
+//   },
+//   closeButtonText: {
+//     textAlign: "center",
+//     color: "#fff",
+//     fontSize: normalize(18),
+//     fontFamily: getFontFamily("700"),
+//   },
+//   emptyContainer: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   emptyState: { alignItems: "center" },
+//   emptyTitle: {
+//     fontSize: normalize(22),
+//     fontFamily: getFontFamily("700"),
+//     color: "#000",
+//     marginVertical: 12,
+//   },
+//   emptyDescription: {
+//     fontSize: normalize(18),
+//     fontFamily: getFontFamily("400"),
+//     color: "#6B7280",
+//     textAlign: "center",
+//   },
+// });
+
+// export default TransactionHistoryScreen;
+import React, { useMemo, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   StatusBar,
   TouchableOpacity,
-  Modal,
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  SectionList,
+  Pressable,
 } from "react-native";
-import { Wallet } from "iconsax-react-nativejs";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { Filter, DocumentDownload } from "iconsax-react-nativejs";
 import useAxios from "../api/axios";
-import CustomLoading from "../components/CustomLoading";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { formatDate } from "../libs/formatDate";
-import { formatAmount } from "../libs/formatNumber";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { COLORS } from "../constants/colors";
 import TransactionSectionList from "../components/TransactionList";
+import CustomLoading from "../components/CustomLoading";
+import { COLORS } from "../constants/colors";
+import { getFontFamily, normalize } from "../constants/settings";
 import CustomIcon from "../components/CustomIcon";
 import { NoResultIcon } from "../assets";
-
-const groupTransactionsByDate = (transactions: any[]) => {
-  const grouped: Record<string, any[]> = {};
-
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-
-  const formatDateLabel = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const isToday =
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear();
-
-    const isYesterday =
-      date.getDate() === yesterday.getDate() &&
-      date.getMonth() === yesterday.getMonth() &&
-      date.getFullYear() === yesterday.getFullYear();
-
-    if (isToday) return "Today";
-    if (isYesterday) return "Yesterday";
-
-    // e.g. "Wednesday, Oct 30, 2025"
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  transactions.forEach(tx => {
-    const label = formatDateLabel(tx.created_at || tx.occurred_at);
-    if (!grouped[label]) grouped[label] = [];
-    grouped[label].push(tx);
-  });
-
-  return Object.keys(grouped).map(label => ({
-    title: label,
-    data: grouped[label],
-  }));
-};
-
-const TransactionItem: React.FC<{ item: any }> = ({ item }) => {
-  const navigation: any = useNavigation();
-  const isCredit = item?.direction === "CREDIT";
-
-  return (
-    <TouchableOpacity
-      onPress={() =>
-        navigation.navigate("TransactionDetail", { transaction: item })
-      }
-      activeOpacity={0.4}
-      style={styles.transactionItem}
-    >
-      <View style={styles.transactionContent}>
-        <View style={styles.transactionMain}>
-          <Text style={styles.transactionTitle}>
-            {item?.description || item?.reference}
-          </Text>
-          <Text style={[styles.transactionAmount]}>
-            {isCredit
-              ? `+${formatAmount(item?.amount, false)}`
-              : `-${formatAmount(item?.amount, false)}`}
-          </Text>
-        </View>
-        <View style={styles.transactionMain}>
-          <Text style={styles.transactionTime}>
-            {item?.occurred_at ? formatDate(item.occurred_at) : ""}
-          </Text>
-          <Text
-            style={[
-              {
-                color:
-                  item?.status.toLowerCase() !== "failed"
-                    ? "#059669"
-                    : "#DC2626",
-                fontSize: normalize(17),
-                fontFamily: getFontFamily(700),
-              },
-            ]}
-          >
-            {item?.status?.toUpperCase() === "SUCCESSFUL"
-              ? "Successful"
-              : item?.status}
-          </Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-};
+import { SelectInput } from "../components/SelectInputField";
+import CustomModal from "../components/CustomModal";
+import DatePicker from "../components/DatePicker";
+import { showSuccess } from "../utlis/toast";
 
 export const EmptyTransactionState: React.FC = () => (
   <View style={styles.emptyState}>
@@ -128,32 +418,37 @@ export const EmptyTransactionState: React.FC = () => (
   </View>
 );
 
+type FilterType = {
+  startDate: { display: string; iso: string };
+  endDate: { display: string; iso: string };
+  status: string;
+  category: string;
+};
+
+const defaultFilter: FilterType = {
+  startDate: { display: "", iso: "" },
+  endDate: { display: "", iso: "" },
+  status: "",
+  category: "",
+};
+
 const TransactionHistoryScreen: React.FC = () => {
   const { apiGet } = useAxios();
-  // const [searchQuery, setSearchQuery] = useState("");
-  // const [typedSearch, setTypedSearch] = useState("");
   const [isFilterVisible, setIsFilterVisible] = useState(false);
-  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-  const [dateType, setDateType] = useState<"startDate" | "endDate" | null>(
-    null,
-  );
-  const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
-    type: "",
-    medium: "",
-    direction: "",
-  });
+  const [filters, setFilters] = useState<FilterType>(defaultFilter);
+  const [filterQuery, setFilterQuery] = useState<FilterType>(defaultFilter);
+
+  // Serialize filters for stable query key
+  const serializedFilters = useMemo(() => JSON.stringify(filters), [filters]);
 
   const fetchTransactions = async ({ pageParam = 1 }) => {
+    console.log("fetching....");
     const params: any = {
       page: pageParam,
-      // search: searchQuery,
-      start_date: filters.startDate,
-      end_date: filters.endDate,
-      type: filters.type,
-      medium: filters.medium,
-      direction: filters.direction,
+      start_date: filters.startDate.iso,
+      end_date: filters.endDate.iso,
+      status: filters.status,
+      category: filters.category,
     };
 
     const { data }: any = await apiGet("/transactions/user/transactions", {
@@ -172,244 +467,209 @@ const TransactionHistoryScreen: React.FC = () => {
     refetch,
     isRefetching,
   } = useInfiniteQuery({
-    queryKey: ["transactions", filters],
+    queryKey: ["transactions", serializedFilters],
     queryFn: fetchTransactions,
     initialPageParam: 1,
     getNextPageParam: lastPage =>
       lastPage.meta?.current_page < lastPage.meta?.last_page
         ? lastPage.meta.current_page + 1
         : undefined,
-    refetchOnWindowFocus: true,
   });
 
-  const transactions = useMemo(() => {
-    return data?.pages.flatMap(page => page.data) ?? [];
-  }, [data?.pages]);
+  const transactions = useMemo(
+    () => data?.pages.flatMap(page => page.data) ?? [],
+    [data?.pages],
+  );
 
-  // const handleSearch = () => setSearchQuery(typedSearch);
-
-  const handleLoadMore = () => {
-    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+  const toggleFilterModal = () => {
+    setIsFilterVisible(prev => !prev);
+    // setFilterQuery(defaultFilter);
   };
 
-  const handleRefresh = () => refetch();
-  const toggleFilterModal = () => setIsFilterVisible(!isFilterVisible);
-  const toggleDateRangeModal = () =>
-    setIsDatePickerVisible(!isDatePickerVisible);
-
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    if (selectedDate && dateType) {
-      setFilters(prev => ({
-        ...prev,
-        [dateType]: selectedDate.toISOString().split("T")[0],
-      }));
-    }
-    setIsDatePickerVisible(false);
-  };
-
-  const applyFilter = (newFilters: any) => {
+  const handleApplyFilter = (newFilters: FilterType) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
     toggleFilterModal();
-    refetch();
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch]),
-  );
+  const handleClearFilter = () => {
+    setFilters(defaultFilter);
+    toggleFilterModal();
+  };
+
+  const downloadAccountStatement = async () => {
+    try {
+      await apiGet("/transactions/user/account-statement");
+      showSuccess("Account Statement sent to your email");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-      {/* <View style={styles.searchContainer}>
-        <View style={styles.searchInput}>
-          <SearchNormal size={14} color="#6B7280" variant="Outline" />
-          <TextInput
-            style={styles.searchTextInput}
-            placeholder="Search Transaction"
-            placeholderTextColor="#9CA3AF"
-            value={typedSearch}
-            onChangeText={setTypedSearch}
-            onSubmitEditing={handleSearch}
-          />
-        </View>
-
+      {/* Top Buttons */}
+      <View style={styles.topRow}>
         <TouchableOpacity
-          style={styles.filterButton}
+          activeOpacity={0.8}
+          style={styles.iconButton}
           onPress={toggleFilterModal}
         >
-          <Filter size={18} color="#000" variant="Linear" />
+          <Filter size={15} color="#fff" variant="Linear" />
+          <Text style={[styles.closeButtonText]}>Filter</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.filterButton}
-          onPress={() => {
-            setDateType("startDate");
-            setIsDatePickerVisible(true);
-          }}
+          activeOpacity={0.8}
+          style={styles.iconButton}
+          onPress={downloadAccountStatement}
         >
-          <Calendar size={18} color="#000" variant="Linear" />
+          <DocumentDownload size={15} color="#fff" variant="Linear" />
+          <Text style={[styles.closeButtonText]}>Download Statement</Text>
         </TouchableOpacity>
-      </View> */}
+      </View>
 
+      {/* Transaction List */}
       {transactions.length === 0 && !isLoading ? (
         <View style={styles.emptyContainer}>
           <EmptyTransactionState />
         </View>
       ) : (
-        <View style={{ paddingHorizontal: 17 }}>
+        <View style={{ flex: 1, paddingHorizontal: 17 }}>
           <TransactionSectionList
             transactions={transactions}
             refreshing={isRefetching}
-            onRefresh={handleRefresh}
-            onLoadMore={handleLoadMore}
+            onRefresh={refetch}
+            onLoadMore={() =>
+              hasNextPage && !isFetchingNextPage && fetchNextPage()
+            }
             isFetchingMore={isFetchingNextPage}
           />
         </View>
       )}
-      <CustomLoading loading={isLoading} />
 
-      <Modal visible={isFilterVisible} transparent animationType="slide">
-        <View style={styles.overlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Filter Transactions</Text>
+      {/* Loading Overlay */}
+      <CustomLoading loading={isLoading || isRefetching} />
 
-            <TouchableOpacity
-              style={styles.filterOption}
-              onPress={() => applyFilter({ type: "CREDIT" })}
-            >
-              <Text>Credits</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.filterOption}
-              onPress={() => applyFilter({ type: "DEBIT" })}
-            >
-              <Text>Debits</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.filterOption}
-              onPress={() => applyFilter({ medium: "WALLET" })}
-            >
-              <Text>Wallet</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={toggleFilterModal}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
+      {/* Filter Modal */}
+      <CustomModal
+        visible={isFilterVisible}
+        title="Filter Transactions"
+        showCloseButton
+        onClose={toggleFilterModal}
+      >
+        <View style={{ marginVertical: 4 }}>
+          <Text style={styles.modalLabel}>Category</Text>
+          <SelectInput
+            onSelect={option =>
+              setFilterQuery(prev => ({ ...prev, category: option.value }))
+            }
+            options={[
+              { label: "WITHDRAWAL", value: "WITHDRAWAL" },
+              { label: "FIAT WALLET FUNDING", value: "BANK_TRANSFER" },
+              { label: "AIRTIME", value: "AIRTIME" },
+              { label: "CRYPTO", value: "CRYPTO" },
+              { label: "CABLETV", value: "CABLETV" },
+              { label: "DATA", value: "DATA" },
+              { label: "ELECTRICITY BILL", value: "ELECTRICITY_BILL" },
+            ]}
+            value={filterQuery.category}
+          />
         </View>
-      </Modal>
 
-      <Modal visible={isDatePickerVisible} transparent animationType="slide">
-        <View style={styles.overlay}>
-          <View style={styles.modalContainer}>
-            <TouchableOpacity
-              style={styles.closeButtonTopRight}
-              onPress={toggleDateRangeModal}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-
-            <Text style={styles.modalTitle}>Filter</Text>
-
-            <DateTimePicker
-              value={new Date()}
-              mode="date"
-              display="calendar"
-              onChange={handleDateChange}
-            />
-          </View>
+        <View style={{ marginVertical: 4 }}>
+          <Text style={styles.modalLabel}>Status</Text>
+          <SelectInput
+            options={[
+              { label: "SUCCESSFUL", value: "successful" },
+              { label: "FAILED", value: "failed" },
+              { label: "PROCESSING", value: "processing" },
+              { label: "PENDING", value: "pending" },
+            ]}
+            onSelect={option =>
+              setFilterQuery(prev => ({ ...prev, status: option.value }))
+            }
+            value={filterQuery.status}
+          />
         </View>
-      </Modal>
+
+        <DatePicker
+          label="Start Date"
+          value={filterQuery.startDate.display}
+          onChange={dateObj =>
+            setFilterQuery(prev => ({ ...prev, startDate: dateObj }))
+          }
+        />
+
+        <DatePicker
+          label="End Date"
+          value={filterQuery.endDate.display}
+          onChange={dateObj =>
+            setFilterQuery(prev => ({ ...prev, endDate: dateObj }))
+          }
+        />
+
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => handleApplyFilter(filterQuery)}
+        >
+          <Text style={styles.closeButtonText}>Apply Filter</Text>
+        </TouchableOpacity>
+
+        <Pressable
+          style={[styles.closeButton, { backgroundColor: "#e7e7e7" }]}
+          onPress={handleClearFilter}
+        >
+          <Text style={[styles.closeButtonText, { color: "#000" }]}>
+            Clear Filter
+          </Text>
+        </Pressable>
+      </CustomModal>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
-  searchContainer: {
+  topRow: {
     paddingHorizontal: 20,
+    marginTop: 7,
     marginBottom: 20,
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
   },
-  searchInput: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F9FAFB",
-    paddingHorizontal: 16,
-    paddingVertical: 13,
-    borderRadius: 9,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-  },
-  searchTextInput: {
-    flex: 1,
-    marginLeft: 8,
-    fontSize: normalize(14),
-    color: "#000",
-  },
-  filterButton: {
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#D2D2D2",
-    backgroundColor: "#fff",
-  },
-  transactionItem: {
-    flexDirection: "row",
-    alignItems: "center",
+  iconButton: {
+    paddingVertical: 8,
     paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#dfdfdfff",
-  },
-  transactionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  transactionIconText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-  transactionContent: { flex: 1 },
-  transactionMain: {
+    borderRadius: 100,
+    borderWidth: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 5,
-    alignItems: "flex-start",
-    alignContent: "flex-start",
-    gap: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: "#D2D2D2",
+    backgroundColor: COLORS.primary,
+    gap: 5,
+    flex: 1,
   },
-  transactionTitle: {
+  modalLabel: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    color: "#000",
-    maxWidth: "70%",
+    color: "#383838ff",
+    marginBottom: 6,
   },
-  transactionAmount: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
+  closeButton: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: 12,
+    borderRadius: 48,
+    marginTop: 15,
   },
-  transactionDescription: {
+  closeButtonText: {
+    textAlign: "center",
+    color: "#fff",
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    color: "#6B7280",
-  },
-  transactionTime: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-    color: "#9CA3AF",
   },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   emptyState: { alignItems: "center" },
@@ -424,55 +684,6 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("400"),
     color: "#6B7280",
     textAlign: "center",
-  },
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-  },
-  sectionHeader: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("800"),
-    color: "#353348",
-    textTransform: "uppercase",
-  },
-  modalTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    marginBottom: 16,
-  },
-  filterOption: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
-  },
-  closeButton: {
-    backgroundColor: "#E89E00",
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginTop: 20,
-  },
-  closeButtonText: {
-    textAlign: "center",
-    color: "#000",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-  modalContainer: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 24,
-    position: "relative",
-  },
-  closeButtonTopRight: {
-    position: "absolute",
-    top: 16,
-    right: 16,
-    zIndex: 10,
-    padding: 8,
   },
 });
 

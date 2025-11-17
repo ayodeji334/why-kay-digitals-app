@@ -1,23 +1,94 @@
 import { useCallback, useRef } from "react";
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 import { getItem } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 
 // export const BASE_URL = `https://wk.micakin.com/v1`;
-export const BASE_URL = `http://localhost:8000/v1`;
+export const BASE_URL = ` https://952dea178457.ngrok-free.app/v1`;
 
 const NETWORK_ERROR_MESSAGE = "Network error. Please check your connection.";
 const SERVER_ERROR_MESSAGE = "Something went wrong. Please try again.";
 const badRequestStatusCodes = [403, 422, 400, 500, 404];
 
-export default function useAxios() {
+// Type for token refresh queue callbacks
+type FailedRequestCallback = (token: string) => void;
+
+// Type for the useAxios hook return value
+interface UseAxiosReturn {
+  apiGet: <T = any>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ) => Promise<AxiosResponse<T>>;
+  post: <T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ) => Promise<AxiosResponse<T>>;
+  put: <T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ) => Promise<AxiosResponse<T>>;
+  patch: <T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ) => Promise<AxiosResponse<T>>;
+  delete: <T = any>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ) => Promise<AxiosResponse<T>>;
+  client: AxiosInstance;
+}
+
+// Type for the enhanced Axios request config with _retry property
+interface EnhancedAxiosRequestConfig extends AxiosRequestConfig {
+  _retry?: boolean;
+}
+
+// Type for refresh token response
+interface RefreshTokenResponse {
+  data?: {
+    data?: {
+      access_token?: string;
+      refresh_token?: string;
+      auth?: {
+        accessToken: string;
+        refreshToken: string;
+      };
+    };
+  };
+}
+
+// Type for error response
+interface ErrorResponse {
+  response?: {
+    status?: number;
+    data?: {
+      error?: {
+        detailsArray?: string[];
+      };
+      errors?: string[];
+      message?: string;
+    };
+  };
+  code?: string;
+  config?: EnhancedAxiosRequestConfig;
+}
+
+export default function useAxios(): UseAxiosReturn {
   const axiosInstanceRef = useRef<AxiosInstance | null>(null);
   const { logout, setToken } = useAuthStore();
 
   // Token refresh state - outside the hook to be shared across all instances
   let isRefreshing = false;
-  let failedRequestsQueue: ((token: string) => void)[] = [];
+  let failedRequestsQueue: FailedRequestCallback[] = [];
 
   const createAxiosInstance = useCallback((): AxiosInstance => {
     const instance = axios.create({
@@ -31,43 +102,50 @@ export default function useAxios() {
 
     // Request Interceptor
     instance.interceptors.request.use(
-      config => {
+      (config: InternalAxiosRequestConfig) => {
         const token = getItem("auth_token");
         if (token) {
+          config.headers = config.headers || {};
           config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
       },
-      error => Promise.reject(error),
+      (error: any) => Promise.reject(error),
     );
 
     // Response Interceptor
     instance.interceptors.response.use(
-      response => response,
-      async error => {
-        const originalRequest = error.config;
+      (response: AxiosResponse) => response,
+      async (error: ErrorResponse) => {
+        const originalRequest = error.config as EnhancedAxiosRequestConfig;
+
+        console.log(error.response);
 
         // Handle 401 errors with token refresh
-        if (error?.response?.status === 401 && !originalRequest._retry) {
+        if (error?.response?.status === 401 && !originalRequest?._retry) {
           if (isRefreshing) {
-            return new Promise(resolve => {
+            return new Promise<AxiosResponse>(resolve => {
               failedRequestsQueue.push((token: string) => {
-                originalRequest.headers.Authorization = `Bearer ${token}`;
+                if (originalRequest.headers) {
+                  originalRequest.headers.Authorization = `Bearer ${token}`;
+                }
                 resolve(instance(originalRequest));
               });
             });
           }
 
-          originalRequest._retry = true;
+          if (originalRequest) {
+            originalRequest._retry = true;
+          }
           isRefreshing = true;
 
           const refreshToken = getItem("refresh_token");
 
           if (refreshToken) {
             try {
-              const response = await axios.post(`${BASE_URL}/auth/refresh`, {
+              const response = (await axios.post(`${BASE_URL}/auth/refresh`, {
                 refresh_token: refreshToken,
-              });
+              })) as RefreshTokenResponse;
 
               const newAccessToken =
                 response.data?.data?.access_token ||
@@ -85,8 +163,10 @@ export default function useAxios() {
                 failedRequestsQueue = [];
 
                 // Retry original request
-                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-                return instance(originalRequest);
+                if (originalRequest?.headers) {
+                  originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                }
+                return instance(originalRequest as AxiosRequestConfig);
               }
             } catch (refreshError) {
               logout();
@@ -101,33 +181,32 @@ export default function useAxios() {
         }
 
         // Handle other errors
-        if (badRequestStatusCodes.includes(error?.response?.status)) {
+        if (
+          error?.response?.status &&
+          badRequestStatusCodes.includes(error.response.status)
+        ) {
           if (
             Array.isArray(error?.response?.data?.error?.detailsArray) &&
-            error?.response?.data?.error?.detailsArray.length > 0
+            error.response.data.error.detailsArray.length > 0
           ) {
-            error?.response?.data?.error?.detailsArray.forEach(
+            error.response.data.error.detailsArray.forEach(
               (element: string) => {
                 showError(element);
               },
             );
           } else if (
             Array.isArray(error?.response?.data?.errors) &&
-            error?.response?.data?.errors.length > 0
+            error.response.data.errors.length > 0
           ) {
-            error?.response?.data?.errors.forEach((element: string) => {
+            error.response.data.errors.forEach((element: string) => {
               showError(element);
             });
           } else {
-            showError(error.response?.data?.message);
+            console.log(error.response?.data);
+            showError(error.response?.data?.message || SERVER_ERROR_MESSAGE);
           }
-        } else if (
-          error?.code === "ERR_NETWORK" ||
-          error?.code === "ECONNABORTED"
-        ) {
-          showError(NETWORK_ERROR_MESSAGE);
         } else {
-          showError(SERVER_ERROR_MESSAGE);
+          showError(NETWORK_ERROR_MESSAGE);
         }
 
         return Promise.reject(error);
@@ -135,7 +214,7 @@ export default function useAxios() {
     );
 
     return instance;
-  }, []);
+  }, [logout, setToken]);
 
   const getInstance = useCallback((): AxiosInstance => {
     if (!axiosInstanceRef.current) {
@@ -188,5 +267,12 @@ export default function useAxios() {
     [getInstance],
   );
 
-  return { apiGet, post, put, patch, delete: del, client: getInstance() };
+  return {
+    apiGet,
+    post,
+    put,
+    patch,
+    delete: del,
+    client: getInstance(),
+  };
 }

@@ -40,6 +40,7 @@ import ConfirmTransactionScreen from "../screens/ConfirmTransactionScreen";
 import BuyAirtimeScreen from "../screens/BuyAirtimeScreen";
 import PayCableTVSubscriptionScreen from "../screens/PayCableTVSubscriptionScreen";
 import PayElectricityBillsScreen from "../screens/PayElectricityBills";
+import WithdrawScreen from "../screens/WithdrawalScreen";
 
 export default function NavigationRoot() {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
@@ -140,6 +141,13 @@ export default function NavigationRoot() {
               ),
             },
           },
+          Withdrawal: {
+            screen: WithdrawScreen,
+            options: {
+              headerBackTitle: ".",
+              header: () => <CustomHeader showTitle={true} title="Withdraw" />,
+            },
+          },
           Profile: {
             screen: ProfileScreen,
             options: {
@@ -152,7 +160,11 @@ export default function NavigationRoot() {
             options: {
               headerShown: true,
               header: () => (
-                <CustomHeader showTitle={true} title="Transaction Detail" />
+                <CustomHeader
+                  showTitle={true}
+                  showBack={false}
+                  title="Transaction Detail"
+                />
               ),
             },
           },

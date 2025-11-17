@@ -35,6 +35,7 @@ interface SelectInputProps {
   rules?: object;
   value?: string | null;
   onChange?: (value: string) => void;
+  onSelect?: (value: any) => void;
   title?: string;
 }
 
@@ -42,6 +43,7 @@ export function SelectInput({
   name,
   control,
   label,
+  onSelect,
   options,
   placeholder = "Select an option...",
   rules,
@@ -145,6 +147,7 @@ export function SelectInput({
                   <Pressable
                     style={styles.option}
                     onPress={() => {
+                      onSelect?.(item);
                       if (onChange) onChange(item.value);
                       handleSelect(item.value);
                     }}
@@ -259,7 +262,7 @@ const styles = StyleSheet.create({
     color: "#374151",
     backgroundColor: "#F9FAFB",
   },
-  option: {},
+  option: { borderBottomWidth: 2, borderBottomColor: "#ecececff" },
   optionContent: { padding: 10 },
   cryptoRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   cryptoInfo: { flex: 1 },

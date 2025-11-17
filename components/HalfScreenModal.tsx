@@ -71,7 +71,9 @@ const HalfScreenModal = ({
             )}
 
             <Text style={styles.title}>{title}</Text>
-            <Text style={styles.description}>{description}</Text>
+            {description && (
+              <Text style={styles.description}>{description}</Text>
+            )}
 
             <TouchableOpacity
               activeOpacity={0.7}
@@ -156,7 +158,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(20),
     fontFamily: getFontFamily("900"),
     color: "#333",
-    marginBottom: 8,
+    paddingBottom: 18,
     textAlign: "center",
   },
   description: {

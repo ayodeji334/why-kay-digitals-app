@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
   },
   checkingText: {
     fontSize: normalize(13),
+    fontFamily: getFontFamily("400"),
     marginTop: -5,
     marginBottom: 10,
   },

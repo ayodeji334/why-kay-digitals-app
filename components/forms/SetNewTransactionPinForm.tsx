@@ -5,30 +5,34 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import PasswordInputField from "../PaswordInputField";
 import { COLORS } from "../../constants/colors";
-import NumberInputField from "../NumberInputField";
-import { getFontFamily, normalize, width } from "../../constants/settings";
+import { getFontFamily, normalize } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { AxiosError } from "axios";
 import { showError, showSuccess } from "../../utlis/toast";
 import useAxios from "../../api/axios";
+import OtpInputField from "../OtpInputField";
 
 const loginSchema = yup.object().shape({
-  password: yup.string().required("Password is required"),
+  token: yup
+    .string()
+    .max(6, "Token must not be more than 6 characters")
+    .min(6, "Token must be at least 6 characters")
+    .required("Confirmation Token is required"),
   new_pin: yup
     .string()
-    .max(4, "Password must not be more than 6 characters")
-    .min(4, "Password must be at least 6 characters")
-    .required("Password is required"),
+    .max(4, "Pin must not be more than 6 characters")
+    .min(4, "Pin must be at least 6 characters")
+    .required("Pin is required"),
   confirm_pin: yup
     .string()
-    .oneOf([yup.ref("new_pin")], "Passwords must match")
-    .required("Confirm Password is required"),
+    .oneOf([yup.ref("new_pin")], "Pin must match")
+    .required("Confirm Pin is required"),
 });
 
 type SetNewTransactionPinFormInputs = {
   new_pin: string;
   confirm_pin: string;
-  password: string;
+  token: string;
 };
 
 const SetNewTransactionPinForm: React.FC<any> = () => {
@@ -62,29 +66,28 @@ const SetNewTransactionPinForm: React.FC<any> = () => {
 
   return (
     <View style={styles.container}>
-      <PasswordInputField
-        label="Account Password"
+      <OtpInputField
         control={control}
-        showHints={false}
-        name="password"
-        placeholder="Enter your password"
-        rules={{ required: "Password is required" }}
+        name="token"
+        isSecuredText={true}
+        boxes={6}
+        label="Token"
       />
 
-      <NumberInputField
-        label="New Transaction Pin"
+      <OtpInputField
         control={control}
         name="new_pin"
-        placeholder="Enter your transaction pin"
-        rules={{ required: "Transaction pin is required" }}
+        isSecuredText={true}
+        boxes={4}
+        label="New Pin"
       />
 
-      <NumberInputField
-        label="Confirm New Transaction Pin"
+      <OtpInputField
         control={control}
         name="confirm_pin"
-        placeholder="Enter your password"
-        rules={{ required: "Confirm Transaction Pin is required" }}
+        isSecuredText={true}
+        boxes={4}
+        label="Confirm New Pin"
       />
 
       <TouchableOpacity

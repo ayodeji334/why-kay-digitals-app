@@ -46,8 +46,12 @@ import ArrowDownLeftIcon from "./icons/arrow-down-left.svg";
 import CloseIcon from "./icons/close.svg";
 import ShareIcon from "./icons/share.svg";
 import NoResultIcon from "./icons/no-result.svg";
+import CheckCircleIcon from "./icons/check-circle.svg";
+import DangerIcon from "./icons/danger.svg";
 
 export {
+  CheckCircleIcon,
+  DangerIcon,
   SellCryptoIcon,
   NoResultIcon,
   ShareIcon,
