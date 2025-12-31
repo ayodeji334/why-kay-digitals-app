@@ -37,7 +37,7 @@ const ServicesSection = () => {
       icon: (
         <CustomIcon source={SellCryptoIcon} size={20} color={COLORS.primary} />
       ),
-      screenName: "",
+      screenName: "SellCrypto",
     },
     {
       id: 4,
@@ -45,7 +45,7 @@ const ServicesSection = () => {
       icon: (
         <CustomIcon source={BuyCryptoIcon} size={24} color={COLORS.primary} />
       ),
-      screenName: "",
+      screenName: "BuyCrypto",
     },
     {
       id: 40,
@@ -58,7 +58,7 @@ const ServicesSection = () => {
     {
       id: 5,
       title: "Swap",
-      screenName: "",
+      screenName: "SwapCrypto",
       icon: <CustomIcon source={SwapIcon} size={20} color={COLORS.primary} />,
     },
     {

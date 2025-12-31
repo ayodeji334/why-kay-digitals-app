@@ -1,4 +1,12 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  RefreshControl,
+  ScrollView,
+  Image,
+} from "react-native";
 import { COLORS } from "../../constants/colors";
 import { normalize, getFontFamily } from "../../constants/settings";
 import BalanceCard from "../Dashboard/BalanceCard";
@@ -6,27 +14,62 @@ import {
   ReceiveCryptoIcon,
   RefreshIcon,
   SellCryptoIcon,
-  SendCryptoIcon,
   TagsIcon,
 } from "../../assets";
 import CustomIcon from "../CustomIcon";
+import useAxios from "../../api/axios";
+import { useQuery } from "@tanstack/react-query";
+import { formatAmount } from "../../libs/formatNumber";
+import { useMemo } from "react";
 
 const CryptoWalletSection = ({
-  user,
-  cryptoWallet,
   handleSell,
   handleSwap,
-}: any) => (
-  <View>
-    <BalanceCard
-      balance={cryptoWallet?.balance ?? 0}
-      title="Total Balance"
-      showTransactionsButton={false}
-      showActionButtons={false}
-    />
+  handleDeposit,
+  handleBuy,
+}: any) => {
+  const { apiGet } = useAxios();
 
-    <View style={styles.actionsContainer}>
-      <ActionCard
+  const fetchTransactions = async () => {
+    const { data }: any = await apiGet("/wallets/user");
+    return data?.data ?? [];
+  };
+
+  const { data, refetch, isRefetching } = useQuery({
+    queryKey: ["user-wallets"],
+    queryFn: fetchTransactions,
+    refetchOnWindowFocus: true,
+  });
+
+  console.log(data);
+
+  const totalWalletValue: number = useMemo(
+    () =>
+      Array.isArray(data)
+        ? data.reduce((sum: number, d: any) => {
+            return sum + (parseFloat(d?.wallet_value) || 0);
+          }, 0)
+        : 0,
+    [data],
+  );
+
+  return (
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+      }
+    >
+      <BalanceCard
+        balance={totalWalletValue}
+        title="Total Balance"
+        showTransactionsButton={false}
+        showActionButtons={false}
+        currency="USD"
+      />
+
+      <View style={styles.actionsContainer}>
+        {/* <ActionCard
         title="Send"
         source={
           <CustomIcon
@@ -36,65 +79,65 @@ const CryptoWalletSection = ({
           />
         }
         onPress={handleSwap}
-      />
-      <ActionCard
-        title="Receive"
-        source={
-          <CustomIcon
-            source={ReceiveCryptoIcon}
-            size={20}
-            color={COLORS.primary}
-          />
-        }
-        onPress={handleSwap}
-      />
-      <ActionCard
-        title="Buy"
-        source={
-          <CustomIcon source={TagsIcon} size={20} color={COLORS.primary} />
-        }
-        onPress={handleSwap}
-      />
-      <ActionCard
-        title="Sell"
-        source={
-          <CustomIcon
-            source={SellCryptoIcon}
-            size={18}
-            color={COLORS.primary}
-          />
-        }
-        onPress={handleSell}
-      />
-      <ActionCard
-        title="Swap"
-        source={
-          <CustomIcon source={RefreshIcon} size={20} color={COLORS.primary} />
-        }
-        onPress={handleSwap}
-      />
-    </View>
-
-    {/* Assets */}
-    <View style={styles.assetsSection}>
-      <Text style={styles.sectionTitle}>Assets</Text>
-      <View style={styles.assetsList}>
-        {user?.assets?.length ? (
-          user.assets.map((asset: any) => (
-            <AssetItem key={asset.id} asset={asset} />
-          ))
-        ) : (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No assets found</Text>
-            <Text style={styles.emptyStateSubtext}>
-              Your assets will appear here once added
-            </Text>
-          </View>
-        )}
+      /> */}
+        <ActionCard
+          title="Receive"
+          source={
+            <CustomIcon
+              source={ReceiveCryptoIcon}
+              size={20}
+              color={COLORS.primary}
+            />
+          }
+          onPress={handleDeposit}
+        />
+        <ActionCard
+          title="Buy"
+          source={
+            <CustomIcon source={TagsIcon} size={20} color={COLORS.primary} />
+          }
+          onPress={handleBuy}
+        />
+        <ActionCard
+          title="Sell"
+          source={
+            <CustomIcon
+              source={SellCryptoIcon}
+              size={18}
+              color={COLORS.primary}
+            />
+          }
+          onPress={handleSell}
+        />
+        <ActionCard
+          title="Swap"
+          source={
+            <CustomIcon source={RefreshIcon} size={20} color={COLORS.primary} />
+          }
+          onPress={handleSwap}
+        />
       </View>
-    </View>
-  </View>
-);
+
+      <View style={styles.assetsSection}>
+        <Text style={styles.sectionTitle}>Assets</Text>
+        <View style={styles.assetsList}>
+          {Array.isArray(data) ? (
+            data.map((asset: any) => (
+              <AssetItem key={asset.asset_id} asset={asset} />
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>No assets found</Text>
+              <Text style={styles.emptyStateSubtext}>
+                Your assets will appear here once added
+              </Text>
+            </View>
+          )}
+        </View>
+      </View>
+    </ScrollView>
+  );
+};
 
 const ActionCard = ({ title, source, onPress }: any) => (
   <TouchableOpacity
@@ -112,16 +155,25 @@ const ActionCard = ({ title, source, onPress }: any) => (
 const AssetItem = ({ asset }: any) => (
   <TouchableOpacity style={styles.assetItem} activeOpacity={0.7}>
     <View style={styles.assetLeft}>
-      <View style={styles.assetIcon}>
-        <Text style={styles.assetIconText}>{asset.icon}</Text>
-      </View>
+      {asset.asset_logo_url && (
+        <Image
+          key={asset.asset_logo_url}
+          source={{ uri: asset.asset_logo_url }}
+          resizeMode="contain"
+          style={styles.assetIcon}
+        />
+      )}
       <View style={styles.assetInfo}>
-        <Text style={styles.assetName}>{asset.name}</Text>
-        <Text style={styles.assetSymbol}>{asset.symbol}</Text>
+        <Text style={styles.assetName}>
+          {asset.asset_name} ({asset.symbol})
+        </Text>
+        <Text style={styles.assetSymbol}>
+          {formatAmount(asset.market_current_value, false, "USD")}
+        </Text>
       </View>
     </View>
     <View style={styles.assetRight}>
-      <Text style={styles.assetPrice}>{asset.price}</Text>
+      <Text style={styles.assetPrice}>{asset.balance}</Text>
     </View>
   </TouchableOpacity>
 );
@@ -210,20 +262,20 @@ const styles = StyleSheet.create({
   },
   assetIconText: {
     fontSize: normalize(13),
-    fontFamily: getFontFamily("400"),
+    fontFamily: getFontFamily("700"),
     color: "#374151",
   },
   assetInfo: { flex: 1 },
   assetName: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("400"),
-    color: "#000",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    color: "#000000",
   },
-  assetSymbol: { fontSize: normalize(11), color: "#6B7280" },
+  assetSymbol: { fontSize: normalize(13), color: "#000000" },
   assetRight: { alignItems: "flex-end" },
   assetPrice: {
-    fontSize: normalize(13),
-    fontFamily: getFontFamily("400"),
+    fontSize: normalize(19),
+    fontFamily: getFontFamily("800"),
     color: "#000",
   },
   emptyState: { alignItems: "center", paddingVertical: 40 },

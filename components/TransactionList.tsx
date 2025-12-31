@@ -87,8 +87,16 @@ const TransactionItem = ({ item }: any) => {
           </Text>
           <Text style={styles.transactionAmount}>
             {isCredit
-              ? `+${formatAmount(item?.amount, false)}`
-              : `-${formatAmount(item?.amount, false)}`}
+              ? `+ ${
+                  item?.medium.toUpperCase() === "CRYPTO"
+                    ? item?.amount.toString()
+                    : formatAmount(item?.amount, false)
+                }`
+              : `- ${
+                  item?.medium.toUpperCase() === "CRYPTO"
+                    ? item?.amount.toString()
+                    : formatAmount(item?.amount, false)
+                }`}
           </Text>
         </View>
         <View style={styles.transactionMain}>

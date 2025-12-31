@@ -41,6 +41,11 @@ import BuyAirtimeScreen from "../screens/BuyAirtimeScreen";
 import PayCableTVSubscriptionScreen from "../screens/PayCableTVSubscriptionScreen";
 import PayElectricityBillsScreen from "../screens/PayElectricityBills";
 import WithdrawScreen from "../screens/WithdrawalScreen";
+import CryptoWalletScreen from "../screens/CryptoScreen";
+import CryptoWalletDepositScreen from "../screens/CryptoWalletDepositScreen";
+import CryptoBuyScreen from "../screens/BuyCryptoScreen";
+import CryptoSellScreen from "../screens/SellCrytpoScreen";
+import CryptoSwapScreen from "../screens/SwapCryptoScreen";
 
 export default function NavigationRoot() {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
@@ -373,6 +378,51 @@ export default function NavigationRoot() {
               headerShown: true,
               header: () => (
                 <CustomHeader showTitle={true} title="Authentictor Setup" />
+              ),
+            },
+          },
+          CryptoDeposit: {
+            screen: CryptoWalletScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Select Wallet" />
+              ),
+            },
+          },
+          CryptoWalletDeposit: {
+            screen: CryptoWalletDepositScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Receive Crypto" />
+              ),
+            },
+          },
+          BuyCrypto: {
+            screen: CryptoBuyScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Buy Crypto" />
+              ),
+            },
+          },
+          SellCrypto: {
+            screen: CryptoSellScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Sell Crypto" />
+              ),
+            },
+          },
+          SwapCrypto: {
+            screen: CryptoSwapScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Swap Crypto" />
               ),
             },
           },

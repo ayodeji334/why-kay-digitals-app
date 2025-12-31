@@ -18,9 +18,12 @@ const FiatWalletSection = ({ fiatWallet }: any) => {
       medium: "fiat",
     };
 
-    const { data }: any = await apiGet("/transactions/user/transactions", {
-      params,
-    });
+    const { data }: any = await apiGet(
+      "/transactions/user/transactions?medium=fiat",
+      {
+        params,
+      },
+    );
 
     return { data: data?.data.transactions, meta: data?.data?.pagination };
   };

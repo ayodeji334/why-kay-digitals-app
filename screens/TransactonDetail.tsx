@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   Image,
   Alert,
-  // Share as ShareLib,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
@@ -41,6 +40,13 @@ const TransactionDetailScreen = () => {
     [transaction.status],
   );
 
+  const isProcessing = useMemo(
+    () =>
+      transaction.status?.toLowerCase() === "processing" ||
+      transaction.status?.toLowerCase() === "pending",
+    [transaction.status],
+  );
+
   const StatusIcon = () =>
     isSuccess ? (
       <Image
@@ -48,7 +54,11 @@ const TransactionDetailScreen = () => {
         style={styles.networkLogo}
       />
     ) : (
-      <CloseCircle size={60} color="#DC2626" variant="Bold" />
+      <CloseCircle
+        size={60}
+        color={isProcessing ? "#CA8A04" : "#DC2626"}
+        variant="Bold"
+      />
     );
 
   const handleGoBack = async () => {
@@ -79,7 +89,10 @@ const TransactionDetailScreen = () => {
             maxFontSizeMultiplier={0}
             style={styles.amount}
           >
-            {formatAmount(transaction.amount, false, "NGN", 2)}
+            {transaction.medium?.toUpperCase() === "CRYPTO"
+              ? transaction?.meta?.amount +
+                (transaction?.meta?.asset_symbol ?? "")
+              : formatAmount(transaction.amount, false, "NGN", 2)}
           </Text>
           <Text
             style={{
@@ -89,7 +102,11 @@ const TransactionDetailScreen = () => {
             }}
           >
             {isSuccess
-              ? transaction?.category === "CABLETV"
+              ? transaction?.category === "CRYPTO_DEPOSIT"
+                ? `Your ${transaction?.meta?.asset_symbol} purchase was successful`
+                : transaction?.category === "CRYPTO_WITHDRAW"
+                ? `Your ${transaction?.meta?.asset_symbol} withdrawal was successful`
+                : transaction?.category === "CABLETV"
                 ? "Your TV bill payment was successful"
                 : transaction?.category === "MOBILEDATA"
                 ? "Your data purchase was successful"
@@ -102,6 +119,8 @@ const TransactionDetailScreen = () => {
                 : transaction?.category === "WITHDRAWAL"
                 ? "Your withdrawal was successful"
                 : "Transaction completed successfully"
+              : isProcessing
+              ? "Trasnsaction is pending the confirmation"
               : "Transaction failed"}
           </Text>
         </View>
@@ -113,7 +132,16 @@ const TransactionDetailScreen = () => {
           />
           <DetailRow
             label="Amount"
-            value={formatAmount(transaction.amount, false, "NGN", 2)}
+            value={
+              transaction.medium?.toUpperCase() === "CRYPTO"
+                ? formatAmount(
+                    transaction.meta?.amount_in_naira ?? 0,
+                    false,
+                    "NGN",
+                    2,
+                  )
+                : formatAmount(transaction.amount, false, "NGN", 2)
+            }
             color={getDirectionColor()}
           />
           <DetailRow
@@ -124,16 +152,25 @@ const TransactionDetailScreen = () => {
             label="Net Amount"
             value={formatAmount(transaction.net_amount, false, "NGN", 2)}
           />
-          {/* <DetailRow
-            label="Direction"
+          {transaction.meta?.exchange_rate && (
+            <DetailRow
+              label="Exchange Rate"
+              value={
+                formatAmount(transaction.meta.exchange_rate, false, "NGN", 2) +
+                "/$"
+              }
+            />
+          )}
+          <DetailRow
+            label="Category"
             value={transaction.direction?.toUpperCase()}
             color={getDirectionColor()}
-          /> */}
+          />
           <DetailRow label="Wallet" value={transaction.medium?.toUpperCase()} />
           <DetailRow
             label="Status"
             value={isSuccess ? "Successful" : transaction.status}
-            color={isSuccess ? "#059669" : "#DC2626"}
+            color={isSuccess ? "#059669" : isProcessing ? "#CA8A04" : "#DC2626"}
           />
 
           {transaction.status.toUpperCase() !== "FAILED" && (

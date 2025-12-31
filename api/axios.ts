@@ -10,13 +10,12 @@ import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 
 // export const BASE_URL = `https://wk.micakin.com/v1`;
-export const BASE_URL = ` https://952dea178457.ngrok-free.app/v1`;
+export const BASE_URL = `http://localhost:8000/v1`;
 
 const NETWORK_ERROR_MESSAGE = "Network error. Please check your connection.";
 const SERVER_ERROR_MESSAGE = "Something went wrong. Please try again.";
 const badRequestStatusCodes = [403, 422, 400, 500, 404];
 
-// Type for token refresh queue callbacks
 type FailedRequestCallback = (token: string) => void;
 
 // Type for the useAxios hook return value
@@ -119,8 +118,6 @@ export default function useAxios(): UseAxiosReturn {
       async (error: ErrorResponse) => {
         const originalRequest = error.config as EnhancedAxiosRequestConfig;
 
-        console.log(error.response);
-
         // Handle 401 errors with token refresh
         if (error?.response?.status === 401 && !originalRequest?._retry) {
           if (isRefreshing) {
@@ -202,7 +199,7 @@ export default function useAxios(): UseAxiosReturn {
               showError(element);
             });
           } else {
-            console.log(error.response?.data);
+            // console.log(error.response?.data);
             showError(error.response?.data?.message || SERVER_ERROR_MESSAGE);
           }
         } else {

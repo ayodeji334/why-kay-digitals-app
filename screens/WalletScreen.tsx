@@ -1,8 +1,5 @@
 import React, { useMemo, useCallback, useState, useEffect } from "react";
 import {
-  Alert,
-  RefreshControl,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -13,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import { useAuthStore } from "../stores/authSlice";
 import { useQuery } from "@tanstack/react-query";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import useAxios from "../api/axios";
 import CustomLoading from "../components/CustomLoading";
 import { COLORS } from "../constants/colors";
@@ -24,6 +21,7 @@ export default function WalletScreen() {
   const { setUser, user } = useAuthStore();
   const { apiGet } = useAxios();
   const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState<"crypto" | "fiat">("crypto");
 
   const fetchUserAccounts = async () => {
@@ -56,7 +54,7 @@ export default function WalletScreen() {
     if (Array.isArray(user?.wallets)) {
       return user.wallets.find((wallet: any) => wallet.type === "fiat");
     }
-  }, [user]);
+  }, [user.wallets]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -64,11 +62,17 @@ export default function WalletScreen() {
     setRefreshing(false);
   };
 
-  const handleSell = () =>
-    Alert.alert(
-      "Coming soon",
-      "The feature is not yet available. Keep watching!",
-    );
+  const handleSwap = () => navigation.navigate("SwapCrypto" as never);
+
+  const handleBuy = () => {
+    navigation.navigate("BuyCrypto" as never);
+  };
+  const handleSell = () => {
+    navigation.navigate("SellCrypto" as never);
+  };
+  const handleDeposit = () => {
+    navigation.navigate("CryptoDeposit" as never);
+  };
 
   useEffect(() => {
     refetch();
@@ -109,10 +113,12 @@ export default function WalletScreen() {
       <View style={styles.scrollContainer}>
         {activeTab === "crypto" ? (
           <CryptoWalletSection
-            user={user}
-            fiatWallet={fiatWallet}
             handleSell={handleSell}
-            handleSwap={handleSell}
+            handleSwap={handleSwap}
+            handleBuy={handleBuy}
+            handleDeposit={handleDeposit}
+            onRefresh={onRefresh}
+            refreshing={refreshing}
           />
         ) : (
           <FiatWalletSection fiatWallet={fiatWallet} />

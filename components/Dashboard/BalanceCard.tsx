@@ -115,10 +115,8 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         buttonText="Deposit Fiat (Naira Wallet)"
         secondaryButtonText="Crypto Deposit"
         secondaryAction={() => {
-          Alert.alert(
-            "Coming Soon!",
-            "The feature is not available for now. Kindly check back later",
-          );
+          setDepositModalVisible(false);
+          setTimeout(() => navigation.navigate("CryptoDeposit" as never), 600);
         }}
         showCloseButton={true}
         iconBackgroundColor="#FF4D4D1A"
