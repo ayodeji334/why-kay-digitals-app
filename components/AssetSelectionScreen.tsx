@@ -46,7 +46,7 @@ const AssetSelectionScreen = ({
 
   // Fetch assets
   const fetchAssets = async (): Promise<any[]> => {
-    const response = await apiGet("/crypto-assets/");
+    const response = await apiGet("/crypto-assets");
     return response.data?.data?.assets.map((asset: any) => {
       const sellRate = asset.rates.find((r: any) => r.type === "sell");
       return {

@@ -51,7 +51,7 @@ export default function CryptoSwapScreen() {
 
   const fetchAssets = async (): Promise<any[]> => {
     try {
-      const response = await apiGet("/wallets/user/");
+      const response = await apiGet("/wallets/user");
       return response?.data?.data ?? [];
     } catch (error) {
       console.error("Failed to fetch assets:", error);

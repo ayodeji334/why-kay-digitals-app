@@ -49,7 +49,7 @@ export default function CryptoSellScreen() {
 
   const fetchAssets = async (): Promise<any[]> => {
     try {
-      const response = await apiGet("/wallets/user/");
+      const response = await apiGet("/wallets/user");
       console.log(response);
       return response?.data?.data ?? [];
     } catch (error) {

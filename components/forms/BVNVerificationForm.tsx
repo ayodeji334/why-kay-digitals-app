@@ -50,7 +50,7 @@ const BVNForm = () => {
 
       showSuccess("BVN Verified successful");
     } catch (error: any) {
-      console.log(error?.response);
+      // console.log(error?.response);
     } finally {
       setLoading(false);
     }

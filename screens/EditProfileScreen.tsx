@@ -54,7 +54,7 @@ const profileSchema = yup.object().shape({
           // Return true if valid, false if invalid
           return phoneNumber ? phoneNumber.isValid() : false;
         } catch (error) {
-          console.log("Phone number parsing error:", error);
+          // console.log("Phone number parsing error:", error);
           return false;
         }
       },

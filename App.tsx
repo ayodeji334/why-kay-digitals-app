@@ -8,6 +8,12 @@ import { useAuthStore } from "./stores/authSlice";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./libs/queryClient";
 
+if (!__DEV__) {
+  console.log = () => {};
+  console.warn = () => {};
+  console.error = () => {};
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>

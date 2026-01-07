@@ -76,7 +76,7 @@ export default function CryptoRatesScreen() {
     queryKey: ["rates"],
     queryFn: async () => {
       try {
-        const res = await apiGet("/crypto-assets/");
+        const res = await apiGet("/crypto-assets");
         return res?.data?.data;
       } catch (error) {
         throw error;

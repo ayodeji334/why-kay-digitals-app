@@ -50,8 +50,8 @@ export default function CryptoBuyScreen() {
 
   const fetchAssets = async (): Promise<any[]> => {
     try {
-      const response = await apiGet("/wallets/user/");
-      console.log(response);
+      const response = await apiGet("/wallets/user");
+      // console.log(response);
       return response?.data?.data ?? [];
     } catch (error) {
       console.error("Failed to fetch assets:", error);

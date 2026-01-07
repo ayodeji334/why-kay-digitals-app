@@ -9,8 +9,8 @@ import { getItem } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 
-// export const BASE_URL = `https://wk.micakin.com/v1`;
-export const BASE_URL = `http://localhost:8000/v1`;
+export const BASE_URL = "https://ayodejijava.com.ng/v1";
+// export const BASE_URL = `http://localhost:8000/v1`;
 
 const NETWORK_ERROR_MESSAGE = "Network error. Please check your connection.";
 const SERVER_ERROR_MESSAGE = "Something went wrong. Please try again.";
@@ -18,7 +18,6 @@ const badRequestStatusCodes = [403, 422, 400, 500, 404];
 
 type FailedRequestCallback = (token: string) => void;
 
-// Type for the useAxios hook return value
 interface UseAxiosReturn {
   apiGet: <T = any>(
     url: string,
@@ -103,10 +102,17 @@ export default function useAxios(): UseAxiosReturn {
     instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
         const token = getItem("auth_token");
+        console.log("Attaching token to request:", token);
+        console.log(
+          "Request config before attaching token:",
+          config.baseURL,
+          config.url,
+        );
         if (token) {
           config.headers = config.headers || {};
           config.headers.Authorization = `Bearer ${token}`;
         }
+
         return config;
       },
       (error: any) => Promise.reject(error),
@@ -117,6 +123,7 @@ export default function useAxios(): UseAxiosReturn {
       (response: AxiosResponse) => response,
       async (error: ErrorResponse) => {
         const originalRequest = error.config as EnhancedAxiosRequestConfig;
+        console.log("Response error:", error.response);
 
         // Handle 401 errors with token refresh
         if (error?.response?.status === 401 && !originalRequest?._retry) {
@@ -134,6 +141,7 @@ export default function useAxios(): UseAxiosReturn {
           if (originalRequest) {
             originalRequest._retry = true;
           }
+
           isRefreshing = true;
 
           const refreshToken = getItem("refresh_token");

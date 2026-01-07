@@ -121,7 +121,7 @@ const CryptoWalletSection = ({
       <View style={styles.assetsSection}>
         <Text style={styles.sectionTitle}>Assets</Text>
         <View style={styles.assetsList}>
-          {Array.isArray(data) ? (
+          {Array.isArray(data) && data.length > 0 ? (
             data.map((asset: any) => (
               <AssetItem key={asset.asset_id} asset={asset} />
             ))

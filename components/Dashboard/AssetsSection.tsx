@@ -34,7 +34,7 @@ const AssetsSection = () => {
   const { apiGet } = useAxios();
   const fetchAssets = async (): Promise<Asset[]> => {
     try {
-      const response = await apiGet("/crypto-assets/");
+      const response = await apiGet("/crypto-assets");
       return response.data?.data?.assets.map((asset: any) => {
         const sellRate = asset.rates.find((r: any) => r.type === "sell");
         return {
@@ -50,7 +50,6 @@ const AssetsSection = () => {
         };
       });
     } catch (error) {
-      console.error("Failed to fetch assets:", error);
       throw error;
     }
   };
