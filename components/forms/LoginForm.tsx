@@ -7,7 +7,6 @@ import TextInputField from "../TextInputField";
 import PasswordInputField from "../PaswordInputField";
 import { COLORS } from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
-import { setItem } from "../../utlis/storage";
 import { getFontFamily, normalize } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { showError } from "../../utlis/toast";
@@ -45,30 +44,27 @@ const LoginForm: React.FC = () => {
     try {
       setLoading(true);
 
-      const response = await post("/auth/login", { login, password });
+      const res = await post("/auth/login", { login, password });
+      console.log(res);
 
-      const authData = response.data?.data?.auth;
+      const { auth, user } = res.data?.data ?? {};
+      console.log(auth);
+      console.log(user);
 
-      if (authData?.accessToken && authData?.refreshToken) {
-        setItem("auth_token", authData.accessToken);
-        setItem("refresh_token", authData.refreshToken);
-        setToken(authData.accessToken);
+      if (!auth?.accessToken || !auth?.refreshToken || !user) {
+        throw new Error("Invalid login response");
       }
 
-      if (response.data?.data?.user) {
-        setItem("user", JSON.stringify(response.data?.data?.user));
-        setUser(response.data?.data?.user);
-      }
-
-      setTimeout(() => setIsAuthenticated(true), 1000);
+      setToken(auth.accessToken, auth.refreshToken);
+      setUser(user);
+      setIsAuthenticated(true);
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
-        console.log(err.response);
         const errorMessage =
-          err.response?.data?.message || "Something went wrong. Try again.";
+          err.response?.data?.message ?? "Unable to login. Please try again.";
         showError(errorMessage);
       } else {
-        console.error("Unexpected error:", err);
+        console.error("Unexpected login error:", err);
         showError("An unexpected error occurred. Please try again.");
       }
     } finally {

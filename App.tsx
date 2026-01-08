@@ -8,6 +8,7 @@ import { useAuthStore } from "./stores/authSlice";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./libs/queryClient";
 
+// remove logs
 if (!__DEV__) {
   console.log = () => {};
   console.warn = () => {};

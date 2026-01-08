@@ -112,28 +112,23 @@ const MenuItem = ({
 };
 
 export default function SettingsScreen() {
-  // const [darkMode, setDarkMode] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const appVersion = DeviceInfo.getVersion();
   const buildNumber = DeviceInfo.getBuildNumber();
   const { user, logout } = useAuthStore(state => state);
-  const restoreUser = JSON.parse(getItem("user") as string);
-  const userData = user || restoreUser;
 
   const handleEditInfo = () => {
     navigation.navigate("EditProfile" as never);
   };
 
   const needsVerification = useMemo(() => {
-    return (
-      userData?.tier_level === "TIER_0" || userData?.bank_accounts?.length === 0
-    );
-  }, [userData]);
+    return user?.tier_level === "TIER_0" || user?.bank_accounts?.length === 0;
+  }, [user]);
 
-  const handleKYCPress = () => {
-    navigation.navigate("Verification" as never);
-  };
+  // const handleKYCPress = () => {
+  //   navigation.navigate("Verification" as never);
+  // };
 
   const handleLogout = async () => {
     logout();
@@ -161,9 +156,9 @@ export default function SettingsScreen() {
           >
             <Image
               source={
-                userData?.profile_picture_url
+                user?.profile_picture_url
                   ? {
-                      uri: userData?.profile_picture_url || undefined,
+                      uri: user?.profile_picture_url || undefined,
                     }
                   : require("../assets/avatar.png")
               }
@@ -172,12 +167,12 @@ export default function SettingsScreen() {
             />
             <View>
               <Text style={styles.title}>
-                {userData?.username
-                  ? userData.username.charAt(0).toUpperCase() +
-                    userData.username.slice(1)
+                {user?.username
+                  ? user.username.charAt(0).toUpperCase() +
+                    user.username.slice(1)
                   : "User"}
               </Text>
-              <Text style={styles.email}>{userData?.email}</Text>
+              <Text style={styles.email}>{user?.email}</Text>
             </View>
           </View>
           <TouchableOpacity

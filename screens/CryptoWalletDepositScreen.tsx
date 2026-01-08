@@ -291,7 +291,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   qrText: {
-    fontWeight: "700",
     fontFamily: getFontFamily(700),
     fontSize: 16,
     color: "#0a0a2a",
@@ -340,7 +339,6 @@ const styles = StyleSheet.create({
   },
   generateButtonText: {
     color: "white",
-    fontWeight: "700",
     fontFamily: getFontFamily(700),
     fontSize: normalize(16),
   },
@@ -402,14 +400,12 @@ const styles = StyleSheet.create({
   },
   priceValue: {
     color: "black",
-    fontFamily: getFontFamily(700),
+    fontFamily: getFontFamily(800),
     fontSize: 20,
-    fontWeight: "800",
   },
   priceChange: {
     fontFamily: getFontFamily(800),
     fontSize: 20,
-    fontWeight: "800",
     marginRight: 6,
   },
   // Buttons
@@ -441,9 +437,7 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     fontFamily: getFontFamily(700),
     fontSize: 16,
-    fontWeight: "700",
   },
-
   toggleButton: {
     position: "absolute",
     top: 100,

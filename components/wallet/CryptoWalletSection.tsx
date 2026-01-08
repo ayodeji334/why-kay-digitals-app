@@ -271,7 +271,11 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("800"),
     color: "#000000",
   },
-  assetSymbol: { fontSize: normalize(13), color: "#000000" },
+  assetSymbol: {
+    fontSize: normalize(13),
+    fontFamily: getFontFamily("400"),
+    color: "#000000",
+  },
   assetRight: { alignItems: "flex-end" },
   assetPrice: {
     fontSize: normalize(19),

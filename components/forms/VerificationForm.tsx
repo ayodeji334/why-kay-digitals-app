@@ -11,8 +11,6 @@ import { getFontFamily, normalize } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { showError, showSuccess } from "../../utlis/toast";
 import { AxiosError } from "axios";
-import apiClient from "../../api/axios";
-import { setItem } from "../../utlis/storage";
 import useAxios from "../../api/axios";
 import { useAuthStore } from "../../stores/authSlice";
 
@@ -54,13 +52,10 @@ const VerificationForm = ({ email }: { email: string }) => {
       // console.log("authData", authData);
 
       if (authData?.accessToken && authData?.refreshToken) {
-        setItem("auth_token", authData.accessToken);
-        setItem("refresh_token", authData.refreshToken);
         setToken(authData.accessToken);
       }
 
       if (response.data?.data?.user) {
-        setItem("user", JSON.stringify(response.data?.data?.user));
         setUser(response.data?.data?.user);
       }
 

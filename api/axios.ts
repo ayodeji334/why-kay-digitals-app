@@ -9,8 +9,8 @@ import { getItem } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 
-export const BASE_URL = "https://ayodejijava.com.ng/v1";
-// export const BASE_URL = `http://localhost:8000/v1`;
+// export const BASE_URL = "https://wk.micakin.com/v1";
+export const BASE_URL = `http://10.210.55.110:8000/v1`;
 
 const NETWORK_ERROR_MESSAGE = "Network error. Please check your connection.";
 const SERVER_ERROR_MESSAGE = "Something went wrong. Please try again.";
@@ -18,6 +18,7 @@ const badRequestStatusCodes = [403, 422, 400, 500, 404];
 
 type FailedRequestCallback = (token: string) => void;
 
+// Type for the useAxios hook return value
 interface UseAxiosReturn {
   apiGet: <T = any>(
     url: string,
@@ -82,9 +83,8 @@ interface ErrorResponse {
 
 export default function useAxios(): UseAxiosReturn {
   const axiosInstanceRef = useRef<AxiosInstance | null>(null);
-  const { logout, setToken } = useAuthStore();
+  const { logout, setToken, token } = useAuthStore(state => state);
 
-  // Token refresh state - outside the hook to be shared across all instances
   let isRefreshing = false;
   let failedRequestsQueue: FailedRequestCallback[] = [];
 
@@ -101,7 +101,6 @@ export default function useAxios(): UseAxiosReturn {
     // Request Interceptor
     instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
-        const token = getItem("auth_token");
         console.log("Attaching token to request:", token);
         console.log(
           "Request config before attaching token:",

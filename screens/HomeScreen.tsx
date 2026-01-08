@@ -19,26 +19,24 @@ import { useAuthStore } from "../stores/authSlice";
 import useAxios from "../api/axios";
 import AssetsSection from "../components/Dashboard/AssetsSection";
 import CustomLoading from "../components/CustomLoading";
-import { getItem } from "../utlis/storage";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import AdvertsBanner from "../components/AdvertsBanner";
 
 const HomeScreen = () => {
   const { apiGet } = useAxios();
-  const { user: userData, setUser } = useAuthStore(state => state);
+  const { user, setUser } = useAuthStore(state => state);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const restoreUser = JSON.parse(getItem("user") as string);
   const navigation = useNavigation();
 
   const userAccounts = useMemo(() => {
-    if (Array.isArray(userData?.bank_accounts)) {
-      return userData?.bank_accounts;
+    if (Array.isArray(user?.bank_accounts)) {
+      return user?.bank_accounts;
     }
 
     return [];
-  }, [userData?.bank_accounts]);
+  }, [user?.bank_accounts]);
 
   const fetchUserAccounts = async () => {
     try {
@@ -47,7 +45,6 @@ const HomeScreen = () => {
       const response = await apiGet("users/user/accounts");
 
       if (response.data?.success) {
-        setUser(restoreUser);
         setUser(response.data.data);
       }
     } catch (err: any) {
@@ -68,19 +65,19 @@ const HomeScreen = () => {
   };
 
   const fiatWallet = useMemo(() => {
-    if (userData?.wallets) {
-      return userData.wallets.find((wallet: any) => wallet?.type === "fiat");
+    if (user?.wallets) {
+      return user?.wallets.find((wallet: any) => wallet?.type === "fiat");
     }
     return null;
-  }, [userData]);
+  }, [user]);
 
   const needsVerification = useMemo(() => {
     return (
-      userData?.tier_level === "TIER_0" ||
+      user?.tier_level === "TIER_0" ||
       !userAccounts?.bank_accounts?.length ||
       userAccounts?.bank_accounts?.length === 0
     );
-  }, [userData, userAccounts]);
+  }, [user, userAccounts]);
 
   return (
     <SafeAreaView edges={["left", "right", "top"]} style={styles.container}>
@@ -101,9 +98,9 @@ const HomeScreen = () => {
           <View style={styles.headerLeft}>
             <Image
               source={
-                userData?.profile_picture_url
+                user?.profile_picture_url
                   ? {
-                      uri: userData?.profile_picture_url || undefined,
+                      uri: user?.profile_picture_url || undefined,
                     }
                   : require("../assets/avatar.png")
               }
@@ -114,9 +111,9 @@ const HomeScreen = () => {
               <Text style={styles.welcomeBack}>Welcome back</Text>
               <Text style={styles.userName}>
                 Hi,{" "}
-                {(userData?.username
-                  ? userData.username.charAt(0).toUpperCase() +
-                    userData.username.slice(1)
+                {(user?.username
+                  ? user.username.charAt(0).toUpperCase() +
+                    user.username.slice(1)
                   : "") || "User"}
               </Text>
             </View>

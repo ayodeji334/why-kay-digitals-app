@@ -1,28 +1,31 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { getItem, setItem, removeItem } from "../utlis/storage"; // Your MMKV utils
 import axios from "axios";
 import { BASE_URL } from "../api/axios";
+import { getItem, setItem, removeItem } from "../utlis/storage";
 
 interface AuthState {
   token: string | null;
   refreshToken: string | null;
-  isShowBalance: boolean;
   user: any | null;
   isAuthenticated: boolean;
   isBiometricEnabled: boolean;
   isGoogleAuthenticatorEnabled: boolean;
+  isShowBalance: boolean;
+  hasHydrated: boolean;
+
   setToken: (token: string | null, refreshToken?: string | null) => void;
-  setUser: (user: any) => void;
+  setUser: (user: any | null) => void;
+  setIsAuthenticated: (value: boolean) => void;
   setIsShowBalance: (show: boolean) => void;
-  logout: () => void;
   enableBiometric: () => void;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
   disableBiometric: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
   setIsGoogleAuthenticatorEnabled: (enabled: boolean) => void;
+  logout: () => void;
   clearAuth: () => void;
   initializeAuth: () => Promise<void>;
+  setHasHydrated: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -32,136 +35,114 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       user: null,
       isAuthenticated: false,
-      isGoogleAuthenticatorEnabled: false,
       isBiometricEnabled: false,
+      isGoogleAuthenticatorEnabled: false,
       isShowBalance: true,
+      hasHydrated: false,
 
       setToken: (token, refreshToken = null) => {
-        set({
-          token,
-          refreshToken,
-          // isAuthenticated: !!token,
-        });
-
-        // axios interceptor access
-        if (token) {
-          setItem("auth_token", token);
-        } else {
-          removeItem("auth_token");
-        }
-
-        if (refreshToken) {
-          setItem("refresh_token", refreshToken);
-        } else {
-          removeItem("refresh_token");
-        }
+        set({ token, refreshToken });
       },
-      setIsShowBalance: (show: boolean) => {
-        set({ isShowBalance: show });
-      },
+
       setUser: user => {
         set(state => ({
-          ...state,
-          user: user ? { ...state.user, ...user } : null,
+          user: user
+            ? {
+                ...(state.user ?? {}),
+                ...user,
+              }
+            : null,
         }));
+      },
 
-        if (user) {
-          setItem("user", JSON.stringify(user));
-        } else {
-          removeItem("user");
-        }
-      },
-      logout: () => {
-        set(state => ({
-          ...state,
-          token: null,
-          refreshToken: null,
-          isAuthenticated: false,
-        }));
-
-        removeItem("auth_token");
-        removeItem("refresh_token");
-      },
-      setIsGoogleAuthenticatorEnabled: (value: boolean) => {
-        set({ isGoogleAuthenticatorEnabled: value });
-      },
-      enableBiometric: () => {
-        set({ isBiometricEnabled: true });
-      },
-      setIsAuthenticated: (value: boolean) => {
+      setIsAuthenticated: value => {
         set({ isAuthenticated: value });
       },
-      disableBiometric: () => {
-        set({ isBiometricEnabled: false });
+
+      setIsShowBalance: show => {
+        set({ isShowBalance: show });
       },
-      setBiometricEnabled: (enabled: boolean) => {
-        set({ isBiometricEnabled: enabled });
+
+      enableBiometric: () => set({ isBiometricEnabled: true }),
+      disableBiometric: () => set({ isBiometricEnabled: false }),
+      setBiometricEnabled: enabled => set({ isBiometricEnabled: enabled }),
+      setIsGoogleAuthenticatorEnabled: enabled =>
+        set({ isGoogleAuthenticatorEnabled: enabled }),
+
+      logout: () => {
+        set({
+          token: null,
+          refreshToken: null,
+          user: null,
+          isAuthenticated: false,
+        });
       },
+
       clearAuth: () => {
         get().logout();
         set({
           isBiometricEnabled: false,
-          // isOnboardingCompleted: false,
+          isGoogleAuthenticatorEnabled: false,
         });
       },
 
-      // completeOnboarding: () => {
-      //   set({ isOnboardingCompleted: true });
-      // },
-
       initializeAuth: async () => {
+        const { token } = get();
+
+        if (!token) {
+          get().logout();
+          return;
+        }
+
         try {
-          const token = getItem("auth_token");
-          const savedUser = getItem("user");
+          const res = await axios.get(`${BASE_URL}/users/current-user`, {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 8000,
+          });
 
-          if (token && savedUser) {
-            try {
-              const res = await axios.get(`${BASE_URL}/users/current-user`, {
-                headers: { Authorization: `Bearer ${token}` },
-                timeout: 8000,
-              });
-
-              if (res?.status === 200 && res.data?.success) {
-                const userData = res.data.data;
-
-                set({
-                  token,
-                  user: userData,
-                  isAuthenticated: true,
-                });
-
-                //   // Load additional user data
-                //   await loadBiometricStatus(userData.uuid);
-                //   loadUserPreferences();
-              } else {
-                throw new Error("Invalid token");
-              }
-            } catch (error) {
-              get().logout(); // Use the existing logout action
-            }
+          if (res.status === 200 && res.data?.success) {
+            set({
+              user: res.data.data,
+              isAuthenticated: true,
+            });
           } else {
-            get().logout(); // Ensure clean state
+            throw new Error("Invalid session");
           }
-        } catch (err) {
+        } catch {
           get().logout();
         }
+      },
+
+      setHasHydrated: () => {
+        set({ hasHydrated: true });
       },
     }),
     {
       name: "auth-storage",
+
+      /**
+       * MMKV adapter
+       * IMPORTANT:
+       * - Zustand already serializes
+       * - MMKV stores raw strings
+       * - NEVER JSON.stringify here
+       */
       storage: createJSONStorage(() => ({
-        getItem: name => {
-          const value = getItem(name);
+        getItem: key => {
+          const value = getItem(key);
           return value ? JSON.parse(value) : null;
         },
-        setItem: (name, value) => {
-          setItem(name, JSON.stringify(value));
+        setItem: (key, value) => {
+          setItem(key, value);
         },
-        removeItem: name => {
-          removeItem(name);
+        removeItem: key => {
+          removeItem(key);
         },
       })),
-      // Only persist these fields
+
+      /**
+       * Persist ONLY what is needed
+       */
       partialize: state => ({
         token: state.token,
         refreshToken: state.refreshToken,
@@ -169,23 +150,30 @@ export const useAuthStore = create<AuthState>()(
         isBiometricEnabled: state.isBiometricEnabled,
         isGoogleAuthenticatorEnabled: state.isGoogleAuthenticatorEnabled,
       }),
+
+      /**
+       * Hydration callback (critical for real devices)
+       */
+      onRehydrateStorage: () => state => {
+        state?.setHasHydrated();
+      },
     },
   ),
 );
 
-// Selector hooks for optimized re-renders
 export const useToken = () => useAuthStore(state => state.token);
 export const useUser = () => useAuthStore(state => state.user);
 export const useIsAuthenticated = () =>
   useAuthStore(state => state.isAuthenticated);
 export const useIsBiometricEnabled = () =>
   useAuthStore(state => state.isBiometricEnabled);
+export const useHasHydrated = () => useAuthStore(state => state.hasHydrated);
+
 export const useAuthActions = () =>
   useAuthStore(state => ({
     setToken: state.setToken,
     setUser: state.setUser,
+    setIsAuthenticated: state.setIsAuthenticated,
     logout: state.logout,
-    enableBiometric: state.enableBiometric,
-    disableBiometric: state.disableBiometric,
-    setBiometricEnabled: state.setBiometricEnabled,
+    clearAuth: state.clearAuth,
   }));
