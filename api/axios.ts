@@ -9,8 +9,8 @@ import { getItem } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 
-// export const BASE_URL = "https://wk.micakin.com/v1";
-export const BASE_URL = `http://10.210.55.110:8000/v1`;
+export const BASE_URL = "https://ayodejijava.com.ng/v1";
+// export const BASE_URL = `http://10.210.55.110:8000/v1`;
 
 const NETWORK_ERROR_MESSAGE = "Network error. Please check your connection.";
 const SERVER_ERROR_MESSAGE = "Something went wrong. Please try again.";

@@ -57,12 +57,12 @@
 	<array>
 		<string>Entypo.ttf</string>
 		<string>Octicons.ttf</string>
-		<string>Zain-Black.ttf</string>
-		<string>Zain-Bold.ttf</string>
-		<string>Zain-ExtraBold.ttf</string>
 		<string>Zain-ExtraLight.ttf</string>
-		<string>Zain-Light.ttf</string>
+		<string>Zain-Black.ttf</string>
 		<string>Zain-Regular.ttf</string>
+		<string>Zain-ExtraBold.ttf</string>
+		<string>Zain-Bold.ttf</string>
+		<string>Zain-Light.ttf</string>
 	</array>
 </dict>
 </plist>

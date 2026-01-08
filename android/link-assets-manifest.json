@@ -2,28 +2,28 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "assets/fonts/Zain-ExtraLight.ttf",
+      "sha1": "c4003d158a3ba156742bbb63178e4455fd80d8be"
+    },
+    {
       "path": "assets/fonts/Zain-Black.ttf",
       "sha1": "ba6a285c49b68484e1ea93a0ae716f8e09eb4532"
     },
     {
-      "path": "assets/fonts/Zain-Bold.ttf",
-      "sha1": "7b46f8b84bd6c694ba48ff76cf2d4dbe1b763089"
+      "path": "assets/fonts/Zain-Regular.ttf",
+      "sha1": "f59cd4a8f16839a21dccfa00f2e28d9236644420"
     },
     {
       "path": "assets/fonts/Zain-ExtraBold.ttf",
       "sha1": "5a1d02cfb0d3dbcc30d4a2cab8a28cfd705e0126"
     },
     {
-      "path": "assets/fonts/Zain-ExtraLight.ttf",
-      "sha1": "c4003d158a3ba156742bbb63178e4455fd80d8be"
+      "path": "assets/fonts/Zain-Bold.ttf",
+      "sha1": "7b46f8b84bd6c694ba48ff76cf2d4dbe1b763089"
     },
     {
       "path": "assets/fonts/Zain-Light.ttf",
       "sha1": "de0e961db26e88076860de9077e6f6d0aae7f306"
-    },
-    {
-      "path": "assets/fonts/Zain-Regular.ttf",
-      "sha1": "f59cd4a8f16839a21dccfa00f2e28d9236644420"
     }
   ]
 }
