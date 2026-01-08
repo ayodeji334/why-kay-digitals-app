@@ -261,12 +261,13 @@ export default function CryptoRatesScreen() {
         </View>
 
         <TouchableOpacity
-          onPress={() => {
-            // Alert.alert(
-            //   "Coming Soon!",
-            //   "The feature is not available for now. Kindly check back later",
-            // );
-          }}
+          // onPress={() => {
+          //   // Alert.alert(
+          //   //   "Coming Soon!",
+          //   //   "The feature is not available for now. Kindly check back later",
+          //   // );
+          // }}
+          onPress={onPress}
           activeOpacity={0.8}
           style={styles.tradeButton}
         >

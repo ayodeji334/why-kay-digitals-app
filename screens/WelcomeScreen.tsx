@@ -1,4 +1,3 @@
-// export default WelcomeScreen;
 import React from "react";
 import {
   View,
@@ -148,9 +147,10 @@ const styles = StyleSheet.create({
     color: COLORS.whiteBackground,
     textAlign: "center",
     fontFamily: getFontFamily(800),
-    maxWidth: "60%",
+    maxWidth: "80%",
     marginHorizontal: "auto",
-    lineHeight: 38,
+    marginBottom: 10,
+    lineHeight: 30,
   },
   highlight: {
     color: COLORS.primary,
