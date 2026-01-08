@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import PasswordInputField from "../PaswordInputField";
 import { COLORS } from "../../constants/colors";
 import { getFontFamily, normalize } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";

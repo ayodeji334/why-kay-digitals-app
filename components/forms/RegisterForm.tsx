@@ -122,13 +122,11 @@ const RegisterForm: React.FC = () => {
         });
 
         if (res.data.available === false) {
-          // ❌ Username taken — set error message
           setError("username", {
             type: "manual",
             message: "Username is already taken",
           });
         } else {
-          // ✅ Username available — clear previous error
           clearErrors("username");
         }
 

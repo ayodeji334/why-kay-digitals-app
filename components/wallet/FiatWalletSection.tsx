@@ -7,7 +7,6 @@ import BalanceCard from "../Dashboard/BalanceCard";
 import useAxios from "../../api/axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TransactionSectionList from "../TransactionList";
-// import { EmptyTransactionState } from "../../screens/TransactionHistory";
 
 const FiatWalletSection = ({ fiatWallet }: any) => {
   const { apiGet } = useAxios();

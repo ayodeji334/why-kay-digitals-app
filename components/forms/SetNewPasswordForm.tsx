@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import PasswordInputField from "../PaswordInputField";
 import { COLORS } from "../../constants/colors";
 import NumberInputField from "../NumberInputField";
-import { getFontFamily, normalize, width } from "../../constants/settings";
+import { getFontFamily, normalize } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { AxiosError } from "axios";
 import { showError } from "../../utlis/toast";

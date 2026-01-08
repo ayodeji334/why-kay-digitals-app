@@ -49,7 +49,6 @@ const VerificationForm = ({ email }: { email: string }) => {
       showSuccess("Token verified!");
 
       const authData = response.data?.data?.auth;
-      // console.log("authData", authData);
 
       if (authData?.accessToken && authData?.refreshToken) {
         setToken(authData.accessToken);
