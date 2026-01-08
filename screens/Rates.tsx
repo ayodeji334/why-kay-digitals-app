@@ -18,6 +18,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SelectInput } from "../components/SelectInputField";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
+import { useNavigation } from "@react-navigation/native";
 
 export default function CryptoRatesScreen() {
   const [activeTab, setActiveTab] = useState("sell");
@@ -26,6 +27,7 @@ export default function CryptoRatesScreen() {
   const [cryptoOptions, setCryptoOptions] = useState<Array<any>>([]);
   const [rateBreakdown, setRateBreakdown] = useState<string>("");
   const { apiGet } = useAxios();
+  const navigation: any = useNavigation();
 
   const crypto: any = useMemo(
     () => cryptoOptions.find((c: any) => c.value === selectedCrypto),
@@ -125,6 +127,27 @@ export default function CryptoRatesScreen() {
     // Return default value if no category matches or no amount provided
     return parseFloat(latestRate.default_value);
   }, [selectedCrypto, activeTab, amount, data]);
+
+  const onPress = () => {
+    if (!selectedCrypto) {
+      Alert.alert("Error", "Please select a cryptocurrency");
+      return;
+    }
+
+    if (activeTab === "buy") {
+      navigation.navigate("BuyCrypto", {
+        crypto,
+        amount,
+        rate: currentRate,
+      });
+    } else {
+      navigation.navigate("SellCrypto", {
+        crypto,
+        amount,
+        rate: currentRate,
+      });
+    }
+  };
 
   useEffect(() => {
     if (data?.assets) {
@@ -239,10 +262,10 @@ export default function CryptoRatesScreen() {
 
         <TouchableOpacity
           onPress={() => {
-            Alert.alert(
-              "Coming Soon!",
-              "The feature is not available for now. Kindly check back later",
-            );
+            // Alert.alert(
+            //   "Coming Soon!",
+            //   "The feature is not available for now. Kindly check back later",
+            // );
           }}
           activeOpacity={0.8}
           style={styles.tradeButton}

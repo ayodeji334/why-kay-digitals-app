@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   },
   optionPrice: {
     fontSize: normalize(16),
-    fontFamily: getFontFamily("400"),
+    fontFamily: getFontFamily("700"),
     color: "#6B7280",
   },
   error: { color: "#FF3B30", marginTop: 4, fontFamily: getFontFamily("700") },
