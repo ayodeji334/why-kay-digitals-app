@@ -13,15 +13,15 @@ export function normalize(size: number) {
 
 export const getFontFamily = (weight: string | number) => {
   const fontWeights: any = {
-    "100": "Zain-Thin",
-    "200": "Zain-ExtraLight",
-    "300": "Zain-Light",
-    "400": "Zain-Regular",
-    "500": "Zain-Medium",
-    "600": "Zain-SemiBold",
-    "700": "Zain-Bold",
-    "800": "Zain-ExtraBold",
-    "900": "Zain-Black",
+    "100": "Onest-Thin",
+    "200": "Onest-ExtraLight",
+    "300": "Onest-Light",
+    "400": "Onest-Regular",
+    "500": "Onest-Medium",
+    "600": "Onest-SemiBold",
+    "700": "Onest-Bold",
+    "800": "Onest-ExtraBold",
+    "900": "Onest-Black",
   };
 
   const weightMap: any = {
