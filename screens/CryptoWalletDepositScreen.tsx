@@ -6,8 +6,9 @@ import {
   StyleSheet,
   ScrollView,
   Share as RNShare,
+  RefreshControl,
 } from "react-native";
-import { Share, Copy, ArrowDown2, ArrowUp2 } from "iconsax-react-nativejs";
+import { Share, Copy } from "iconsax-react-nativejs";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
@@ -19,7 +20,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import useAxios from "../api/axios";
 import { useQuery } from "@tanstack/react-query";
 import CustomLoading from "../components/CustomLoading";
-import { formatAmount, formatNumber } from "../libs/formatNumber";
+// import { formatAmount, formatNumber } from "../libs/formatNumber";
 import QRCode from "react-native-qrcode-svg";
 
 const WalletQRCode = ({ address }: { address: string }) => {
@@ -42,12 +43,12 @@ const CryptoWalletDepositScreen = () => {
   const route: any = useRoute();
   const navigation: any = useNavigation();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedChain, setSelectedChain] = useState<any | null>(null);
   const axiosInstance = useAxios();
   const selectedAssetUuid = useMemo(
     () => route.params?.crypto?.uuid,
     [route.params?.crypto?.uuid],
   );
-
   const { data, isFetching, isLoading, refetch } = useQuery({
     queryKey: ["walletAddress", selectedAssetUuid],
     queryFn: async () => {
@@ -66,24 +67,34 @@ const CryptoWalletDepositScreen = () => {
     enabled: selectedAssetUuid !== undefined && selectedAssetUuid !== null,
   });
 
-  const walletAddress = useMemo(() => {
-    if (!data?.addresses?.length) return null;
-
-    return (
-      data.addresses.find((a: any) => a.is_primary)?.address ??
-      data.addresses[0]?.address
-    );
+  const availableChains = useMemo(() => {
+    return Array.isArray(data?.availableChains) ? data.availableChains : [];
   }, [data]);
 
+  const walletAddress = useMemo(() => {
+    if (!Array.isArray(data?.addresses) || data.addresses.length === 0)
+      return null;
+
+    return data.addresses[0];
+  }, [data?.addresses]);
+
   const handleGenerateWallet = async () => {
+    if (!selectedChain) return;
+
     setIsGenerating(true);
 
     try {
-      await axiosInstance.apiGet(
+      await axiosInstance.post(
         `wallets/user/${selectedAssetUuid}/generate-wallet`,
+        {
+          chainType: selectedChain.chain,
+        },
       );
 
+      setSelectedChain(null);
       refetch();
+    } catch (error) {
+      showError("Failed to generate wallet address");
     } finally {
       setIsGenerating(false);
     }
@@ -129,6 +140,47 @@ const CryptoWalletDepositScreen = () => {
         </Text>
       </View>
 
+      {availableChains.length > 0 && (
+        <View style={{ marginBottom: 20 }}>
+          <Text style={styles.label}>Select Network</Text>
+
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
+            {availableChains.map((chain: any) => {
+              const isSelected = selectedChain?.chain === chain.chain;
+
+              return (
+                <TouchableOpacity
+                  key={chain.chain}
+                  activeOpacity={0.8}
+                  onPress={() => setSelectedChain(chain)}
+                  style={[
+                    {
+                      paddingVertical: 8,
+                      paddingHorizontal: 14,
+                      borderRadius: 20,
+                      borderWidth: 1,
+                      borderColor: isSelected ? COLORS.primary : "#ccc",
+                      backgroundColor: isSelected
+                        ? "rgba(0,200,83,0.15)"
+                        : "transparent",
+                    },
+                  ]}
+                >
+                  <Text
+                    style={{
+                      fontFamily: getFontFamily(700),
+                      color: isSelected ? COLORS.primary : "#333",
+                    }}
+                  >
+                    {chain.chainType} ({chain?.chain})
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+      )}
+
       <View style={styles.section}>
         <TouchableOpacity
           style={[styles.generateButton, isGenerating && { opacity: 0.5 }]}
@@ -161,19 +213,19 @@ const CryptoWalletDepositScreen = () => {
           gap: 10,
         }}
       >
-        <WalletQRCode address={walletAddress} />
+        <WalletQRCode address={walletAddress?.address} />
 
         <View style={styles.sectionBox}>
           <Text style={styles.label}>Receiving Address</Text>
 
           <View style={styles.addressRow}>
             <Text numberOfLines={1} style={styles?.addressText}>
-              {walletAddress}
+              {walletAddress?.address}
             </Text>
 
             <TouchableOpacity
               style={styles.copyButton}
-              onPress={() => copyToClipboard(walletAddress)}
+              onPress={() => copyToClipboard(walletAddress?.address)}
             >
               <Copy size={18} color={COLORS.primary} />
             </TouchableOpacity>
@@ -182,29 +234,31 @@ const CryptoWalletDepositScreen = () => {
 
         <View style={styles.priceContainer}>
           <View style={styles.priceBox}>
-            <Text style={styles.label}>Price</Text>
+            <Text style={styles.label}>Chain Type</Text>
             <Text style={styles.priceValue}>
-              {formatAmount(data?.price ?? 0)}
+              {walletAddress?.chain_type ?? "Not Provided"}
+              {/* {formatAmount(data?.price ?? 0)} */}
             </Text>
           </View>
 
           <View style={styles.priceBox}>
-            <Text style={styles.label}>Last 1hr</Text>
+            <Text style={styles.label}>Chain</Text>
             <View style={styles.priceRow}>
               <Text
                 style={[
                   styles.priceChange,
-                  { color: isPriceDown ? "#FF5252" : "#00E676" },
+                  { color: isPriceDown ? "#FF5252" : "#000000" },
                 ]}
               >
-                {formatNumber(data?.priceChange ?? 0)}%
+                {walletAddress?.chain ?? "Not Provided"}
+                {/* {formatNumber(data?.priceChange ?? 0)}% */}
               </Text>
 
-              {isPriceDown ? (
+              {/* {isPriceDown ? (
                 <ArrowDown2 size={18} color={COLORS.error} />
               ) : (
                 <ArrowUp2 size={18} color={COLORS.primary} />
-              )}
+              )} */}
             </View>
           </View>
         </View>
@@ -237,8 +291,18 @@ const CryptoWalletDepositScreen = () => {
 
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.screen}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
-        {data ? renderWalletDetails() : renderNoWalletAddress()}
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching || isLoading}
+            onRefresh={refetch}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
+        contentContainerStyle={{ paddingBottom: 120 }}
+      >
+        {walletAddress ? renderWalletDetails() : renderNoWalletAddress()}
       </ScrollView>
 
       <CustomLoading loading={isLoading || isGenerating || isFetching} />
@@ -359,9 +423,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   label: {
-    color: "gray",
-    fontFamily: getFontFamily(700),
-    fontSize: 15,
+    color: "black",
+    fontFamily: getFontFamily(900),
+    fontSize: normalize(19),
     marginBottom: 6,
   },
   addressRow: {

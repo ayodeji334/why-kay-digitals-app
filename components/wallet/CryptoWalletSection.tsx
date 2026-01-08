@@ -41,8 +41,6 @@ const CryptoWalletSection = ({
     refetchOnWindowFocus: true,
   });
 
-  console.log(data);
-
   const totalWalletValue: number = useMemo(
     () =>
       Array.isArray(data)
