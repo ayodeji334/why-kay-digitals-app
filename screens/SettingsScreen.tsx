@@ -18,7 +18,6 @@ import DeviceInfo from "react-native-device-info";
 import { useNavigation } from "@react-navigation/native";
 import HalfScreenModal from "../components/HalfScreenModal";
 import { useAuthStore } from "../stores/authSlice";
-import { getItem } from "../utlis/storage";
 import CustomIcon from "../components/CustomIcon";
 import {
   AlarmIcon,
@@ -116,7 +115,8 @@ export default function SettingsScreen() {
   const navigation = useNavigation();
   const appVersion = DeviceInfo.getVersion();
   const buildNumber = DeviceInfo.getBuildNumber();
-  const { user, logout } = useAuthStore(state => state);
+  const logout = useAuthStore(state => state.logout);
+  const user = useAuthStore(state => state.user);
 
   const handleEditInfo = () => {
     navigation.navigate("EditProfile" as never);

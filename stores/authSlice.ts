@@ -13,7 +13,7 @@ interface AuthState {
   isGoogleAuthenticatorEnabled: boolean;
   isShowBalance: boolean;
   hasHydrated: boolean;
-
+  fetchUserAccounts: () => Promise<void>;
   setToken: (token: string | null, refreshToken?: string | null) => void;
   setUser: (user: any | null) => void;
   setIsAuthenticated: (value: boolean) => void;
@@ -62,7 +62,31 @@ export const useAuthStore = create<AuthState>()(
       setIsShowBalance: show => {
         set({ isShowBalance: show });
       },
+      fetchUserAccounts: async () => {
+        const { token } = get();
+        if (!token) return;
 
+        try {
+          const res = await axios.get(`${BASE_URL}/users/user/accounts`, {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 8000,
+          });
+
+          if (res.status === 200 && res.data?.success) {
+            set(state => ({
+              user: {
+                ...(state.user ?? {}),
+                ...res.data.data, // merge or replace depending on your needs
+              },
+            }));
+          }
+        } catch (err) {
+          // fallback: clear accounts but keep user shape predictable
+          set(state => ({
+            user: { ...(state.user ?? {}), bank_accounts: [], wallets: [] },
+          }));
+        }
+      },
       enableBiometric: () => set({ isBiometricEnabled: true }),
       disableBiometric: () => set({ isBiometricEnabled: false }),
       setBiometricEnabled: enabled => set({ isBiometricEnabled: enabled }),
@@ -73,7 +97,6 @@ export const useAuthStore = create<AuthState>()(
         set({
           token: null,
           refreshToken: null,
-          user: null,
           isAuthenticated: false,
         });
       },
@@ -156,6 +179,9 @@ export const useAuthStore = create<AuthState>()(
        */
       onRehydrateStorage: () => state => {
         state?.setHasHydrated();
+        // call fetchUserAccounts once hydrated
+        console.log("calling user account endpoint");
+        state?.fetchUserAccounts?.();
       },
     },
   ),

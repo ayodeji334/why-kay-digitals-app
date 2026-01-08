@@ -26,7 +26,12 @@ import HelpSupportScreen from "../screens/ContactUsScreen";
 import ReferAndEarnScreen from "../screens/ReferAndEarnScreen";
 import ReferralHistoryScreen from "../screens/ReferralHistoryScreen";
 import BiometricsScreen from "../screens/EnableBiometricScreen";
-import { useAuthStore } from "../stores/authSlice";
+import {
+  useAuthStore,
+  useHasHydrated,
+  useIsAuthenticated,
+  useUser,
+} from "../stores/authSlice";
 import DepositScreen from "../screens/DepositScreen";
 import BankTransferScreen from "../screens/BankTransfer";
 import BVNVerificationScreen from "../screens/BVNVerificationScreen";
@@ -48,11 +53,19 @@ import CryptoSellScreen from "../screens/SellCrytpoScreen";
 import CryptoSwapScreen from "../screens/SwapCryptoScreen";
 
 export default function NavigationRoot() {
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
-  const user = getItem("user");
+  const isAuthenticated = useIsAuthenticated();
+  const user = useUser();
+
+  console.log(user);
+
+  console.log(!!user);
 
   const RootStack = createNativeStackNavigator({
-    initialRouteName: isAuthenticated ? "Dashboard" : user ? "SignIn" : "Intro",
+    initialRouteName: isAuthenticated
+      ? "Dashboard"
+      : !!user
+      ? "SignIn"
+      : "Intro",
     screens: {
       Welcome: {
         screen: WelcomeScreen,

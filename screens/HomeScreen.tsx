@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -15,8 +15,7 @@ import ServicesSection from "../components/Dashboard/ServicesSection";
 import { Notification, Scan } from "iconsax-react-nativejs";
 import BalanceCard from "../components/Dashboard/BalanceCard";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useAuthStore } from "../stores/authSlice";
-import useAxios from "../api/axios";
+import { useAuthStore, useUser } from "../stores/authSlice";
 import AssetsSection from "../components/Dashboard/AssetsSection";
 import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
@@ -24,10 +23,10 @@ import { COLORS } from "../constants/colors";
 import AdvertsBanner from "../components/AdvertsBanner";
 
 const HomeScreen = () => {
-  const { apiGet } = useAxios();
-  const { user, setUser } = useAuthStore(state => state);
+  const user = useUser();
+  const fetchUserAccounts = useAuthStore(s => s.fetchUserAccounts);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
   const userAccounts = useMemo(() => {
@@ -37,32 +36,6 @@ const HomeScreen = () => {
 
     return [];
   }, [user?.bank_accounts]);
-
-  const fetchUserAccounts = async () => {
-    try {
-      setLoading(true);
-
-      const response = await apiGet("users/user/accounts");
-
-      if (response.data?.success) {
-        setUser(response.data.data);
-      }
-    } catch (err: any) {
-      setUser({ bank_accounts: [], wallets: [] });
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserAccounts();
-  }, []);
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchUserAccounts();
-  };
 
   const fiatWallet = useMemo(() => {
     if (user?.wallets) {
@@ -78,6 +51,14 @@ const HomeScreen = () => {
       userAccounts?.bank_accounts?.length === 0
     );
   }, [user, userAccounts]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    setLoading(true);
+    await fetchUserAccounts();
+    setRefreshing(false);
+    setLoading(false);
+  };
 
   return (
     <SafeAreaView edges={["left", "right", "top"]} style={styles.container}>
@@ -176,7 +157,7 @@ const HomeScreen = () => {
         <ServicesSection />
         <AdvertsBanner />
       </ScrollView>
-      <CustomLoading loading={loading} />
+      <CustomLoading loading={loading || refreshing} />
     </SafeAreaView>
   );
 };
