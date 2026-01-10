@@ -8,38 +8,21 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useAuthStore, useUser } from "../stores/authSlice";
-import { useQuery } from "@tanstack/react-query";
+import { useUser } from "../stores/authSlice";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import CustomLoading from "../components/CustomLoading";
 import { COLORS } from "../constants/colors";
 import CryptoWalletSection from "../components/wallet/CryptoWalletSection";
 import FiatWalletSection from "../components/wallet/FiatWalletSection";
-import useAxios from "../hooks/useAxios";
+import { useWalletStore } from "../stores/walletSlice";
 
 export default function WalletScreen() {
-  const setUser = useAuthStore(state => state.setUser);
   const user = useUser();
-  const { apiGet } = useAxios();
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState<"crypto" | "fiat">("crypto");
-
-  const fetchUserAccounts = async () => {
-    const response = await apiGet("users/user/accounts");
-    if (!response.data?.success) {
-      setRefreshing(false);
-      throw new Error(
-        response.data?.message || "Failed to fetch user accounts",
-      );
-    }
-    return response.data.data;
-  };
-
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["userWallet"],
-    queryFn: fetchUserAccounts,
-  });
+  const fetchWallets = useWalletStore(state => state.fetchWallets);
+  const loading = useWalletStore(state => state.loading);
 
   const fiatWallet = useMemo(() => {
     if (Array.isArray(user?.wallets)) {
@@ -49,7 +32,7 @@ export default function WalletScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await refetch();
+    await fetchWallets();
     setRefreshing(false);
   };
 
@@ -67,17 +50,9 @@ export default function WalletScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      refetch();
-    }, [refetch]),
+      fetchWallets();
+    }, [fetchWallets]),
   );
-
-  useEffect(() => {
-    if (data) setUser(data);
-  }, [data, setUser]);
-
-  useEffect(() => {
-    refetch();
-  }, [activeTab, refetch]);
 
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
@@ -126,7 +101,7 @@ export default function WalletScreen() {
         )}
       </View>
 
-      <CustomLoading loading={isLoading} />
+      <CustomLoading loading={loading} />
     </SafeAreaView>
   );
 }

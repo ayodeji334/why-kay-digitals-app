@@ -10,6 +10,7 @@ interface WalletState {
   error: string | null;
 
   fetchWalletsAndAccounts: () => Promise<void>;
+  fetchWallets: () => Promise<void>;
   refreshWallets: () => Promise<void>;
   clearWallets: () => void;
 }
@@ -36,6 +37,31 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       set({
         wallets: res.data.data.wallets ?? [],
         bankAccounts: res.data.data.bank_accounts ?? [],
+      });
+    } catch (e: any) {
+      set({ error: e.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  fetchWallets: async () => {
+    const token = useAuthStore.getState().token;
+    if (!token || get().wallets.length) return;
+
+    set({ loading: true, error: null });
+
+    try {
+      const res = await axios.get(`${BASE_URL}/wallets/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log(res?.data?.data);
+
+      if (!res.data?.success) throw new Error(res.data?.message);
+
+      set({
+        wallets: res.data.data ?? [],
       });
     } catch (e: any) {
       set({ error: e.message });

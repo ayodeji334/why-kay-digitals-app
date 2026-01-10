@@ -3,7 +3,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  RefreshControl,
   ScrollView,
   Image,
 } from "react-native";
@@ -17,10 +16,9 @@ import {
   TagsIcon,
 } from "../../assets";
 import CustomIcon from "../CustomIcon";
-import useAxios from "../../hooks/useAxios";
-import { useQuery } from "@tanstack/react-query";
 import { formatAmount } from "../../libs/formatNumber";
 import { useMemo } from "react";
+import { useWalletStore } from "../../stores/walletSlice";
 
 const CryptoWalletSection = ({
   handleSell,
@@ -28,36 +26,23 @@ const CryptoWalletSection = ({
   handleDeposit,
   handleBuy,
 }: any) => {
-  const { apiGet } = useAxios();
+  const wallets = useWalletStore(state => state.wallets);
 
-  const fetchTransactions = async () => {
-    const { data }: any = await apiGet("/wallets/user");
-    return data?.data ?? [];
-  };
-
-  const { data, refetch, isRefetching } = useQuery({
-    queryKey: ["user-wallets"],
-    queryFn: fetchTransactions,
-    refetchOnWindowFocus: true,
-  });
-
-  const totalWalletValue: number = useMemo(
+  const totalWalletValue = useMemo(
     () =>
-      Array.isArray(data)
-        ? data.reduce((sum: number, d: any) => {
-            return sum + (parseFloat(d?.wallet_value) || 0);
-          }, 0)
+      Array.isArray(wallets)
+        ? wallets.reduce(
+            (sum: number, w: any) => sum + (parseFloat(w.wallet_value) || 0),
+            0,
+          )
         : 0,
-    [data],
+    [wallets],
   );
 
+  console.log(wallets);
+
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
-      }
-    >
+    <ScrollView showsVerticalScrollIndicator={false}>
       <BalanceCard
         balance={totalWalletValue}
         title="Total Balance"
@@ -119,8 +104,8 @@ const CryptoWalletSection = ({
       <View style={styles.assetsSection}>
         <Text style={styles.sectionTitle}>Assets</Text>
         <View style={styles.assetsList}>
-          {Array.isArray(data) && data.length > 0 ? (
-            data.map((asset: any) => (
+          {Array.isArray(wallets) && wallets.length > 0 ? (
+            wallets.map((asset: any) => (
               <AssetItem key={asset.asset_id} asset={asset} />
             ))
           ) : (
@@ -150,31 +135,34 @@ const ActionCard = ({ title, source, onPress }: any) => (
   </TouchableOpacity>
 );
 
-const AssetItem = ({ asset }: any) => (
-  <TouchableOpacity style={styles.assetItem} activeOpacity={0.7}>
-    <View style={styles.assetLeft}>
-      {asset.asset_logo_url && (
-        <Image
-          key={asset.asset_logo_url}
-          source={{ uri: asset.asset_logo_url }}
-          resizeMode="contain"
-          style={styles.assetIcon}
-        />
-      )}
-      <View style={styles.assetInfo}>
-        <Text style={styles.assetName}>
-          {asset.asset_name} ({asset.symbol})
-        </Text>
-        <Text style={styles.assetSymbol}>
-          {formatAmount(asset.market_current_value, false, "USD")}
-        </Text>
+const AssetItem = ({ asset }: any) => {
+  console.log(asset);
+  return (
+    <TouchableOpacity style={styles.assetItem} activeOpacity={0.7}>
+      <View style={styles.assetLeft}>
+        {asset.asset_logo_url && (
+          <Image
+            key={asset.asset_logo_url}
+            source={{ uri: asset.asset_logo_url }}
+            resizeMode="contain"
+            style={styles.assetIcon}
+          />
+        )}
+        <View style={styles.assetInfo}>
+          <Text style={styles.assetName}>
+            {asset.asset_name} ({asset.symbol})
+          </Text>
+          <Text style={styles.assetSymbol}>
+            {formatAmount(asset.market_current_value, false, "USD")}
+          </Text>
+        </View>
       </View>
-    </View>
-    <View style={styles.assetRight}>
-      <Text style={styles.assetPrice}>{asset.balance}</Text>
-    </View>
-  </TouchableOpacity>
-);
+      <View style={styles.assetRight}>
+        <Text style={styles.assetPrice}>{asset.balance}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 export default CryptoWalletSection;
 
