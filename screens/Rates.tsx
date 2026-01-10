@@ -54,8 +54,6 @@ export default function CryptoRatesScreen() {
       activeTab === "sell" ? r.type === "buy" : r.type === "sell",
     );
 
-    console.log(rate);
-
     if (!rate) return 0;
 
     const category = rate.categories.find(
@@ -67,8 +65,6 @@ export default function CryptoRatesScreen() {
     const rateValue = category
       ? parseFloat(category.value)
       : parseFloat(rate.default_value);
-
-    console.log(category);
 
     setRateBreakdown(`$1 - ${formatAmount(rateValue)}`);
 

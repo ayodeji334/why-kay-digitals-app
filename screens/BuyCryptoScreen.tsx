@@ -57,7 +57,7 @@ export default function CryptoBuyScreen() {
     resolver: yupResolver(schema),
     defaultValues: {
       amount: parseFloat(intent?.amount as string) ?? 0,
-      asset_id: intent?.assetId,
+      asset_id: intent?.assetId ?? "",
     },
     mode: "onChange",
   });

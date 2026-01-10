@@ -377,13 +377,12 @@ export default function CryptoSellScreen() {
   const {
     control,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       amount: parseFloat(intent.amount ?? "0"),
-      asset_id: intent.assetId,
+      asset_id: intent.assetId ?? "",
     },
     mode: "onChange",
   });
