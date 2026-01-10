@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
   },
   ngn: {
     color: "#fff",
-    fontSize: normalize(25),
+    fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
   },
   button: {

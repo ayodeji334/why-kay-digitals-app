@@ -26,16 +26,16 @@ const CryptoWalletSection = () => {
   const wallets = useWalletStore(state => state.wallets);
   const navigation: any = useNavigation();
 
-  const totalWalletValue = useMemo(
-    () =>
-      Array.isArray(wallets)
-        ? wallets.reduce(
-            (sum: number, w: any) => sum + (parseFloat(w.wallet_value) || 0),
-            0,
-          )
-        : 0,
-    [wallets],
-  );
+  const walletList = wallets.filter((wallet: any) => wallet.type === "crypto");
+
+  const totalValueInUsd = useMemo(() => {
+    return (
+      walletList.reduce(
+        (sum: number, w: any) => sum + (parseFloat(w.value) || 0),
+        0,
+      ) ?? null
+    );
+  }, [wallets]);
 
   // Navigate with intent
   const handleBuy = () => {
@@ -69,7 +69,7 @@ const CryptoWalletSection = () => {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <BalanceCard
-        balance={totalWalletValue}
+        balance={totalValueInUsd}
         title="Total Balance"
         showTransactionsButton={false}
         showActionButtons={false}
@@ -119,7 +119,7 @@ const CryptoWalletSection = () => {
         <Text style={styles.sectionTitle}>Assets</Text>
         <View style={styles.assetsList}>
           {Array.isArray(wallets) && wallets.length > 0 ? (
-            wallets.map((asset: any) => (
+            walletList.map((asset: any) => (
               <AssetItem key={asset.asset_id} asset={asset} />
             ))
           ) : (
@@ -152,20 +152,20 @@ const ActionCard = ({ title, source, onPress }: any) => (
 const AssetItem = ({ asset }: any) => (
   <TouchableOpacity style={styles.assetItem} activeOpacity={0.7}>
     <View style={styles.assetLeft}>
-      {asset.asset_logo_url && (
+      {asset.logo && (
         <Image
-          key={asset.asset_logo_url}
-          source={{ uri: asset.asset_logo_url }}
+          key={asset.logo}
+          source={{ uri: asset.logo }}
           resizeMode="contain"
           style={styles.assetIcon}
         />
       )}
       <View style={styles.assetInfo}>
         <Text style={styles.assetName}>
-          {asset.asset_name} ({asset.symbol})
+          {asset.name} ({asset.symbol})
         </Text>
         <Text style={styles.assetSymbol}>
-          {formatAmount(asset.market_current_value, false, "USD")}
+          {formatAmount(asset.price, false, "USD")}
         </Text>
       </View>
     </View>
@@ -249,8 +249,8 @@ const styles = StyleSheet.create({
   },
   assetLeft: { flexDirection: "row", alignItems: "center", flex: 1 },
   assetIcon: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     borderRadius: 20,
     backgroundColor: "#F3F4F6",
     justifyContent: "center",
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     color: "#000000",
   },
   assetSymbol: {
-    fontSize: normalize(13),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("400"),
     color: "#000000",
   },

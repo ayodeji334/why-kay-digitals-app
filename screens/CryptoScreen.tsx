@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 15,
     borderRadius: 100,
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: getFontFamily("700"),
     borderColor: "#E8E8E8",
     borderWidth: 1,
@@ -173,6 +173,6 @@ const styles = StyleSheet.create({
   cryptoLeft: { flexDirection: "row", alignItems: "center" },
   assetIcon: { width: 40, height: 40, borderRadius: 20, marginRight: 12 },
   cryptoInfo: { flexDirection: "column" },
-  cryptoName: { fontSize: 16, fontFamily: getFontFamily(800) },
-  cryptoSymbol: { fontSize: 14, fontFamily: getFontFamily(400), color: "#000" },
+  cryptoName: { fontSize: 15, fontFamily: getFontFamily(800) },
+  cryptoSymbol: { fontSize: 12, fontFamily: getFontFamily(700), color: "#000" },
 });

@@ -127,7 +127,7 @@ const TransactionHistoryScreen: React.FC = () => {
           style={styles.iconButton}
           onPress={toggleFilterModal}
         >
-          <Filter size={15} color="#fff" variant="Linear" />
+          <Filter size={13} color="#fff" variant="Linear" />
           <Text style={[styles.closeButtonText]}>Filter</Text>
         </TouchableOpacity>
 
@@ -136,7 +136,7 @@ const TransactionHistoryScreen: React.FC = () => {
           style={styles.iconButton}
           onPress={downloadAccountStatement}
         >
-          <DocumentDownload size={15} color="#fff" variant="Linear" />
+          <DocumentDownload size={13} color="#fff" variant="Linear" />
           <Text style={[styles.closeButtonText]}>Download Statement</Text>
         </TouchableOpacity>
       </View>
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     textAlign: "center",
     color: "#fff",
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
   },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
