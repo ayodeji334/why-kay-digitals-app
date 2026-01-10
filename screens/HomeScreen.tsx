@@ -27,20 +27,17 @@ const HomeScreen = () => {
   const user = useUser();
   const fetchWallets = useWalletStore(s => s.fetchWalletsAndAccounts);
   const wallets = useWalletStore(s => s.wallets);
+  const bankAccounts = useWalletStore(s => s.bankAccounts);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
-
-  const userAccounts = Array.isArray(user?.bank_accounts)
-    ? user?.bank_accounts
-    : [];
 
   const fiatWallet = Array.isArray(wallets)
     ? user.wallets?.find((w: any) => w.type === "fiat")
     : null;
 
   const needsVerification =
-    user?.tier_level === "TIER_0" || !userAccounts?.length;
+    user?.tier_level === "TIER_0" || !bankAccounts?.length;
 
   const onRefresh = async () => {
     setRefreshing(true);

@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#dcdcdcff",
   },
   cryptoLeft: { flexDirection: "row", alignItems: "center" },
-  assetIcon: { width: 40, height: 40, borderRadius: 20, marginRight: 12 },
+  assetIcon: { width: 30, height: 30, borderRadius: 20, marginRight: 12 },
   cryptoInfo: { flexDirection: "column" },
   cryptoName: { fontSize: 15, fontFamily: getFontFamily(800) },
   cryptoSymbol: { fontSize: 12, fontFamily: getFontFamily(700), color: "#000" },

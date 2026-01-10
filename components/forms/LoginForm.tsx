@@ -32,11 +32,7 @@ const LoginForm: React.FC = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormInputs>({
+  const { control, handleSubmit } = useForm<LoginFormInputs>({
     resolver: yupResolver(loginSchema),
   });
 
@@ -46,8 +42,6 @@ const LoginForm: React.FC = () => {
 
       const res = await post("/auth/login", { login, password });
 
-      console.log(res?.data);
-
       const { auth, user } = res.data?.data ?? {};
       if (!auth?.accessToken || !auth?.refreshToken || !user) {
         throw new Error("Invalid login response");
@@ -56,7 +50,7 @@ const LoginForm: React.FC = () => {
       setToken(auth.accessToken, auth.refreshToken);
       setUser(user);
       setIsAuthenticated(true);
-    } catch (err: unknown) {
+    } catch (err: any) {
       if (err instanceof AxiosError) {
         const errorMessage =
           err.response?.data?.message ?? "Unable to login. Please try again.";
