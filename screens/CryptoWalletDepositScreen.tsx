@@ -17,11 +17,10 @@ import { showError } from "../utlis/toast";
 import CustomIcon from "../components/CustomIcon";
 import { LogoIcon, WalletIcon } from "../assets";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import useAxios from "../api/axios";
 import { useQuery } from "@tanstack/react-query";
 import CustomLoading from "../components/CustomLoading";
-// import { formatAmount, formatNumber } from "../libs/formatNumber";
 import QRCode from "react-native-qrcode-svg";
+import useAxios from "../hooks/useAxios";
 
 const WalletQRCode = ({ address }: { address: string }) => {
   if (!address) return null;

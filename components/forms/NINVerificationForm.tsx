@@ -7,7 +7,7 @@ import NumberInputField from "../NumberInputField";
 import CustomLoading from "../CustomLoading";
 import { COLORS } from "../../constants/colors";
 import { getFontFamily, normalize } from "../../constants/settings";
-import useAxios from "../../api/axios";
+import useAxios from "../../hooks/useAxios";
 import { showSuccess } from "../../utlis/toast";
 import InfoCard from "../InfoCard";
 import { InfoCircle } from "iconsax-react-nativejs";

@@ -12,7 +12,7 @@ import { ArrowLeft2 } from "iconsax-react-nativejs";
 import { SelectInput } from "../components/SelectInputField";
 import { COLORS } from "../constants/colors";
 import { normalize, getFontFamily } from "../constants/settings";
-import useAxios from "../api/axios";
+import useAxios from "../hooks/useAxios";
 
 export default function BankAccountModal({
   visible,

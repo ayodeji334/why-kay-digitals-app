@@ -75,13 +75,11 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 import SetNewTransactionPinForm from "../components/forms/SetNewTransactionPinForm";
-import useAxios from "../api/axios";
 import PasswordInputField from "../components/PaswordInputField";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -89,6 +87,7 @@ import * as yup from "yup";
 import { showError } from "../utlis/toast";
 import { AxiosError } from "axios";
 import CustomLoading from "../components/CustomLoading";
+import useAxios from "../hooks/useAxios";
 
 export default function ChangeTransactionPinScreen() {
   const [step, setStep] = useState<"password" | "newPin">("password");

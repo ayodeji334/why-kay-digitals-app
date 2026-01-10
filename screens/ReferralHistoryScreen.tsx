@@ -16,9 +16,9 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { formatAmount } from "../libs/formatNumber";
 import { useAuthStore } from "../stores/authSlice";
 import { useQuery } from "@tanstack/react-query";
-import useAxios from "../api/axios";
 import { formatDate } from "../libs/formatDate";
 import CustomLoading from "../components/CustomLoading";
+import useAxios from "../hooks/useAxios";
 
 // Types
 interface ReferralItem {

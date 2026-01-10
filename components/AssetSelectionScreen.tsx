@@ -11,9 +11,9 @@ import {
   Animated,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import useAxios from "../api/axios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily } from "../constants/settings";
+import useAxios from "../hooks/useAxios";
 
 const AssetSelectionScreen = ({
   onSelect,

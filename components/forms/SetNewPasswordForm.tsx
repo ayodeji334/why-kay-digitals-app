@@ -10,7 +10,7 @@ import { getFontFamily, normalize } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { AxiosError } from "axios";
 import { showError } from "../../utlis/toast";
-import useAxios from "../../api/axios";
+import useAxios from "../../hooks/useAxios";
 
 const loginSchema = yup.object().shape({
   token: yup.string().max(6, "Invalid code").required("Email is required"),

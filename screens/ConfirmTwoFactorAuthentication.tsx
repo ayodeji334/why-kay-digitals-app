@@ -19,7 +19,7 @@ import { showError, showSuccess } from "../utlis/toast";
 import { AxiosError } from "axios";
 import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
-import useAxios from "../api/axios";
+import useAxios from "../hooks/useAxios";
 
 type FormData = {
   pin: string;

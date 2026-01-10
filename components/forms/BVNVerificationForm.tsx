@@ -7,11 +7,11 @@ import NumberInputField from "../NumberInputField";
 import CustomLoading from "../CustomLoading";
 import { COLORS } from "../../constants/colors";
 import { getFontFamily, normalize } from "../../constants/settings";
-import useAxios from "../../api/axios";
 import { showSuccess } from "../../utlis/toast";
 import InfoCard from "../InfoCard";
 import { InfoCircle } from "iconsax-react-nativejs";
 import { useAuthStore } from "../../stores/authSlice";
+import useAxios from "../../hooks/useAxios";
 
 const bvnSchema = yup.object({
   bvn: yup

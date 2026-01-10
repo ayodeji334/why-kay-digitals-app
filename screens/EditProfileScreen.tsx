@@ -26,11 +26,11 @@ import { CardEdit } from "iconsax-react-nativejs";
 import { SelectInput } from "../components/SelectInputField";
 import { getFontFamily, normalize } from "../constants/settings";
 import CustomLoading from "../components/CustomLoading";
-import useAxios from "../api/axios";
 import { useAuthStore } from "../stores/authSlice";
 import { useNavigation } from "@react-navigation/native";
 import PhoneNumberInputField from "../components/PhoneNumberInputField";
 import parsePhoneNumberFromString from "libphonenumber-js";
+import useAxios from "../hooks/useAxios";
 
 const profileSchema = yup.object().shape({
   username: yup.string().required("Username is required"),

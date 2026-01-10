@@ -4,7 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { COLORS } from "../../constants/colors";
 import { normalize, getFontFamily } from "../../constants/settings";
 import BalanceCard from "../Dashboard/BalanceCard";
-import useAxios from "../../api/axios";
+import useAxios from "../../hooks/useAxios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TransactionSectionList from "../TransactionList";
 

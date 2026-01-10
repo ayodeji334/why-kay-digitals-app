@@ -12,13 +12,13 @@ import {
 } from "react-native";
 import CustomLoading from "../components/CustomLoading";
 import { useQuery } from "@tanstack/react-query";
-import useAxios from "../api/axios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SelectInput } from "../components/SelectInputField";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { useNavigation } from "@react-navigation/native";
+import useAxios from "../hooks/useAxios";
 
 export default function CryptoRatesScreen() {
   const [activeTab, setActiveTab] = useState("sell");

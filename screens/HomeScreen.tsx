@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -21,36 +21,24 @@ import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import AdvertsBanner from "../components/AdvertsBanner";
+import { useWalletStore } from "../stores/walletSlice";
 
 const HomeScreen = () => {
   const user = useUser();
-  const fetchUserAccounts = useAuthStore(s => s.fetchUserAccounts);
+  const fetchUserAccounts = useWalletStore(s => s.fetchWalletsAndAccounts);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
 
-  const userAccounts = useMemo(() => {
-    if (Array.isArray(user?.bank_accounts)) {
-      return user?.bank_accounts;
-    }
+  const userAccounts = Array.isArray(user?.bank_accounts)
+    ? user?.bank_accounts
+    : [];
 
-    return [];
-  }, [user?.bank_accounts]);
-
-  const fiatWallet = useMemo(() => {
-    if (user?.wallets) {
-      return user?.wallets.find((wallet: any) => wallet?.type === "fiat");
-    }
-    return null;
-  }, [user]);
-
-  const needsVerification = useMemo(() => {
-    return (
-      user?.tier_level === "TIER_0" ||
-      !userAccounts?.bank_accounts?.length ||
-      userAccounts?.bank_accounts?.length === 0
-    );
-  }, [user, userAccounts]);
+  const fiatWallet = Array.isArray(user?.wallets)
+    ? user?.wallets?.find((w: any) => w.type === "fiat")
+    : null;
+  const needsVerification =
+    user?.tier_level === "TIER_0" || !userAccounts?.length;
 
   const onRefresh = async () => {
     setRefreshing(true);

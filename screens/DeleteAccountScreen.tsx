@@ -13,14 +13,13 @@ import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize, width } from "../constants/settings";
 import HalfScreenModal from "../components/HalfScreenModal";
 import { useNavigation } from "@react-navigation/native";
-import { UserRemove } from "iconsax-react-nativejs";
 import { removeItem } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 import CustomLoading from "../components/CustomLoading";
-import useAxios from "../api/axios";
 import { useAuthStore } from "../stores/authSlice";
 import CustomIcon from "../components/CustomIcon";
 import { AccountDeleteIcon } from "../assets";
+import useAxios from "../hooks/useAxios";
 
 const deleteReasons = [
   "I no longer need the account",

@@ -8,17 +8,18 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useAuthStore } from "../stores/authSlice";
+import { useAuthStore, useUser } from "../stores/authSlice";
 import { useQuery } from "@tanstack/react-query";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import useAxios from "../api/axios";
 import CustomLoading from "../components/CustomLoading";
 import { COLORS } from "../constants/colors";
 import CryptoWalletSection from "../components/wallet/CryptoWalletSection";
 import FiatWalletSection from "../components/wallet/FiatWalletSection";
+import useAxios from "../hooks/useAxios";
 
 export default function WalletScreen() {
-  const { setUser, user } = useAuthStore();
+  const setUser = useAuthStore(state => state.setUser);
+  const user = useUser();
   const { apiGet } = useAxios();
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
@@ -39,16 +40,6 @@ export default function WalletScreen() {
     queryKey: ["userWallet"],
     queryFn: fetchUserAccounts,
   });
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch]),
-  );
-
-  useEffect(() => {
-    if (data) setUser(data);
-  }, [data, setUser]);
 
   const fiatWallet = useMemo(() => {
     if (Array.isArray(user?.wallets)) {
@@ -73,6 +64,16 @@ export default function WalletScreen() {
   const handleDeposit = () => {
     navigation.navigate("CryptoDeposit" as never);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
+
+  useEffect(() => {
+    if (data) setUser(data);
+  }, [data, setUser]);
 
   useEffect(() => {
     refetch();

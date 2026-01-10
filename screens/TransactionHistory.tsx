@@ -10,7 +10,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Filter, DocumentDownload } from "iconsax-react-nativejs";
-import useAxios from "../api/axios";
 import TransactionSectionList from "../components/TransactionList";
 import CustomLoading from "../components/CustomLoading";
 import { COLORS } from "../constants/colors";
@@ -21,6 +20,7 @@ import { SelectInput } from "../components/SelectInputField";
 import CustomModal from "../components/CustomModal";
 import DatePicker from "../components/DatePicker";
 import { showSuccess } from "../utlis/toast";
+import useAxios from "../hooks/useAxios";
 
 export const EmptyTransactionState: React.FC = () => (
   <View style={styles.emptyState}>

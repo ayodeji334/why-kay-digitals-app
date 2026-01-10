@@ -15,9 +15,9 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { formatAmount } from "../libs/formatNumber";
-import useAxios from "../api/axios";
 import { useQuery } from "@tanstack/react-query";
 import { SelectInput } from "../components/SelectInputField";
+import useAxios from "../hooks/useAxios";
 
 // Validation schema
 const schema = Yup.object().shape({

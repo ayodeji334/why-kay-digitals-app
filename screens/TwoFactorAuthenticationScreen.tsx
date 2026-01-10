@@ -14,10 +14,10 @@ import { FingerScan } from "iconsax-react-nativejs";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CustomLoading from "../components/CustomLoading";
-import useAxios from "../api/axios";
 import { useAuthStore } from "../stores/authSlice";
 import { showSuccess, showError } from "../utlis/toast";
 import { getItem, removeItem, setItem } from "../utlis/storage";
+import useAxios from "../hooks/useAxios";
 
 const TwoFactorAuthenticationScreen = () => {
   const navigation = useNavigation();

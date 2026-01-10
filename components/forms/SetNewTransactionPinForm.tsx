@@ -8,7 +8,7 @@ import { getFontFamily, normalize } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { AxiosError } from "axios";
 import { showError, showSuccess } from "../../utlis/toast";
-import useAxios from "../../api/axios";
+import useAxios from "../../hooks/useAxios";
 import OtpInputField from "../OtpInputField";
 
 const loginSchema = yup.object().shape({

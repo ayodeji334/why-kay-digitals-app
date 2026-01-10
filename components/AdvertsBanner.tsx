@@ -10,8 +10,8 @@ import {
   Text,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import useAxios from "../api/axios";
 import { getFontFamily, normalize } from "../constants/settings";
+import useAxios from "../hooks/useAxios";
 
 type Banner = {
   id: number;

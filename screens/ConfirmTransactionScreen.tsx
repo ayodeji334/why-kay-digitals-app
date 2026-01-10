@@ -16,7 +16,7 @@ import * as yup from "yup";
 import OtpInputField from "../components/OtpInputField";
 import { useState } from "react";
 import CustomLoading from "../components/CustomLoading";
-import useAxios from "../api/axios";
+import useAxios from "../hooks/useAxios";
 
 type FormData = {
   pin: string;

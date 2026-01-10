@@ -11,7 +11,7 @@ import { getFontFamily, normalize } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { showError } from "../../utlis/toast";
 import { AxiosError } from "axios";
-import useAxios from "../../api/axios";
+import useAxios from "../../hooks/useAxios";
 import { useAuthStore } from "../../stores/authSlice";
 
 const loginSchema = yup.object().shape({

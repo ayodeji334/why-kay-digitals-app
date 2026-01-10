@@ -17,8 +17,8 @@ import { BiometryTypes } from "react-native-biometrics";
 import { showError, showSuccess } from "../utlis/toast";
 import CustomLoading from "../components/CustomLoading";
 import DeviceInfo from "react-native-device-info";
-import useAxios from "../api/axios";
 import { useAuthStore } from "../stores/authSlice";
+import useAxios from "../hooks/useAxios";
 
 const BiometricsScreen = () => {
   const user = useAuthStore(state => state.user);

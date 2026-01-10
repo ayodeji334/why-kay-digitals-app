@@ -11,9 +11,9 @@ import {
   Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useAxios from "../api/axios";
 import { useQuery } from "@tanstack/react-query";
 import { getFontFamily } from "../constants/settings";
+import useAxios from "../hooks/useAxios";
 
 const CryptoWalletScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");

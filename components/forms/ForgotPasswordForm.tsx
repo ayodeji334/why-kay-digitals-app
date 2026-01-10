@@ -10,7 +10,7 @@ import { getFontFamily, normalize } from "../../constants/settings";
 import { AxiosError } from "axios";
 import { showError } from "../../utlis/toast";
 import CustomLoading from "../CustomLoading";
-import useAxios from "../../api/axios";
+import useAxios from "../../hooks/useAxios";
 
 const loginSchema = yup.object().shape({
   email: yup

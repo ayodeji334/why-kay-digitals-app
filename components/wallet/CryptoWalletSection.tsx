@@ -17,7 +17,7 @@ import {
   TagsIcon,
 } from "../../assets";
 import CustomIcon from "../CustomIcon";
-import useAxios from "../../api/axios";
+import useAxios from "../../hooks/useAxios";
 import { useQuery } from "@tanstack/react-query";
 import { formatAmount } from "../../libs/formatNumber";
 import { useMemo } from "react";

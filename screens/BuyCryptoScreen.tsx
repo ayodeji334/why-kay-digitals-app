@@ -18,7 +18,7 @@ import { formatAmount } from "../libs/formatNumber";
 import CustomLoading from "../components/CustomLoading";
 import { SelectInput } from "../components/SelectInputField";
 import { useQuery } from "@tanstack/react-query";
-import useAxios from "../api/axios";
+import useAxios from "../hooks/useAxios";
 
 // Validation schema
 const schema = Yup.object().shape({

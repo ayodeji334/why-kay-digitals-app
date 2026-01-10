@@ -13,7 +13,6 @@ interface AuthState {
   isGoogleAuthenticatorEnabled: boolean;
   isShowBalance: boolean;
   hasHydrated: boolean;
-  fetchUserAccounts: () => Promise<void>;
   setToken: (token: string | null, refreshToken?: string | null) => void;
   setUser: (user: any | null) => void;
   setIsAuthenticated: (value: boolean) => void;
@@ -61,31 +60,6 @@ export const useAuthStore = create<AuthState>()(
 
       setIsShowBalance: show => {
         set({ isShowBalance: show });
-      },
-      fetchUserAccounts: async () => {
-        const { token } = get();
-        if (!token) return;
-
-        try {
-          const res = await axios.get(`${BASE_URL}/users/user/accounts`, {
-            headers: { Authorization: `Bearer ${token}` },
-            timeout: 8000,
-          });
-
-          if (res.status === 200 && res.data?.success) {
-            set(state => ({
-              user: {
-                ...(state.user ?? {}),
-                ...res.data.data, // merge or replace depending on your needs
-              },
-            }));
-          }
-        } catch (err) {
-          // fallback: clear accounts but keep user shape predictable
-          set(state => ({
-            user: { ...(state.user ?? {}), bank_accounts: [], wallets: [] },
-          }));
-        }
       },
       enableBiometric: () => set({ isBiometricEnabled: true }),
       disableBiometric: () => set({ isBiometricEnabled: false }),
@@ -153,7 +127,7 @@ export const useAuthStore = create<AuthState>()(
       storage: createJSONStorage(() => ({
         getItem: key => {
           const value = getItem(key);
-          return value ? JSON.parse(value) : null;
+          return value ?? null;
         },
         setItem: (key, value) => {
           setItem(key, value);
@@ -177,11 +151,15 @@ export const useAuthStore = create<AuthState>()(
       /**
        * Hydration callback (critical for real devices)
        */
-      onRehydrateStorage: () => state => {
-        state?.setHasHydrated();
-        // call fetchUserAccounts once hydrated
-        console.log("calling user account endpoint");
-        state?.fetchUserAccounts?.();
+      onRehydrateStorage: () => {
+        return (state, error) => {
+          if (error) {
+            console.log("an error happened during hydration", error);
+          } else {
+            state?.setHasHydrated;
+            console.log("hydration finished");
+          }
+        };
       },
     },
   ),
