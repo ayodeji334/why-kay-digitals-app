@@ -390,7 +390,7 @@ export default function NavigationRoot() {
               ),
             },
           },
-          CryptoDeposit: {
+          SelectAsset: {
             screen: CryptoWalletScreen,
             options: {
               headerShown: true,

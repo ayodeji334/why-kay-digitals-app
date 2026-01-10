@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -15,7 +15,7 @@ import ServicesSection from "../components/Dashboard/ServicesSection";
 import { Notification, Scan } from "iconsax-react-nativejs";
 import BalanceCard from "../components/Dashboard/BalanceCard";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useAuthStore, useUser } from "../stores/authSlice";
+import { useUser } from "../stores/authSlice";
 import AssetsSection from "../components/Dashboard/AssetsSection";
 import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
@@ -47,6 +47,12 @@ const HomeScreen = () => {
     setRefreshing(false);
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (!user?.wallets?.length && !user?.bank_accounts?.length) {
+      fetchUserAccounts();
+    }
+  }, [fetchUserAccounts, user?.wallets, user?.bank_accounts]);
 
   return (
     <SafeAreaView edges={["left", "right", "top"]} style={styles.container}>

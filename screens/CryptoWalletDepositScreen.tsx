@@ -1,49 +1,27 @@
 import React, { useMemo, useState } from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
   StyleSheet,
   ScrollView,
   Share as RNShare,
   RefreshControl,
 } from "react-native";
-import { Share, Copy } from "iconsax-react-nativejs";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { showError } from "../utlis/toast";
-import CustomIcon from "../components/CustomIcon";
-import { LogoIcon, WalletIcon } from "../assets";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import CustomLoading from "../components/CustomLoading";
-import QRCode from "react-native-qrcode-svg";
 import useAxios from "../hooks/useAxios";
-
-const WalletQRCode = ({ address }: { address: string }) => {
-  if (!address) return null;
-
-  return (
-    <View style={styles.qrContainer}>
-      <View style={styles.qrBox}>
-        <QRCode value={address} size={230} backgroundColor="white" />
-      </View>
-
-      <View style={styles.qrIconWrapper}>
-        <CustomIcon source={LogoIcon} size={30} color={COLORS.primary} />
-      </View>
-    </View>
-  );
-};
+import WalletDetails from "./WalletAddress";
+import NoWalletAddress from "../components/NoWalletAddress";
 
 const CryptoWalletDepositScreen = () => {
   const route: any = useRoute();
-  const navigation: any = useNavigation();
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedChain, setSelectedChain] = useState<any | null>(null);
-  const axiosInstance = useAxios();
+  const { apiGet, post } = useAxios();
   const selectedAssetUuid = useMemo(
     () => route.params?.crypto?.uuid,
     [route.params?.crypto?.uuid],
@@ -52,7 +30,7 @@ const CryptoWalletDepositScreen = () => {
     queryKey: ["walletAddress", selectedAssetUuid],
     queryFn: async () => {
       try {
-        const response = await axiosInstance.apiGet(
+        const response = await apiGet(
           `/wallets/user/${selectedAssetUuid}/check-address`,
         );
 
@@ -83,12 +61,9 @@ const CryptoWalletDepositScreen = () => {
     setIsGenerating(true);
 
     try {
-      await axiosInstance.post(
-        `wallets/user/${selectedAssetUuid}/generate-wallet`,
-        {
-          chainType: selectedChain.chain,
-        },
-      );
+      await post(`wallets/user/${selectedAssetUuid}/generate-wallet`, {
+        chainType: selectedChain.chain,
+      });
 
       setSelectedChain(null);
       refetch();
@@ -124,169 +99,169 @@ const CryptoWalletDepositScreen = () => {
     }
   };
 
-  const renderNoWalletAddress = () => (
-    <View style={styles.centerContainer}>
-      <View style={styles.section}>
-        <View style={styles.walletCircle}>
-          <CustomIcon source={WalletIcon} size={30} color={COLORS.primary} />
-        </View>
+  // const renderNoWalletAddress = () => (
+  //   <View style={styles.centerContainer}>
+  //     <View style={styles.section}>
+  //       <View style={styles.walletCircle}>
+  //         <CustomIcon source={WalletIcon} size={30} color={COLORS.primary} />
+  //       </View>
 
-        <Text style={styles.noWalletTitle}>No Wallet Address</Text>
+  //       <Text style={styles.noWalletTitle}>No Wallet Address</Text>
 
-        <Text style={styles.noWalletText}>
-          You need to generate a wallet address before you can receive assets.
-          This will create a unique address for your wallet.
-        </Text>
-      </View>
+  //       <Text style={styles.noWalletText}>
+  //         You need to generate a wallet address before you can receive assets.
+  //         This will create a unique address for your wallet.
+  //       </Text>
+  //     </View>
 
-      {availableChains.length > 0 && (
-        <View style={{ marginBottom: 20 }}>
-          <Text style={styles.label}>Select Network</Text>
+  //     {availableChains.length > 0 && (
+  //       <View style={{ marginBottom: 20 }}>
+  //         <Text style={styles.label}>Select Network</Text>
 
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
-            {availableChains.map((chain: any) => {
-              const isSelected = selectedChain?.chain === chain.chain;
+  //         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
+  //           {availableChains.map((chain: any) => {
+  //             const isSelected = selectedChain?.chain === chain.chain;
 
-              return (
-                <TouchableOpacity
-                  key={chain.chain}
-                  activeOpacity={0.8}
-                  onPress={() => setSelectedChain(chain)}
-                  style={[
-                    {
-                      paddingVertical: 8,
-                      paddingHorizontal: 14,
-                      borderRadius: 20,
-                      borderWidth: 1,
-                      borderColor: isSelected ? COLORS.primary : "#ccc",
-                      backgroundColor: isSelected
-                        ? "rgba(0,200,83,0.15)"
-                        : "transparent",
-                    },
-                  ]}
-                >
-                  <Text
-                    style={{
-                      fontFamily: getFontFamily(700),
-                      color: isSelected ? COLORS.primary : "#333",
-                    }}
-                  >
-                    {chain.chainType} ({chain?.chain})
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
-      )}
+  //             return (
+  //               <TouchableOpacity
+  //                 key={chain.chain}
+  //                 activeOpacity={0.8}
+  //                 onPress={() => setSelectedChain(chain)}
+  //                 style={[
+  //                   {
+  //                     paddingVertical: 8,
+  //                     paddingHorizontal: 14,
+  //                     borderRadius: 20,
+  //                     borderWidth: 1,
+  //                     borderColor: isSelected ? COLORS.primary : "#ccc",
+  //                     backgroundColor: isSelected
+  //                       ? "rgba(0,200,83,0.15)"
+  //                       : "transparent",
+  //                   },
+  //                 ]}
+  //               >
+  //                 <Text
+  //                   style={{
+  //                     fontFamily: getFontFamily(700),
+  //                     color: isSelected ? COLORS.primary : "#333",
+  //                   }}
+  //                 >
+  //                   {chain.chainType} ({chain?.chain})
+  //                 </Text>
+  //               </TouchableOpacity>
+  //             );
+  //           })}
+  //         </View>
+  //       </View>
+  //     )}
 
-      <View style={styles.section}>
-        <TouchableOpacity
-          style={[styles.generateButton, isGenerating && { opacity: 0.5 }]}
-          activeOpacity={0.89}
-          disabled={isGenerating}
-          onPress={handleGenerateWallet}
-        >
-          <Text style={styles.generateButtonText}>
-            {isGenerating ? "Generating..." : "Generate Wallet Address"}
-          </Text>
-        </TouchableOpacity>
+  //     <View style={styles.section}>
+  //       <TouchableOpacity
+  //         style={[styles.generateButton, isGenerating && { opacity: 0.5 }]}
+  //         activeOpacity={0.89}
+  //         disabled={isGenerating}
+  //         onPress={handleGenerateWallet}
+  //       >
+  //         <Text style={styles.generateButtonText}>
+  //           {isGenerating ? "Generating..." : "Generate Wallet Address"}
+  //         </Text>
+  //       </TouchableOpacity>
 
-        <Text style={styles.noteText}>
-          Your wallet address will be generated securely and can be used to
-          receive cryptocurrency.
-        </Text>
-      </View>
-    </View>
-  );
+  //       <Text style={styles.noteText}>
+  //         Your wallet address will be generated securely and can be used to
+  //         receive cryptocurrency.
+  //       </Text>
+  //     </View>
+  //   </View>
+  // );
 
-  const renderWalletDetails = () => {
-    const isPriceDown = data?.priceChange < 0;
+  // const renderWalletDetails = () => {
+  //   const isPriceDown = data?.priceChange < 0;
 
-    return (
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 19,
-          alignItems: "center",
-          gap: 10,
-        }}
-      >
-        <WalletQRCode address={walletAddress?.address} />
+  //   return (
+  //     <View
+  //       style={{
+  //         flex: 1,
+  //         paddingHorizontal: 19,
+  //         alignItems: "center",
+  //         gap: 10,
+  //       }}
+  //     >
+  //       <WalletQRCode address={walletAddress?.address} />
 
-        <View style={styles.sectionBox}>
-          <Text style={styles.label}>Receiving Address</Text>
+  //       <View style={styles.sectionBox}>
+  //         <Text style={styles.label}>Receiving Address</Text>
 
-          <View style={styles.addressRow}>
-            <Text numberOfLines={1} style={styles?.addressText}>
-              {walletAddress?.address}
-            </Text>
+  //         <View style={styles.addressRow}>
+  //           <Text numberOfLines={1} style={styles?.addressText}>
+  //             {walletAddress?.address}
+  //           </Text>
 
-            <TouchableOpacity
-              style={styles.copyButton}
-              onPress={() => copyToClipboard(walletAddress?.address)}
-            >
-              <Copy size={18} color={COLORS.primary} />
-            </TouchableOpacity>
-          </View>
-        </View>
+  //           <TouchableOpacity
+  //             style={styles.copyButton}
+  //             onPress={() => copyToClipboard(walletAddress?.address)}
+  //           >
+  //             <Copy size={18} color={COLORS.primary} />
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
 
-        <View style={styles.priceContainer}>
-          <View style={styles.priceBox}>
-            <Text style={styles.label}>Chain Type</Text>
-            <Text style={styles.priceValue}>
-              {walletAddress?.chain_type ?? "Not Provided"}
-              {/* {formatAmount(data?.price ?? 0)} */}
-            </Text>
-          </View>
+  //       <View style={styles.priceContainer}>
+  //         <View style={styles.priceBox}>
+  //           <Text style={styles.label}>Chain Type</Text>
+  //           <Text style={styles.priceValue}>
+  //             {walletAddress?.chain_type ?? "Not Provided"}
+  //             {/* {formatAmount(data?.price ?? 0)} */}
+  //           </Text>
+  //         </View>
 
-          <View style={styles.priceBox}>
-            <Text style={styles.label}>Chain</Text>
-            <View style={styles.priceRow}>
-              <Text
-                style={[
-                  styles.priceChange,
-                  { color: isPriceDown ? "#FF5252" : "#000000" },
-                ]}
-              >
-                {walletAddress?.chain ?? "Not Provided"}
-                {/* {formatNumber(data?.priceChange ?? 0)}% */}
-              </Text>
+  //         <View style={styles.priceBox}>
+  //           <Text style={styles.label}>Chain</Text>
+  //           <View style={styles.priceRow}>
+  //             <Text
+  //               style={[
+  //                 styles.priceChange,
+  //                 { color: isPriceDown ? "#FF5252" : "#000000" },
+  //               ]}
+  //             >
+  //               {walletAddress?.chain ?? "Not Provided"}
+  //               {/* {formatNumber(data?.priceChange ?? 0)}% */}
+  //             </Text>
 
-              {/* {isPriceDown ? (
-                <ArrowDown2 size={18} color={COLORS.error} />
-              ) : (
-                <ArrowUp2 size={18} color={COLORS.primary} />
-              )} */}
-            </View>
-          </View>
-        </View>
+  //             {/* {isPriceDown ? (
+  //               <ArrowDown2 size={18} color={COLORS.error} />
+  //             ) : (
+  //               <ArrowUp2 size={18} color={COLORS.primary} />
+  //             )} */}
+  //           </View>
+  //         </View>
+  //       </View>
 
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            activeOpacity={0.89}
-            style={styles.shareButton}
-            onPress={handleShare}
-          >
-            <Share size={20} color="white" />
-            <Text style={styles.actionButtonText}>Share</Text>
-          </TouchableOpacity>
+  //       <View style={styles.actionsContainer}>
+  //         <TouchableOpacity
+  //           activeOpacity={0.89}
+  //           style={styles.shareButton}
+  //           onPress={handleShare}
+  //         >
+  //           <Share size={20} color="white" />
+  //           <Text style={styles.actionButtonText}>Share</Text>
+  //         </TouchableOpacity>
 
-          <TouchableOpacity
-            activeOpacity={0.89}
-            onPress={() =>
-              navigation.navigate("Dashboard", { screen: "Rates" })
-            }
-            style={styles.viewRatesButton}
-          >
-            <Text style={[styles.actionButtonText, { color: "black" }]}>
-              View Rates
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
+  //         <TouchableOpacity
+  //           activeOpacity={0.89}
+  //           onPress={() =>
+  //             navigation.navigate("Dashboard", { screen: "Rates" })
+  //           }
+  //           style={styles.viewRatesButton}
+  //         >
+  //           <Text style={[styles.actionButtonText, { color: "black" }]}>
+  //             View Rates
+  //           </Text>
+  //         </TouchableOpacity>
+  //       </View>
+  //     </View>
+  //   );
+  // };
 
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.screen}>
@@ -301,7 +276,22 @@ const CryptoWalletDepositScreen = () => {
         }
         contentContainerStyle={{ paddingBottom: 120 }}
       >
-        {walletAddress ? renderWalletDetails() : renderNoWalletAddress()}
+        {walletAddress ? (
+          <WalletDetails
+            walletAddress={walletAddress?.address}
+            onCopyAddress={copyToClipboard}
+            onShare={handleShare}
+            onViewRates={() => {}}
+          />
+        ) : (
+          <NoWalletAddress
+            availableChains={availableChains}
+            isGenerating={isGenerating}
+            onGenerateWallet={handleGenerateWallet}
+            onSelectChain={chain => setSelectedChain(chain)}
+            selectedChain={selectedChain}
+          />
+        )}
       </ScrollView>
 
       <CustomLoading loading={isLoading || isGenerating || isFetching} />

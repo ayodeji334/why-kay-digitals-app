@@ -116,7 +116,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         secondaryButtonText="Crypto Deposit"
         secondaryAction={() => {
           setDepositModalVisible(false);
-          setTimeout(() => navigation.navigate("CryptoDeposit" as never), 600);
+          setTimeout(() => navigation.navigate("SelectAsset" as never), 600);
         }}
         showCloseButton={true}
         iconBackgroundColor="#FF4D4D1A"

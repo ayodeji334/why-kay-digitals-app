@@ -8,7 +8,6 @@ import {
   ScrollView,
   RefreshControl,
   Alert,
-  Image,
 } from "react-native";
 import CustomLoading from "../components/CustomLoading";
 import { useQuery } from "@tanstack/react-query";
@@ -19,6 +18,15 @@ import { SelectInput } from "../components/SelectInputField";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { useNavigation } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
+
+export type TradeIntent = {
+  assetId: string;
+  symbol: string;
+  action: "buy" | "sell";
+  source: "home" | "rates" | "wallet";
+  amount?: string;
+  rate?: number;
+};
 
 export default function CryptoRatesScreen() {
   const [activeTab, setActiveTab] = useState("sell");
@@ -42,7 +50,12 @@ export default function CryptoRatesScreen() {
     const amountNum = parseFloat(amount);
     if (isNaN(amountNum)) return 0;
 
-    const rate = crypto.rates.find((r: any) => r.type === activeTab);
+    const rate = crypto.rates.find((r: any) =>
+      activeTab === "sell" ? r.type === "buy" : r.type === "sell",
+    );
+
+    console.log(rate);
+
     if (!rate) return 0;
 
     const category = rate.categories.find(
@@ -54,6 +67,8 @@ export default function CryptoRatesScreen() {
     const rateValue = category
       ? parseFloat(category.value)
       : parseFloat(rate.default_value);
+
+    console.log(category);
 
     setRateBreakdown(`$1 - ${formatAmount(rateValue)}`);
 
@@ -128,24 +143,46 @@ export default function CryptoRatesScreen() {
     return parseFloat(latestRate.default_value);
   }, [selectedCrypto, activeTab, amount, data]);
 
+  // const onPress = () => {
+  //   if (!selectedCrypto) {
+  //     Alert.alert("Error", "Please select a cryptocurrency");
+  //     return;
+  //   }
+
+  //   if (activeTab === "buy") {
+  //     navigation.navigate("BuyCrypto", {
+  //       crypto,
+  //       amount,
+  //       rate: currentRate,
+  //     });
+  //   } else {
+  //     navigation.navigate("SellCrypto", {
+  //       crypto,
+  //       amount,
+  //       rate: currentRate,
+  //     });
+  //   }
+  // };
+
   const onPress = () => {
     if (!selectedCrypto) {
       Alert.alert("Error", "Please select a cryptocurrency");
       return;
     }
 
+    const intent: TradeIntent = {
+      assetId: crypto.value,
+      symbol: crypto.symbol,
+      action: activeTab === "buy" ? "buy" : "sell",
+      source: "rates",
+      amount,
+      rate: currentRate,
+    };
+
     if (activeTab === "buy") {
-      navigation.navigate("BuyCrypto", {
-        crypto,
-        amount,
-        rate: currentRate,
-      });
+      navigation.navigate("BuyCrypto", { intent });
     } else {
-      navigation.navigate("SellCrypto", {
-        crypto,
-        amount,
-        rate: currentRate,
-      });
+      navigation.navigate("SellCrypto", { intent });
     }
   };
 
@@ -243,7 +280,7 @@ export default function CryptoRatesScreen() {
         ) : null}
 
         <View style={{ marginVertical: 12 }}>
-          <Text style={styles.label}>Current Rate (₦)</Text>
+          <Text style={styles.label}>Expected Amount (₦)</Text>
           <View style={styles.rateBox}>
             <Text style={styles.rateText}>{formatAmount(currentRate)}</Text>
           </View>

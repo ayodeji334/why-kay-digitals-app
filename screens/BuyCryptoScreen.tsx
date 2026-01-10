@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,21 +6,29 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Image,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { formatAmount } from "../libs/formatNumber";
 import CustomLoading from "../components/CustomLoading";
-import { SelectInput } from "../components/SelectInputField";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
+import { TradeIntent } from "./Rates";
+import NoWalletAddress from "../components/NoWalletAddress";
+import { showError } from "../utlis/toast";
 
-// Validation schema
+type CryptoBuyScreenParams = {
+  CryptoBuy: {
+    intent: TradeIntent;
+  };
+};
+
 const schema = Yup.object().shape({
   asset_id: Yup.string().required("Select the crypto you want to convert from"),
   amount: Yup.number()
@@ -30,79 +38,67 @@ const schema = Yup.object().shape({
 });
 
 export default function CryptoBuyScreen() {
+  const route = useRoute<RouteProp<CryptoBuyScreenParams, "CryptoBuy">>();
+  const { intent } = route.params;
   const navigation: any = useNavigation();
-  const [btcEquivalent, setBtcEquivalent] = useState("0.00000");
+  const [assetValueEquivalent, setAssetValueEquivalent] = useState("0.00000");
   const [ngnAmount, setNgnAmount] = useState("₦0.00");
-  const { apiGet } = useAxios();
+  const { apiGet, post } = useAxios();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedChain, setSelectedChain] = useState<any | null>(null);
+
+  const selectedAssetUuid = intent.assetId ?? "";
 
   const {
     control,
-    watch,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { amount: 0 },
+    defaultValues: {
+      amount: parseFloat(intent?.amount as string) ?? 0,
+      asset_id: intent?.assetId,
+    },
     mode: "onChange",
   });
 
-  const assestId = watch("asset_id");
-
-  const fetchAssets = async (): Promise<any[]> => {
-    try {
-      const response = await apiGet("/wallets/user");
-      // console.log(response);
-      return response?.data?.data ?? [];
-    } catch (error) {
-      console.error("Failed to fetch assets:", error);
-      throw error;
-    }
-  };
-
-  const { data, isFetching } = useQuery({
-    queryKey: ["users-assets"],
-    queryFn: fetchAssets,
+  const {
+    data: assetDetails,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ["asset-detail", selectedAssetUuid],
+    queryFn: async () => {
+      try {
+        const res = await apiGet(`/wallets/user/${selectedAssetUuid}`);
+        return res?.data?.data;
+      } catch (error) {
+        console.error("Failed to fetch asset details:", error);
+        throw error;
+      }
+    },
     refetchOnWindowFocus: true,
+    enabled: !!selectedAssetUuid,
   });
 
-  const options = useMemo(
-    () =>
-      Array.isArray(data)
-        ? data.map(asset => ({
-            label: asset?.asset_name,
-            value: asset?.asset_id,
-            symbol: asset?.symbol,
-            logo_url: asset?.asset_logo_url,
-            buy_rate: asset?.buy_rate,
-            sell_rate: asset?.sell_rate,
-            market_price: asset?.market_current_value,
-            balance: asset?.balance,
-          }))
-        : [],
-    [data],
-  );
-
-  const selectedAsset = useMemo(
-    () => options.find(option => option.value === assestId),
-    [options, assestId],
-  );
-
-  const balance = Number(selectedAsset?.balance ?? 0);
-  const price = Number(selectedAsset?.market_price ?? 0);
-  const symbol = selectedAsset?.symbol ?? "";
+  const balance = Number(assetDetails?.balance ?? 0);
+  const price = Number(assetDetails?.market_current_value ?? 0);
+  const symbol = assetDetails?.symbol ?? "";
 
   const updateConversion = useCallback(
     (value: any) => {
       const usd = parseFloat(value);
-      if (!isNaN(usd) && selectedAsset) {
-        const marketValue = parseFloat(selectedAsset.market_price ?? "0");
-        const sellRate = parseFloat(selectedAsset.sell_rate ?? "0");
+      if (!isNaN(usd) && assetDetails) {
+        const marketValue = parseFloat(
+          assetDetails.market_current_value ?? "0",
+        );
+        const sellRate = parseFloat(assetDetails.sell_rate ?? "0");
 
         if (marketValue > 0) {
           const cryptoAmount = usd / marketValue;
-          setBtcEquivalent(cryptoAmount.toFixed(8));
+          setAssetValueEquivalent(cryptoAmount.toFixed(8));
         } else {
-          setBtcEquivalent("0.00000000");
+          setAssetValueEquivalent("0.00000000");
         }
 
         if (sellRate > 0) {
@@ -112,11 +108,11 @@ export default function CryptoBuyScreen() {
           setNgnAmount("₦0.00");
         }
       } else {
-        setBtcEquivalent("0.00000000");
+        setAssetValueEquivalent("0.00000000");
         setNgnAmount("₦0.00");
       }
     },
-    [selectedAsset],
+    [assetDetails],
   );
 
   const onSubmit = async (values: any) => {
@@ -130,6 +126,36 @@ export default function CryptoBuyScreen() {
     });
   };
 
+  const availableChains = Array.isArray(assetDetails?.available_chains)
+    ? assetDetails.available_chains
+    : [];
+
+  const handleGenerateWallet = async () => {
+    if (!selectedChain) return;
+
+    setIsGenerating(true);
+
+    try {
+      await post(`wallets/user/${selectedAssetUuid}/generate-wallet`, {
+        chainType: selectedChain.chain,
+      });
+
+      setSelectedChain(null);
+      refetch();
+    } catch (error) {
+      showError("Failed to generate wallet address");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  useEffect(() => {
+    const defaultAmount = parseFloat(intent?.amount as string) ?? 0;
+    if (defaultAmount > 0) {
+      updateConversion(defaultAmount);
+    }
+  }, [assetDetails, intent?.amount, updateConversion]);
+
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
       <ScrollView
@@ -137,113 +163,138 @@ export default function CryptoBuyScreen() {
           flex: 1,
         }}
       >
-        <View style={styles.container}>
-          <View>
-            <View style={{ marginBottom: 10 }}>
-              <SelectInput
-                control={control}
-                name="asset_id"
-                label="Select asset you want to convert from"
-                options={options}
-                placeholder="Select an asset"
-                title="Select an asset"
-              />
-            </View>
+        {!assetDetails?.wallet_id ? (
+          <NoWalletAddress
+            availableChains={availableChains}
+            isGenerating={isGenerating}
+            onGenerateWallet={handleGenerateWallet}
+            onSelectChain={chain => setSelectedChain(chain)}
+            selectedChain={selectedChain}
+          />
+        ) : (
+          <View style={styles.container}>
             <View>
-              <Text style={styles.label}>Enter the amount you want to buy</Text>
-
-              <Controller
-                control={control}
-                name="amount"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    style={styles.input}
-                    placeholder="$0.0 USD"
-                    keyboardType="numeric"
-                    onBlur={onBlur}
-                    onChangeText={val => {
-                      onChange(val);
-                      updateConversion(val);
-                    }}
-                    value={value.toString()}
-                  />
-                )}
-              />
-              {errors.amount && (
-                <Text style={styles.error}>{errors.amount.message}</Text>
-              )}
-              <Text style={styles.approx}>
-                Approximately {btcEquivalent} {selectedAsset?.symbol}
-              </Text>
-              <View
-                style={{
-                  marginVertical: 10,
-                  backgroundColor: "#EFF7EC",
-                  padding: 10,
-                  borderRadius: 10,
-                }}
-              >
-                <Text style={[styles.note, { color: "black" }]}>
-                  Rate at which we get our US Dollar
+              <View style={{ marginBottom: 15 }}>
+                <View style={styles.cryptoRow}>
+                  {assetDetails?.asset_logo_url && (
+                    <Image
+                      source={{ uri: assetDetails?.asset_logo_url ?? "" }}
+                      style={styles.optionLogo}
+                    />
+                  )}
+                  <View style={styles.cryptoInfo}>
+                    <Text style={styles.optionName}>
+                      {assetDetails?.asset_name}{" "}
+                      {assetDetails?.symbol && ` (${assetDetails?.symbol})`}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View>
+                <Text style={styles.label}>
+                  Enter the amount (in $ dollars) you want to buy
                 </Text>
+
+                <Controller
+                  control={control}
+                  name="amount"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                      style={styles.input}
+                      placeholder="$0.0 USD"
+                      keyboardType="numeric"
+                      onBlur={onBlur}
+                      onChangeText={val => {
+                        onChange(val);
+                        updateConversion(val);
+                      }}
+                      value={value.toString()}
+                    />
+                  )}
+                />
+                {errors.amount && (
+                  <Text style={styles.error}>{errors.amount.message}</Text>
+                )}
+                <Text style={styles.approx}>
+                  Approximately {assetValueEquivalent} {assetDetails?.symbol}
+                </Text>
+                <View
+                  style={{
+                    marginVertical: 10,
+                    backgroundColor: "#EFF7EC",
+                    padding: 10,
+                    borderRadius: 10,
+                  }}
+                >
+                  <Text style={[styles.note, { color: "black" }]}>
+                    Rate at which we get our US Dollar
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.balance,
+                        { fontFamily: getFontFamily("800") },
+                      ]}
+                    >
+                      {assetDetails?.symbol} Balance
+                    </Text>
+                    <Text style={styles.balance}>
+                      {`${balance} ${symbol} = ${formatAmount(
+                        balance * price,
+                        false,
+                        "USD",
+                      )}`}
+                    </Text>
+                  </View>
+                </View>
                 <View
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
                   }}
                 >
-                  <Text
-                    style={[
-                      styles.balance,
-                      { fontFamily: getFontFamily("800") },
-                    ]}
-                  >
-                    {selectedAsset?.symbol} Balance
+                  <Text style={styles.rate}>
+                    Rate:{" "}
+                    {formatAmount(
+                      assetDetails?.sell_rate ??
+                        assetDetails?.latest_sell_rate ??
+                        0,
+                    )}
+                    /$
                   </Text>
-                  <Text style={styles.balance}>
-                    {`${balance} ${symbol} = ${formatAmount(
-                      balance * price,
-                      false,
-                      "USD",
-                    )}`}
-                  </Text>
+                  <Text style={styles.min}>Network Fee: $0.00</Text>
                 </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={styles.rate}>
-                  Rate: {formatAmount(selectedAsset?.sell_rate ?? 0)}/$
-                </Text>
-                <Text style={styles.min}>Network Fee: $0.00</Text>
-              </View>
 
-              <View style={styles.paymentContainer}>
-                {/* <Text style={styles.note}>
+                <View style={styles.paymentContainer}>
+                  {/* <Text style={styles.note}>
                   Rate at which we get our US Dollar
                 </Text> */}
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text style={styles.ngn}>You’re Paying:</Text>
-                  <Text style={styles.ngn}>{ngnAmount}</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      padding: 9,
+                    }}
+                  >
+                    <Text style={styles.ngn}>You’re Paying:</Text>
+                    <Text style={styles.ngn}>{ngnAmount}</Text>
+                  </View>
                 </View>
               </View>
             </View>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleSubmit(onSubmit)}
+            >
+              <Text style={styles.buttonText}>Continue</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleSubmit(onSubmit)}
-          >
-            <Text style={styles.buttonText}>Continue</Text>
-          </TouchableOpacity>
-        </View>
+        )}
       </ScrollView>
 
       <CustomLoading loading={isFetching} />
@@ -283,6 +334,28 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("700"),
     marginBottom: normalize(9),
     color: COLORS.primary,
+  },
+  cryptoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "#9f9f9fff",
+    borderRadius: 8,
+    padding: 10,
+  },
+  cryptoInfo: { flex: 1 },
+  optionName: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
+    color: "#374151",
+  },
+  optionLogo: {
+    width: 32,
+    height: 32,
+    borderRadius: 120,
+    borderWidth: 1,
+    borderColor: "#cdcdcdff",
   },
   balance: {
     fontSize: normalize(19),

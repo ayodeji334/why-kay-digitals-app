@@ -45,7 +45,7 @@ export default function WalletScreen() {
     navigation.navigate("SellCrypto" as never);
   };
   const handleDeposit = () => {
-    navigation.navigate("CryptoDeposit" as never);
+    navigation.navigate("SelectAsset" as never);
   };
 
   useFocusEffect(
