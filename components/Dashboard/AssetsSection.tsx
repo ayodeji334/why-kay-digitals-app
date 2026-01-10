@@ -56,7 +56,7 @@ const AssetsSection = () => {
 
   const {
     data: assets = [],
-    isFetching: isLoading,
+    isLoading,
     isError,
     error,
     refetch,
@@ -168,7 +168,7 @@ const AssetsSection = () => {
                   <View style={styles.assetStats}>
                     <Text style={styles.assetLabel}>Rate:</Text>
                     <Text style={styles.assetValue}>
-                      {formatAmount(asset.rate, false, "NGN", 2)} /$
+                      {formatAmount(asset.rate?.toString(), false, "NGN", 2)} /$
                     </Text>
                   </View>
                 </View>
