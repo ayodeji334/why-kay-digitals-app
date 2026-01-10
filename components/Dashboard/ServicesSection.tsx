@@ -243,15 +243,7 @@ import {
   CableTVIcon,
   TransferIcon,
 } from "../../assets";
-
-export type TradeIntent = {
-  assetId?: string;
-  symbol?: string;
-  action: "buy" | "sell" | "deposit";
-  source: "home" | "wallets";
-  amount?: string;
-  rate?: number;
-};
+import { TradeIntent } from "../../screens/Rates";
 
 const ServicesSection = () => {
   const navigation: any = useNavigation();

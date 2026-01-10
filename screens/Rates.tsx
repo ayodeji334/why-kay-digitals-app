@@ -20,10 +20,10 @@ import { useNavigation } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
 
 export type TradeIntent = {
-  assetId: string;
-  symbol: string;
-  action: "buy" | "sell";
-  source: "home" | "rates" | "wallet";
+  assetId?: string;
+  symbol?: string;
+  action?: "buy" | "sell" | "deposit";
+  source?: "home" | "rates" | "wallet";
   amount?: string;
   rate?: number;
 };

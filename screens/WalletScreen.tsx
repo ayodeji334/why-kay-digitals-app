@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   StatusBar,
   StyleSheet,
@@ -8,51 +8,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useUser } from "../stores/authSlice";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import CustomLoading from "../components/CustomLoading";
 import { COLORS } from "../constants/colors";
 import CryptoWalletSection from "../components/wallet/CryptoWalletSection";
 import FiatWalletSection from "../components/wallet/FiatWalletSection";
-import { useWalletStore } from "../stores/walletSlice";
 
 export default function WalletScreen() {
-  const user = useUser();
-  const [refreshing, setRefreshing] = useState(false);
-  const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState<"crypto" | "fiat">("crypto");
-  const fetchWallets = useWalletStore(state => state.fetchWallets);
-  const loading = useWalletStore(state => state.loading);
-
-  const fiatWallet = useMemo(() => {
-    if (Array.isArray(user?.wallets)) {
-      return user.wallets.find((wallet: any) => wallet.type === "fiat");
-    }
-  }, [user.wallets]);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await fetchWallets();
-    setRefreshing(false);
-  };
-
-  const handleSwap = () => navigation.navigate("SwapCrypto" as never);
-
-  const handleBuy = () => {
-    navigation.navigate("BuyCrypto" as never);
-  };
-  const handleSell = () => {
-    navigation.navigate("SellCrypto" as never);
-  };
-  const handleDeposit = () => {
-    navigation.navigate("SelectAsset" as never);
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchWallets();
-    }, [fetchWallets]),
-  );
 
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
@@ -88,20 +49,11 @@ export default function WalletScreen() {
 
       <View style={styles.scrollContainer}>
         {activeTab === "crypto" ? (
-          <CryptoWalletSection
-            handleSell={handleSell}
-            handleSwap={handleSwap}
-            handleBuy={handleBuy}
-            handleDeposit={handleDeposit}
-            onRefresh={onRefresh}
-            refreshing={refreshing}
-          />
+          <CryptoWalletSection />
         ) : (
-          <FiatWalletSection fiatWallet={fiatWallet} />
+          <FiatWalletSection />
         )}
       </View>
-
-      <CustomLoading loading={loading} />
     </SafeAreaView>
   );
 }

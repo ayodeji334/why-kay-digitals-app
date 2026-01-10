@@ -7,8 +7,24 @@ import BalanceCard from "../Dashboard/BalanceCard";
 import useAxios from "../../hooks/useAxios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TransactionSectionList from "../TransactionList";
+import { useUser } from "../../stores/authSlice";
+import { useWalletStore } from "../../stores/walletSlice";
+import CustomLoading from "../CustomLoading";
 
-const FiatWalletSection = ({ fiatWallet }: any) => {
+const FiatWalletSection = () => {
+  const user = useUser();
+  const wallets = useWalletStore(state => state.wallets);
+  const loading = useWalletStore(state => state.loading);
+
+  const fiatWallet = useMemo(() => {
+    const walletList = Array.isArray(user?.wallets)
+      ? user.wallets
+      : Array.isArray(wallets)
+      ? wallets
+      : [];
+    return walletList.find((wallet: any) => wallet.type === "fiat") ?? null;
+  }, [user?.wallets, wallets]);
+
   const { apiGet } = useAxios();
 
   const fetchTransactions = async ({ pageParam = 1 }) => {
@@ -83,6 +99,8 @@ const FiatWalletSection = ({ fiatWallet }: any) => {
           }
         />
       }
+
+      <CustomLoading loading={loading} />
     </View>
   );
 };

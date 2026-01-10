@@ -2,12 +2,11 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   Image,
+  StyleSheet,
 } from "react-native";
 import { COLORS } from "../../constants/colors";
-import { normalize, getFontFamily } from "../../constants/settings";
 import BalanceCard from "../Dashboard/BalanceCard";
 import {
   ReceiveCryptoIcon,
@@ -19,14 +18,13 @@ import CustomIcon from "../CustomIcon";
 import { formatAmount } from "../../libs/formatNumber";
 import { useMemo } from "react";
 import { useWalletStore } from "../../stores/walletSlice";
+import { useNavigation } from "@react-navigation/native";
+import { normalize, getFontFamily } from "../../constants/settings";
+import { TradeIntent } from "../../screens/Rates";
 
-const CryptoWalletSection = ({
-  handleSell,
-  handleSwap,
-  handleDeposit,
-  handleBuy,
-}: any) => {
+const CryptoWalletSection = () => {
   const wallets = useWalletStore(state => state.wallets);
+  const navigation: any = useNavigation();
 
   const totalWalletValue = useMemo(
     () =>
@@ -39,7 +37,34 @@ const CryptoWalletSection = ({
     [wallets],
   );
 
-  console.log(wallets);
+  // Navigate with intent
+  const handleBuy = () => {
+    navigation.navigate("SelectAsset", {
+      action: "buy",
+      source: "home",
+      amount: "0",
+    } as TradeIntent);
+  };
+
+  const handleSell = () => {
+    navigation.navigate("SelectAsset", {
+      action: "sell",
+      source: "home",
+      amount: "0",
+    } as TradeIntent);
+  };
+
+  const handleDeposit = () => {
+    navigation.navigate("SelectAsset", {
+      action: "deposit",
+      source: "home",
+      amount: "0",
+    } as TradeIntent);
+  };
+
+  const handleSwap = () => {
+    navigation.navigate("SwapCrypto");
+  };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -52,17 +77,6 @@ const CryptoWalletSection = ({
       />
 
       <View style={styles.actionsContainer}>
-        {/* <ActionCard
-        title="Send"
-        source={
-          <CustomIcon
-            source={SendCryptoIcon}
-            size={20}
-            color={COLORS.primary}
-          />
-        }
-        onPress={handleSwap}
-      /> */}
         <ActionCard
           title="Receive"
           source={
@@ -135,34 +149,31 @@ const ActionCard = ({ title, source, onPress }: any) => (
   </TouchableOpacity>
 );
 
-const AssetItem = ({ asset }: any) => {
-  console.log(asset);
-  return (
-    <TouchableOpacity style={styles.assetItem} activeOpacity={0.7}>
-      <View style={styles.assetLeft}>
-        {asset.asset_logo_url && (
-          <Image
-            key={asset.asset_logo_url}
-            source={{ uri: asset.asset_logo_url }}
-            resizeMode="contain"
-            style={styles.assetIcon}
-          />
-        )}
-        <View style={styles.assetInfo}>
-          <Text style={styles.assetName}>
-            {asset.asset_name} ({asset.symbol})
-          </Text>
-          <Text style={styles.assetSymbol}>
-            {formatAmount(asset.market_current_value, false, "USD")}
-          </Text>
-        </View>
+const AssetItem = ({ asset }: any) => (
+  <TouchableOpacity style={styles.assetItem} activeOpacity={0.7}>
+    <View style={styles.assetLeft}>
+      {asset.asset_logo_url && (
+        <Image
+          key={asset.asset_logo_url}
+          source={{ uri: asset.asset_logo_url }}
+          resizeMode="contain"
+          style={styles.assetIcon}
+        />
+      )}
+      <View style={styles.assetInfo}>
+        <Text style={styles.assetName}>
+          {asset.asset_name} ({asset.symbol})
+        </Text>
+        <Text style={styles.assetSymbol}>
+          {formatAmount(asset.market_current_value, false, "USD")}
+        </Text>
       </View>
-      <View style={styles.assetRight}>
-        <Text style={styles.assetPrice}>{asset.balance}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-};
+    </View>
+    <View style={styles.assetRight}>
+      <Text style={styles.assetPrice}>{asset.balance}</Text>
+    </View>
+  </TouchableOpacity>
+);
 
 export default CryptoWalletSection;
 
@@ -292,3 +303,4 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
 });
+// --- Styles remain the same as your original ---
