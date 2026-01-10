@@ -10,7 +10,7 @@ interface WalletState {
   error: string | null;
 
   fetchWalletsAndAccounts: () => Promise<void>;
-  fetchCryptoWallets: () => Promise<void>;
+  fetchWallets: () => Promise<void>;
   refreshWallets: () => Promise<void>;
   clearWallets: () => void;
 }
@@ -45,7 +45,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     }
   },
 
-  fetchCryptoWallets: async () => {
+  fetchWallets: async () => {
     const token = useAuthStore.getState().token;
     if (!token || get().wallets.length) return;
 
@@ -144,7 +144,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   //   }
   // },
 
-  // fetchCryptoWallets: async () => {
+  // fetchWallets: async () => {
   //   const token = useAuthStore.getState().token;
   //   if (!token) return;
 

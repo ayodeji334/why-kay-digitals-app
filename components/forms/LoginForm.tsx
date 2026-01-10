@@ -46,6 +46,8 @@ const LoginForm: React.FC = () => {
 
       const res = await post("/auth/login", { login, password });
 
+      console.log(res?.data);
+
       const { auth, user } = res.data?.data ?? {};
       if (!auth?.accessToken || !auth?.refreshToken || !user) {
         throw new Error("Invalid login response");

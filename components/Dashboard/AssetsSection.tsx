@@ -170,13 +170,7 @@ const AssetsSection = () => {
                   <View style={styles.assetStats}>
                     <Text style={styles.assetLabel}>Rate:</Text>
                     <Text style={styles.assetValue}>
-                      {formatAmount(
-                        asset.sell_rate?.toString(),
-                        false,
-                        "NGN",
-                        2,
-                      )}{" "}
-                      /$
+                      {formatAmount(asset.rate?.toString(), false, "NGN", 2)} /$
                     </Text>
                   </View>
                 </View>

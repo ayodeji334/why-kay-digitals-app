@@ -25,7 +25,8 @@ import { useWalletStore } from "../stores/walletSlice";
 
 const HomeScreen = () => {
   const user = useUser();
-  const fetchUserAccounts = useWalletStore(s => s.fetchWalletsAndAccounts);
+  const fetchWallets = useWalletStore(s => s.fetchWalletsAndAccounts);
+  const wallets = useWalletStore(s => s.wallets);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
@@ -34,25 +35,26 @@ const HomeScreen = () => {
     ? user?.bank_accounts
     : [];
 
-  const fiatWallet = Array.isArray(user?.wallets)
-    ? user?.wallets?.find((w: any) => w.type === "fiat")
+  const fiatWallet = Array.isArray(wallets)
+    ? user.wallets?.find((w: any) => w.type === "fiat")
     : null;
+
   const needsVerification =
     user?.tier_level === "TIER_0" || !userAccounts?.length;
 
   const onRefresh = async () => {
     setRefreshing(true);
     setLoading(true);
-    await fetchUserAccounts();
+    await fetchWallets();
     setRefreshing(false);
     setLoading(false);
   };
 
   useEffect(() => {
-    if (!user?.wallets?.length && !user?.bank_accounts?.length) {
-      fetchUserAccounts();
+    if (!wallets?.length) {
+      fetchWallets();
     }
-  }, [fetchUserAccounts, user?.wallets, user?.bank_accounts]);
+  }, [fetchWallets, wallets]);
 
   return (
     <SafeAreaView edges={["left", "right", "top"]} style={styles.container}>
