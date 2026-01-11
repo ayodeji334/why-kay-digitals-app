@@ -58,7 +58,7 @@ const CryptoWalletScreen = () => {
     }
   };
 
-  const { data: assets = [], isFetching } = useQuery({
+  const { data: assets = [], isLoading } = useQuery({
     queryKey: ["assets"],
     queryFn: fetchAssets,
   });
@@ -143,7 +143,7 @@ const CryptoWalletScreen = () => {
         contentContainerStyle={styles.listContent}
       />
 
-      <CustomLoading loading={isFetching} />
+      <CustomLoading loading={isLoading} />
     </SafeAreaView>
   );
 };
