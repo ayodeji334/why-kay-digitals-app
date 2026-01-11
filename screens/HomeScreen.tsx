@@ -166,8 +166,8 @@ const styles = StyleSheet.create({
   },
   headerLeft: { flexDirection: "row", alignItems: "center" },
   profileImage: {
-    width: 43,
-    height: 43,
+    width: 36,
+    height: 36,
     borderRadius: 25,
     marginRight: 12,
     backgroundColor: "#f0f0f0",

@@ -125,8 +125,8 @@ const styles = StyleSheet.create({
   },
   label: {
     color: "black",
-    fontFamily: getFontFamily(900),
-    fontSize: 19,
+    fontFamily: getFontFamily(800),
+    fontSize: 16,
     marginBottom: 6,
   },
   addressRow: {
@@ -136,8 +136,8 @@ const styles = StyleSheet.create({
   },
   addressText: {
     color: "black",
-    fontFamily: getFontFamily(700),
-    fontSize: 19,
+    fontFamily: getFontFamily(400),
+    fontSize: 16,
     maxWidth: "80%",
   },
   copyButton: {
@@ -165,12 +165,12 @@ const styles = StyleSheet.create({
   },
   priceValue: {
     color: "black",
-    fontFamily: getFontFamily(800),
-    fontSize: 20,
+    fontFamily: getFontFamily(400),
+    fontSize: 16,
   },
   priceChange: {
-    fontFamily: getFontFamily(800),
-    fontSize: 20,
+    fontFamily: getFontFamily(400),
+    fontSize: 16,
     marginRight: 6,
   },
   actionsContainer: {
