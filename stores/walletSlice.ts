@@ -9,7 +9,7 @@ interface WalletState {
   loading: boolean;
   error: string | null;
 
-  fetchWalletsAndAccounts: () => Promise<void>;
+  fetchWalletsAndAccounts: () => Promise<any>;
   fetchWallets: () => Promise<void>;
   refreshWallets: () => Promise<void>;
   clearWallets: () => void;
@@ -23,7 +23,6 @@ export const useWalletStore = create<WalletState>((set, get) => ({
 
   fetchWalletsAndAccounts: async () => {
     const token = useAuthStore.getState().token;
-    if (!token || get().wallets.length) return;
 
     set({ loading: true, error: null });
 
@@ -38,6 +37,8 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         wallets: res.data.data.wallets ?? [],
         bankAccounts: res.data.data.bank_accounts ?? [],
       });
+
+      return res?.data;
     } catch (e: any) {
       set({ error: e.message });
     } finally {

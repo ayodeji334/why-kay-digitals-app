@@ -8,7 +8,7 @@ import CustomIcon from "../components/CustomIcon";
 import { LogoIcon } from "../assets";
 
 interface WalletDetailsProps {
-  walletAddress: any;
+  wallet: any;
   priceChange?: number;
   onShare: () => void;
   onViewRates: () => void;
@@ -32,7 +32,7 @@ const WalletQRCode = ({ address }: { address: string }) => {
 };
 
 const WalletDetails: React.FC<WalletDetailsProps> = ({
-  walletAddress,
+  wallet,
   priceChange,
   onShare,
   onViewRates,
@@ -42,19 +42,19 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
 
   return (
     <View style={styles.container}>
-      <WalletQRCode address={walletAddress?.address} />
+      <WalletQRCode address={wallet?.address} />
 
       <View style={styles.sectionBox}>
         <Text style={styles.label}>Receiving Address</Text>
         <View style={styles.addressRow}>
           <Text numberOfLines={1} style={styles.addressText}>
-            {walletAddress?.address}
+            {wallet?.address}
           </Text>
           <TouchableOpacity
             style={styles.copyButton}
-            onPress={() => onCopyAddress(walletAddress?.address)}
+            onPress={() => onCopyAddress(wallet?.address)}
           >
-            <Copy size={18} color={COLORS.primary} />
+            <Copy size={15} color={COLORS.primary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -63,7 +63,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
         <View style={styles.priceBox}>
           <Text style={styles.label}>Chain Type</Text>
           <Text style={styles.priceValue}>
-            {walletAddress?.chain_type ?? "Not Provided"}
+            {wallet?.chain_type ?? "Not Provided"}
           </Text>
         </View>
 
@@ -76,7 +76,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
                 { color: isPriceDown ? "#FF5252" : "#000000" },
               ]}
             >
-              {walletAddress?.chain ?? "Not Provided"}
+              {wallet?.chain ?? "Not Provided"}
             </Text>
           </View>
         </View>
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   label: {
     color: "black",
     fontFamily: getFontFamily(800),
-    fontSize: 16,
+    fontSize: 15,
     marginBottom: 6,
   },
   addressRow: {
@@ -137,11 +137,11 @@ const styles = StyleSheet.create({
   addressText: {
     color: "black",
     fontFamily: getFontFamily(400),
-    fontSize: 16,
+    fontSize: 15,
     maxWidth: "80%",
   },
   copyButton: {
-    padding: 10,
+    padding: 7,
     backgroundColor: "rgba(0,200,83,0.2)",
     borderRadius: 8,
   },
@@ -166,11 +166,11 @@ const styles = StyleSheet.create({
   priceValue: {
     color: "black",
     fontFamily: getFontFamily(400),
-    fontSize: 16,
+    fontSize: 15,
   },
   priceChange: {
     fontFamily: getFontFamily(400),
-    fontSize: 16,
+    fontSize: 15,
     marginRight: 6,
   },
   actionsContainer: {
