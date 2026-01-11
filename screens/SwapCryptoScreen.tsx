@@ -74,13 +74,13 @@ export default function CryptoSwapScreen() {
     () =>
       Array.isArray(data)
         ? data.map(asset => ({
-            label: asset?.asset_name,
-            value: asset?.asset_id,
-            symbol: asset?.symbol,
-            logo_url: asset?.asset_logo_url,
+            label: asset?.asset_name ?? asset?.name ?? "",
+            value: asset?.asset_id ?? "",
+            symbol: asset?.symbol ?? "",
+            logo_url: asset?.asset_logo_url ?? asset?.logo ?? "",
             buy_rate: asset?.buy_rate,
             sell_rate: asset?.sell_rate,
-            market_price: asset?.market_current_value,
+            market_price: asset?.market_current_value ?? asset?.price ?? 0,
             balance: asset?.balance,
           }))
         : [],
