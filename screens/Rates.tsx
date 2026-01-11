@@ -37,9 +37,8 @@ export default function CryptoRatesScreen() {
   const { apiGet } = useAxios();
   const navigation: any = useNavigation();
 
-  const crypto: any = useMemo(
-    () => cryptoOptions.find((c: any) => c.value === selectedCrypto),
-    [selectedCrypto, cryptoOptions],
+  const crypto: any = cryptoOptions.find(
+    (c: any) => c.value === selectedCrypto,
   );
 
   const currentRate: number = useMemo(() => {
@@ -138,27 +137,6 @@ export default function CryptoRatesScreen() {
     // Return default value if no category matches or no amount provided
     return parseFloat(latestRate.default_value);
   }, [selectedCrypto, activeTab, amount, data]);
-
-  // const onPress = () => {
-  //   if (!selectedCrypto) {
-  //     Alert.alert("Error", "Please select a cryptocurrency");
-  //     return;
-  //   }
-
-  //   if (activeTab === "buy") {
-  //     navigation.navigate("BuyCrypto", {
-  //       crypto,
-  //       amount,
-  //       rate: currentRate,
-  //     });
-  //   } else {
-  //     navigation.navigate("SellCrypto", {
-  //       crypto,
-  //       amount,
-  //       rate: currentRate,
-  //     });
-  //   }
-  // };
 
   const onPress = () => {
     if (!selectedCrypto) {

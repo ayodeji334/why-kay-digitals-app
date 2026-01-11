@@ -8,7 +8,6 @@ import CustomHeader from "../components/CustomHeader";
 import ForgetPasswordScreen from "../screens/ForgetPasswordScreen";
 import VerificationCodeScreen from "../screens/VerificationCode";
 import SetNewPasswordScreen from "../screens/SetNewPasswordScreen";
-import { getItem } from "../utlis/storage";
 import RegisterScreen from "../screens/RegisterScreen";
 import CreateSecurityPinScreen from "../screens/CreateSecurityPinScreen";
 import ConfirmSecurityPinScreen from "../screens/ConfirmSecurityPinScreen";
@@ -26,12 +25,7 @@ import HelpSupportScreen from "../screens/ContactUsScreen";
 import ReferAndEarnScreen from "../screens/ReferAndEarnScreen";
 import ReferralHistoryScreen from "../screens/ReferralHistoryScreen";
 import BiometricsScreen from "../screens/EnableBiometricScreen";
-import {
-  useAuthStore,
-  useHasHydrated,
-  useIsAuthenticated,
-  useUser,
-} from "../stores/authSlice";
+import { useIsAuthenticated, useUser } from "../stores/authSlice";
 import DepositScreen from "../screens/DepositScreen";
 import BankTransferScreen from "../screens/BankTransfer";
 import BVNVerificationScreen from "../screens/BVNVerificationScreen";
