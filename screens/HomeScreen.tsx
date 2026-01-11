@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -22,36 +21,26 @@ import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import AdvertsBanner from "../components/AdvertsBanner";
 import { useWalletStore } from "../stores/walletSlice";
+import { useQuery } from "@tanstack/react-query";
 
 const HomeScreen = () => {
   const user = useUser();
   const fetchWallets = useWalletStore(s => s.fetchWalletsAndAccounts);
   const wallets = useWalletStore(s => s.wallets);
   const bankAccounts = useWalletStore(s => s.bankAccounts);
-  const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
 
+  const { refetch, isRefetching, isLoading } = useQuery({
+    queryKey: ["wallets"],
+    queryFn: fetchWallets,
+  });
+
   const fiatWallet = Array.isArray(wallets)
-    ? user.wallets?.find((w: any) => w.type === "fiat")
+    ? wallets?.find((w: any) => w.type === "fiat")
     : null;
 
   const needsVerification =
     user?.tier_level === "TIER_0" || !bankAccounts?.length;
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    setLoading(true);
-    await fetchWallets();
-    setRefreshing(false);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    if (!wallets?.length) {
-      fetchWallets();
-    }
-  }, [fetchWallets, wallets]);
 
   return (
     <SafeAreaView edges={["left", "right", "top"]} style={styles.container}>
@@ -61,8 +50,8 @@ const HomeScreen = () => {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
+            refreshing={isRefetching}
+            onRefresh={refetch}
             colors={["#df8b0cff"]}
             tintColor="#e28b0aff"
           />
@@ -150,7 +139,7 @@ const HomeScreen = () => {
         <ServicesSection />
         <AdvertsBanner />
       </ScrollView>
-      <CustomLoading loading={loading || refreshing} />
+      <CustomLoading loading={isLoading} />
     </SafeAreaView>
   );
 };
