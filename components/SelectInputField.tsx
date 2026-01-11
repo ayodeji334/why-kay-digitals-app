@@ -228,8 +228,8 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("700"),
   },
   cryptoLogo: {
-    width: 30,
-    height: 30,
+    width: 26,
+    height: 26,
     borderRadius: 160,
     backgroundColor: "#F3F4F6",
   },
@@ -279,8 +279,8 @@ const styles = StyleSheet.create({
   error: { color: "#FF3B30", marginTop: 4, fontFamily: getFontFamily("700") },
   errorBorder: { borderColor: "#FF3B30", borderWidth: 1.5 },
   optionLogo: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     borderRadius: 120,
     borderWidth: 1,
     borderColor: "#cdcdcdff",

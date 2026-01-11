@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: normalize(22),
+    fontSize: normalize(20),
     fontFamily: getFontFamily("800"),
     color: "#333",
   },
