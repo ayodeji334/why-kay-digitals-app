@@ -39,7 +39,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
   const [depositModalVisible, setDepositModalVisible] = useState(false);
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
   const [visible, setVisible] = useState(isShowBalance);
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
 
   return (
     <ImageBackground
@@ -116,7 +116,14 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         secondaryButtonText="Crypto Deposit"
         secondaryAction={() => {
           setDepositModalVisible(false);
-          setTimeout(() => navigation.navigate("SelectAsset" as never), 600);
+          setTimeout(
+            () =>
+              navigation.navigate("SelectAsset", {
+                action: "deposit",
+                source: "home",
+              } as never),
+            600,
+          );
         }}
         showCloseButton={true}
         iconBackgroundColor="#FF4D4D1A"
