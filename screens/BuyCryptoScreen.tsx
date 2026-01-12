@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     marginBottom: normalize(10),
   },
   approx: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     marginBottom: normalize(9),
     color: COLORS.primary,

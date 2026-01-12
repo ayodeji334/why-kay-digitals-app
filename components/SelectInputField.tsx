@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     minHeight: 50,
     justifyContent: "center",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   selectedCryptoContainer: {
     flexDirection: "row",
@@ -276,7 +276,11 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("700"),
     color: "#6B7280",
   },
-  error: { color: "#FF3B30", marginTop: 4, fontFamily: getFontFamily("700") },
+  error: {
+    color: "#FF3B30",
+    marginBottom: 9,
+    fontFamily: getFontFamily("700"),
+  },
   errorBorder: { borderColor: "#FF3B30", borderWidth: 1.5 },
   optionLogo: {
     width: 30,
