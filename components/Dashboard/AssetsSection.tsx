@@ -65,8 +65,6 @@ const AssetsSection = () => {
     queryFn: fetchAssets,
   });
 
-  console.log(assets);
-
   if (isLoading) {
     return (
       <View style={styles.section}>

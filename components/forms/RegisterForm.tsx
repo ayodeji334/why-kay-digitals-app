@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   checkingText: {
-    fontSize: normalize(13),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
     marginTop: -5,
     marginBottom: 10,

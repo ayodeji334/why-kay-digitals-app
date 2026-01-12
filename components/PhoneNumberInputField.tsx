@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: getFontFamily("700"),
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     marginBottom: 6,
     color: "#000",
   },

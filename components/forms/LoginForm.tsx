@@ -26,9 +26,9 @@ type LoginFormInputs = {
 
 const LoginForm: React.FC = () => {
   const { post } = useAxios();
-  const { setUser, setToken, setIsAuthenticated } = useAuthStore(
-    state => state,
-  );
+  const setToken = useAuthStore(state => state.setToken);
+  const setUser = useAuthStore(state => state.setUser);
+  const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
   const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
 

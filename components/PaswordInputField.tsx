@@ -148,21 +148,24 @@ const styles = StyleSheet.create({
   },
   hintsWrapper: {
     marginTop: 6,
+    flexDirection: "row",
+    gap: 9,
+    flexWrap: "wrap",
   },
   hint: {
     fontFamily: getFontFamily("700"),
-    fontSize: normalize(13),
+    fontSize: normalize(16),
     marginVertical: 2,
   },
   hintValid: {
     color: "green",
     fontFamily: getFontFamily("700"),
-    fontSize: normalize(13),
+    fontSize: normalize(16),
   },
   hintInvalid: {
     color: "red",
     fontFamily: getFontFamily("700"),
-    fontSize: normalize(13),
+    fontSize: normalize(16),
   },
 });
 
