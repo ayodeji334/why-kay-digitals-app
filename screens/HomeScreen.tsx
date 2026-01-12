@@ -105,7 +105,7 @@ const HomeScreen = () => {
         {needsVerification && (
           <View style={styles.verificationBanner}>
             <View style={styles.verificationIcon}>
-              <Scan size={normalize(22)} color={COLORS.whiteBackground} />
+              <Scan size={normalize(20)} color={COLORS.whiteBackground} />
             </View>
             <View style={styles.verificationText}>
               <Text style={styles.verificationTitle}>
@@ -126,7 +126,7 @@ const HomeScreen = () => {
               <Text
                 style={{
                   color: COLORS.secondary,
-                  fontSize: normalize(15),
+                  fontSize: normalize(18),
                   fontFamily: getFontFamily("400"),
                 }}
               >
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 7,
+    padding: 4,
   },
   verificationText: {
     flex: 1,
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   },
   verificationTitle: {
     color: "#fff",
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
   },
   emptyState: {
