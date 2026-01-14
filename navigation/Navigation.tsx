@@ -45,14 +45,19 @@ import CryptoWalletDepositScreen from "../screens/CryptoWalletDepositScreen";
 import CryptoBuyScreen from "../screens/BuyCryptoScreen";
 import CryptoSellScreen from "../screens/SellCrytpoScreen";
 import CryptoSwapScreen from "../screens/SwapCryptoScreen";
+import ReturningUserLoginScreen from "../screens/ReturningUserLoginScreen";
 
 export default function NavigationRoot() {
   const isAuthenticated = useIsAuthenticated();
   const user = useUser();
 
+  console.log(user?.username);
+
   const RootStack = createNativeStackNavigator({
     initialRouteName: isAuthenticated
       ? "Dashboard"
+      : user?.username
+      ? "ReturningLogin"
       : !!user
       ? "SignIn"
       : "Intro",
@@ -72,6 +77,12 @@ export default function NavigationRoot() {
       },
       SignIn: {
         screen: LoginScreen,
+        options: {
+          header: () => <CustomHeader showBack={!user} title="Login" />,
+        },
+      },
+      ReturningLogin: {
+        screen: ReturningUserLoginScreen,
         options: {
           header: () => <CustomHeader showBack={!user} title="Login" />,
         },
