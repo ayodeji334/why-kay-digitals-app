@@ -140,7 +140,7 @@ export function SelectInput({
 
               <FlatList
                 data={options.filter(opt =>
-                  opt.label.toLowerCase().includes(search.toLowerCase()),
+                  opt.label?.toLowerCase().includes(search?.toLowerCase()),
                 )}
                 keyExtractor={(item, index) => `${item.value}-${index}`}
                 renderItem={({ item }) => (
