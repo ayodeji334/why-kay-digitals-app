@@ -11,7 +11,7 @@ export default function ReturningUserLoginScreen() {
   const user = useAuthStore(state => state.user);
 
   const handleNavigate = () => {
-    navigation.navigate("Login" as never);
+    navigation.navigate("SignIn" as never);
   };
 
   return (
