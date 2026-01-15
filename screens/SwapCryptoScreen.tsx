@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
   View,
   Text,
@@ -11,17 +11,16 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { formatAmount } from "../libs/formatNumber";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import CustomLoading from "../components/CustomLoading";
 import { SelectInput } from "../components/SelectInputField";
 import useAxios from "../hooks/useAxios";
 
-// Validation schema
 const schema = Yup.object().shape({
   from_asset: Yup.string().required(
     "Select the crypto you want to convert from",
@@ -43,11 +42,7 @@ const schema = Yup.object().shape({
 });
 
 export default function CryptoSwapScreen() {
-  const route: any = useRoute();
   const { apiGet } = useAxios();
-  const { assetId } = route.params || {};
-  const [btcEquivalent, setBtcEquivalent] = useState("0.00000");
-  const [ngnAmount, setNgnAmount] = useState("0.00");
 
   const fetchAssets = async (): Promise<any[]> => {
     try {
@@ -59,23 +54,39 @@ export default function CryptoSwapScreen() {
     }
   };
 
-  const {
-    data,
-    isFetching: isLoading,
-    isRefetching,
-    refetch,
-  } = useQuery({
-    queryKey: ["users-assets"],
-    queryFn: fetchAssets,
-    refetchOnWindowFocus: true,
+  const fetchAvailableAssets = async (): Promise<any> => {
+    try {
+      const response = await apiGet("/crypto-assets");
+      return response.data?.data?.assets;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const queries = useQueries({
+    queries: [
+      {
+        queryKey: ["assets"],
+        queryFn: fetchAvailableAssets,
+      },
+      {
+        queryKey: ["user-assets"],
+        queryFn: fetchAssets,
+      },
+    ],
   });
+
+  const availableAssets = queries[0].data ?? [];
+  const userAssets = queries[1].data ?? [];
+  const isLoading = queries.some(q => q.isLoading);
 
   const options = useMemo(
     () =>
-      Array.isArray(data)
-        ? data.map(asset => ({
+      Array.isArray(userAssets)
+        ? userAssets.map(asset => ({
+            id: asset?.asset_id ?? asset?.uuid ?? "",
             label: asset?.asset_name ?? asset?.name ?? "",
-            value: asset?.asset_id ?? "",
+            value: asset?.asset_id ?? asset?.uuid ?? "",
             symbol: asset?.symbol ?? "",
             logo_url: asset?.asset_logo_url ?? asset?.logo ?? "",
             buy_rate: asset?.buy_rate,
@@ -84,7 +95,26 @@ export default function CryptoSwapScreen() {
             balance: asset?.balance,
           }))
         : [],
-    [data],
+    [userAssets],
+  );
+
+  const availableAssetOptions = useMemo(
+    () =>
+      Array.isArray(availableAssets)
+        ? availableAssets.map(asset => ({
+            label: asset?.asset_name ?? asset?.name ?? "",
+            value: asset?.asset_id ?? asset?.uuid ?? "",
+            symbol: asset?.symbol ?? "",
+            id: asset?.asset_id ?? asset?.uuid ?? "",
+            logo_url:
+              asset?.asset_logo_url ?? asset?.logo ?? asset?.logo_url ?? "",
+            buy_rate: asset?.buy_rate,
+            sell_rate: asset?.sell_rate,
+            market_price: asset?.market_current_value ?? asset?.price ?? 0,
+            balance: asset?.balance,
+          }))
+        : [],
+    [availableAssets],
   );
 
   const {
@@ -94,7 +124,7 @@ export default function CryptoSwapScreen() {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { amount: 0 },
+    defaultValues: { amount: 0, from_asset: "", to_asset: "" },
     mode: "onChange",
   });
 
@@ -103,42 +133,57 @@ export default function CryptoSwapScreen() {
   const toAssetId = watch("to_asset");
   const amount = watch("amount");
   const fromAsset = options.find(opt => opt.value === fromAssetId);
-  const toAsset = options.find(opt => opt.value === toAssetId);
+  const toAsset = availableAssetOptions.find(opt => opt.value === toAssetId);
 
   // From asset balance
   const balance = Number(fromAsset?.balance ?? 0);
   const price = Number(fromAsset?.market_price ?? 0);
   const symbol = fromAsset?.symbol ?? "";
 
-  const updateConversion = (value: any) => {
-    const usd = parseFloat(value);
-    if (!isNaN(usd) && fromAsset && toAsset) {
-      // Amount of "from" coin using its market price
-      const fromCoinAmount = usd / parseFloat(fromAsset.market_price ?? "1");
+  const { btcEquivalent, ngnAmount } = useMemo(() => {
+    const usd = Number(amount);
 
-      // Convert USD to NGN using sell_rate of fromAsset
-      const ngn = usd * parseFloat(fromAsset.sell_rate ?? "1");
-
-      // Equivalent "to" coin: divide NGN by toAsset market price
-      const toCoinAmount = ngn / parseFloat(toAsset.market_price ?? "1");
-
-      setBtcEquivalent(fromCoinAmount.toFixed(8)); // from asset amount
-      setNgnAmount(toCoinAmount.toFixed(8)); // to asset amount
-    } else {
-      setBtcEquivalent("0.00000000");
-      setNgnAmount("0.00000000");
+    if (!usd || !fromAsset || !toAsset) {
+      return {
+        btcEquivalent: "0.00000000",
+        ngnAmount: "0.00000000",
+      };
     }
-  };
+
+    const fromMarketPrice = Number(fromAsset.market_price ?? 1);
+    const sellRate = Number(fromAsset.sell_rate ?? 1);
+    const toMarketPrice = Number(toAsset.market_price ?? 1);
+    const fromCoinAmount = usd / fromMarketPrice;
+
+    if (!toMarketPrice || toMarketPrice <= 0) {
+      return {
+        btcEquivalent: fromCoinAmount.toFixed(8),
+        ngnAmount: "0.00000000", // fallback
+      };
+    }
+
+    // USD → NGN → To coin
+    const ngn = usd * sellRate;
+    const toCoinAmount = ngn / toMarketPrice;
+
+    return {
+      btcEquivalent: fromCoinAmount.toFixed(8),
+      ngnAmount: toCoinAmount.toFixed(8),
+    };
+  }, [amount, fromAsset, toAsset]);
 
   const onSubmit = async (values: any) => {
     const payload = {
       ...values,
       url: "/wallets/user/swap-crypto",
     };
-
     navigation.navigate("ConfirmTransaction" as never, {
       payload,
     });
+  };
+
+  const onRefresh = async () => {
+    await Promise.all(queries.map(q => q.refetch()));
   };
 
   return (
@@ -146,37 +191,36 @@ export default function CryptoSwapScreen() {
       <ScrollView
         contentContainerStyle={{
           flex: 1,
+          backgroundColor: "white",
         }}
         refreshControl={
-          <RefreshControl onRefresh={refetch} refreshing={isRefetching} />
+          <RefreshControl onRefresh={onRefresh} refreshing={isLoading} />
         }
       >
         <View style={styles.container}>
           <View>
-            <View>
+            <View style={{ marginBottom: 4 }}>
               <SelectInput
                 control={control}
                 name="from_asset"
-                label="Select asset you want to convert from"
+                label="Select asset(coin) you want to convert from"
                 options={options}
-                placeholder="Select an asset"
+                placeholder="Select an asset(coin)"
                 title="Select an asset"
               />
             </View>
-            <View>
+            <View style={{ marginVertical: 4 }}>
               <SelectInput
                 control={control}
                 name="to_asset"
-                label="Select asset you want to convert to"
-                options={options}
-                placeholder="Select an asset"
+                label="Select asset(coin) you want to convert to"
+                options={availableAssetOptions}
+                placeholder="Select an asset(coin)"
                 title="Select an asset"
               />
             </View>
-            <View>
-              <Text style={styles.label}>
-                Enter the amount you want to sell
-              </Text>
+            <View style={{ marginVertical: 4 }}>
+              <Text style={styles.label}>Amount (USD)</Text>
 
               <Controller
                 control={control}
@@ -189,7 +233,6 @@ export default function CryptoSwapScreen() {
                     onBlur={onBlur}
                     onChangeText={val => {
                       onChange(val);
-                      updateConversion(val);
                     }}
                     value={value.toString()}
                   />
@@ -202,7 +245,6 @@ export default function CryptoSwapScreen() {
                 Approximately {btcEquivalent} {fromAsset?.symbol}
               </Text>
             </View>
-
             <View
               style={{
                 marginVertical: 10,
@@ -212,17 +254,16 @@ export default function CryptoSwapScreen() {
               }}
             >
               <Text style={[styles.note, { color: "black" }]}>
-                Rate at which we get our US Dollar
+                Your balance & rate
               </Text>
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
+                  paddingVertical: 5,
                 }}
               >
-                <Text
-                  style={[styles.balance, { fontFamily: getFontFamily("400") }]}
-                >
+                <Text style={[styles.balance]}>
                   {fromAsset?.symbol} Balance
                 </Text>
                 <Text style={styles.balance}>
@@ -241,24 +282,22 @@ export default function CryptoSwapScreen() {
               }}
             >
               <Text style={styles.rate}>
-                Rate: {formatAmount(fromAsset?.buy_rate ?? 0)}/$
+                Exchange rate: {formatAmount(fromAsset?.buy_rate ?? 0)}/$
               </Text>
               <Text style={styles.min}>
-                Network Fee: {formatAmount(amount * 0.01, false, "USD")}
+                Estimated Network Fee:{" "}
+                {formatAmount(amount * 0.01, false, "USD")}
               </Text>
             </View>
-
             <View style={styles.paymentContainer}>
-              <Text style={styles.note}>
-                Rate at which we get our US Dollar
-              </Text>
+              <Text style={styles.note}>You’ll receive</Text>
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
                 }}
               >
-                <Text style={styles.ngn}>You will get:</Text>
+                <Text style={styles.ngn}>Estimated amount:</Text>
                 <Text style={styles.ngn}>
                   {ngnAmount} {toAsset?.symbol}
                 </Text>
@@ -307,13 +346,13 @@ const styles = StyleSheet.create({
     marginBottom: normalize(10),
   },
   approx: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     marginBottom: normalize(9),
     color: COLORS.primary,
   },
   balance: {
-    fontSize: normalize(19),
+    fontSize: normalize(20),
     fontFamily: getFontFamily("800"),
     marginBottom: normalize(4),
   },
@@ -323,7 +362,7 @@ const styles = StyleSheet.create({
     marginBottom: normalize(4),
   },
   rate: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     marginBottom: normalize(4),
   },
