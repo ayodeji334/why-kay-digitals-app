@@ -35,6 +35,7 @@ const AssetsSection = () => {
   const fetchAssets = async (): Promise<Asset[]> => {
     try {
       const response = await apiGet("/crypto-assets");
+      console.log(response);
       return response.data?.data?.assets.map((asset: any) => {
         const sellRate = asset.rates.find((r: any) => r.type === "sell");
         return {

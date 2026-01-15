@@ -161,7 +161,7 @@ const TransactionHistoryScreen: React.FC = () => {
       )}
 
       {/* Loading Overlay */}
-      <CustomLoading loading={isLoading || isRefetching} />
+      <CustomLoading loading={isLoading} />
 
       {/* Filter Modal */}
       <CustomModal

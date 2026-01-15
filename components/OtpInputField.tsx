@@ -95,6 +95,7 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                   selectionColor="transparent"
                   caretHidden={isSecuredText}
                   placeholder={isSecuredText ? "•" : ""}
+                  placeholderTextColor="#999"
                   autoCapitalize="none"
                   maxFontSizeMultiplier={0}
                   autoCorrect={false}

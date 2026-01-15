@@ -19,9 +19,7 @@ export default function LoginScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>
-            Welcome Back, {user?.username || "User"}
-          </Text>
+          <Text style={styles.title}>Welcome Back</Text>
           <Text
             style={[
               styles.title,

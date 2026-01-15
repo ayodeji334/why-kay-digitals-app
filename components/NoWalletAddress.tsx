@@ -77,7 +77,7 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
         <TouchableOpacity
           style={[styles.generateButton, isGenerating && { opacity: 0.5 }]}
           activeOpacity={0.89}
-          disabled={isGenerating}
+          disabled={availableChains.length === 0 || isGenerating}
           onPress={onGenerateWallet}
         >
           <Text style={styles.generateButtonText}>
