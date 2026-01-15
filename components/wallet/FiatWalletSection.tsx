@@ -18,7 +18,7 @@ const FiatWalletSection = () => {
 
   const fiatWallet = useMemo(() => {
     const walletList = Array.isArray(user?.wallets)
-      ? user.wallets
+      ? wallets
       : Array.isArray(wallets)
       ? wallets
       : [];
