@@ -35,6 +35,13 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
         </Text>
       </View>
 
+      {availableChains.length === 0 && (
+        <Text style={styles.emptyChainsText}>
+          Wallet addresses cannot be created for this asset(coin) at the moment.
+          Please check back later, we are already working on it.
+        </Text>
+      )}
+
       {availableChains.length > 0 && (
         <View style={{ marginBottom: 20 }}>
           <Text style={styles.label}>Select Network</Text>
@@ -75,7 +82,10 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
 
       <View style={styles.section}>
         <TouchableOpacity
-          style={[styles.generateButton, isGenerating && { opacity: 0.5 }]}
+          style={[
+            styles.generateButton,
+            (availableChains.length === 0 || isGenerating) && { opacity: 0.5 },
+          ]}
           activeOpacity={0.89}
           disabled={availableChains.length === 0 || isGenerating}
           onPress={onGenerateWallet}
@@ -105,6 +115,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 10,
     backgroundColor: "white",
+  },
+  emptyChainsText: {
+    textAlign: "center",
+    fontFamily: getFontFamily(400),
+    fontSize: 14,
+    color: "#B00020",
+    marginBottom: 20,
+    maxWidth: 260,
+    lineHeight: 18,
   },
   section: {
     alignItems: "center",
