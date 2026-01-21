@@ -1,25 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { getFontFamily } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CustomIcon from "./CustomIcon";
 import { WalletIcon } from "../assets";
+import useAxios from "../hooks/useAxios";
+import { showError } from "../utlis/toast";
 
 interface NoWalletAddressProps {
-  availableChains?: any[];
-  selectedChain?: any | null;
-  onSelectChain?: (chain: any) => void;
-  onGenerateWallet?: () => void;
-  isGenerating?: boolean;
+  selectedAssetUuid: string;
+  onSuccess: () => void;
 }
 
 const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
-  availableChains = [],
-  selectedChain = null,
-  onSelectChain,
-  onGenerateWallet,
-  isGenerating = false,
+  selectedAssetUuid,
+  onSuccess,
 }) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { apiGet } = useAxios();
+
+  const handleGenerateWallet = async () => {
+    setIsGenerating(true);
+
+    try {
+      await apiGet(`wallets/user/${selectedAssetUuid}/generate-wallet`);
+
+      onSuccess();
+    } catch (error) {
+      showError("Failed to generate wallet address");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <View style={styles.centerContainer}>
       <View style={styles.section}>
@@ -27,68 +40,20 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
           <CustomIcon source={WalletIcon} size={30} color={COLORS.primary} />
         </View>
 
-        <Text style={styles.noWalletTitle}>No Wallet Address</Text>
+        <Text style={styles.noWalletTitle}>No Wallet</Text>
 
         <Text style={styles.noWalletText}>
-          You need to generate a wallet address before you can receive assets.
-          This will create a unique address for the selected coin.
+          You need to generate a wallet before you can receive assets. This will
+          create a unique addresses for all networks on the coin.
         </Text>
       </View>
 
-      {availableChains.length === 0 && (
-        <Text style={styles.emptyChainsText}>
-          Wallet addresses cannot be created for this asset(coin) at the moment.
-          Please check back later, we are already working on it.
-        </Text>
-      )}
-
-      {availableChains.length > 0 && (
-        <View style={{ marginBottom: 20 }}>
-          <Text style={styles.label}>Select Network</Text>
-
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
-            {availableChains.map((chain: any) => {
-              const isSelected = selectedChain?.chain === chain.chain;
-
-              return (
-                <TouchableOpacity
-                  key={chain.chain}
-                  activeOpacity={0.8}
-                  onPress={() => onSelectChain?.(chain)}
-                  style={[
-                    styles.chainButton,
-                    {
-                      borderColor: isSelected ? COLORS.primary : "#ccc",
-                      backgroundColor: isSelected
-                        ? "rgba(0,200,83,0.15)"
-                        : "transparent",
-                    },
-                  ]}
-                >
-                  <Text
-                    style={{
-                      fontFamily: getFontFamily(700),
-                      color: isSelected ? COLORS.primary : "#333",
-                    }}
-                  >
-                    {chain.chainType} ({chain.chain})
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
-      )}
-
       <View style={styles.section}>
         <TouchableOpacity
-          style={[
-            styles.generateButton,
-            (availableChains.length === 0 || isGenerating) && { opacity: 0.5 },
-          ]}
+          disabled={isGenerating}
+          style={[styles.generateButton, isGenerating && { opacity: 0.6 }]}
           activeOpacity={0.89}
-          disabled={availableChains.length === 0 || isGenerating}
-          onPress={onGenerateWallet}
+          onPress={handleGenerateWallet}
         >
           <Text style={styles.generateButtonText}>
             {isGenerating ? "Generating..." : "Generate Wallet Address"}
@@ -96,8 +61,8 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
         </TouchableOpacity>
 
         <Text style={styles.noteText}>
-          Your wallet address will be generated securely and can be used to
-          receive cryptocurrency.
+          Your wallet and addresses will be generated securely and can be used
+          to receive cryptocurrency.
         </Text>
       </View>
     </View>

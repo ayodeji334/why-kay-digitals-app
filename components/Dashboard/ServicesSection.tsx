@@ -57,7 +57,7 @@ const ServicesSection = () => {
       icon: (
         <CustomIcon source={TransferIcon} size={24} color={COLORS.primary} />
       ),
-      screenName: "",
+      screenName: "Transfer",
     },
     {
       id: 5,

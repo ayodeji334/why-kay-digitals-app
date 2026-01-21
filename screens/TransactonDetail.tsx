@@ -36,15 +36,15 @@ const TransactionDetailScreen = () => {
   const { transaction }: any = route.params;
 
   const isSuccess = useMemo(
-    () => transaction.status?.toLowerCase() === "successful",
-    [transaction.status],
+    () => transaction?.status?.toLowerCase() === "successful",
+    [transaction?.status],
   );
 
   const isProcessing = useMemo(
     () =>
-      transaction.status?.toLowerCase() === "processing" ||
-      transaction.status?.toLowerCase() === "pending",
-    [transaction.status],
+      transaction?.status?.toLowerCase() === "processing" ||
+      transaction?.status?.toLowerCase() === "pending",
+    [transaction?.status],
   );
 
   const StatusIcon = () =>

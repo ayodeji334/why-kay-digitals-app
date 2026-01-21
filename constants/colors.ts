@@ -8,4 +8,5 @@ export const COLORS = {
   lightGray: "#E0E0E0",
   dark: "#03001A",
   iconColor: "#00863B",
+  fadePrimary: "#DDF1D8",
 };

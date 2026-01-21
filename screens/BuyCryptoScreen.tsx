@@ -43,10 +43,7 @@ export default function CryptoBuyScreen() {
   const navigation: any = useNavigation();
   const [assetValueEquivalent, setAssetValueEquivalent] = useState("0.00000");
   const [ngnAmount, setNgnAmount] = useState("₦0.00");
-  const { apiGet, post } = useAxios();
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [selectedChain, setSelectedChain] = useState<any | null>(null);
-
+  const { apiGet } = useAxios();
   const selectedAssetUuid = intent.assetId ?? "";
 
   const {
@@ -126,29 +123,6 @@ export default function CryptoBuyScreen() {
     });
   };
 
-  const availableChains = Array.isArray(assetDetails?.available_chains)
-    ? assetDetails.available_chains
-    : [];
-
-  const handleGenerateWallet = async () => {
-    if (!selectedChain) return;
-
-    setIsGenerating(true);
-
-    try {
-      await post(`wallets/user/${selectedAssetUuid}/generate-wallet`, {
-        chainType: selectedChain.chain,
-      });
-
-      setSelectedChain(null);
-      refetch();
-    } catch (error) {
-      showError("Failed to generate wallet address");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   useEffect(() => {
     const defaultAmount = parseFloat(intent?.amount as string) ?? 0;
     if (defaultAmount > 0) {
@@ -165,11 +139,10 @@ export default function CryptoBuyScreen() {
       >
         {!assetDetails?.wallet_id ? (
           <NoWalletAddress
-            availableChains={availableChains}
-            isGenerating={isGenerating}
-            onGenerateWallet={handleGenerateWallet}
-            onSelectChain={chain => setSelectedChain(chain)}
-            selectedChain={selectedChain}
+            selectedAssetUuid={selectedAssetUuid}
+            onSuccess={() => {
+              refetch();
+            }}
           />
         ) : (
           <View style={styles.container}>

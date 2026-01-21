@@ -33,20 +33,17 @@ const CryptoWalletScreen = () => {
   // Fetch assets
   const fetchAssets = async (): Promise<any[]> => {
     try {
-      const response = await apiGet("/crypto-assets");
+      const response = await apiGet("/crypto-assets/available");
       return (
-        response.data?.data?.assets.map((asset: any) => {
-          const sellRate = asset.rates.find((r: any) => r.type === "sell");
-          const buyRate = asset.rates.find((r: any) => r.type === "buy");
+        response.data?.data?.map((asset: any) => {
           return {
-            id: asset.id,
-            uuid: asset.uuid,
-            name: asset.name,
+            id: asset.asset_id,
+            uuid: asset.asset_id,
+            name: asset.asset_name,
             symbol: asset.symbol,
             logo_url: asset.logo_url,
-            balance: asset.market_current_value ?? 0,
-            sell_rate: parseFloat(sellRate?.default_value ?? 0),
-            buy_rate: parseFloat(buyRate?.default_value ?? 0),
+            balance: asset.market_price ?? 0,
+            rate: parseFloat(asset?.sell_rate ?? 0),
             change: Math.random() > 0.5 ? "up" : "down",
             changePercentage: (Math.random() * 20 - 10).toFixed(2),
           };

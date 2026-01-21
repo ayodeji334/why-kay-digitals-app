@@ -48,7 +48,7 @@ import ShareIcon from "./icons/share.svg";
 import NoResultIcon from "./icons/no-result.svg";
 import CheckCircleIcon from "./icons/check-circle.svg";
 import DangerIcon from "./icons/danger.svg";
-import WalletIcon from "./icons/wallet.svg";
+import WalletIcon from "./icons/wallet2.svg";
 import LogoIcon from "./icons/logo.svg";
 
 export {

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import NumberInputField from "../components/NumberInputField";
+import NumberInputField from "./NumberInputField";
 import { getFontFamily, normalize } from "../constants/settings";
 
 export default function WithdrawalForm({ control }: any) {

@@ -46,6 +46,7 @@ import CryptoBuyScreen from "../screens/BuyCryptoScreen";
 import CryptoSellScreen from "../screens/SellCrytpoScreen";
 import CryptoSwapScreen from "../screens/SwapCryptoScreen";
 import ReturningUserLoginScreen from "../screens/ReturningUserLoginScreen";
+import TransferScreen from "../screens/TransferScreen";
 
 export default function NavigationRoot() {
   const isAuthenticated = useIsAuthenticated();
@@ -406,12 +407,15 @@ export default function NavigationRoot() {
           },
           CryptoWalletDeposit: {
             screen: CryptoWalletDepositScreen,
-            options: {
+            options: ({ route }: any) => ({
               headerShown: true,
               header: () => (
-                <CustomHeader showTitle={true} title="Receive Crypto" />
+                <CustomHeader
+                  showTitle
+                  title={route.params?.title ?? "Receive Crypto"}
+                />
               ),
-            },
+            }),
           },
           BuyCrypto: {
             screen: CryptoBuyScreen,
@@ -438,6 +442,13 @@ export default function NavigationRoot() {
               header: () => (
                 <CustomHeader showTitle={true} title="Swap Crypto" />
               ),
+            },
+          },
+          Transfer: {
+            screen: TransferScreen,
+            options: {
+              headerShown: true,
+              header: () => <CustomHeader showTitle={true} title="Transfer" />,
             },
           },
         },

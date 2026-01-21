@@ -16,7 +16,7 @@ import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import { COLORS } from "../constants/colors";
 import { normalize, getFontFamily } from "../constants/settings";
 import BalanceLimitCard from "../components/BalanceLimitCard";
-import WithdrawalForm from "./WithdrawalForm";
+import WithdrawalForm from "../components/WithdrawalForm";
 import BankAccountSelector from "./BankAccountSelector";
 import BankAccountModal from "./BankAccountModal";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -64,7 +64,7 @@ export default function WithdrawScreen() {
     handleSubmit,
     setValue,
     watch,
-    formState: { isValid, isSubmitting },
+    formState: { isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
     mode: "onChange",

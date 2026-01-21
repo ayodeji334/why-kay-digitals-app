@@ -37,6 +37,7 @@ interface SelectInputProps {
   onChange?: (value: string) => void;
   onSelect?: (value: any) => void;
   title?: string;
+  showSearchBox?: boolean;
 }
 
 export function SelectInput({
@@ -50,6 +51,7 @@ export function SelectInput({
   value: externalValue,
   onChange: externalOnChange,
   title = "Select an option",
+  showSearchBox = true,
 }: SelectInputProps) {
   const [visible, setVisible] = useState(false);
   const [search, setSearch] = useState("");
@@ -130,19 +132,21 @@ export function SelectInput({
                 </Pressable>
               </View>
 
-              <TextInput
-                placeholder="Search..."
-                value={search}
-                onChangeText={setSearch}
-                placeholderTextColor="#9CA3AF"
-                style={styles.search}
-              />
+              {showSearchBox && (
+                <TextInput
+                  placeholder="Search..."
+                  value={search}
+                  onChangeText={setSearch}
+                  placeholderTextColor="#9CA3AF"
+                  style={styles.search}
+                />
+              )}
 
               <FlatList
                 data={options.filter(opt =>
                   opt.label?.toLowerCase().includes(search?.toLowerCase()),
                 )}
-                keyExtractor={(item, index) => `${item.value}-${index}`}
+                keyExtractor={(item, index) => `${item.value}-${index + 0.456}`}
                 renderItem={({ item }) => (
                   <Pressable
                     style={styles.option}
@@ -258,7 +262,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     fontFamily: getFontFamily("700"),
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     color: "#374151",
     backgroundColor: "#F9FAFB",
   },
@@ -272,7 +276,7 @@ const styles = StyleSheet.create({
     color: "#374151",
   },
   optionPrice: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#6B7280",
   },

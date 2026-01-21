@@ -22,7 +22,6 @@ import useAxios from "../hooks/useAxios";
 import NoWalletAddress from "../components/NoWalletAddress";
 import { showError } from "../utlis/toast";
 import { TradeIntent } from "./Rates";
-// import { SelectInput } from "../components/SelectInputField";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -156,11 +155,10 @@ export default function CryptoSellScreen() {
       <ScrollView contentContainerStyle={{ flex: 1 }}>
         {!assetDetails?.wallet_id ? (
           <NoWalletAddress
-            availableChains={availableChains}
-            isGenerating={isGenerating}
-            onGenerateWallet={handleGenerateWallet}
-            onSelectChain={chain => setSelectedChain(chain)}
-            selectedChain={selectedChain}
+            selectedAssetUuid={selectedAssetUuid}
+            onSuccess={() => {
+              refetch();
+            }}
           />
         ) : (
           <View style={styles.container}>
@@ -356,13 +354,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#9f9f9fff",
     borderRadius: 8,
-    padding: 9,
+    padding: 10,
   },
   cryptoInfo: { flex: 1 },
   optionName: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#374151",
+  },
+  optionLogo: {
+    width: 32,
+    height: 32,
+    borderRadius: 120,
+    borderWidth: 1,
+    borderColor: "#cdcdcdff",
   },
   ngn: {
     color: "#fff",
@@ -385,13 +390,5 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     marginVertical: 20,
     padding: 14,
-  },
-  optionLogo: {
-    width: 32,
-    height: 32,
-    borderRadius: 120,
-    borderWidth: 1,
-    borderColor: "#cdcdcdff",
-    marginBottom: 10,
   },
 });

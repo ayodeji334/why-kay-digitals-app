@@ -34,18 +34,16 @@ const AssetsSection = () => {
   const { apiGet } = useAxios();
   const fetchAssets = async (): Promise<Asset[]> => {
     try {
-      const response = await apiGet("/crypto-assets");
-      console.log(response);
-      return response.data?.data?.assets.map((asset: any) => {
-        const sellRate = asset.rates.find((r: any) => r.type === "sell");
+      const response = await apiGet("/crypto-assets/available");
+      return response.data?.data.map((asset: any) => {
         return {
-          id: asset.id,
-          uuid: asset.uuid,
-          name: asset.name,
+          id: asset.asset_id,
+          uuid: asset.asset_id,
+          name: asset.asset_name,
           symbol: asset.symbol,
           logo_url: asset.logo_url,
-          balance: asset.market_current_value ?? 0,
-          rate: parseFloat(sellRate?.default_value ?? 0),
+          balance: asset.market_price ?? 0,
+          rate: parseFloat(asset?.sell_rate ?? 0),
           change: Math.random() > 0.5 ? "up" : "down",
           changePercentage: (Math.random() * 20 - 10).toFixed(2),
         };
@@ -60,13 +58,14 @@ const AssetsSection = () => {
     isLoading,
     isError,
     error,
+    isRefetching,
     refetch,
   } = useQuery({
     queryKey: ["assets"],
     queryFn: fetchAssets,
   });
 
-  if (isLoading) {
+  if (isLoading || isRefetching) {
     return (
       <View style={styles.section}>
         <View style={styles.sectionHeader}>

@@ -8,18 +8,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize, width } from "../constants/settings";
-import {
-  ArrowRight2,
-  Camera,
-  Clock,
-  Location,
-  ShieldSecurity,
-  ShieldTick,
-  TagUser,
-  User,
-  UserSquare,
-} from "iconsax-react-nativejs";
+import { getFontFamily, normalize } from "../constants/settings";
+import { ArrowRight2 } from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
 import InfoCard from "../components/InfoCard";

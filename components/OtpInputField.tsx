@@ -94,7 +94,7 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                   secureTextEntry={isSecuredText}
                   selectionColor="transparent"
                   caretHidden={isSecuredText}
-                  placeholder={isSecuredText ? "•" : ""}
+                  placeholder={isSecuredText ? "*" : "*"}
                   placeholderTextColor="#999"
                   autoCapitalize="none"
                   maxFontSizeMultiplier={0}
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     textAlign: "center",
     fontFamily: getFontFamily(800),
-    fontSize: normalize(25),
+    fontSize: normalize(30),
   },
   label: {
     fontFamily: getFontFamily("700"),

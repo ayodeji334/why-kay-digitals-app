@@ -18,6 +18,7 @@ import { SelectInput } from "../components/SelectInputField";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { useNavigation } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
+import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 
 export type TradeIntent = {
   assetId?: string;
@@ -33,7 +34,6 @@ export default function CryptoRatesScreen() {
   const [selectedCrypto, setSelectedCrypto] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
   const [cryptoOptions, setCryptoOptions] = useState<Array<any>>([]);
-  const [rateBreakdown, setRateBreakdown] = useState<string>("");
   const { apiGet } = useAxios();
   const navigation: any = useNavigation();
 
@@ -41,6 +41,37 @@ export default function CryptoRatesScreen() {
     (c: any) => c.value === selectedCrypto,
   );
 
+  // Calculate exchange rate (USD to NGN)
+  const exchangeRate: number = useMemo(() => {
+    if (!selectedCrypto || !crypto?.rates) return 0;
+
+    const rate = crypto.rates.find((r: any) =>
+      activeTab === "sell" ? r.type === "buy" : r.type === "sell",
+    );
+
+    if (!rate) return 0;
+
+    // Check for category-specific rates based on amount
+    if (amount) {
+      const amountNum = parseFloat(amount);
+      if (!isNaN(amountNum) && rate.categories && rate.categories.length > 0) {
+        const category = rate.categories.find(
+          (cat: any) =>
+            amountNum >= parseFloat(cat.min_amount) &&
+            amountNum < parseFloat(cat.max_amount),
+        );
+
+        if (category) {
+          return parseFloat(category.value);
+        }
+      }
+    }
+
+    // Return default rate
+    return parseFloat(rate.default_value);
+  }, [amount, crypto, activeTab, selectedCrypto]);
+
+  // Calculate current rate (total NGN value)
   const currentRate: number = useMemo(() => {
     if (!amount || !selectedCrypto) return 0;
 
@@ -65,8 +96,6 @@ export default function CryptoRatesScreen() {
       ? parseFloat(category.value)
       : parseFloat(rate.default_value);
 
-    setRateBreakdown(`$1 - ${formatAmount(rateValue)}`);
-
     return amountNum * rateValue;
   }, [amount, crypto, activeTab]);
 
@@ -88,8 +117,8 @@ export default function CryptoRatesScreen() {
     queryKey: ["rates"],
     queryFn: async () => {
       try {
-        const res = await apiGet("/crypto-assets");
-        return res?.data?.data;
+        const res = await apiGet("/crypto-assets/available");
+        return res?.data?.data ?? [];
       } catch (error) {
         throw error;
       }
@@ -99,9 +128,7 @@ export default function CryptoRatesScreen() {
   const getRateForCrypto = useMemo(() => {
     if (!selectedCrypto || !data?.assets) return 0;
 
-    const crypto = data.assets.find(
-      (asset: any) => asset.name === selectedCrypto,
-    );
+    const crypto = data.find((asset: any) => asset.name === selectedCrypto);
     if (!crypto) return 0;
 
     const rateType = activeTab === "sell" ? "sell" : "buy";
@@ -138,6 +165,44 @@ export default function CryptoRatesScreen() {
     return parseFloat(latestRate.default_value);
   }, [selectedCrypto, activeTab, amount, data]);
 
+  const appliedRate = useMemo(() => {
+    if (!crypto || !amount) return null;
+
+    const amountNum = Number(amount);
+    if (isNaN(amountNum) || amountNum <= 0) return null;
+
+    const rate = crypto.rates?.find(
+      (r: any) => r.type === (activeTab === "sell" ? "buy" : "sell"),
+    );
+
+    if (!rate) return null;
+
+    if (Array.isArray(rate.categories) && rate.categories.length > 0) {
+      const matchedCategory = rate.categories.find((cat: any) => {
+        const min = Number(cat.min_amount);
+        const max = Number(cat.max_amount);
+
+        return amountNum >= min && amountNum < max;
+      });
+
+      if (matchedCategory) {
+        return {
+          source: "category",
+          label: matchedCategory.label,
+          min: matchedCategory.min_amount,
+          max: matchedCategory.max_amount,
+          value: Number(matchedCategory.value),
+        };
+      }
+    }
+
+    // fallback to base rate
+    return {
+      source: "base",
+      value: Number(rate.value),
+    };
+  }, [crypto, amount, activeTab]);
+
   const onPress = () => {
     if (!selectedCrypto) {
       Alert.alert("Error", "Please select a cryptocurrency");
@@ -161,14 +226,19 @@ export default function CryptoRatesScreen() {
   };
 
   useEffect(() => {
-    if (data?.assets) {
-      const options = data.assets.map((asset: any) => ({
-        label: asset.name,
-        value: asset.uuid,
+    if (Array.isArray(data)) {
+      const options = data.map((asset: any) => ({
+        id: asset.asset_id,
+        value: asset.asset_id,
+        label: asset.asset_name,
         symbol: asset.symbol,
         logo_url: asset.logo_url,
+        balance: asset.market_price ?? 0,
+        rate: parseFloat(asset?.sell_rate ?? 0),
+        change: Math.random() > 0.5 ? "up" : "down",
+        changePercentage: (Math.random() * 20 - 10).toFixed(2),
         rates: asset.rates,
-        market_value: asset?.market_current_value,
+        market_value: asset?.market_price,
         is_buy_enabled: asset.is_buy_enabled,
         is_sell_enabled: asset.is_sell_enabled,
       }));
@@ -176,7 +246,7 @@ export default function CryptoRatesScreen() {
       setCryptoOptions(options);
 
       if (!selectedCrypto && options.length > 0) {
-        setSelectedCrypto(options[0].name);
+        setSelectedCrypto(options[0].label);
       }
     }
   }, [data]);
@@ -187,6 +257,7 @@ export default function CryptoRatesScreen() {
         ...option,
         rate: getRateForCrypto,
       }));
+
       setCryptoOptions(updatedOptions);
     }
   }, [getRateForCrypto]);
@@ -230,61 +301,85 @@ export default function CryptoRatesScreen() {
           title="Select Crypto Wallet"
         />
 
-        <View style={{ marginBottom: 12 }}>
+        <View style={{ marginBottom: 2, marginTop: 10 }}>
           <Text style={styles.label}>Amount in USD ($)</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            placeholderTextColor={"#a6a6a6ff"}
-            placeholder="Enter amount"
-            value={amount}
-            onChangeText={setAmount}
-          />
-        </View>
-        {rateBreakdown ? (
-          <Text
-            style={{
-              marginBottom: 5,
-              fontSize: normalize(18),
-              fontFamily: getFontFamily("700"),
-            }}
-          >
-            {rateBreakdown}
-          </Text>
-        ) : null}
+          <View style={styles.inputContainer}>
+            <Text style={styles.dollarSign}>$</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              placeholderTextColor={"#a6a6a6ff"}
+              placeholder="Enter amount"
+              value={amount}
+              onChangeText={text => {
+                const formatted = formatWithCommas(text);
 
+                setAmount(formatted);
+              }}
+            />
+          </View>
+        </View>
+
+        {/* Expected Amount Section */}
         <View style={{ marginVertical: 12 }}>
           <Text style={styles.label}>Expected Amount (₦)</Text>
           <View style={styles.rateBox}>
-            <Text style={styles.rateText}>{formatAmount(currentRate)}</Text>
-          </View>
-          {!!amount && (
-            <Text
-              style={{
-                marginTop: 6,
-                fontSize: normalize(18),
-                fontFamily: getFontFamily("700"),
-              }}
-            >
-              {formatNumber(coinAmount, false, 9)} {crypto?.symbol}
+            <Text style={styles.rateText}>
+              {formatAmount(currentRate, false, "NGN")}
             </Text>
-          )}
+          </View>
         </View>
 
+        {/* Exchange Rate Information */}
+        {selectedCrypto && amount && parseFloat(amount) > 0 && (
+          <View style={styles.infoContainer}>
+            {/* Exchange Rate */}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Exchange Rate:</Text>
+              <Text style={styles.infoValue}>
+                $1 = {formatAmount(exchangeRate)}
+              </Text>
+            </View>
+
+            {/* Rate Category */}
+            {appliedRate && (
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Rate Category:</Text>
+                <Text style={styles.infoValue}>
+                  {appliedRate.source === "category"
+                    ? appliedRate.label
+                    : "Default rate"}
+                </Text>
+              </View>
+            )}
+
+            {/* Rate Used */}
+            {appliedRate && (
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Rate Used:</Text>
+                <Text style={styles.infoValue}>
+                  ₦{formatAmount(appliedRate.value)}
+                </Text>
+              </View>
+            )}
+
+            {/* Estimated Crypto */}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Estimated {crypto?.symbol}:</Text>
+              <Text style={styles.infoValue}>
+                {formatNumber(coinAmount, false, 8)} {crypto?.symbol}
+              </Text>
+            </View>
+          </View>
+        )}
+
         <TouchableOpacity
-          // onPress={() => {
-          //   // Alert.alert(
-          //   //   "Coming Soon!",
-          //   //   "The feature is not available for now. Kindly check back later",
-          //   // );
-          // }}
           onPress={onPress}
           activeOpacity={0.8}
           style={styles.tradeButton}
         >
           <Text style={styles.tradeButtonText}>Trade Crypto</Text>
         </TouchableOpacity>
-
         <Text
           style={[
             styles.label,
@@ -329,6 +424,77 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("700"),
     color: "#000000ff",
   },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 8,
+    gap: 5,
+  },
+  dollarSign: {
+    fontSize: normalize(26),
+    fontFamily: getFontFamily("800"),
+    color: "#000",
+    paddingLeft: 15,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 13,
+    fontSize: normalize(26),
+    fontFamily: getFontFamily("800"),
+    color: "#000",
+  },
+  infoContainer: {
+    backgroundColor: "#5AB2431A",
+    padding: 12,
+    borderRadius: 8,
+    marginVertical: 12,
+    borderWidth: 1,
+    borderColor: "#E9ECEF",
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  infoLabel: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
+    color: "#000",
+  },
+  infoValue: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    color: COLORS.primary,
+  },
+  rateBreakdownRow: {
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#DEE2E6",
+  },
+  rateBreakdownText: {
+    fontSize: normalize(14),
+    fontFamily: getFontFamily("500"),
+    color: "#6C757D",
+    fontStyle: "italic",
+    textAlign: "center",
+  },
+  coinEquivalentContainer: {
+    marginTop: 8,
+    padding: 8,
+    backgroundColor: "rgba(232, 158, 0, 0.1)",
+    borderRadius: 6,
+    alignItems: "center",
+  },
+  coinEquivalentText: {
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("700"),
+    color: COLORS.primary,
+  },
   dropdownButton: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -351,15 +517,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#E5E7EB",
   },
-  input: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    padding: 15,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
   rateBox: {
     backgroundColor: "#fff",
     padding: 12,
@@ -369,7 +526,7 @@ const styles = StyleSheet.create({
   },
   rateText: {
     fontSize: normalize(28),
-    fontFamily: getFontFamily("900"),
+    fontFamily: getFontFamily("800"),
     color: "#111827",
   },
   tradeButton: {
