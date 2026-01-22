@@ -12,6 +12,7 @@ import { showSuccess } from "../../utlis/toast";
 import InfoCard from "../InfoCard";
 import { InfoCircle } from "iconsax-react-nativejs";
 import { useAuthStore } from "../../stores/authSlice";
+import { useNavigation } from "@react-navigation/native";
 
 const ninSchema = yup.object({
   nin: yup
@@ -22,6 +23,7 @@ const ninSchema = yup.object({
 });
 
 const NINVerificationForm = () => {
+  const navigation = useNavigation();
   const setUser = useAuthStore(state => state.setUser);
   const [loading, setLoading] = useState<boolean>(false);
   const { post } = useAxios();
@@ -42,7 +44,9 @@ const NINVerificationForm = () => {
     try {
       setLoading(true);
 
-      const response = await post("/nin/verify", data);
+      const response = await post("/kyc/verify-nin", data);
+
+      navigation.navigate("Verification" as never);
 
       setUser(response.data?.data?.user);
 

@@ -15,7 +15,6 @@ import { useAuthStore } from "../stores/authSlice";
 import InfoCard from "../components/InfoCard";
 import CustomIcon from "../components/CustomIcon";
 import {
-  LocationIcon,
   ShieldCheckIcon,
   UserIdCardIcon,
   UserVerificationShieldIcon,
@@ -137,7 +136,7 @@ export default function KYCVerificationScreen() {
                 color={COLORS.primary}
               />
             }
-            isVerified={!!user?.bvn}
+            isVerified={user?.bvn_verification_status === "VERIFIED"}
           />
           <MenuItem
             title="Proof of Identity"
@@ -150,8 +149,9 @@ export default function KYCVerificationScreen() {
                 fill={COLORS.primary}
               />
             }
+            isVerified={user?.nin_verification_status === "VERIFIED"}
           />
-          <MenuItem
+          {/* <MenuItem
             title="Proof of Address"
             subtitle="Provide utility bill or similar document"
             onPress={() => navigation.navigate("Proof Of Address" as never)}
@@ -162,14 +162,20 @@ export default function KYCVerificationScreen() {
                 color={COLORS.primary}
               />
             }
-            isVerified={true}
-          />
-          {/* <MenuItem
+          /> */}
+          <MenuItem
             title="Selfie Verification"
             subtitle="Check your current transaction limits"
-            onPress={() => navigation.navigate("Profile" as never)}
-            IconComponent={Camera}
-          /> */}
+            onPress={() => navigation.navigate("SelfieVerification" as never)}
+            IconComponent={
+              <CustomIcon
+                source={ShieldCheckIcon}
+                size={20}
+                fill={COLORS.primary}
+              />
+            }
+            isVerified={user?.selfie_verification_status === "VERIFIED"}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

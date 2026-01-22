@@ -47,6 +47,8 @@ import CryptoSellScreen from "../screens/SellCrytpoScreen";
 import CryptoSwapScreen from "../screens/SwapCryptoScreen";
 import ReturningUserLoginScreen from "../screens/ReturningUserLoginScreen";
 import TransferScreen from "../screens/TransferScreen";
+import SelfieVerificationScreen from "../screens/SelfieVerificationScreen";
+import SelfieConfirmationScreen from "../screens/SelfieConfirmation";
 
 export default function NavigationRoot() {
   const isAuthenticated = useIsAuthenticated();
@@ -449,6 +451,24 @@ export default function NavigationRoot() {
             options: {
               headerShown: true,
               header: () => <CustomHeader showTitle={true} title="Transfer" />,
+            },
+          },
+          SelfieVerification: {
+            screen: SelfieVerificationScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Selfie Verification" />
+              ),
+            },
+          },
+          SelfieConfirmation: {
+            screen: SelfieConfirmationScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Selfie Confirmation" />
+              ),
             },
           },
         },

@@ -12,6 +12,7 @@ import InfoCard from "../InfoCard";
 import { InfoCircle } from "iconsax-react-nativejs";
 import { useAuthStore } from "../../stores/authSlice";
 import useAxios from "../../hooks/useAxios";
+import { useNavigation } from "@react-navigation/native";
 
 const bvnSchema = yup.object({
   bvn: yup
@@ -22,14 +23,14 @@ const bvnSchema = yup.object({
 });
 
 const BVNForm = () => {
+  const navigation = useNavigation();
   const setUser = useAuthStore(state => state.setUser);
-  const [loading, setLoading] = useState<boolean>(false);
   const { post } = useAxios();
   const {
     control,
     handleSubmit,
     reset,
-    formState: { isValid, isDirty },
+    formState: { isValid, isDirty, isSubmitting },
   } = useForm({
     resolver: yupResolver(bvnSchema),
     mode: "onChange",
@@ -40,10 +41,9 @@ const BVNForm = () => {
 
   const onSubmit = async (data: any) => {
     try {
-      setLoading(true);
-
-      const response = await post("/bvn/verify", data);
-
+      const response = await post("/kyc/verify-bvn", data);
+      console.log(response.data?.data?.user);
+      navigation.navigate("Verification" as never);
       setUser(response.data?.data?.user);
 
       reset();
@@ -51,8 +51,6 @@ const BVNForm = () => {
       showSuccess("BVN Verified successful");
     } catch (error: any) {
       // console.log(error?.response);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -79,7 +77,7 @@ const BVNForm = () => {
       />
 
       <TouchableOpacity
-        disabled={!isValid && isDirty}
+        disabled={(!isValid && isDirty) || isSubmitting}
         activeOpacity={0.6}
         style={styles.button}
         onPress={handleSubmit(onSubmit)}
@@ -87,7 +85,7 @@ const BVNForm = () => {
         <Text style={styles.buttonText}>Verify BVN</Text>
       </TouchableOpacity>
 
-      <CustomLoading loading={loading} />
+      <CustomLoading loading={isSubmitting} />
     </View>
   );
 };

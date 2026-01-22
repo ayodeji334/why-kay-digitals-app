@@ -13,7 +13,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import Clipboard from "@react-native-clipboard/clipboard";
-import { Copy, CopySuccess } from "iconsax-react-nativejs";
 import { showSuccess } from "../utlis/toast";
 import { getFontFamily, normalize } from "../constants/settings";
 import { useAuthStore } from "../stores/authSlice";
@@ -108,11 +107,11 @@ export default function ProfileScreen() {
 
         {/* Profile Details */}
         <View style={styles.detailsSection}>
-          {/* <ProfileField label="Firstname" value={userData?.first_name} />
+          <ProfileField label="Firstname" value={userData?.first_name} />
           <ProfileField
             label="Lastname (Surname)"
             value={userData?.last_name}
-          /> */}
+          />
           <ProfileField
             label="Username"
             value={userData?.username}

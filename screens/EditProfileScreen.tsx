@@ -33,6 +33,8 @@ import parsePhoneNumberFromString from "libphonenumber-js";
 import useAxios from "../hooks/useAxios";
 
 const profileSchema = yup.object().shape({
+  first_name: yup.string().required("First Name is required"),
+  last_name: yup.string().required("Last Name is required"),
   username: yup.string().required("Username is required"),
   gender: yup.string().required("Gender is required"),
   phone_number: yup
@@ -71,81 +73,13 @@ export default function EditProfileScreen() {
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(profileSchema),
     defaultValues: {
-      // first_name: user?.first_name || "",
-      // last_name: user?.last_name || "",
+      first_name: user?.first_name || "",
+      last_name: user?.last_name || "",
       username: user?.username || "",
       gender: user?.gender || "",
       phone_number: user?.phone_number || "",
     },
   });
-
-  // const handleUpdateProfile = async (data: any) => {
-  //   setLoading(true);
-
-  //   try {
-  //     // Upload the image if it exists
-  //     let uploadedImageUrl = imageUri;
-
-  //     const formData = new FormData();
-
-  //     formData.append("file", {
-  //       uri: Platform.OS === "ios" ? imageUri.replace("file://", "") : imageUri,
-  //       type: "image/jpeg",
-  //       name: `profile_${Date.now()}.jpg`,
-  //     } as any);
-
-  //     const res = await fetch(`${BASE_URL}/files/upload`, {
-  //       method: "POST",
-  //       body: formData,
-  //       headers: {
-  //         Accept: "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     const result = await res.json();
-
-  //     if (res.ok && result?.success && result?.data?.url) {
-  //       uploadedImageUrl = result.data.url;
-  //     } else {
-  //       console.log("Upload failed:", result);
-  //       showError(result?.message || "Failed to upload image");
-  //       setLoading(false);
-  //       return;
-  //     }
-  //     // Update profile with uploaded image URL
-  //     const response = await patch("/users/update-user-profile", {
-  //       ...data,
-  //       profile_picture_url: uploadedImageUrl,
-  //     });
-
-  //     if (response.data?.success) {
-  //       if (response?.data?.data) {
-  //         setUser(response.data?.data);
-  //       }
-  //       showSuccess("Profile updated successfully");
-  //       navigation.goBack();
-  //     } else {
-  //       showError(response.data?.message || "Failed to update profile");
-  //     }
-  //   } catch (error: any) {
-  //     console.log(error?.response);
-  //     if (error.response) {
-  //       showError(
-  //         error.response.data?.message ||
-  //           "An error occurred while updating profile",
-  //       );
-  //     } else if (error.request) {
-  //       showError(
-  //         "No response from server. Please check your internet connection.",
-  //       );
-  //     } else {
-  //       showError("Something went wrong. Please try again.");
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleUpdateProfile = async (data: any) => {
     setLoading(true);
@@ -298,7 +232,7 @@ export default function EditProfileScreen() {
         </View>
 
         <View style={styles.formSection}>
-          {/* <TextInputField
+          <TextInputField
             label="First Name"
             control={control}
             name="first_name"
@@ -309,7 +243,7 @@ export default function EditProfileScreen() {
             control={control}
             name="last_name"
             placeholder="Enter last name"
-          /> */}
+          />
           <TextInputField
             label="Username"
             control={control}
