@@ -13,6 +13,7 @@ import { showError } from "../../utlis/toast";
 import { AxiosError } from "axios";
 import useAxios from "../../hooks/useAxios";
 import { useAuthStore, useUser } from "../../stores/authSlice";
+import { OneSignal } from "react-native-onesignal";
 
 const loginSchema = yup.object().shape({
   password: yup.string().required("Password is required"),
@@ -40,9 +41,12 @@ const ReturningUserLoginForm: React.FC = () => {
     try {
       setLoading(true);
 
+      const userOneSignalID = await OneSignal.User.getOnesignalId();
+
       const res = await post("/auth/login", {
         login: userDetail?.email || userDetail?.username,
         password,
+        device_id: userOneSignalID,
       });
 
       const { auth, user } = res.data?.data ?? {};
