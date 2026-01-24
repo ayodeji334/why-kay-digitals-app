@@ -6551,6 +6551,13 @@ react-native-mmkv@^3.3.1:
   resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-3.3.1.tgz#854ec786d3951e4bbbaa6161d812c3345d071d85"
   integrity sha512-LYamDWQirPTUJZ9Re+BkCD+zLRGNr+EVJDeIeblvoJXGatWy9PXnChtajDSLqwjX3EXVeUyjgrembs7wlBw9ug==
 
+react-native-onesignal@^5.2.16:
+  version "5.2.16"
+  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-5.2.16.tgz#9edf7da1ee55ce40ffb944d80c3f28ee4f0a061f"
+  integrity sha512-KsLFhB78aitUSqwJPiOGpI1YY3SaaB2wsg2nSZELT7tiucaod0aFyQ72KHYMR/jl8+DIoDvaa3AW9XZiX75nOg==
+  dependencies:
+    invariant "^2.2.4"
+
 react-native-qrcode-svg@^6.3.15:
   version "6.3.15"
   resolved "https://registry.yarnpkg.com/react-native-qrcode-svg/-/react-native-qrcode-svg-6.3.15.tgz#20d7a189dff5b7ee8a75222a1268a805497cac75"
