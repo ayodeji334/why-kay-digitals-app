@@ -19,6 +19,7 @@ import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { useNavigation } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
+import { showError } from "../utlis/toast";
 
 export type TradeIntent = {
   assetId?: string;
@@ -204,17 +205,17 @@ export default function CryptoRatesScreen() {
   }, [crypto, amount, activeTab]);
 
   const onPress = () => {
-    if (!selectedCrypto) {
-      Alert.alert("Error", "Please select a cryptocurrency");
+    if (!selectedCrypto || !crypto) {
+      showError("Please select an asset");
       return;
     }
 
     const intent: TradeIntent = {
-      assetId: crypto.value,
-      symbol: crypto.symbol,
+      assetId: crypto?.value,
+      symbol: crypto?.symbol,
       action: activeTab === "buy" ? "buy" : "sell",
       source: "rates",
-      amount,
+      amount: amount,
       rate: currentRate,
     };
 
@@ -298,7 +299,8 @@ export default function CryptoRatesScreen() {
           label="Cryptocurrency"
           options={cryptoOptions}
           onChange={setSelectedCrypto}
-          title="Select Crypto Wallet"
+          title="Select an asset Wallet"
+          placeholder="Select an asset wallet"
         />
 
         <View style={{ marginBottom: 2, marginTop: 10 }}>
@@ -308,7 +310,7 @@ export default function CryptoRatesScreen() {
             <TextInput
               style={styles.input}
               keyboardType="numeric"
-              placeholderTextColor={"#a6a6a6ff"}
+              placeholderTextColor={"#aeaeaeff"}
               placeholder="Enter amount"
               value={amount}
               onChangeText={text => {
@@ -439,12 +441,20 @@ const styles = StyleSheet.create({
     color: "#000",
     paddingLeft: 15,
   },
+  // input: {
+  //   flex: 1,
+  //   paddingVertical: 13,
+  //   fontSize: normalize(26),
+  //   fontFamily: getFontFamily("800"),
+  //   color: "#000",
+  // },
   input: {
-    flex: 1,
-    paddingVertical: 13,
-    fontSize: normalize(26),
+    width: "100%",
+    paddingVertical: 10,
+    color: "#1A1A1A",
     fontFamily: getFontFamily("800"),
-    color: "#000",
+    fontSize: normalize(28),
+    backgroundColor: "#FFFFFF",
   },
   infoContainer: {
     backgroundColor: "#5AB2431A",
@@ -532,7 +542,7 @@ const styles = StyleSheet.create({
   tradeButton: {
     backgroundColor: COLORS.secondary,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 120,
     alignItems: "center",
     marginVertical: 16,
   },

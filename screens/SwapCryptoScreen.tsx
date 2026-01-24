@@ -170,7 +170,7 @@ export default function CryptoSwapScreen() {
   const fromAsset = userWallets.find(opt => opt.value === fromAssetId);
   const toAsset = options.find(opt => opt.value === toAssetId);
   const balance = Number(fromAsset?.balance ?? 0);
-  const price = Number(fromAsset?.market_price ?? 0);
+  const price = Number(fromAsset?.price ?? 0);
   const symbol = fromAsset?.symbol ?? "";
 
   const { fromAmount, toCoinAmount } = useMemo(() => {
@@ -181,8 +181,8 @@ export default function CryptoSwapScreen() {
       };
     }
 
-    const fromPrice = Number(fromAsset.market_price ?? 1);
-    const toPrice = Number(toAsset.market_price ?? 1);
+    const fromPrice = Number(fromAsset?.price ?? 1);
+    const toPrice = Number(toAsset?.balance ?? 1);
 
     if (!fromPrice || !toPrice) {
       return {
@@ -211,7 +211,7 @@ export default function CryptoSwapScreen() {
   const requiredAssetAmount = useMemo(() => {
     if (!fromAsset || !amount || amount <= 0) return "0";
 
-    const fromMarketPrice = Number(fromAsset.market_price ?? 1);
+    const fromMarketPrice = Number(fromAsset.price ?? 1);
     const usdAmount = Number(amount);
 
     return (usdAmount / fromMarketPrice).toFixed(8);
@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
   // },
   error: {
     color: "red",
-    fontSize: normalize(14),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
     marginBottom: normalize(10),
   },
@@ -498,8 +498,8 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: COLORS.primary,
-    paddingVertical: normalize(14),
-    borderRadius: normalize(208),
+    paddingVertical: normalize(20),
+    borderRadius: 100,
     alignItems: "center",
   },
   buttonDisabled: {

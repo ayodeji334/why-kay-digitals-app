@@ -35,6 +35,8 @@ const TransactionDetailScreen = () => {
   const route = useRoute();
   const { transaction }: any = route.params;
 
+  console.log(transaction);
+
   const isSuccess = useMemo(
     () => transaction?.status?.toLowerCase() === "successful",
     [transaction?.status],
@@ -71,8 +73,8 @@ const TransactionDetailScreen = () => {
   };
 
   const getDirectionColor = () => {
-    if (!transaction.direction) return "#000";
-    return transaction.direction.toLowerCase() === "debit" ? "#000" : "#000";
+    if (!transaction?.direction) return "#000";
+    return transaction?.direction.toLowerCase() === "debit" ? "#000" : "#000";
   };
 
   return (
@@ -89,10 +91,10 @@ const TransactionDetailScreen = () => {
             maxFontSizeMultiplier={0}
             style={styles.amount}
           >
-            {transaction.medium?.toUpperCase() === "CRYPTO"
+            {transaction?.medium?.toUpperCase() === "CRYPTO"
               ? transaction?.meta?.amount +
                 (transaction?.meta?.asset_symbol ?? "")
-              : formatAmount(transaction.amount, false, "NGN", 2)}
+              : formatAmount(transaction?.amount, false, "NGN", 2)}
           </Text>
           <Text
             style={{
@@ -128,61 +130,68 @@ const TransactionDetailScreen = () => {
         <View style={styles.detailsContainer}>
           <DetailRow
             label="Transaction ID"
-            value={transaction.uuid.split("-").join("")}
+            value={transaction?.uuid.split("-").join("")}
           />
           <DetailRow
             label="Amount"
             value={
-              transaction.medium?.toUpperCase() === "CRYPTO"
+              transaction?.medium?.toUpperCase() === "CRYPTO"
                 ? formatAmount(
-                    transaction.meta?.amount_in_naira ?? 0,
+                    transaction?.meta?.amount_in_naira ?? 0,
                     false,
                     "NGN",
                     2,
                   )
-                : formatAmount(transaction.amount, false, "NGN", 2)
+                : formatAmount(transaction?.amount, false, "NGN", 2)
             }
             color={getDirectionColor()}
           />
           <DetailRow
             label="Fee"
-            value={formatAmount(transaction.fee, false, "NGN", 2)}
+            value={formatAmount(transaction?.fee, false, "NGN", 2)}
           />
           <DetailRow
             label="Net Amount"
-            value={formatAmount(transaction.net_amount, false, "NGN", 2)}
+            value={formatAmount(transaction?.net_amount, false, "NGN", 2)}
           />
-          {transaction.meta?.exchange_rate && (
+          {transaction?.meta?.exchange_rate && (
             <DetailRow
               label="Exchange Rate"
               value={
-                formatAmount(transaction.meta.exchange_rate, false, "NGN", 2) +
-                "/$"
+                formatAmount(
+                  transaction?.meta?.exchange_rate,
+                  false,
+                  "NGN",
+                  2,
+                ) + "/$"
               }
             />
           )}
           <DetailRow
             label="Category"
-            value={transaction.direction?.toUpperCase()}
+            value={transaction?.direction?.toUpperCase()}
             color={getDirectionColor()}
           />
-          <DetailRow label="Wallet" value={transaction.medium?.toUpperCase()} />
+          <DetailRow
+            label="Wallet"
+            value={transaction?.medium?.toUpperCase()}
+          />
           <DetailRow
             label="Status"
-            value={isSuccess ? "Successful" : transaction.status}
+            value={isSuccess ? "Successful" : transaction?.status}
             color={isSuccess ? "#059669" : isProcessing ? "#CA8A04" : "#DC2626"}
           />
 
-          {transaction.status.toUpperCase() !== "FAILED" && (
-            <DetailRow label="Description" value={transaction.description} />
+          {transaction?.status.toUpperCase() !== "FAILED" && (
+            <DetailRow label="Description" value={transaction?.description} />
           )}
           <DetailRow
             label="Reference"
-            value={transaction.reference.split("-").join("")}
+            value={transaction?.reference.split("-").join("")}
           />
           <DetailRow
             label="Occurred At"
-            value={formatDate(transaction.occurred_at)}
+            value={formatDate(transaction?.occurred_at)}
           />
         </View>
 
@@ -239,7 +248,7 @@ const styles = StyleSheet.create({
   headerButton: {
     borderColor: COLORS.secondary,
     borderWidth: 1,
-    padding: 11,
+    padding: 15,
     flex: 1,
     gap: 6,
     flexDirection: "row",
@@ -249,7 +258,7 @@ const styles = StyleSheet.create({
   },
   goBackButton: {
     backgroundColor: COLORS.secondary,
-    padding: 11,
+    padding: 15,
     flex: 1,
     gap: 6,
     flexDirection: "row",
@@ -281,9 +290,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#E5E7EB",
   },
-  label: { fontSize: normalize(16), fontFamily: getFontFamily("400") },
+  label: { fontSize: normalize(18), fontFamily: getFontFamily("400") },
   value: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     flexShrink: 1,
     textAlign: "right",
