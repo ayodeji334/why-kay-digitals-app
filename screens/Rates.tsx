@@ -311,7 +311,7 @@ export default function CryptoRatesScreen() {
               style={styles.input}
               keyboardType="numeric"
               placeholderTextColor={"#aeaeaeff"}
-              placeholder="Enter amount"
+              placeholder="0.00"
               value={amount}
               onChangeText={text => {
                 const formatted = formatWithCommas(text);
@@ -441,21 +441,21 @@ const styles = StyleSheet.create({
     color: "#000",
     paddingLeft: 15,
   },
-  // input: {
-  //   flex: 1,
-  //   paddingVertical: 13,
-  //   fontSize: normalize(26),
-  //   fontFamily: getFontFamily("800"),
-  //   color: "#000",
-  // },
   input: {
-    width: "100%",
-    paddingVertical: 10,
-    color: "#1A1A1A",
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(28),
-    backgroundColor: "#FFFFFF",
+    flex: 1,
+    paddingVertical: normalize(16),
+    fontSize: normalize(26),
+    fontFamily: getFontFamily("900"),
+    color: "#000",
   },
+  // input: {
+  //   width: "100%",
+  //   paddingVertical: 10,
+  //   color: "#1A1A1A",
+  //   fontFamily: getFontFamily("700"),
+  //   fontSize: normalize(28),
+  //   backgroundColor: "#FFFFFF",
+  // },
   infoContainer: {
     backgroundColor: "#5AB2431A",
     padding: 12,
