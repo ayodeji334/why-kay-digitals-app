@@ -24,7 +24,7 @@ import { showError } from "../utlis/toast";
 export type TradeIntent = {
   assetId?: string;
   symbol?: string;
-  action?: "buy" | "sell" | "deposit";
+  action?: "buy" | "sell" | "deposit" | "withdraw";
   source?: "home" | "rates" | "wallet";
   amount?: string;
   rate?: number;

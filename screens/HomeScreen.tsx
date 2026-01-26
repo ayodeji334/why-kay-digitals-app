@@ -22,6 +22,7 @@ import { COLORS } from "../constants/colors";
 import AdvertsBanner from "../components/AdvertsBanner";
 import { useWalletStore } from "../stores/walletSlice";
 import { useQuery } from "@tanstack/react-query";
+import NotificationBell from "../components/Dashboard/NotificationBell";
 
 const HomeScreen = () => {
   const user = useUser();
@@ -81,18 +82,7 @@ const HomeScreen = () => {
               </Text>
             </View>
           </View>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() =>
-              Alert.alert(
-                "Coming Soon!",
-                "This feature is not available yet. Kindly check back later",
-              )
-            }
-            style={styles.notificationButton}
-          >
-            <Notification size={20} color="#333" />
-          </TouchableOpacity>
+          <NotificationBell />
         </View>
 
         <BalanceCard
@@ -172,16 +162,6 @@ const styles = StyleSheet.create({
     fontSize: normalize(22),
     fontFamily: getFontFamily("800"),
     color: "#333",
-  },
-  notificationButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#BBBBBB",
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    alignItems: "center",
   },
   cryptoSection: { marginBottom: 30 },
   sectionHeader: {

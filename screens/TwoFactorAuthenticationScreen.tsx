@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -24,12 +24,13 @@ const TwoFactorAuthenticationScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { apiGet } = useAxios();
   const user = useAuthStore(state => state.user);
+  console.log(user);
   const { setIsGoogleAuthenticatorEnabled, isGoogleAuthenticatorEnabled } =
     useAuthStore();
 
   const existingOtp = getItem("2fa_auth_url");
   const [otpauthUrl, setOtpauthUrl] = useState<string | null>(null);
-  const is2FAEnabled = user?.biometric_enabled || isGoogleAuthenticatorEnabled;
+  const is2FAEnabled = user?.two_factor_enabled || isGoogleAuthenticatorEnabled;
 
   const handleGenerateQRCode = useCallback(async () => {
     if (existingOtp) return;
@@ -38,7 +39,7 @@ const TwoFactorAuthenticationScreen = () => {
     try {
       const response = await apiGet("2fa-auth/generate");
       const url = response?.data.data?.otpauth_url;
-      setOtpauthUrl(JSON.stringify(url));
+      setOtpauthUrl(url);
       setItem("2fa_auth_url", url);
       showSuccess(
         "Secret fetched successfully. Scan the QR code in Google Authenticator.",
@@ -77,6 +78,8 @@ const TwoFactorAuthenticationScreen = () => {
         navigation.navigate("ConfirmTwoFactorAuthentication" as never);
     return handleGenerateQRCode;
   };
+
+  console.log(otpauthUrl, existingOtp);
 
   const getPrimaryButtonText = () => {
     if (is2FAEnabled) return "Disable Google Authenticator";

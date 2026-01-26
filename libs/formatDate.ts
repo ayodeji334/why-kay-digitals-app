@@ -181,7 +181,7 @@ const getRelativeTime = (date: Date): string => {
   if (diffInSeconds < 60) {
     return "just now";
   } else if (diffInMinutes < 60) {
-    return `${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""} ago`;
+    return `${diffInMinutes} min${diffInMinutes > 1 ? "s" : ""} ago`;
   } else if (diffInHours < 24) {
     return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
   } else if (diffInDays < 7) {

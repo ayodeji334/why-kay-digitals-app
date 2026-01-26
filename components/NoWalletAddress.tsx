@@ -5,7 +5,7 @@ import { COLORS } from "../constants/colors";
 import CustomIcon from "./CustomIcon";
 import { WalletIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
-import { showError } from "../utlis/toast";
+import { showError, showSuccess } from "../utlis/toast";
 
 interface NoWalletAddressProps {
   selectedAssetUuid: string;
@@ -25,9 +25,9 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
     try {
       await apiGet(`wallets/user/${selectedAssetUuid}/generate-wallet`);
 
+      showSuccess("Wallet Address created!");
+
       onSuccess();
-    } catch (error) {
-      showError("Failed to generate wallet address");
     } finally {
       setIsGenerating(false);
     }

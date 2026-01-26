@@ -49,12 +49,13 @@ import ReturningUserLoginScreen from "../screens/ReturningUserLoginScreen";
 import TransferScreen from "../screens/TransferScreen";
 import SelfieVerificationScreen from "../screens/SelfieVerificationScreen";
 import SelfieConfirmationScreen from "../screens/SelfieConfirmation";
+import SendScreen from "../screens/SendCrypto";
+import ConfirmCryptoWithdrawalScreen from "../screens/ConfirmCryptoWithdrawScreen";
+import NotificationsScreen from "../screens/Notifications";
 
 export default function NavigationRoot() {
   const isAuthenticated = useIsAuthenticated();
   const user = useUser();
-
-  console.log(user?.username);
 
   const RootStack = createNativeStackNavigator({
     initialRouteName: isAuthenticated
@@ -156,6 +157,15 @@ export default function NavigationRoot() {
           },
           ConfirmTransaction: {
             screen: ConfirmTransactionScreen,
+            options: {
+              headerBackTitle: ".",
+              header: () => (
+                <CustomHeader showTitle={true} title="Confirm Transaction" />
+              ),
+            },
+          },
+          ConfirmCryptoWithdrawTransaction: {
+            screen: ConfirmCryptoWithdrawalScreen,
             options: {
               headerBackTitle: ".",
               header: () => (
@@ -468,6 +478,24 @@ export default function NavigationRoot() {
               headerShown: true,
               header: () => (
                 <CustomHeader showTitle={true} title="Selfie Confirmation" />
+              ),
+            },
+          },
+          WithdrawalCrypto: {
+            screen: SendScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Withdraw Crypto" />
+              ),
+            },
+          },
+          Notifications: {
+            screen: NotificationsScreen,
+            options: {
+              headerBackTitle: ".",
+              header: () => (
+                <CustomHeader showTitle={true} title="Notifications" />
               ),
             },
           },

@@ -527,8 +527,8 @@ const styles = StyleSheet.create({
   },
   warningText: {
     color: "#db0b0bff",
-    fontSize: normalize(14),
-    fontFamily: getFontFamily("600"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
     textAlign: "center",
   },
 });

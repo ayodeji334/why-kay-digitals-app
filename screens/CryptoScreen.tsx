@@ -94,6 +94,16 @@ const CryptoWalletScreen = () => {
       });
     } else if (currentAction === "deposit") {
       navigation.navigate("CryptoWalletDeposit", { crypto: asset });
+    } else {
+      navigation.navigate("WithdrawalCrypto", {
+        intent: {
+          assetId: asset.uuid,
+          symbol: asset.symbol,
+          action: "withdraw",
+          source: "wallets",
+          amount: 0,
+        },
+      });
     }
   };
 

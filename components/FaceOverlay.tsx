@@ -22,11 +22,10 @@ export default function FaceOverlay() {
         <Rect
           width={width}
           height={height}
-          fill="rgba(0,0,0,0.6)"
+          fill="rgba(255, 255, 255, 1)"
           mask="url(#mask)"
         />
 
-        {/* Red oval border */}
         <Ellipse
           cx={width / 2}
           cy={height * 0.38}

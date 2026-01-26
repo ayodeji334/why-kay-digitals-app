@@ -51,7 +51,7 @@ export default function IdentityVerifying({ loading }: { loading: boolean }) {
         <View style={styles.card}>
           <ActivityIndicator size="large" color={COLORS.primary} />
 
-          <Text style={styles.title}>Verifying your Identity</Text>
+          <Text style={styles.title}>Verifying Identity</Text>
 
           <Animated.View style={{ opacity: fadeAnim }}>
             <Text style={styles.stepText}>{steps[stepIndex]}</Text>
@@ -88,16 +88,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 16,
-    fontFamily: getFontFamily("800"),
+    fontSize: 20,
+    fontFamily: getFontFamily("700"),
     color: "#000",
     marginTop: 24,
     marginBottom: 8,
   },
   stepText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: getFontFamily("400"),
-    color: COLORS.primary,
+    color: COLORS.primary, // Using your brand green
     marginBottom: 24,
   },
   progressTrack: {
@@ -114,9 +114,9 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   disclaimer: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: getFontFamily("400"),
-    color: "#666",
+    color: "#999",
     textAlign: "center",
   },
 });

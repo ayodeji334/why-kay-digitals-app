@@ -103,6 +103,7 @@ export default function AccountSecurityScreen() {
   const isBiometricEnabled =
     userData?.biometric_enabled ||
     useAuthStore(state => state.isBiometricEnabled);
+  const is2FAEnabled = userData?.two_factor_enabled || false;
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
@@ -138,7 +139,7 @@ export default function AccountSecurityScreen() {
               />
             }
             showSwitch={true}
-            switchValue={isGoogleAuthenticatorEnabled}
+            switchValue={is2FAEnabled || isGoogleAuthenticatorEnabled}
           />
           <MenuItem
             title="Use FaceID/Fingerprint"

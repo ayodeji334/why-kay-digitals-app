@@ -3,10 +3,10 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   Image,
   StyleSheet,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import { COLORS } from "../../constants/colors";
 import BalanceCard from "../Dashboard/BalanceCard";
@@ -14,7 +14,6 @@ import {
   ReceiveCryptoIcon,
   RefreshIcon,
   SellCryptoIcon,
-  SendCryptoIcon,
   TagsIcon,
 } from "../../assets";
 import CustomIcon from "../CustomIcon";
@@ -32,7 +31,8 @@ import CustomLoading from "../CustomLoading";
 
 const CryptoWalletSection = () => {
   const wallets = useWalletStore(state => state.wallets);
-  const fetchWallets = useWalletStore(state => state.fetchWallets);
+  const loading = useWalletStore(state => state.loading);
+  const fetchWallets = useWalletStore(state => state.fetchWalletsAndAccounts);
   const [showAddAssetWalletModal, setAddAssetWalletModal] = useState(false);
   const [selectAssetId, setSelectAssetId] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -44,7 +44,7 @@ const CryptoWalletSection = () => {
     [wallets],
   );
 
-  const fetchAssets = useCallback(async (): Promise<any[]> => {
+  const fetchAssets = async () => {
     try {
       const response = await apiGet("/crypto-assets/available");
       return response.data?.data.map((asset: any) => ({
@@ -60,15 +60,13 @@ const CryptoWalletSection = () => {
       console.error("Fetch assets error:", error);
       return [];
     }
-  }, [apiGet]);
+  };
 
   const { data: assets = [] } = useQuery({
     queryKey: ["assets"],
     queryFn: fetchAssets,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  // Optimized filteredWallets with Set
   const filteredWallets = useMemo(() => {
     if (!assets.length) return [];
 
@@ -91,28 +89,57 @@ const CryptoWalletSection = () => {
     );
   }, [walletList]);
 
-  const handleGenerateWallet = useCallback(async () => {
-    if (!selectAssetId) return;
+  const handleGenerateWallet = useCallback(
+    async (assetId: string) => {
+      if (!assetId) return;
 
-    setIsGenerating(true);
+      setIsGenerating(true);
 
-    try {
-      await apiGet(`wallets/user/${selectAssetId}/generate-wallet`);
-      await fetchWallets();
-      showSuccess("Wallet created successfully");
-      setSelectAssetId("");
-    } catch (error) {
-      console.error("Generate wallet error:", error);
-      showError("Failed to generate wallet");
-    } finally {
-      setIsGenerating(false);
-    }
-  }, [selectAssetId, apiGet, fetchWallets]);
+      try {
+        await apiGet(`wallets/user/${assetId}/generate-wallet`);
+        await fetchWallets();
+        showSuccess("Wallet created successfully");
+        setSelectAssetId("");
+      } catch (error) {
+        console.error("Generate wallet error:", error);
+        showError("Failed to generate wallet");
+      } finally {
+        setIsGenerating(false);
+      }
+    },
+    [apiGet, fetchWallets],
+  );
+
+  // const handleGenerateWallet = useCallback(async () => {
+  //   if (!selectAssetId) return;
+
+  //   setIsGenerating(true);
+
+  //   try {
+  //     await apiGet(`wallets/user/${selectAssetId}/generate-wallet`);
+  //     await fetchWallets();
+  //     showSuccess("Wallet created successfully");
+  //     setSelectAssetId("");
+  //   } catch (error) {
+  //     console.error("Generate wallet error:", error);
+  //     showError("Failed to generate wallet");
+  //   } finally {
+  //     setIsGenerating(false);
+  //   }
+  // }, [selectAssetId, apiGet, fetchWallets]);
 
   // Memoize navigation handlers
   const handleBuy = useCallback(() => {
     navigation.navigate("SelectAsset", {
       action: "buy",
+      source: "home",
+      amount: "0",
+    } as TradeIntent);
+  }, [navigation]);
+
+  const handleWithdrawal = useCallback(() => {
+    navigation.navigate("SelectAsset", {
+      action: "withdraw",
       source: "home",
       amount: "0",
     } as TradeIntent);
@@ -170,120 +197,15 @@ const CryptoWalletSection = () => {
   );
 
   return (
-    // <View style={styles.container}>
-    //   <ScrollView
-    //     style={{ flex: 1 }}
-    //     showsVerticalScrollIndicator={false}
-    //     contentContainerStyle={styles.scrollContainer}
-    //   >
-    //     <BalanceCard
-    //       balance={totalValueInUsd}
-    //       title="Total Balance"
-    //       showTransactionsButton={false}
-    //       showActionButtons={false}
-    //       currency="USD"
-    //     />
-
-    //     <View style={styles.actionsContainer}>
-    //       <ActionCard
-    //         title="Receive"
-    //         source={ReceiveIcon}
-    //         onPress={handleDeposit}
-    //       />
-    //       <ActionCard title="Buy" source={BuyIcon} onPress={handleBuy} />
-    //       <ActionCard title="Sell" source={SellIcon} onPress={handleSell} />
-    //       <ActionCard title="Swap" source={SwapIcon} onPress={handleSwap} />
-    //     </View>
-
-    //     <View style={styles.assetsSection}>
-    //       <View style={styles.assetsHeader}>
-    //         <Text style={styles.sectionTitle}>Assets</Text>
-    //         <TouchableOpacity
-    //           onPress={() => setAddAssetWalletModal(true)}
-    //           activeOpacity={0.68}
-    //           style={styles.generateButton}
-    //         >
-    //           <Add color="black" size={15} />
-    //           <Text style={styles.generateButtonText}>Add</Text>
-    //         </TouchableOpacity>
-    //       </View>
-
-    //       {Array.isArray(walletList) && walletList.length > 0 ? (
-    //         <FlatList
-    //           data={walletList}
-    //           keyExtractor={(item: any) => item.asset_id}
-    //           scrollEnabled={false}
-    //           renderItem={({ item }) => (
-    //             <AssetItem asset={item} onPress={() => handleNavigate(item)} />
-    //           )}
-    //           ItemSeparatorComponent={() => <View style={styles.separator} />}
-    //         />
-    //       ) : (
-    //         <View style={styles.emptyState}>
-    //           <Text style={styles.emptyStateText}>No assets found</Text>
-    //           <Text style={styles.emptyStateSubtext}>
-    //             Your assets will appear here once added
-    //           </Text>
-    //         </View>
-    //       )}
-    //     </View>
-    //   </ScrollView>
-
-    //   <CustomModal
-    //     height={300}
-    //     title="Select an Asset"
-    //     visible={showAddAssetWalletModal}
-    //     onClose={() => {
-    //       setAddAssetWalletModal(false);
-    //       setSelectAssetId("");
-    //     }}
-    //   >
-    //     {filteredWallets.length > 0 ? (
-    //       <FlatList
-    //         data={filteredWallets}
-    //         keyExtractor={item => item.value}
-    //         initialNumToRender={10}
-    //         maxToRenderPerBatch={5}
-    //         windowSize={5}
-    //         removeClippedSubviews={true}
-    //         renderItem={({ item }) => (
-    //           <TouchableOpacity
-    //             onPress={() => {
-    //               setSelectAssetId(item.value);
-    //               setAddAssetWalletModal(false);
-    //               setTimeout(() => handleGenerateWallet(), 100);
-    //             }}
-    //             style={styles.assetOption}
-    //             activeOpacity={0.7}
-    //           >
-    //             <View style={styles.cryptoRow}>
-    //               {item.logo_url && (
-    //                 <Image
-    //                   source={{ uri: item.logo_url }}
-    //                   resizeMode="contain"
-    //                   style={styles.assetIcon}
-    //                 />
-    //               )}
-    //               <View style={styles.cryptoInfo}>
-    //                 <Text style={styles.optionName}>
-    //                   {item.name} ({item.symbol})
-    //                 </Text>
-    //               </View>
-    //             </View>
-    //           </TouchableOpacity>
-    //         )}
-    //       />
-    //     ) : (
-    //       <View style={styles.emptyModalState}>
-    //         <Text style={styles.emptyStateText}>No assets available</Text>
-    //       </View>
-    //     )}
-    //   </CustomModal>
-
-    //   <CustomLoading loading={isGenerating} />
-    // </View>
     <View style={styles.container}>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={fetchWallets}
+            colors={[COLORS.primary]}
+          />
+        }
         data={Array.isArray(walletList) ? walletList : []}
         keyExtractor={(item: any) => item.asset_id}
         showsVerticalScrollIndicator={false}
@@ -301,7 +223,11 @@ const CryptoWalletSection = () => {
 
             {/* Actions */}
             <View style={styles.actionsContainer}>
-              <ActionCard title="Send" source={BuyIcon} onPress={handleBuy} />
+              <ActionCard
+                title="Send"
+                source={BuyIcon}
+                onPress={handleWithdrawal}
+              />
               <ActionCard
                 title="Receive"
                 source={ReceiveIcon}
@@ -360,7 +286,7 @@ const CryptoWalletSection = () => {
                 onPress={() => {
                   setSelectAssetId(item.value);
                   setAddAssetWalletModal(false);
-                  setTimeout(() => handleGenerateWallet(), 100);
+                  handleGenerateWallet(item.value);
                 }}
                 style={styles.assetOption}
                 activeOpacity={0.7}

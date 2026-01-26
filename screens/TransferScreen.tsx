@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   View,
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigation } from "@react-navigation/native";
@@ -18,13 +19,15 @@ import CustomLoading from "../components/CustomLoading";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import ConfirmationModal from "../components/ConfirmationModal";
 import TabSwitcher, { TabOption } from "../components/TabSwitcher";
-import TransferForm from "../components/FiatTransferForm";
 import { COLORS } from "../constants/colors";
 import { normalize, getFontFamily } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import { useWalletStore } from "../stores/walletSlice";
 import BalanceCard from "../components/Dashboard/BalanceCard";
 import { formatAmount } from "../libs/formatNumber";
+import TextInputField from "../components/TextInputField";
+import { SelectInput } from "../components/SelectInputField";
+import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 
 const fiatSchema = yup.object({
   username: yup.string().required("Username is required"),
@@ -50,12 +53,25 @@ const cryptoSchema = yup.object({
 export default function TransferScreen() {
   const navigation = useNavigation<any>();
   const { apiGet } = useAxios();
-  const userWallets = useWalletStore(state => state.wallets);
   const [activeTab, setActiveTab] = useState<"fiat" | "crypto">("crypto");
   const [saveBeneficiary, setSaveBeneficiary] = useState(true);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingPayload, setPendingPayload] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const availableAssets = useWalletStore(state => state.wallets);
+  const [displayAmount, setDisplayAmount] = useState("");
+
+  const userWallets = useMemo(
+    () =>
+      availableAssets.map(asset => ({
+        ...asset,
+        label: asset?.asset_name ?? asset?.name ?? "",
+        value: asset?.asset_id ?? asset?.uuid ?? "",
+        symbol: asset?.symbol ?? "",
+        logo_url: asset?.logo ?? "",
+      })) ?? [],
+    [availableAssets],
+  );
 
   const {
     data: walletSummary,
@@ -237,9 +253,71 @@ export default function TransferScreen() {
           </View>
         </View>
 
-        <TransferForm key={activeTab} control={control} type={activeTab} />
+        <View style={styles.form}>
+          <TextInputField
+            label="Username"
+            control={control}
+            name="username"
+            placeholder="Enter receipient username"
+          />
 
-        {activeTab === "crypto" && (
+          {activeTab === "crypto" && (
+            <View style={{ marginVertical: 4 }}>
+              <SelectInput
+                control={control}
+                name="asset_id"
+                label="Choose Asset(coin)"
+                options={userWallets}
+                placeholder="Select an asset(coin)"
+                title="Select an asset"
+              />
+            </View>
+          )}
+
+          <View style={{ marginVertical: 4 }}>
+            <Text style={styles.label}>
+              Amount in {activeTab === "fiat" ? "Naira (₦)" : "Dollars (USD)"}
+            </Text>
+            <Controller
+              control={control}
+              name="amount"
+              render={({ field: { onBlur, onChange } }) => (
+                <View style={styles.inputContainer}>
+                  <Text style={styles.dollarSign}>
+                    {activeTab === "fiat" ? "₦" : "$"}
+                  </Text>
+                  <TextInput
+                    style={styles.input}
+                    value={displayAmount}
+                    placeholder="0.00"
+                    placeholderTextColor="#999"
+                    keyboardType="decimal-pad"
+                    onBlur={onBlur}
+                    onChangeText={text => {
+                      const formatted = formatWithCommas(text);
+                      const numeric = parseToNumber(formatted);
+                      onChange(numeric);
+                      setDisplayAmount(formatted);
+                    }}
+                  />
+                </View>
+              )}
+            />
+          </View>
+
+          {activeTab === "fiat" && (
+            <View style={{ marginVertical: 4 }}>
+              <TextInputField
+                label="Narration"
+                control={control}
+                name="description"
+                placeholder="Enter description"
+              />
+            </View>
+          )}
+        </View>
+
+        {activeTab === "crypto" && selectedCryptoWallet?.symbol && (
           <View style={{ flexDirection: "row", gap: 5 }}>
             <Text style={styles.limitValue}>
               Your {selectedCryptoWallet?.symbol} Wallet Balance and USD Value:
@@ -330,6 +408,35 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFF7EC",
     padding: 10,
     borderRadius: 10,
+  },
+  form: { marginVertical: 10 },
+  label: {
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    marginBottom: 4,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: normalize(8),
+    paddingHorizontal: normalize(16),
+    marginBottom: normalize(10),
+    gap: 5,
+  },
+  dollarSign: {
+    fontSize: normalize(26),
+    fontFamily: getFontFamily("700"),
+    color: "#000",
+    marginRight: normalize(5),
+  },
+  input: {
+    flex: 1,
+    paddingVertical: normalize(16),
+    fontSize: normalize(26),
+    fontFamily: getFontFamily("700"),
+    color: "#000",
   },
   limitHeader: {
     flexDirection: "row",

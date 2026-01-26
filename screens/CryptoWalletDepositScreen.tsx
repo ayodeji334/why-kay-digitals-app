@@ -3,14 +3,14 @@ import { StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import WalletDetails from "./WalletAddress";
 import NoWalletAddress from "../components/NoWalletAddress";
 import { useWalletStore } from "../stores/walletSlice";
 
 const CryptoWalletDepositScreen = () => {
   const route: any = useRoute();
-  const navigation: any = useNavigation();
+  // const navigation: any = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const wallets = useWalletStore(state => state.wallets);
   const fetchWallets = useWalletStore(state => state.fetchWalletsAndAccounts);

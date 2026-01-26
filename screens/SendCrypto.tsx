@@ -20,9 +20,9 @@ import CustomLoading from "../components/CustomLoading";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
 import NoWalletAddress from "../components/NoWalletAddress";
-import { showError } from "../utlis/toast";
 import { TradeIntent } from "./Rates";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
+import TextInputField from "../components/TextInputField";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -31,32 +31,33 @@ type CryptoSellScreenParams = {
 };
 
 const schema = Yup.object().shape({
-  asset_id: Yup.string().required("Select the crypto you want to sell"),
   amount: Yup.number()
     .typeError("Enter a valid amount")
-    .moreThan(0, "Must be more than 0")
+    .positive("Amount must be greater than 0")
     .required("Amount is required"),
+  wallet_address: Yup.string().required("Wallet address is required"),
+  asset_id: Yup.string().required(),
 });
 
-export default function CryptoSellScreen() {
+export default function SendScreen() {
   const navigation: any = useNavigation();
   const route = useRoute<RouteProp<CryptoSellScreenParams, "CryptoSell">>();
-  const { apiGet } = useAxios();
+  const { apiGet, post } = useAxios();
   const { intent } = route.params;
+  const [btcEquivalent, setBtcEquivalent] = useState("0.00000000");
   const [displayAmount, setDisplayAmount] = useState("");
-
-  const selectedAssetUuid = intent.assetId ?? "";
+  const selectedAssetUuid = intent?.assetId ?? "";
 
   const {
     control,
-    watch,
     handleSubmit,
-    formState: { errors },
+    watch,
+    formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      amount: parseFloat(intent.amount ?? "0"),
-      asset_id: intent.assetId ?? "",
+      amount: parseFloat(intent?.amount ?? "0"),
+      asset_id: intent?.assetId ?? "",
     },
     mode: "onChange",
   });
@@ -85,32 +86,6 @@ export default function CryptoSellScreen() {
   const symbol = assetDetails?.symbol ?? "";
   const amount = watch("amount");
 
-  const { assetValueEquivalent, ngnAmount } = useMemo(() => {
-    if (!isNaN(amount) && assetDetails) {
-      const marketValue = parseFloat(assetDetails.market_current_value ?? "0");
-      const sellRate = parseFloat(assetDetails.sell_rate ?? "0");
-      let cryptoAmount = "0.00000000";
-      let ngn = "₦0.00";
-      if (marketValue > 0) {
-        cryptoAmount = (amount / marketValue).toFixed(8);
-      }
-      if (sellRate > 0) {
-        const nairaValue = amount * sellRate;
-        ngn = `${formatAmount(nairaValue)}`;
-      }
-      return { assetValueEquivalent: cryptoAmount, ngnAmount: ngn };
-    }
-    return { assetValueEquivalent: "0.00000000", ngnAmount: "₦0.00" };
-  }, [amount, assetDetails]);
-
-  const onSubmit = async (values: any) => {
-    const payload = {
-      ...values,
-      url: "/wallets/user/sell-crypto",
-    };
-    navigation.navigate("ConfirmTransaction" as never, { payload });
-  };
-
   const hasInsufficientBalance = useMemo(() => {
     if (!amount) return false;
 
@@ -118,6 +93,43 @@ export default function CryptoSellScreen() {
 
     return amount > assetDetails.balance * assetDetails?.market_current_value;
   }, [amount, assetDetails]);
+
+  const updateConversion = useCallback(
+    (usd: number) => {
+      if (!isNaN(usd) && assetDetails?.market_current_value) {
+        const marketValue = Number(assetDetails.market_current_value);
+        if (marketValue > 0) {
+          const cryptoAmount = usd / marketValue;
+          setBtcEquivalent(cryptoAmount.toFixed(8));
+        } else {
+          setBtcEquivalent("0.00000000");
+        }
+      } else {
+        setBtcEquivalent("0.00000000");
+      }
+    },
+    [assetDetails],
+  );
+
+  const canSubmit = isValid && hasInsufficientBalance && amount > 0;
+
+  useEffect(() => {
+    if (amount && amount > 0) {
+      updateConversion(amount);
+    } else {
+      setBtcEquivalent("0.00000000");
+    }
+  }, [amount, updateConversion]);
+
+  const onSubmit = async (values: any) => {
+    const payload = {
+      ...values,
+      url: "/wallets/user/withdraw-crypto",
+    };
+    navigation.navigate("ConfirmCryptoWithdrawTransaction" as never, {
+      payload,
+    });
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
@@ -131,24 +143,7 @@ export default function CryptoSellScreen() {
           />
         ) : (
           <View style={styles.container}>
-            <View>
-              <View style={{ marginBottom: 15 }}>
-                <View style={styles.cryptoRow}>
-                  {assetDetails?.asset_logo_url && (
-                    <Image
-                      source={{ uri: assetDetails?.asset_logo_url ?? "" }}
-                      style={styles.optionLogo}
-                    />
-                  )}
-                  <View style={styles.cryptoInfo}>
-                    <Text style={styles.optionName}>
-                      {assetDetails?.asset_name}{" "}
-                      {assetDetails?.symbol && ` (${assetDetails?.symbol})`}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
+            <View style={{ gap: 10 }}>
               <View>
                 <Text style={styles.label}>
                   Enter the amount (in $ dollars) you want to buy
@@ -157,7 +152,7 @@ export default function CryptoSellScreen() {
                 <Controller
                   control={control}
                   name="amount"
-                  render={({ field: { onChange, onBlur } }) => (
+                  render={({ field: { onBlur, onChange } }) => (
                     <View style={styles.inputContainer}>
                       <Text style={styles.dollarSign}>$</Text>
                       <TextInput
@@ -181,41 +176,50 @@ export default function CryptoSellScreen() {
                   <Text style={styles.error}>{errors.amount.message}</Text>
                 )}
                 <Text style={styles.approx}>
-                  Approximately {assetValueEquivalent} {assetDetails?.symbol}
+                  Approximately {btcEquivalent} {assetDetails?.symbol}
+                </Text>
+              </View>
+
+              <View style={{ marginVertical: 4 }}>
+                <TextInputField
+                  label="Wallet Address"
+                  control={control}
+                  name="wallet_address"
+                  placeholder="Enter destination wallet address"
+                />
+              </View>
+
+              <View
+                style={{
+                  backgroundColor: "#EFF7EC",
+                  padding: 10,
+                  borderRadius: 10,
+                }}
+              >
+                <Text style={[styles.note, { color: "black" }]}>
+                  {assetDetails?.symbol} Balance and Network Fee Breakdown
                 </Text>
                 <View
                   style={{
-                    marginVertical: 10,
-                    backgroundColor: "#EFF7EC",
-                    padding: 10,
-                    borderRadius: 10,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
                   }}
                 >
-                  <Text style={[styles.note, { color: "black" }]}>
-                    Rate at which we get our US Dollar
-                  </Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
                   >
-                    <Text
-                      style={[
-                        styles.balance,
-                        { fontFamily: getFontFamily("800") },
-                      ]}
-                    >
-                      {assetDetails?.symbol} Balance
-                    </Text>
-                    <Text style={styles.balance}>
-                      {`${balance} ${symbol} = ${formatAmount(
-                        balance * price,
-                        false,
-                        "USD",
-                      )}`}
-                    </Text>
-                  </View>
+                    Wallet Balance in USD:
+                  </Text>
+                  <Text style={styles.balance}>
+                    {`${balance} ${symbol} = ${formatAmount(
+                      balance * price,
+                      false,
+                      "USD",
+                    )}`}
+                  </Text>
                 </View>
                 <View
                   style={{
@@ -223,55 +227,44 @@ export default function CryptoSellScreen() {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Text style={styles.rate}>
-                    Rate:{" "}
-                    {formatAmount(
-                      assetDetails?.buy_rate ??
-                        assetDetails?.latest_buy_rate ??
-                        0,
-                    )}
-                    /$
-                  </Text>
-                  <Text style={styles.min}>Network Fee: $0.00</Text>
-                </View>
-
-                <View style={styles.paymentContainer}>
-                  {/* <Text style={styles.note}>
-                            Rate at which we get our US Dollar
-                          </Text> */}
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      padding: 9,
-                    }}
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
                   >
-                    <Text style={styles.ngn}>You’ll be paid:</Text>
-                    <Text style={styles.ngn}>{ngnAmount}</Text>
-                  </View>
+                    Network Fee::
+                  </Text>
+                  <Text style={styles.balance}>
+                    {formatAmount(2.0, false, "USD")}
+                  </Text>
                 </View>
               </View>
+
+              {hasInsufficientBalance && (
+                <View style={styles.warningContainer}>
+                  <Text style={styles.warningText}>
+                    Insufficient balance! You need {btcEquivalent}{" "}
+                    {assetDetails?.symbol} but you only have {balance}{" "}
+                    {assetDetails.symbol}
+                  </Text>
+                </View>
+              )}
             </View>
 
-            {hasInsufficientBalance && (
-              <Text
-                style={{
-                  fontFamily: getFontFamily(700),
-                  fontSize: normalize(18),
-                  color: "#f40505ff",
-                  marginBottom: 10,
-                  textAlign: "center",
-                  borderRadius: 10,
-                  backgroundColor: "#fffafaff",
-                  padding: 20,
-                }}
-              >
-                You do not have enough balance to complete this transfer.
-              </Text>
-            )}
-
             <TouchableOpacity
-              style={styles.button}
+              disabled={canSubmit}
+              style={[
+                styles.button,
+                {
+                  backgroundColor: canSubmit
+                    ? COLORS.fadePrimary
+                    : COLORS.secondary,
+                  borderRadius: 100,
+                  paddingVertical: 16,
+                  marginTop: 30,
+                },
+              ]}
               onPress={handleSubmit(onSubmit)}
             >
               <Text style={styles.buttonText}>Continue</Text>
@@ -297,6 +290,12 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("400"),
     marginBottom: normalize(8),
   },
+  error: {
+    color: "red",
+    fontSize: normalize(14),
+    fontFamily: getFontFamily("400"),
+    marginBottom: normalize(10),
+  },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -320,12 +319,6 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("800"),
     color: "#000",
   },
-  error: {
-    color: "red",
-    fontSize: normalize(14),
-    fontFamily: getFontFamily("400"),
-    marginBottom: normalize(10),
-  },
   approx: {
     fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
@@ -333,26 +326,26 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   balance: {
-    fontSize: normalize(19),
+    fontSize: normalize(21),
     fontFamily: getFontFamily("800"),
     marginBottom: normalize(4),
   },
   rate: {
-    fontSize: normalize(17),
+    fontSize: normalize(19),
     fontFamily: getFontFamily("800"),
     marginBottom: normalize(4),
   },
   min: {
-    fontSize: normalize(17),
+    fontSize: normalize(19),
     fontFamily: getFontFamily("800"),
     marginBottom: normalize(4),
     color: "black",
   },
   note: {
-    fontSize: normalize(17),
+    fontSize: normalize(19),
     fontFamily: getFontFamily("700"),
     color: "#ffffff",
-    marginBottom: normalize(10),
+    marginBottom: normalize(15),
   },
   cryptoRow: {
     flexDirection: "row",
@@ -397,5 +390,19 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     marginVertical: 20,
     padding: 14,
+  },
+  warningContainer: {
+    marginTop: 12,
+    padding: 10,
+    backgroundColor: "rgba(255, 0, 0, 0.03)",
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(255, 0, 0, 0.3)",
+  },
+  warningText: {
+    color: "#db0b0bff",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    textAlign: "center",
   },
 });

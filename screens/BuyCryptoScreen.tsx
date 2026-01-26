@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -21,7 +21,7 @@ import { useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
 import { TradeIntent } from "./Rates";
 import NoWalletAddress from "../components/NoWalletAddress";
-import { showError } from "../utlis/toast";
+import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 
 type CryptoBuyScreenParams = {
   CryptoBuy: {
@@ -41,14 +41,14 @@ export default function CryptoBuyScreen() {
   const route = useRoute<RouteProp<CryptoBuyScreenParams, "CryptoBuy">>();
   const { intent } = route.params;
   const navigation: any = useNavigation();
-  const [assetValueEquivalent, setAssetValueEquivalent] = useState("0.00000");
-  const [ngnAmount, setNgnAmount] = useState("₦0.00");
   const { apiGet } = useAxios();
   const selectedAssetUuid = intent.assetId ?? "";
+  const [displayAmount, setDisplayAmount] = useState("");
 
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -81,36 +81,25 @@ export default function CryptoBuyScreen() {
   const balance = Number(assetDetails?.balance ?? 0);
   const price = Number(assetDetails?.market_current_value ?? 0);
   const symbol = assetDetails?.symbol ?? "";
+  const usd = watch("amount");
 
-  const updateConversion = useCallback(
-    (value: any) => {
-      const usd = parseFloat(value);
-      if (!isNaN(usd) && assetDetails) {
-        const marketValue = parseFloat(
-          assetDetails.market_current_value ?? "0",
-        );
-        const sellRate = parseFloat(assetDetails.sell_rate ?? "0");
-
-        if (marketValue > 0) {
-          const cryptoAmount = usd / marketValue;
-          setAssetValueEquivalent(cryptoAmount.toFixed(8));
-        } else {
-          setAssetValueEquivalent("0.00000000");
-        }
-
-        if (sellRate > 0) {
-          const ngn = usd * sellRate;
-          setNgnAmount(`${formatAmount(ngn)}`);
-        } else {
-          setNgnAmount("₦0.00");
-        }
-      } else {
-        setAssetValueEquivalent("0.00000000");
-        setNgnAmount("₦0.00");
+  const { assetValueEquivalent, ngnAmount } = useMemo(() => {
+    if (!isNaN(usd) && assetDetails) {
+      const marketValue = parseFloat(assetDetails.market_current_value ?? "0");
+      const sellRate = parseFloat(assetDetails.sell_rate ?? "0");
+      let cryptoAmount = "0.00000000";
+      let ngn = "₦0.00";
+      if (marketValue > 0) {
+        cryptoAmount = (usd / marketValue).toFixed(8);
       }
-    },
-    [assetDetails],
-  );
+      if (sellRate > 0) {
+        const nairaValue = usd * sellRate;
+        ngn = `${formatAmount(nairaValue)}`;
+      }
+      return { assetValueEquivalent: cryptoAmount, ngnAmount: ngn };
+    }
+    return { assetValueEquivalent: "0.00000000", ngnAmount: "₦0.00" };
+  }, [usd, assetDetails]);
 
   const onSubmit = async (values: any) => {
     const payload = {
@@ -123,12 +112,12 @@ export default function CryptoBuyScreen() {
     });
   };
 
-  useEffect(() => {
-    const defaultAmount = parseFloat(intent?.amount as string) ?? 0;
-    if (defaultAmount > 0) {
-      updateConversion(defaultAmount);
-    }
-  }, [assetDetails, intent?.amount, updateConversion]);
+  // useEffect(() => {
+  //   const defaultAmount = parseFloat(intent?.amount as string) ?? 0;
+  //   if (defaultAmount > 0) {
+  //     updateConversion(defaultAmount);
+  //   }
+  // }, [assetDetails, intent?.amount, updateConversion]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
@@ -172,17 +161,23 @@ export default function CryptoBuyScreen() {
                   control={control}
                   name="amount"
                   render={({ field: { onChange, onBlur, value } }) => (
-                    <TextInput
-                      style={styles.input}
-                      placeholder="$0.0 USD"
-                      keyboardType="numeric"
-                      onBlur={onBlur}
-                      onChangeText={val => {
-                        onChange(val);
-                        updateConversion(val);
-                      }}
-                      value={value.toString()}
-                    />
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.dollarSign}>$</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={displayAmount}
+                        placeholder="0.00"
+                        placeholderTextColor="#999"
+                        keyboardType="decimal-pad"
+                        onBlur={onBlur}
+                        onChangeText={text => {
+                          const formatted = formatWithCommas(text);
+                          const numeric = parseToNumber(formatted);
+                          onChange(numeric);
+                          setDisplayAmount(formatted);
+                        }}
+                      />
+                    </View>
                   )}
                 />
                 {errors.amount && (
@@ -244,9 +239,6 @@ export default function CryptoBuyScreen() {
                 </View>
 
                 <View style={styles.paymentContainer}>
-                  {/* <Text style={styles.note}>
-                  Rate at which we get our US Dollar
-                </Text> */}
                   <View
                     style={{
                       flexDirection: "row",
@@ -287,14 +279,28 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("400"),
     marginBottom: normalize(8),
   },
-  input: {
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: normalize(8),
-    padding: normalize(16),
+    paddingHorizontal: normalize(16),
+    marginBottom: normalize(10),
+    gap: 5,
+  },
+  dollarSign: {
     fontSize: normalize(26),
     fontFamily: getFontFamily("700"),
-    marginBottom: normalize(10),
+    color: "#000",
+    marginRight: normalize(5),
+  },
+  input: {
+    flex: 1,
+    paddingVertical: normalize(19),
+    fontSize: normalize(26),
+    fontFamily: getFontFamily("800"),
+    color: "#000",
   },
   error: {
     color: "red",
@@ -364,7 +370,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: COLORS.primary,
-    paddingVertical: normalize(14),
+    paddingVertical: 14,
     borderRadius: normalize(208),
     alignItems: "center",
   },

@@ -19,17 +19,17 @@ export default function TransferForm({
 
   const userWallets = useMemo(
     () =>
-      Array.isArray(availableAssets)
-        ? availableAssets.map(asset => ({
-            ...asset,
-            label: asset?.asset_name ?? asset?.name ?? "",
-            value: asset?.asset_id ?? asset?.uuid ?? "",
-            symbol: asset?.symbol ?? "",
-            logo_url: asset?.logo ?? "",
-          }))
-        : [],
+      availableAssets.map(asset => ({
+        ...asset,
+        label: asset?.asset_name ?? asset?.name ?? "",
+        value: asset?.asset_id ?? asset?.uuid ?? "",
+        symbol: asset?.symbol ?? "",
+        logo_url: asset?.logo ?? "",
+      })),
     [availableAssets],
   );
+
+  console.log(userWallets);
 
   return (
     <View style={styles.form}>
