@@ -143,9 +143,14 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         buttonText="Withdraw to Bank"
         secondaryButtonText="Crypto Withdrawal"
         secondaryAction={() => {
-          Alert.alert(
-            "Coming Soon!",
-            "The feature is not available for now. Kindly check back later",
+          setWithdrawModalVisible(false);
+          setTimeout(
+            () =>
+              navigation.navigate("SelectAsset", {
+                action: "withdraw",
+                source: "home",
+              } as never),
+            600,
           );
         }}
         showCloseButton={true}

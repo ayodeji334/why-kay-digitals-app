@@ -15,6 +15,8 @@ import { COLORS } from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import { ArrowDown, ArrowUp } from "iconsax-react-nativejs";
 import useAxios from "../../hooks/useAxios";
+import { useAssets } from "../../hooks/useAssets";
+import LoadingState from "../LoadingState";
 
 interface Asset {
   id: number;
@@ -31,51 +33,10 @@ interface Asset {
 
 const AssetsSection = () => {
   const navigation = useNavigation();
-  const { apiGet } = useAxios();
-  const fetchAssets = async (): Promise<Asset[]> => {
-    try {
-      const response = await apiGet("/crypto-assets/available");
-      return response.data?.data.map((asset: any) => {
-        return {
-          id: asset.asset_id,
-          uuid: asset.asset_id,
-          name: asset.asset_name,
-          symbol: asset.symbol,
-          logo_url: asset.logo_url,
-          balance: asset.market_price ?? 0,
-          rate: parseFloat(asset?.sell_rate ?? 0),
-          change: Math.random() > 0.5 ? "up" : "down",
-          changePercentage: (Math.random() * 20 - 10).toFixed(2),
-        };
-      });
-    } catch (error) {
-      throw error;
-    }
-  };
+  const { assets, isLoading, isError, error, refetch } = useAssets();
 
-  const {
-    data: assets = [],
-    isLoading,
-    isError,
-    error,
-    isRefetching,
-    refetch,
-  } = useQuery({
-    queryKey: ["assets"],
-    queryFn: fetchAssets,
-  });
-
-  if (isLoading || isRefetching) {
-    return (
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Sell Rate:</Text>
-        </View>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading assets...</Text>
-        </View>
-      </View>
-    );
+  if (isLoading) {
+    return <LoadingState message="Laoding assets market rates..." />;
   }
 
   if (isError && error) {
@@ -141,7 +102,7 @@ const AssetsSection = () => {
                 )}
                 <View style={styles.assetInfo}>
                   <View style={styles.assetDetails}>
-                    <Text style={styles.assetName}>{asset.name}</Text>
+                    <Text style={styles.assetName}>{asset.symbol}</Text>
                     <View
                       style={{
                         flexDirection: "row",
@@ -151,11 +112,10 @@ const AssetsSection = () => {
                     >
                       <Text style={styles.assetBalance}>
                         {formatAmount(
-                          parseFloat(asset.balance),
+                          parseFloat(asset.market_current_value || 0),
                           false,
                           "USD",
                           2,
-                          true,
                         )}
                       </Text>
                       {asset.change === "up" ? (
@@ -168,7 +128,13 @@ const AssetsSection = () => {
                   <View style={styles.assetStats}>
                     <Text style={styles.assetLabel}>Rate:</Text>
                     <Text style={styles.assetValue}>
-                      {formatAmount(asset.rate?.toString(), false, "NGN", 2)} /$
+                      {formatAmount(
+                        asset.sell_rate?.toString(),
+                        false,
+                        "NGN",
+                        2,
+                      )}{" "}
+                      /$
                     </Text>
                   </View>
                 </View>
@@ -216,7 +182,8 @@ const styles = StyleSheet.create({
   assetCard: {
     backgroundColor: "#EFF7EC",
     borderRadius: 12,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     marginRight: 12,
     minWidth: 200,
   },

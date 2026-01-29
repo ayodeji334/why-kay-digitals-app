@@ -7,11 +7,17 @@ import {
   StyleSheet,
   ScrollView,
   Image,
+  RefreshControl,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { useNavigation, RouteProp, useRoute } from "@react-navigation/native";
+import {
+  useNavigation,
+  RouteProp,
+  useRoute,
+  useFocusEffect,
+} from "@react-navigation/native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,6 +29,7 @@ import NoWalletAddress from "../components/NoWalletAddress";
 import { showError } from "../utlis/toast";
 import { TradeIntent } from "./Rates";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
+import NoWallet from "../components/NoWallet";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -44,6 +51,7 @@ export default function CryptoSellScreen() {
   const { apiGet } = useAxios();
   const { intent } = route.params;
   const [displayAmount, setDisplayAmount] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const selectedAssetUuid = intent.assetId ?? "";
 
@@ -70,7 +78,7 @@ export default function CryptoSellScreen() {
     queryFn: async () => {
       if (!selectedAssetUuid) return null;
       try {
-        const res = await apiGet(`/wallets/user/${selectedAssetUuid}`);
+        const res = await apiGet(`/wallets/${selectedAssetUuid}`);
         return res?.data?.data ?? null;
       } catch (error) {
         console.error("Failed to fetch asset details:", error);
@@ -80,9 +88,6 @@ export default function CryptoSellScreen() {
     enabled: !!selectedAssetUuid,
   });
 
-  const balance = Number(assetDetails?.balance ?? 0);
-  const price = Number(assetDetails?.market_current_value ?? 0);
-  const symbol = assetDetails?.symbol ?? "";
   const amount = watch("amount");
 
   const { assetValueEquivalent, ngnAmount } = useMemo(() => {
@@ -90,7 +95,7 @@ export default function CryptoSellScreen() {
       const marketValue = parseFloat(assetDetails.market_current_value ?? "0");
       const sellRate = parseFloat(assetDetails.sell_rate ?? "0");
       let cryptoAmount = "0.00000000";
-      let ngn = "₦0.00";
+      let ngn = "0.00";
       if (marketValue > 0) {
         cryptoAmount = (amount / marketValue).toFixed(8);
       }
@@ -113,17 +118,32 @@ export default function CryptoSellScreen() {
 
   const hasInsufficientBalance = useMemo(() => {
     if (!amount) return false;
-
     if (!assetDetails) return true;
+    return amount > assetDetails?.balance * assetDetails?.market_current_value;
+  }, [amount, assetDetails.balance, assetDetails?.market_current_value]);
 
-    return amount > assetDetails.balance * assetDetails?.market_current_value;
-  }, [amount, assetDetails]);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
-      <ScrollView contentContainerStyle={{ flex: 1 }}>
+      <ScrollView
+        contentContainerStyle={{ flex: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {!assetDetails?.wallet_id ? (
-          <NoWalletAddress
+          <NoWallet
             selectedAssetUuid={selectedAssetUuid}
             onSuccess={() => {
               refetch();
@@ -192,7 +212,7 @@ export default function CryptoSellScreen() {
                   }}
                 >
                   <Text style={[styles.note, { color: "black" }]}>
-                    Rate at which we get our US Dollar
+                    Wallet Balance, Exchange Rate, and Network Fee Breakdown
                   </Text>
                   <View
                     style={{
@@ -206,14 +226,74 @@ export default function CryptoSellScreen() {
                         { fontFamily: getFontFamily("800") },
                       ]}
                     >
-                      {assetDetails?.symbol} Balance
+                      Wallet balance:
                     </Text>
                     <Text style={styles.balance}>
-                      {`${balance} ${symbol} = ${formatAmount(
-                        balance * price,
+                      {assetDetails?.balance || 0}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.balance,
+                        { fontFamily: getFontFamily("800") },
+                      ]}
+                    >
+                      Wallet balance in USD:
+                    </Text>
+                    <Text style={styles.balance}>
+                      {formatAmount(
+                        Number(assetDetails?.balance) *
+                          Number(assetDetails?.market_current_value) || 0,
                         false,
                         "USD",
-                      )}`}
+                      )}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.balance,
+                        { fontFamily: getFontFamily("800") },
+                      ]}
+                    >
+                      Exchange Rate:
+                    </Text>
+                    <Text style={styles.balance}>
+                      {formatAmount(
+                        assetDetails?.buy_rate ??
+                          assetDetails?.latest_buy_rate ??
+                          0,
+                      )}
+                      /$
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.balance,
+                        { fontFamily: getFontFamily("800") },
+                      ]}
+                    >
+                      Service Network Fee:
+                    </Text>
+                    <Text style={styles.balance}>
+                      {formatAmount(2, false, "USD")}
                     </Text>
                   </View>
                 </View>
@@ -236,14 +316,10 @@ export default function CryptoSellScreen() {
                 </View>
 
                 <View style={styles.paymentContainer}>
-                  {/* <Text style={styles.note}>
-                            Rate at which we get our US Dollar
-                          </Text> */}
                   <View
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
-                      padding: 9,
                     }}
                   >
                     <Text style={styles.ngn}>You’ll be paid:</Text>
@@ -251,27 +327,29 @@ export default function CryptoSellScreen() {
                   </View>
                 </View>
               </View>
+
+              {hasInsufficientBalance && (
+                <View style={styles.warningContainer}>
+                  <Text style={styles.warningText}>
+                    Insufficient balance! Your current balance worth is{" "}
+                    {formatAmount(
+                      Number(assetDetails?.balance) *
+                        Number(assetDetails?.market_current_value) || 0,
+                      false,
+                      "USD",
+                    )}{" "}
+                    which is less than {formatAmount(amount, false, "USD")}
+                  </Text>
+                </View>
+              )}
             </View>
 
-            {hasInsufficientBalance && (
-              <Text
-                style={{
-                  fontFamily: getFontFamily(700),
-                  fontSize: normalize(18),
-                  color: "#f40505ff",
-                  marginBottom: 10,
-                  textAlign: "center",
-                  borderRadius: 10,
-                  backgroundColor: "#fffafaff",
-                  padding: 20,
-                }}
-              >
-                You do not have enough balance to complete this transfer.
-              </Text>
-            )}
-
             <TouchableOpacity
-              style={styles.button}
+              style={[
+                styles.button,
+                hasInsufficientBalance && styles.buttonDisabled,
+              ]}
+              disabled={hasInsufficientBalance}
               onPress={handleSubmit(onSubmit)}
             >
               <Text style={styles.buttonText}>Continue</Text>
@@ -291,6 +369,24 @@ const styles = StyleSheet.create({
     padding: normalize(20),
     backgroundColor: "#fff",
     justifyContent: "space-between",
+  },
+  buttonDisabled: {
+    backgroundColor: "#cccccc",
+    opacity: 0.6,
+  },
+  warningContainer: {
+    marginTop: 12,
+    padding: 10,
+    backgroundColor: "rgba(255, 0, 0, 0.03)",
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(255, 0, 0, 0.3)",
+  },
+  warningText: {
+    color: "#db0b0bff",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    textAlign: "center",
   },
   label: {
     fontSize: normalize(18),
@@ -386,6 +482,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: normalize(208),
     alignItems: "center",
+    marginBottom: 30,
   },
   buttonText: {
     color: "#fff",

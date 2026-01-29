@@ -25,7 +25,7 @@ import HelpSupportScreen from "../screens/ContactUsScreen";
 import ReferAndEarnScreen from "../screens/ReferAndEarnScreen";
 import ReferralHistoryScreen from "../screens/ReferralHistoryScreen";
 import BiometricsScreen from "../screens/EnableBiometricScreen";
-import { useIsAuthenticated, useUser } from "../stores/authSlice";
+import { useAuthStore, useIsAuthenticated } from "../stores/authSlice";
 import DepositScreen from "../screens/DepositScreen";
 import BankTransferScreen from "../screens/BankTransfer";
 import BVNVerificationScreen from "../screens/BVNVerificationScreen";
@@ -52,17 +52,19 @@ import SelfieConfirmationScreen from "../screens/SelfieConfirmation";
 import SendScreen from "../screens/SendCrypto";
 import ConfirmCryptoWithdrawalScreen from "../screens/ConfirmCryptoWithdrawScreen";
 import NotificationsScreen from "../screens/Notifications";
+import PendingSwapScreen from "../screens/PendingSwapTransactionScreen";
 
 export default function NavigationRoot() {
   const isAuthenticated = useIsAuthenticated();
-  const user = useUser();
+  const username = useAuthStore(state => state.user?.username);
+  const uuid = useAuthStore(state => state.user?.uuid);
 
   const RootStack = createNativeStackNavigator({
     initialRouteName: isAuthenticated
       ? "Dashboard"
-      : user?.username
+      : username
       ? "ReturningLogin"
-      : !!user
+      : !!uuid
       ? "SignIn"
       : "Intro",
     screens: {
@@ -82,13 +84,13 @@ export default function NavigationRoot() {
       SignIn: {
         screen: LoginScreen,
         options: {
-          header: () => <CustomHeader showBack={!user} title="Login" />,
+          header: () => <CustomHeader showBack={!username} title="Login" />,
         },
       },
       ReturningLogin: {
         screen: ReturningUserLoginScreen,
         options: {
-          header: () => <CustomHeader showBack={!user} title="Login" />,
+          header: () => <CustomHeader showBack={!username} title="Login" />,
         },
       },
       SignUp: {
@@ -118,25 +120,6 @@ export default function NavigationRoot() {
           header: () => <CustomHeader showTitle={true} title="New Password" />,
         },
       },
-      CreatePin: {
-        screen: CreateSecurityPinScreen,
-        options: {
-          headerBackTitle: ".",
-          header: () => <CustomHeader title="New Password" />,
-        },
-      },
-      ConfirmPin: {
-        screen: ConfirmSecurityPinScreen,
-        options: {
-          headerBackTitle: ".",
-          header: () => (
-            <CustomHeader showTitle={true} title="Confirm Security Pin" />
-          ),
-        },
-        screenOptions: {
-          presentation: "modal",
-        },
-      },
       WebView: {
         screen: WebViewScreen,
         options: {
@@ -153,6 +136,22 @@ export default function NavigationRoot() {
             screen: AppTabs,
             options: {
               headerShown: false,
+            },
+          },
+          CreatePin: {
+            screen: CreateSecurityPinScreen,
+            options: {
+              headerBackTitle: ".",
+              header: () => <CustomHeader title="New Password" />,
+            },
+          },
+          ConfirmPin: {
+            screen: ConfirmSecurityPinScreen,
+            options: {
+              headerBackTitle: ".",
+              header: () => (
+                <CustomHeader showTitle={true} title="Confirm Security Pin" />
+              ),
             },
           },
           ConfirmTransaction: {
@@ -415,6 +414,13 @@ export default function NavigationRoot() {
               header: () => (
                 <CustomHeader showTitle={true} title="Select Wallet" />
               ),
+            },
+          },
+          PendingSwap: {
+            screen: PendingSwapScreen,
+            options: {
+              headerShown: false,
+              header: () => <CustomHeader showTitle={true} title="" />,
             },
           },
           CryptoWalletDeposit: {

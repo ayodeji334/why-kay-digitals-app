@@ -5,9 +5,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   Linking,
+  Dimensions,
 } from "react-native";
 import { Camera, useCameraDevice } from "react-native-vision-camera";
-// import type { CameraPermissionStatus } from "react-native-vision-camera";
+import Svg, { Ellipse } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily } from "../constants/settings";
 import FaceOverlay from "../components/FaceOverlay";
@@ -16,14 +17,40 @@ import { COLORS } from "../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import CustomIcon from "../components/CustomIcon";
 import { FaceIdIcon } from "../assets";
+import ReactNativeBlobUtil from "react-native-blob-util";
+import { Image } from "react-native-compressor";
+
+const MAX_BASE64_SIZE = 900 * 1024; // 900 KB
+
+export async function captureAndCompress(path: string) {
+  let quality = 0.8;
+  // start at 80% let
+  let compressedPath = path;
+  // initial read
+  let base64String = await ReactNativeBlobUtil.fs.readFile(path, "base64");
+  // check size and compress iteratively
+  while (base64String.length * 0.75 > MAX_BASE64_SIZE && quality > 0.3) {
+    compressedPath = await Image.compress(compressedPath, {
+      compressionMethod: "manual",
+      quality,
+      maxWidth: 800,
+      maxHeight: 800,
+    });
+    base64String = await ReactNativeBlobUtil.fs.readFile(
+      compressedPath,
+      "base64",
+    );
+    quality -= 0.1;
+  }
+  return { path: compressedPath, base64: base64String };
+}
+const { width, height } = Dimensions.get("window");
 
 export default function SelfieVerificationScreen() {
   const cameraRef = useRef<Camera>(null);
   const device = useCameraDevice("front");
   const navigation: any = useNavigation();
   const [showCamera, setShowCamera] = useState(false);
-  // const [cameraPermission, setCameraPermission] =
-  //   useState<CameraPermissionStatus>("not-determined");
   const [loading, setLoading] = useState(false);
 
   // Request permission logic
@@ -45,14 +72,16 @@ export default function SelfieVerificationScreen() {
 
   const takeSelfie = async () => {
     if (cameraRef.current) {
-      const photo = await cameraRef.current.takePhoto({
-        flash: "off",
-      });
-      navigation.navigate("SelfieConfirmation", { image: photo });
+      const photo = await cameraRef.current.takePhoto({ flash: "off" });
+
+      const result = await captureAndCompress(photo.path);
+
+      if (result) {
+        navigation.replace("SelfieConfirmation", { image: result });
+      }
     }
   };
 
-  // Initial State UI (The instructional screen)
   if (!showCamera) {
     return (
       <SafeAreaView style={styles.container}>
@@ -84,18 +113,39 @@ export default function SelfieVerificationScreen() {
     );
   }
 
-  // Camera View (Active State)
-  if (!device && showCamera) return <View style={styles.loader} />;
-
   return (
-    <SafeAreaView edges={["bottom"]} style={styles.container}>
-      <Camera
-        ref={cameraRef}
-        style={StyleSheet.absoluteFill}
-        device={device!}
-        isActive={true}
-        photo={true}
-      />
+    <SafeAreaView style={styles.container}>
+      <View
+        style={{
+          position: "absolute",
+          top: height * 0.16,
+          left: width * 0.18,
+          width: width * 0.64,
+          height: height * 0.44,
+          overflow: "hidden",
+          borderRadius: Math.min(width * 0.32, height * 0.22), // rounded crop
+        }}
+      >
+        <Camera
+          ref={cameraRef}
+          style={StyleSheet.absoluteFill}
+          device={device!}
+          isActive={true}
+          photo={true}
+        />
+      </View>
+
+      <Svg width={width} height={height} style={StyleSheet.absoluteFill}>
+        <Ellipse
+          cx={width / 2}
+          cy={height * 0.38}
+          rx={width * 0.32}
+          ry={height * 0.22}
+          stroke="#FF3B30"
+          strokeWidth={4}
+          fill="transparent"
+        />
+      </Svg>
 
       <FaceOverlay />
 
@@ -171,7 +221,7 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: getFontFamily("700"),
   },
   loader: {

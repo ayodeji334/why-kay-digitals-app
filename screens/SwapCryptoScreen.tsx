@@ -16,11 +16,10 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { formatAmount } from "../libs/formatNumber";
-import { useQuery } from "@tanstack/react-query";
 import CustomLoading from "../components/CustomLoading";
 import { SelectInput } from "../components/SelectInputField";
-import useAxios from "../hooks/useAxios";
-import { useWalletStore } from "../stores/walletSlice";
+import { useWallets } from "../hooks/useWallet";
+import { useAssets } from "../hooks/useAssets";
 
 export const formatWithCommas = (value: string) => {
   if (!value) return "";
@@ -92,56 +91,27 @@ const schema = Yup.object().shape({
 });
 
 export default function CryptoSwapScreen() {
-  const { apiGet } = useAxios();
   const [displayAmount, setDisplayAmount] = useState("");
   const navigation: any = useNavigation();
-  const availableAssets = useWalletStore(state => state.wallets);
-
-  const fetchAssets = async (): Promise<any[]> => {
-    try {
-      const response = await apiGet("/crypto-assets/available");
-      return (
-        response.data?.data?.map((asset: any) => {
-          return {
-            id: asset.asset_id,
-            uuid: asset.asset_id,
-            name: asset.asset_name,
-            symbol: asset.symbol,
-            logo_url: asset.logo_url,
-            balance: asset.market_price ?? 0,
-            rate: parseFloat(asset?.sell_rate ?? 0),
-            change: Math.random() > 0.5 ? "up" : "down",
-            changePercentage: (Math.random() * 20 - 10).toFixed(2),
-          };
-        }) ?? []
-      );
-    } catch (error) {
-      console.error("Failed to fetch assets:", error);
-      throw error;
-    }
-  };
-
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["assets"],
-    queryFn: fetchAssets,
-  });
+  const { assets, isLoading, refetch } = useAssets();
+  const { data, refetch: refetchUserWallets } = useWallets();
 
   const options = useMemo(
     () =>
-      (data &&
-        data.map(option => ({
+      (assets &&
+        assets.map((option: any) => ({
           ...option,
           label: option.name,
           value: option.id,
         }))) ||
       [],
-    [data],
+    [assets],
   );
 
   const userWallets = useMemo(
     () =>
-      Array.isArray(availableAssets)
-        ? availableAssets.map(asset => ({
+      Array.isArray(data?.wallets)
+        ? data?.wallets.map((asset: any) => ({
             ...asset,
             label: asset?.asset_name ?? asset?.name ?? "",
             value: asset?.asset_id ?? asset?.uuid ?? "",
@@ -149,7 +119,7 @@ export default function CryptoSwapScreen() {
             logo_url: asset?.logo ?? "",
           }))
         : [],
-    [availableAssets],
+    [data?.wallets],
   );
 
   const {
@@ -167,37 +137,36 @@ export default function CryptoSwapScreen() {
   const fromAssetId = watch("from_asset");
   const toAssetId = watch("to_asset");
   const amount = watch("amount");
-  const fromAsset = userWallets.find(opt => opt.value === fromAssetId);
-  const toAsset = options.find(opt => opt.value === toAssetId);
+  const fromAsset = userWallets.find((opt: any) => opt.value === fromAssetId);
+  const toAsset = options.find((opt: any) => opt.value === toAssetId);
   const balance = Number(fromAsset?.balance ?? 0);
   const price = Number(fromAsset?.price ?? 0);
   const symbol = fromAsset?.symbol ?? "";
 
   const { fromAmount, toCoinAmount } = useMemo(() => {
-    if (!amount || !fromAsset || !toAsset) {
+    if (!amount || !fromAsset.price || !toAsset.market_current_value) {
       return {
-        fromAmount: "0.00000000",
-        toCoinAmount: "0.00000000",
+        fromAmount: 0,
+        toCoinAmount: 0,
       };
     }
 
-    const fromPrice = Number(fromAsset?.price ?? 1);
-    const toPrice = Number(toAsset?.balance ?? 1);
+    const fromAseetMarketPrice = Number(fromAsset?.price || 0);
+    const toAssetMarketPrice = Number(toAsset?.market_current_value || 0);
 
-    if (!fromPrice || !toPrice) {
+    if (!fromAseetMarketPrice || !toAssetMarketPrice) {
       return {
-        fromAmount: "0.00000000",
-        toCoinAmount: "0.00000000",
+        fromAmount: 0,
+        toCoinAmount: 0,
       };
     }
 
     return {
-      fromAmount: (amount / fromPrice).toFixed(8),
-      toCoinAmount: (amount / toPrice).toFixed(8),
+      fromAmount: (amount / fromAseetMarketPrice).toFixed(8),
+      toCoinAmount: (amount / toAssetMarketPrice).toFixed(8),
     };
-  }, [amount, fromAsset, toAsset]);
+  }, [amount, fromAsset.price, toAsset.market_current_value]);
 
-  // Calculate if user has insufficient balance
   const insufficientBalance = useMemo(() => {
     if (!fromAsset || !amount || amount <= 0) return false;
 
@@ -207,7 +176,6 @@ export default function CryptoSwapScreen() {
     return usdAmount > userBalanceUSD;
   }, [amount, balance, price, fromAsset]);
 
-  // Calculate the required amount in the asset's own units
   const requiredAssetAmount = useMemo(() => {
     if (!fromAsset || !amount || amount <= 0) return "0";
 
@@ -230,17 +198,16 @@ export default function CryptoSwapScreen() {
   };
 
   const onRefresh = async () => {
-    await refetch();
+    refetch();
+    refetchUserWallets();
   };
 
-  // Check if form can be submitted
   const canSubmit = isValid && !insufficientBalance && amount > 0;
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
       <ScrollView
         contentContainerStyle={{
-          flex: 1,
           backgroundColor: "white",
         }}
         refreshControl={
@@ -303,7 +270,8 @@ export default function CryptoSwapScreen() {
               )}
               {fromAsset && amount > 0 && (
                 <Text style={styles.approx}>
-                  Approximately {fromAmount} {fromAsset?.symbol}
+                  Approximately {fromAmount} {fromAsset?.symbol} will debited
+                  from your {symbol} wallet
                 </Text>
               )}
             </View>
@@ -316,30 +284,91 @@ export default function CryptoSwapScreen() {
               }}
             >
               <Text style={[styles.note, { color: "black" }]}>
-                Your curent balance market value & fee
+                Transaction Breakdown
               </Text>
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
-                  paddingVertical: 5,
                 }}
               >
-                <Text style={[styles.balance]}>
-                  {fromAsset?.symbol || "Asset"} Wallet Balance
+                <Text
+                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                >
+                  Your {symbol} Wallet balance:
+                </Text>
+                <Text style={styles.balance}>{balance || 0}</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text
+                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                >
+                  Your {symbol} Wallet balance in USD:
                 </Text>
                 <Text style={styles.balance}>
-                  {fromAsset
-                    ? `${balance} ${symbol} = ${formatAmount(
-                        balance * price,
-                        false,
-                        "USD",
-                      )}`
-                    : "Select an asset"}
+                  {formatAmount(
+                    Number(balance) * Number(price) || 0,
+                    false,
+                    "USD",
+                  )}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text
+                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                >
+                  {symbol} Market Current Price in USD:
+                </Text>
+                <Text style={styles.balance}>
+                  {formatAmount(Number(fromAsset?.price) || 0, false, "USD")}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text
+                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                >
+                  {toAsset?.symbol} Market Current Price in USD:
+                </Text>
+                <Text style={styles.balance}>
+                  {formatAmount(
+                    Number(toAsset?.market_current_value) || 0,
+                    false,
+                    "USD",
+                  )}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text
+                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                >
+                  Service Network Fee:
+                </Text>
+                <Text style={styles.balance}>
+                  {formatAmount(2, false, "USD")}
                 </Text>
               </View>
             </View>
-            <View
+            {/* <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
@@ -349,7 +378,7 @@ export default function CryptoSwapScreen() {
                 Estimated Network Fee:{" "}
                 {formatAmount(amount * 0.01, false, "USD")}
               </Text>
-            </View>
+            </View> */}
             <View style={styles.paymentContainer}>
               <Text style={styles.note}>You'll receive</Text>
               <View
@@ -364,6 +393,7 @@ export default function CryptoSwapScreen() {
                 </Text>
               </View>
             </View>
+
             {/* Insufficient balance warning */}
             {insufficientBalance && fromAsset && (
               <View style={styles.warningContainer}>
@@ -391,6 +421,7 @@ export default function CryptoSwapScreen() {
               </Text>
             </View>
           </View>
+
           <TouchableOpacity
             style={[styles.button, !canSubmit && styles.buttonDisabled]}
             onPress={handleSubmit(onSubmit)}
@@ -406,14 +437,13 @@ export default function CryptoSwapScreen() {
   );
 }
 
-// Styles remain the same...
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: normalize(20),
     backgroundColor: "#fff",
     justifyContent: "space-between",
+    paddingBottom: 30,
   },
   label: {
     fontSize: normalize(18),
@@ -460,7 +490,7 @@ const styles = StyleSheet.create({
   },
   approx: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     marginBottom: normalize(9),
     color: COLORS.primary,
   },
@@ -501,6 +531,7 @@ const styles = StyleSheet.create({
     paddingVertical: normalize(20),
     borderRadius: 100,
     alignItems: "center",
+    marginTop: 20,
   },
   buttonDisabled: {
     backgroundColor: "#cccccc",

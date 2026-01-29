@@ -6519,6 +6519,11 @@ react-native-bootsplash@^6.3.10:
     ts-dedent "^2.2.0"
     xml-formatter "^3.6.5"
 
+react-native-compressor@^1.16.0:
+  version "1.16.0"
+  resolved "https://registry.yarnpkg.com/react-native-compressor/-/react-native-compressor-1.16.0.tgz#4c1dbad91f9bb33dd06292763da5ae3bdfbf3f87"
+  integrity sha512-yBJ1j/ank4Ckx/0cKf8QiK1oATppxN8GuNBoW6P83Os7s7MUdCLzVmIXX0ikkusdrgdCaetW6j3hH2eMI54pcw==
+
 react-native-country-picker-modal@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-country-picker-modal/-/react-native-country-picker-modal-2.0.0.tgz#005421303349a81fedf5975e465405bb4b7312d5"

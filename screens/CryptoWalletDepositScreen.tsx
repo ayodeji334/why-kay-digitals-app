@@ -6,14 +6,15 @@ import { COLORS } from "../constants/colors";
 import { useRoute } from "@react-navigation/native";
 import WalletDetails from "./WalletAddress";
 import NoWalletAddress from "../components/NoWalletAddress";
-import { useWalletStore } from "../stores/walletSlice";
+import { useWallets } from "../hooks/useWallet";
 
 const CryptoWalletDepositScreen = () => {
   const route: any = useRoute();
-  // const navigation: any = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
-  const wallets = useWalletStore(state => state.wallets);
-  const fetchWallets = useWalletStore(state => state.fetchWalletsAndAccounts);
+  const {
+    data: { wallets },
+    refetch,
+  } = useWallets();
 
   const selectedAssetUuid = useMemo(
     () => route.params?.crypto?.uuid,
@@ -23,7 +24,7 @@ const CryptoWalletDepositScreen = () => {
   const refreshWallets = async () => {
     try {
       setRefreshing(true);
-      await fetchWallets();
+      await refetch();
     } catch (error) {
       console.error("Failed to refresh wallets:", error);
     } finally {

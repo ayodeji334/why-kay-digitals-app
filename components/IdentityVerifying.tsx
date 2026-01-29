@@ -10,7 +10,6 @@ import { COLORS } from "../constants/colors";
 import { getFontFamily } from "../constants/settings";
 
 const steps = [
-  "Uploading your selfie...",
   "Analyzing facial features...",
   "Cross-referencing documents...",
   "Finalizing verification...",
@@ -51,7 +50,7 @@ export default function IdentityVerifying({ loading }: { loading: boolean }) {
         <View style={styles.card}>
           <ActivityIndicator size="large" color={COLORS.primary} />
 
-          <Text style={styles.title}>Verifying Identity</Text>
+          <Text style={styles.title}>Verifying your Identity</Text>
 
           <Animated.View style={{ opacity: fadeAnim }}>
             <Text style={styles.stepText}>{steps[stepIndex]}</Text>
@@ -78,7 +77,7 @@ export default function IdentityVerifying({ loading }: { loading: boolean }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.95)", // High opacity white
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
@@ -88,16 +87,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 20,
-    fontFamily: getFontFamily("700"),
+    fontSize: 16,
+    fontFamily: getFontFamily("800"),
     color: "#000",
-    marginTop: 24,
-    marginBottom: 8,
+    marginTop: 20,
   },
   stepText: {
-    fontSize: 15,
+    fontSize: 14,
     fontFamily: getFontFamily("400"),
-    color: COLORS.primary, // Using your brand green
+    color: COLORS.primary,
     marginBottom: 24,
   },
   progressTrack: {
@@ -115,7 +113,7 @@ const styles = StyleSheet.create({
   },
   disclaimer: {
     fontSize: 12,
-    fontFamily: getFontFamily("400"),
+    fontFamily: getFontFamily("700"),
     color: "#999",
     textAlign: "center",
   },

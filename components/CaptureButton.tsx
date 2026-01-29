@@ -3,7 +3,7 @@ import { TouchableOpacity, StyleSheet, View } from "react-native";
 
 export default function CaptureButton({ onPress }: { onPress: () => void }) {
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.67}>
       <View style={styles.outer}>
         <View style={styles.inner} />
       </View>

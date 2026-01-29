@@ -9,13 +9,14 @@ import {
   StatusBar,
   StyleSheet,
   Image,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useQuery } from "@tanstack/react-query";
 import { getFontFamily } from "../constants/settings";
-import useAxios from "../hooks/useAxios";
 import CustomLoading from "../components/CustomLoading";
 import { TradeIntent } from "./Rates";
+import { COLORS } from "../constants/colors";
+import { useAssets } from "../hooks/useAssets";
 
 type CryptoWalletScreenRoute = {
   CryptoWallets: {
@@ -28,43 +29,13 @@ const CryptoWalletScreen = () => {
   const navigation: any = useNavigation();
   const route = useRoute<RouteProp<CryptoWalletScreenRoute, "CryptoWallets">>();
   const { action: currentAction = "buy" } = route.params ?? {};
-  const { apiGet } = useAxios();
-
-  // Fetch assets
-  const fetchAssets = async (): Promise<any[]> => {
-    try {
-      const response = await apiGet("/crypto-assets/available");
-      return (
-        response.data?.data?.map((asset: any) => {
-          return {
-            id: asset.asset_id,
-            uuid: asset.asset_id,
-            name: asset.asset_name,
-            symbol: asset.symbol,
-            logo_url: asset.logo_url,
-            balance: asset.market_price ?? 0,
-            rate: parseFloat(asset?.sell_rate ?? 0),
-            change: Math.random() > 0.5 ? "up" : "down",
-            changePercentage: (Math.random() * 20 - 10).toFixed(2),
-          };
-        }) ?? []
-      );
-    } catch (error) {
-      console.error("Failed to fetch assets:", error);
-      throw error;
-    }
-  };
-
-  const { data: assets = [], isLoading } = useQuery({
-    queryKey: ["assets"],
-    queryFn: fetchAssets,
-  });
+  const { assets, isLoading, isRefetching, refetch } = useAssets();
 
   // Filter by search query
   const filteredAssets = useMemo(() => {
     if (!searchQuery) return assets;
     return assets.filter(
-      asset =>
+      (asset: any) =>
         asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         asset.symbol.toLowerCase().includes(searchQuery.toLowerCase()),
     );
@@ -122,8 +93,8 @@ const CryptoWalletScreen = () => {
           />
         )}
         <View style={styles.cryptoInfo}>
-          <Text style={styles.cryptoName}>{item.name}</Text>
-          <Text style={styles.cryptoSymbol}>{item.symbol}</Text>
+          <Text style={styles.cryptoName}>{item.symbol}</Text>
+          <Text style={styles.cryptoSymbol}>{item.name}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -143,6 +114,13 @@ const CryptoWalletScreen = () => {
       </View>
 
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            colors={[COLORS.primary]}
+          />
+        }
         data={filteredAssets}
         renderItem={renderCryptoItem}
         keyExtractor={item => item.id}

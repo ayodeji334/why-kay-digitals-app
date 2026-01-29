@@ -7,41 +7,37 @@ import {
   TouchableOpacity,
   Image,
   RefreshControl,
-  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ServicesSection from "../components/Dashboard/ServicesSection";
-import { Notification, Scan } from "iconsax-react-nativejs";
-import BalanceCard from "../components/Dashboard/BalanceCard";
+import { Scan } from "iconsax-react-nativejs";
 import { getFontFamily, normalize } from "../constants/settings";
 import { useUser } from "../stores/authSlice";
 import AssetsSection from "../components/Dashboard/AssetsSection";
-import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import AdvertsBanner from "../components/AdvertsBanner";
-import { useWalletStore } from "../stores/walletSlice";
-import { useQuery } from "@tanstack/react-query";
 import NotificationBell from "../components/Dashboard/NotificationBell";
+import FiatWalletBalanceCard from "../components/wallet/FiatWalletBalanceCard";
+import { useMemo } from "react";
+import { useFiatBalance } from "../hooks/useFiatBalance";
 
 const HomeScreen = () => {
   const user = useUser();
-  const fetchWallets = useWalletStore(s => s.fetchWalletsAndAccounts);
-  const wallets = useWalletStore(s => s.wallets);
-  const bankAccounts = useWalletStore(s => s.bankAccounts);
   const navigation = useNavigation();
+  const { refetch, isRefetching, isLoading } = useFiatBalance();
 
-  const { refetch, isRefetching, isLoading } = useQuery({
-    queryKey: ["wallets"],
-    queryFn: fetchWallets,
-  });
-
-  const fiatWallet = Array.isArray(wallets)
-    ? wallets?.find((w: any) => w.type === "fiat")
-    : null;
-
-  const needsVerification =
-    user?.tier_level === "TIER_0" || !bankAccounts?.length;
+  const hasCompleteVerification = useMemo(
+    () =>
+      user?.nin_verification_status === "VERIFIED" &&
+      user?.bvn_verification_status === "VERIFIED" &&
+      user?.selfie_verification_status === "VERIFIED",
+    [
+      user?.nin_verification_status,
+      user?.bvn_verification_status,
+      user?.selfie_verification_status,
+    ],
+  );
 
   return (
     <SafeAreaView edges={["left", "right", "top"]} style={styles.container}>
@@ -51,10 +47,8 @@ const HomeScreen = () => {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={isRefetching}
+            refreshing={isRefetching || isLoading}
             onRefresh={refetch}
-            colors={["#df8b0cff"]}
-            tintColor="#e28b0aff"
           />
         }
       >
@@ -85,22 +79,18 @@ const HomeScreen = () => {
           <NotificationBell />
         </View>
 
-        <BalanceCard
-          balance={fiatWallet?.balance || 0}
-          showTransactionsButton={true}
-        />
+        <FiatWalletBalanceCard />
 
         <AssetsSection />
 
-        {needsVerification && (
+        {!hasCompleteVerification && (
           <View style={styles.verificationBanner}>
             <View style={styles.verificationIcon}>
               <Scan size={normalize(20)} color={COLORS.whiteBackground} />
             </View>
             <View style={styles.verificationText}>
               <Text style={styles.verificationTitle}>
-                Kindly verify your identity to unlock all the features of the
-                app.
+                Kindly complete all KYC verification to unlock all the services
               </Text>
             </View>
             <TouchableOpacity
@@ -129,7 +119,6 @@ const HomeScreen = () => {
         <ServicesSection />
         <AdvertsBanner />
       </ScrollView>
-      <CustomLoading loading={isLoading} />
     </SafeAreaView>
   );
 };

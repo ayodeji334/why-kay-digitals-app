@@ -174,7 +174,7 @@ export default function KYCVerificationScreen() {
                 fill={COLORS.primary}
               />
             }
-            isVerified={user?.selfie_verification_status === "VERIFIED"}
+            isVerified={false}
           />
         </View>
       </ScrollView>

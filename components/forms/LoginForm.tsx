@@ -14,6 +14,7 @@ import { AxiosError } from "axios";
 import useAxios from "../../hooks/useAxios";
 import { useAuthStore } from "../../stores/authSlice";
 import { OneSignal } from "react-native-onesignal";
+import { useQueryClient } from "@tanstack/react-query";
 
 const loginSchema = yup.object().shape({
   login: yup.string().required("Email or Username is required"),
@@ -27,6 +28,7 @@ type LoginFormInputs = {
 
 const LoginForm: React.FC = () => {
   const { post } = useAxios();
+  const queryClient = useQueryClient();
   const setToken = useAuthStore(state => state.setToken);
   const setUser = useAuthStore(state => state.setUser);
   const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
@@ -50,9 +52,13 @@ const LoginForm: React.FC = () => {
       });
 
       const { auth, user } = res.data?.data ?? {};
+
       if (!auth?.accessToken || !auth?.refreshToken || !user) {
         throw new Error("Invalid login response");
       }
+
+      // fetch wallets
+      queryClient.prefetchQuery({ queryKey: ["assets"] });
 
       setToken(auth.accessToken, auth.refreshToken);
       setUser(user);

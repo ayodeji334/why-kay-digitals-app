@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontFamily: getFontFamily(700),
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     textAlign: "center",
   },
   helpLink: {

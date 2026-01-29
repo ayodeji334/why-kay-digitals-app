@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -19,10 +18,10 @@ import { formatAmount } from "../libs/formatNumber";
 import CustomLoading from "../components/CustomLoading";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
-import NoWalletAddress from "../components/NoWalletAddress";
 import { TradeIntent } from "./Rates";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import TextInputField from "../components/TextInputField";
+import NoWallet from "../components/NoWallet";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -42,7 +41,7 @@ const schema = Yup.object().shape({
 export default function SendScreen() {
   const navigation: any = useNavigation();
   const route = useRoute<RouteProp<CryptoSellScreenParams, "CryptoSell">>();
-  const { apiGet, post } = useAxios();
+  const { apiGet } = useAxios();
   const { intent } = route.params;
   const [btcEquivalent, setBtcEquivalent] = useState("0.00000000");
   const [displayAmount, setDisplayAmount] = useState("");
@@ -71,7 +70,7 @@ export default function SendScreen() {
     queryFn: async () => {
       if (!selectedAssetUuid) return null;
       try {
-        const res = await apiGet(`/wallets/user/${selectedAssetUuid}`);
+        const res = await apiGet(`/wallets/${selectedAssetUuid}`);
         return res?.data?.data ?? null;
       } catch (error) {
         console.error("Failed to fetch asset details:", error);
@@ -135,7 +134,7 @@ export default function SendScreen() {
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
       <ScrollView contentContainerStyle={{ flex: 1 }}>
         {!assetDetails?.wallet_id ? (
-          <NoWalletAddress
+          <NoWallet
             selectedAssetUuid={selectedAssetUuid}
             onSuccess={() => {
               refetch();
@@ -146,7 +145,7 @@ export default function SendScreen() {
             <View style={{ gap: 10 }}>
               <View>
                 <Text style={styles.label}>
-                  Enter the amount (in $ dollars) you want to buy
+                  Enter the amount you want to send
                 </Text>
 
                 <Controller

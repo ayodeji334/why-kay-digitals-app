@@ -166,8 +166,8 @@ export function SelectInput({
                         )}
                         <View style={styles.cryptoInfo}>
                           <Text style={styles.optionName}>
-                            {item.label}
-                            {item.symbol && ` (${item.symbol})`}
+                            {item.symbol}
+                            {` (${item.label})`}
                           </Text>
                           {item.market_value && (
                             <Text style={styles.optionPrice}>
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
   cryptoInfo: { flex: 1 },
   optionName: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#374151",
   },
   optionPrice: {

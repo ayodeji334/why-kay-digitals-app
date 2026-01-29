@@ -51,7 +51,7 @@ const TransactionHistoryScreen: React.FC = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [filters, setFilters] = useState<FilterType>(defaultFilter);
   const [filterQuery, setFilterQuery] = useState<FilterType>(defaultFilter);
-  const serializedFilters = useMemo(() => JSON.stringify(filters), [filters]);
+  const serializedFilters = useMemo(() => filters, [filters]);
 
   const fetchTransactions = async ({ pageParam = 1 }) => {
     const params: any = {

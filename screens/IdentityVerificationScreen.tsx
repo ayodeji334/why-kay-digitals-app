@@ -1,122 +1,109 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
   StyleSheet,
-  ActivityIndicator,
-  Animated,
+  ScrollView,
+  TouchableOpacity,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { getFontFamily, normalize } from "../constants/settings";
+import NINVerificationForm from "../components/forms/NINVerificationForm";
+import { useUser } from "../stores/authSlice";
+import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
-import { getFontFamily } from "../constants/settings";
 
-const steps = [
-  "Uploading your selfie...",
-  "Analyzing facial features...",
-  "Cross-referencing documents...",
-  "Finalizing verification...",
-];
+export default function IdentityVerificationScreen() {
+  const user = useUser();
+  const navigation = useNavigation();
 
-export default function IdentityVerifying({ loading }: { loading: boolean }) {
-  const [stepIndex, setStepIndex] = useState(0);
-  const fadeAnim = new Animated.Value(1);
-
-  useEffect(() => {
-    if (!loading) return;
-
-    const interval = setInterval(() => {
-      // Fade out current text
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }).start(() => {
-        // Change text and fade back in
-        setStepIndex(prev => (prev + 1) % steps.length);
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }).start();
-      });
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [loading]);
-
-  if (!loading) return null;
+  const isProfileComplete = !!user?.first_name && !!user?.last_name;
 
   return (
-    <View style={StyleSheet.absoluteFill}>
-      <View style={styles.overlay}>
-        <View style={styles.card}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        {!isProfileComplete ? (
+          <View style={styles.infoSection}>
+            <Text style={styles.subtitle}>
+              To verify your NIN, please update your profile with the same first
+              name and last name used for your NIN or BVN.
+            </Text>
+            <Text style={styles.bulletText}>
+              Go to the Edit Profile screen to complete your details.
+            </Text>
 
-          <Text style={styles.title}>Verifying your Identity</Text>
-
-          <Animated.View style={{ opacity: fadeAnim }}>
-            <Text style={styles.stepText}>{steps[stepIndex]}</Text>
-          </Animated.View>
-
-          <View style={styles.progressTrack}>
-            <View
-              style={[
-                styles.progressBar,
-                { width: `${(stepIndex + 1) * 25}%` },
-              ]}
-            />
+            <TouchableOpacity
+              activeOpacity={0.89}
+              style={styles.editButton}
+              onPress={() => navigation.navigate("EditProfile" as never)}
+            >
+              <Text style={styles.editButtonText}>Go to Edit Profile</Text>
+            </TouchableOpacity>
           </View>
+        ) : (
+          <>
+            <Text style={styles.subtitle}>
+              We'll authenticate your National Identification Number (NIN) by
+              matching it with a live selfie for secure identity verification.
+              This process ensures regulatory compliance and account security.
+            </Text>
 
-          <Text style={styles.disclaimer}>
-            Please do not close the app or go back.
-          </Text>
-        </View>
-      </View>
-    </View>
+            <View style={styles.formSection}>
+              <NINVerificationForm />
+            </View>
+          </>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
+  container: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.95)", // High opacity white
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
+    backgroundColor: "white",
   },
-  card: {
-    width: "100%",
-    alignItems: "center",
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 10,
+    backgroundColor: "white",
   },
-  title: {
-    fontSize: 16,
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginTop: 24,
-    marginBottom: 8,
+  subtitle: {
+    fontSize: normalize(18),
+    color: "black",
+    fontFamily: getFontFamily(700),
+    paddingVertical: 20,
   },
-  stepText: {
-    fontSize: 14,
-    fontFamily: getFontFamily("400"),
-    color: COLORS.primary,
-    marginBottom: 24,
+  formSection: {
+    marginBottom: 32,
   },
-  progressTrack: {
-    width: "80%",
-    height: 6,
-    backgroundColor: "#F0F0F0",
-    borderRadius: 3,
-    overflow: "hidden",
-    marginBottom: 16,
+  infoSection: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    marginBottom: 20,
   },
-  progressBar: {
-    height: "100%",
-    backgroundColor: COLORS.primary,
-    borderRadius: 3,
-  },
-  disclaimer: {
-    fontSize: 13,
+  bulletText: {
+    fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
     color: "#666",
-    textAlign: "center",
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  editButton: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: 12,
+    borderRadius: 80,
+    alignItems: "center",
+    marginTop: 30,
+  },
+  editButtonText: {
+    color: "#FFF",
+    fontSize: normalize(16),
+    fontFamily: getFontFamily(700),
   },
 });

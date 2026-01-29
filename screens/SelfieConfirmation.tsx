@@ -157,7 +157,7 @@ import useAxios from "../hooks/useAxios";
 import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 import { CloseCircle, TickCircle } from "iconsax-react-nativejs";
-import IdentityVerificationScreen from "./IdentityVerificationScreen";
+import IdentityVerifying from "../components/IdentityVerifying";
 
 export default function SelfieConfirmationScreen() {
   const route = useRoute();
@@ -170,7 +170,7 @@ export default function SelfieConfirmationScreen() {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
   const handleRetake = () => {
-    navigation.goBack();
+    navigation.replace("SelfieVerification");
   };
 
   async function convertImageToBase64(imagePath: string): Promise<string> {
@@ -205,7 +205,6 @@ export default function SelfieConfirmationScreen() {
       setStatus("success");
       setUser(response.data.data?.user);
     } catch (err: any) {
-      // showError(err?.response?.data?.message ?? errorMessage);
       setStatus("error");
     } finally {
       setIsLoading(false);
@@ -214,35 +213,39 @@ export default function SelfieConfirmationScreen() {
 
   return (
     <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
-      <IdentityVerificationScreen loading={isLoading} />
-
-      {/* SUCCESS STATE */}
-      {!isLoading && status === "success" && (
+      {isLoading ? (
+        <IdentityVerifying loading={isLoading} />
+      ) : status === "success" ? (
         <View style={styles.statusContent}>
-          <View>
-            <TickCircle size={80} color={COLORS.primary} variant="Bold" />
+          <View
+            style={{
+              justifyContent: "center",
+              alignContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <TickCircle size={40} color={COLORS.primary} variant="Bold" />
             <Text style={styles.statusTitle}>Verification Complete</Text>
             <Text style={styles.statusDescription}>
               Your identity has been successfully verified. You now have full
               access to upgrade your account and increase your transaction
               limits.
             </Text>
-            <TouchableOpacity
-              style={[styles.confirmButton, { marginLeft: 0, width: "100%" }]}
-              onPress={() => navigation.navigate("Verification")}
-            >
-              <Text style={styles.buttonText}>Continue to Dashboard</Text>
-            </TouchableOpacity>
           </View>
+          <TouchableOpacity
+            style={[styles.confirmButton, { marginLeft: 0, width: "100%" }]}
+            onPress={() => navigation.replace("Verification")}
+          >
+            <Text style={styles.buttonText}>Continue</Text>
+          </TouchableOpacity>
         </View>
-      )}
-
-      {/* ERROR STATE */}
-      {!isLoading && status === "error" && (
+      ) : status === "error" ? (
+        // ERROR STATE
         <View style={styles.statusContent}>
           <View
             style={{
               justifyContent: "center",
+              alignContent: "center",
               alignItems: "center",
             }}
           >
@@ -253,30 +256,25 @@ export default function SelfieConfirmationScreen() {
               in a well-lit area and your face is fully centered in the frame.
             </Text>
           </View>
-          <View>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={[styles.retakeButton]}
-              onPress={handleRetake}
-            >
-              <Text style={styles.buttonText}>Try Again</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.retakeButton}
+            onPress={handleRetake}
+          >
+            <Text style={styles.buttonText}>Try Again</Text>
+          </TouchableOpacity>
         </View>
-      )}
-
-      {!isLoading && status === "idle" && (
+      ) : (
+        // IDLE STATE
         <View style={styles.idleContent}>
           <Image
             source={{ uri: `file://${image.path}` }}
             style={styles.previewImage}
             resizeMode="cover"
           />
-
           <Text style={styles.instructions}>
             Make sure your face is clearly visible and centered.
           </Text>
-
           <View style={styles.buttonRow}>
             <TouchableOpacity
               activeOpacity={0.8}
@@ -285,7 +283,6 @@ export default function SelfieConfirmationScreen() {
             >
               <Text style={styles.buttonText}>Retake</Text>
             </TouchableOpacity>
-
             <TouchableOpacity
               activeOpacity={0.8}
               style={[styles.confirmButton, { flex: 1 }]}
@@ -298,6 +295,93 @@ export default function SelfieConfirmationScreen() {
       )}
     </SafeAreaView>
   );
+
+  // return (
+  //   <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
+  //     <IdentityVerificationScreen loading={isLoading} />
+
+  //     {/* SUCCESS STATE */}
+  //     {!isLoading && status === "success" && (
+  //       <View style={styles.statusContent}>
+  //         <View>
+  //           <TickCircle size={80} color={COLORS.primary} variant="Bold" />
+  //           <Text style={styles.statusTitle}>Verification Complete</Text>
+  //           <Text style={styles.statusDescription}>
+  //             Your identity has been successfully verified. You now have full
+  //             access to upgrade your account and increase your transaction
+  //             limits.
+  //           </Text>
+  //           <TouchableOpacity
+  //             style={[styles.confirmButton, { marginLeft: 0, width: "100%" }]}
+  //             onPress={() => navigation.navigate("Verification")}
+  //           >
+  //             <Text style={styles.buttonText}>Continue to Dashboard</Text>
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
+  //     )}
+
+  //     {/* ERROR STATE */}
+  //     {!isLoading && status === "error" && (
+  //       <View style={styles.statusContent}>
+  //         <View
+  //           style={{
+  //             justifyContent: "center",
+  //             alignItems: "center",
+  //           }}
+  //         >
+  //           <CloseCircle size={40} color="#FF4D4D" variant="Bold" />
+  //           <Text style={styles.statusTitle}>Verification Failed</Text>
+  //           <Text style={styles.statusDescription}>
+  //             We couldn't get a clear match of your face. Please ensure you are
+  //             in a well-lit area and your face is fully centered in the frame.
+  //           </Text>
+  //         </View>
+  //         <View>
+  //           <TouchableOpacity
+  //             activeOpacity={0.8}
+  //             style={[styles.retakeButton]}
+  //             onPress={handleRetake}
+  //           >
+  //             <Text style={styles.buttonText}>Try Again</Text>
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
+  //     )}
+
+  //     {!isLoading && status === "idle" && (
+  //       <View style={styles.idleContent}>
+  //         <Image
+  //           source={{ uri: `file://${image.path}` }}
+  //           style={styles.previewImage}
+  //           resizeMode="cover"
+  //         />
+
+  //         <Text style={styles.instructions}>
+  //           Make sure your face is clearly visible and centered.
+  //         </Text>
+
+  //         <View style={styles.buttonRow}>
+  //           <TouchableOpacity
+  //             activeOpacity={0.8}
+  //             style={[styles.retakeButton, { flex: 1 }]}
+  //             onPress={handleRetake}
+  //           >
+  //             <Text style={styles.buttonText}>Retake</Text>
+  //           </TouchableOpacity>
+
+  //           <TouchableOpacity
+  //             activeOpacity={0.8}
+  //             style={[styles.confirmButton, { flex: 1 }]}
+  //             onPress={handleConfirm}
+  //           >
+  //             <Text style={styles.buttonText}>Confirm</Text>
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
+  //     )}
+  //   </SafeAreaView>
+  // );
 }
 
 const styles = StyleSheet.create({
@@ -358,7 +442,7 @@ const styles = StyleSheet.create({
     color: "#FF4D4D",
   },
   statusTitle: {
-    fontSize: 17,
+    fontSize: 16,
     fontFamily: getFontFamily("800"),
     color: "#000",
     marginTop: 24,
@@ -366,9 +450,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   statusDescription: {
-    fontSize: 15,
+    fontSize: 14,
     fontFamily: getFontFamily("400"),
-    color: "#666",
+    color: "#000",
     textAlign: "center",
     lineHeight: 24,
     marginBottom: 40,

@@ -18,54 +18,35 @@ import {
 } from "../../assets";
 import CustomIcon from "../CustomIcon";
 import { formatAmount } from "../../libs/formatNumber";
-import { useWalletStore } from "../../stores/walletSlice";
 import { useNavigation } from "@react-navigation/native";
 import { normalize, getFontFamily } from "../../constants/settings";
 import { TradeIntent } from "../../screens/Rates";
 import { Add } from "iconsax-react-nativejs";
 import useAxios from "../../hooks/useAxios";
-import { useQuery } from "@tanstack/react-query";
 import CustomModal from "../CustomModal";
 import { showError, showSuccess } from "../../utlis/toast";
 import CustomLoading from "../CustomLoading";
+import { useAssets } from "../../hooks/useAssets";
+import { useWallets } from "../../hooks/useWallet";
+import LoadingBalance from "../LoadingState";
 
 const CryptoWalletSection = () => {
-  const wallets = useWalletStore(state => state.wallets);
-  const loading = useWalletStore(state => state.loading);
-  const fetchWallets = useWalletStore(state => state.fetchWalletsAndAccounts);
   const [showAddAssetWalletModal, setAddAssetWalletModal] = useState(false);
-  const [selectAssetId, setSelectAssetId] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const navigation: any = useNavigation();
   const { apiGet } = useAxios();
+  const { assets } = useAssets();
+  const { data, isLoading, refetch, isRefetching } = useWallets();
+
+  const wallets: any = useMemo(
+    () => (Array.isArray(data?.wallets) ? data?.wallets : []),
+    [data?.wallets],
+  );
 
   const walletList = useMemo(
     () => wallets.filter((wallet: any) => wallet.type === "crypto"),
     [wallets],
   );
-
-  const fetchAssets = async () => {
-    try {
-      const response = await apiGet("/crypto-assets/available");
-      return response.data?.data.map((asset: any) => ({
-        id: asset.asset_id,
-        uuid: asset.asset_id,
-        name: asset.asset_name,
-        symbol: asset.symbol,
-        logo_url: asset.logo_url,
-        balance: asset.market_price ?? 0,
-        rate: parseFloat(asset?.sell_rate ?? 0),
-      }));
-    } catch (error) {
-      console.error("Fetch assets error:", error);
-      return [];
-    }
-  };
-
-  const { data: assets = [] } = useQuery({
-    queryKey: ["assets"],
-    queryFn: fetchAssets,
-  });
 
   const filteredWallets = useMemo(() => {
     if (!assets.length) return [];
@@ -97,9 +78,8 @@ const CryptoWalletSection = () => {
 
       try {
         await apiGet(`wallets/user/${assetId}/generate-wallet`);
-        await fetchWallets();
+        refetch();
         showSuccess("Wallet created successfully");
-        setSelectAssetId("");
       } catch (error) {
         console.error("Generate wallet error:", error);
         showError("Failed to generate wallet");
@@ -107,26 +87,8 @@ const CryptoWalletSection = () => {
         setIsGenerating(false);
       }
     },
-    [apiGet, fetchWallets],
+    [apiGet, refetch],
   );
-
-  // const handleGenerateWallet = useCallback(async () => {
-  //   if (!selectAssetId) return;
-
-  //   setIsGenerating(true);
-
-  //   try {
-  //     await apiGet(`wallets/user/${selectAssetId}/generate-wallet`);
-  //     await fetchWallets();
-  //     showSuccess("Wallet created successfully");
-  //     setSelectAssetId("");
-  //   } catch (error) {
-  //     console.error("Generate wallet error:", error);
-  //     showError("Failed to generate wallet");
-  //   } finally {
-  //     setIsGenerating(false);
-  //   }
-  // }, [selectAssetId, apiGet, fetchWallets]);
 
   // Memoize navigation handlers
   const handleBuy = useCallback(() => {
@@ -201,8 +163,8 @@ const CryptoWalletSection = () => {
       <FlatList
         refreshControl={
           <RefreshControl
-            refreshing={loading}
-            onRefresh={fetchWallets}
+            refreshing={isRefetching}
+            onRefresh={refetch}
             colors={[COLORS.primary]}
           />
         }
@@ -256,12 +218,16 @@ const CryptoWalletSection = () => {
           <AssetItem asset={item} onPress={() => handleNavigate(item)} />
         )}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No asset wallets found</Text>
-            <Text style={styles.emptyStateSubtext}>
-              Your asset wallets will appear here once added
-            </Text>
-          </View>
+          isLoading ? (
+            <LoadingBalance />
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>No asset wallets found</Text>
+              <Text style={styles.emptyStateSubtext}>
+                Your asset wallets will appear here once added
+              </Text>
+            </View>
+          )
         }
         contentContainerStyle={{
           paddingBottom: 40,
@@ -274,7 +240,6 @@ const CryptoWalletSection = () => {
         visible={showAddAssetWalletModal}
         onClose={() => {
           setAddAssetWalletModal(false);
-          setSelectAssetId("");
         }}
       >
         {filteredWallets.length > 0 ? (
@@ -284,7 +249,6 @@ const CryptoWalletSection = () => {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => {
-                  setSelectAssetId(item.value);
                   setAddAssetWalletModal(false);
                   handleGenerateWallet(item.value);
                 }}
@@ -310,7 +274,9 @@ const CryptoWalletSection = () => {
           />
         ) : (
           <View style={styles.emptyModalState}>
-            <Text style={styles.emptyStateText}>No assets available</Text>
+            <Text style={styles.emptyStateText}>
+              No more assets available to add
+            </Text>
             <Text style={styles.emptyStateSubtext}>
               You've added all wallets currently supported.
             </Text>

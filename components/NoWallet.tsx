@@ -7,12 +7,12 @@ import { WalletIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
 import { showSuccess } from "../utlis/toast";
 
-interface NoWalletAddressProps {
+interface NoWalletProps {
   selectedAssetUuid: string;
   onSuccess: () => void;
 }
 
-const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
+const NoWallet: React.FC<NoWalletProps> = ({
   selectedAssetUuid,
   onSuccess,
 }) => {
@@ -25,7 +25,7 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
     try {
       await apiGet(`wallets/user/${selectedAssetUuid}/generate-wallet`);
 
-      showSuccess("Wallet Address created!");
+      showSuccess("Wallet created!");
 
       onSuccess();
     } finally {
@@ -40,11 +40,11 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
           <CustomIcon source={WalletIcon} size={30} color={COLORS.primary} />
         </View>
 
-        <Text style={styles.noWalletTitle}>No Wallet Address</Text>
+        <Text style={styles.noWalletTitle}>No Wallet</Text>
 
         <Text style={styles.noWalletText}>
-          You need to generate wallet address before you can receive assets.
-          This will create a unique addresses for all networks on the coin.
+          You need to generate wallet before you can receive assets. This will
+          create a unique wallet for this asset.
         </Text>
       </View>
 
@@ -56,20 +56,20 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
           onPress={handleGenerateWallet}
         >
           <Text style={styles.generateButtonText}>
-            {isGenerating ? "Generating..." : "Generate Wallet Address"}
+            {isGenerating ? "Generating..." : `Generate Wallet`}
           </Text>
         </TouchableOpacity>
 
         <Text style={styles.noteText}>
-          Your wallet addresses will be generated securely and can be used to
-          receive cryptocurrency.
+          Your wallet and addresses will be generated securely and can be used
+          to receive cryptocurrency.
         </Text>
       </View>
     </View>
   );
 };
 
-export default NoWalletAddress;
+export default NoWallet;
 
 const styles = StyleSheet.create({
   centerContainer: {

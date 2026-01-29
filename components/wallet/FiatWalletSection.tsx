@@ -3,28 +3,13 @@ import { View, Text, StyleSheet } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { COLORS } from "../../constants/colors";
 import { normalize, getFontFamily } from "../../constants/settings";
-import BalanceCard from "../Dashboard/BalanceCard";
 import useAxios from "../../hooks/useAxios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TransactionSectionList from "../TransactionList";
-import { useUser } from "../../stores/authSlice";
-import { useWalletStore } from "../../stores/walletSlice";
 import CustomLoading from "../CustomLoading";
+import FiatWalletBalanceCard from "./FiatWalletBalanceCard";
 
 const FiatWalletSection = () => {
-  const user = useUser();
-  const wallets = useWalletStore(state => state.wallets);
-  const loading = useWalletStore(state => state.loading);
-
-  const fiatWallet = useMemo(() => {
-    const walletList = Array.isArray(user?.wallets)
-      ? wallets
-      : Array.isArray(wallets)
-      ? wallets
-      : [];
-    return walletList.find((wallet: any) => wallet.type === "fiat") ?? null;
-  }, [user?.wallets, wallets]);
-
   const { apiGet } = useAxios();
 
   const fetchTransactions = async ({ pageParam = 1 }) => {
@@ -88,19 +73,12 @@ const FiatWalletSection = () => {
           isFetchingMore={isFetchingNextPage}
           ListHeaderComponent={
             <View>
-              <BalanceCard
-                balance={fiatWallet?.balance ?? 0}
-                title="Total Balance"
-                showTransactionsButton={false}
-                showActionButtons={true}
-              />
+              <FiatWalletBalanceCard />
               <Text style={styles.sectionHeader}>Transaction History</Text>
             </View>
           }
         />
       }
-
-      <CustomLoading loading={loading} />
     </View>
   );
 };

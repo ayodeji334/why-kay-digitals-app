@@ -13,6 +13,7 @@ import { showError, showSuccess } from "../../utlis/toast";
 import { AxiosError } from "axios";
 import useAxios from "../../hooks/useAxios";
 import { useAuthStore } from "../../stores/authSlice";
+import { useQueryClient } from "@tanstack/react-query";
 
 const otpSchema = yup.object().shape({
   otp: yup
@@ -34,6 +35,8 @@ const VerificationForm = ({ email }: { email: string }) => {
     resolver: yupResolver(otpSchema),
     defaultValues: { otp: "" },
   });
+  const queryClient = useQueryClient();
+  const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
   const { countdown, reset, isActive } = useCountdown(20);
   const otp = watch("otp");
 
@@ -57,6 +60,10 @@ const VerificationForm = ({ email }: { email: string }) => {
       if (response.data?.data?.user) {
         setUser(response.data?.data?.user);
       }
+
+      queryClient.prefetchQuery({ queryKey: ["assets"] });
+
+      setIsAuthenticated(true);
 
       navigation.navigate("CreatePin" as never);
     } catch (err: unknown) {

@@ -17,6 +17,7 @@ import OtpInputField from "../components/OtpInputField";
 import { useState } from "react";
 import CustomLoading from "../components/CustomLoading";
 import useAxios from "../hooks/useAxios";
+import { useQueryClient } from "@tanstack/react-query";
 
 type FormData = {
   pin: string;
@@ -34,6 +35,7 @@ export default function ConfirmTransactionScreen() {
   const navigation: any = useNavigation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const route: any = useRoute();
+  const queryClient = useQueryClient();
   const { payload } = route.params;
   const { control, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
@@ -51,9 +53,19 @@ export default function ConfirmTransactionScreen() {
         ...rest,
       });
 
-      navigation.navigate("TransactionDetail" as never, {
-        transaction: response?.data?.data,
-      });
+      queryClient.refetchQueries({ queryKey: ["fiat-balance"] });
+      queryClient.refetchQueries({ queryKey: ["notifications"] });
+
+      const transaction = response?.data?.data;
+
+      if (
+        transaction.category === "CRYPTO_SWAP" &&
+        transaction.status === "pending"
+      ) {
+        navigation.navigate("PendingSwap", { transaction });
+      } else {
+        navigation.navigate("TransactionDetail", { transaction });
+      }
     } finally {
       setIsLoading(false);
     }
