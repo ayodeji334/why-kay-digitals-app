@@ -21,6 +21,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
 import useAxios from "../hooks/useAxios";
+import { formatAmount } from "../libs/formatNumber";
 
 // Validation Schema
 const schema = yup.object({
@@ -162,9 +163,9 @@ export default function PayCableTVSubscriptionScreen() {
           options={
             tvPlans.length
               ? tvPlans.map(plan => ({
-                  label: `${
-                    plan.biller_name || plan.name
-                  } - ₦${plan.amount.toLocaleString()}`,
+                  label: `${plan.biller_name || plan.name} - ${formatAmount(
+                    plan.amount,
+                  )}`,
                   value: plan.item_code,
                 }))
               : []

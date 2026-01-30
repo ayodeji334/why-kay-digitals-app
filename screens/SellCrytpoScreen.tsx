@@ -22,11 +22,8 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { formatAmount } from "../libs/formatNumber";
-import CustomLoading from "../components/CustomLoading";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
-import NoWalletAddress from "../components/NoWalletAddress";
-import { showError } from "../utlis/toast";
 import { TradeIntent } from "./Rates";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import NoWallet from "../components/NoWallet";
@@ -52,6 +49,7 @@ export default function CryptoSellScreen() {
   const { intent } = route.params;
   const [displayAmount, setDisplayAmount] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  console.log(intent);
 
   const selectedAssetUuid = intent.assetId ?? "";
 
@@ -63,17 +61,13 @@ export default function CryptoSellScreen() {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      amount: parseFloat(intent.amount ?? "0"),
+      amount: 0,
       asset_id: intent.assetId ?? "",
     },
     mode: "onChange",
   });
 
-  const {
-    data: assetDetails,
-    isFetching,
-    refetch,
-  } = useQuery({
+  const { data: assetDetails, refetch } = useQuery({
     queryKey: ["asset-detail", selectedAssetUuid],
     queryFn: async () => {
       if (!selectedAssetUuid) return null;
@@ -105,7 +99,7 @@ export default function CryptoSellScreen() {
       }
       return { assetValueEquivalent: cryptoAmount, ngnAmount: ngn };
     }
-    return { assetValueEquivalent: "0.00000000", ngnAmount: "₦0.00" };
+    return { assetValueEquivalent: "0.00000000", ngnAmount: "0.00" };
   }, [amount, assetDetails]);
 
   const onSubmit = async (values: any) => {
@@ -120,13 +114,22 @@ export default function CryptoSellScreen() {
     if (!amount) return false;
     if (!assetDetails) return true;
     return amount > assetDetails?.balance * assetDetails?.market_current_value;
-  }, [amount, assetDetails.balance, assetDetails?.market_current_value]);
+  }, [amount, assetDetails?.balance, assetDetails?.market_current_value]);
 
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch();
     setRefreshing(false);
   };
+
+  useEffect(() => {
+    if (intent?.amount) {
+      const numericAmount = Number(intent.amount);
+      if (!isNaN(numericAmount)) {
+        setDisplayAmount(formatWithCommas(numericAmount.toString()));
+      }
+    }
+  }, [intent?.amount]);
 
   useFocusEffect(
     useCallback(() => {
@@ -358,7 +361,7 @@ export default function CryptoSellScreen() {
         )}
       </ScrollView>
 
-      <CustomLoading loading={isFetching} />
+      {/* <CustomLoading loading={isFetching} /> */}
     </SafeAreaView>
   );
 }

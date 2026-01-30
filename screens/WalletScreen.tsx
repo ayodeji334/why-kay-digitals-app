@@ -71,23 +71,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     backgroundColor: "#F5F5F5",
-    borderRadius: 12,
+    borderRadius: 1200,
     marginHorizontal: 20,
     padding: 5,
   },
   tabButton: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 10,
     alignItems: "center",
+    borderRadius: 1200,
   },
   tabText: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#000",
   },
   activeTab: {
     backgroundColor: COLORS.primary,
-    borderRadius: 12,
   },
   activeTabText: {
     color: "#fff",

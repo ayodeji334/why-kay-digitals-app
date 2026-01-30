@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -50,7 +50,7 @@ export default function CryptoBuyScreen() {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      amount: parseFloat(intent?.amount as string) ?? 0,
+      amount: 0,
       asset_id: intent?.assetId ?? "",
     },
     mode: "onChange",
@@ -104,6 +104,15 @@ export default function CryptoBuyScreen() {
     if (!ngnAmount) return false;
     return ngnAmount > fiatBalance;
   }, [ngnAmount, fiatBalance]);
+
+  useEffect(() => {
+    if (intent?.amount) {
+      const numericAmount = Number(intent.amount);
+      if (!isNaN(numericAmount)) {
+        setDisplayAmount(formatWithCommas(numericAmount.toString()));
+      }
+    }
+  }, [intent?.amount]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>

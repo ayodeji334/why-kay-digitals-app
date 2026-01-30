@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: "center",
     justifyContent: "center",
+    marginVertical: 10,
   },
   spinner: {
     marginBottom: 12,

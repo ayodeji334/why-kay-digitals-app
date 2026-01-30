@@ -22,12 +22,12 @@ import TabSwitcher, { TabOption } from "../components/TabSwitcher";
 import { COLORS } from "../constants/colors";
 import { normalize, getFontFamily } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
-import { useWalletStore } from "../stores/walletSlice";
 import BalanceCard from "../components/Dashboard/BalanceCard";
 import { formatAmount } from "../libs/formatNumber";
 import TextInputField from "../components/TextInputField";
 import { SelectInput } from "../components/SelectInputField";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
+import { useWallets } from "../hooks/useWallet";
 
 const fiatSchema = yup.object({
   username: yup.string().required("Username is required"),
@@ -58,20 +58,21 @@ export default function TransferScreen() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingPayload, setPendingPayload] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const availableAssets = useWalletStore(state => state.wallets);
+  const {
+    data: { wallets, totalAssetValueBalance },
+  } = useWallets();
   const [displayAmount, setDisplayAmount] = useState("");
 
-  const userWallets = useMemo(
-    () =>
-      availableAssets.map(asset => ({
-        ...asset,
-        label: asset?.asset_name ?? asset?.name ?? "",
-        value: asset?.asset_id ?? asset?.uuid ?? "",
-        symbol: asset?.symbol ?? "",
-        logo_url: asset?.logo ?? "",
-      })) ?? [],
-    [availableAssets],
-  );
+  const userWallets: any[] = useMemo(() => {
+    if (!wallets || wallets.length === 0) return [];
+    return wallets.map((asset: any) => ({
+      ...asset,
+      label: asset.asset_name ?? asset.name ?? "",
+      value: asset.asset_id ?? asset.uuid ?? "",
+      symbol: asset.symbol ?? "",
+      logo_url: asset.logo ?? "",
+    }));
+  }, [wallets]);
 
   const {
     data: walletSummary,
@@ -105,8 +106,17 @@ export default function TransferScreen() {
     formState: { isValid, isSubmitting },
   } = form;
 
-  const amount = Number(watch("amount") || 0);
+  const amount = watch("amount") || 0;
   const assetId = watch("asset_id");
+
+  const dailyLimit = walletSummary?.daily_limit ?? 0;
+
+  const exceedsDailyLimit = useMemo(() => {
+    if (activeTab !== "fiat") return false;
+    if (!amount || !dailyLimit) return false;
+
+    return amount > dailyLimit;
+  }, [activeTab, amount, dailyLimit]);
 
   const fiatBalance = walletSummary?.balance ?? 0;
 
@@ -125,7 +135,40 @@ export default function TransferScreen() {
     if (!selectedCryptoWallet) return true;
 
     return amount > selectedCryptoWallet.balance * selectedCryptoWallet?.price;
-  }, [amount, activeTab, fiatBalance, selectedCryptoWallet]);
+  }, [
+    amount,
+    activeTab,
+    fiatBalance,
+    selectedCryptoWallet?.balance,
+    selectedCryptoWallet?.price,
+  ]);
+
+  const progress =
+    walletSummary && walletSummary.daily_limit
+      ? walletSummary.total_today / walletSummary.daily_limit
+      : 0;
+
+  const isDisabled = useMemo(
+    () =>
+      !isValid ||
+      isSubmitting ||
+      hasInsufficientBalance ||
+      exceedsDailyLimit ||
+      amount <= 0,
+    [
+      isValid,
+      isSubmitting,
+      hasInsufficientBalance,
+      exceedsDailyLimit,
+      amount,
+      activeTab,
+    ],
+  );
+
+  const tabOptions: TabOption[] = [
+    { value: "crypto", label: "Crypto" },
+    { value: "fiat", label: "Fiat" },
+  ];
 
   const onSubmit = (values: any) => {
     let payload: any;
@@ -163,25 +206,6 @@ export default function TransferScreen() {
     navigation.navigate("ConfirmTransaction", { payload: pendingPayload });
   };
 
-  const totalValueInUsd = useMemo(() => {
-    return userWallets
-      .filter((wallet: any) => wallet.type === "crypto")
-      .reduce((sum: number, w: any) => sum + (parseFloat(w.value) || 0), 0);
-  }, [userWallets]);
-
-  const progress =
-    walletSummary && walletSummary.daily_limit
-      ? walletSummary.total_today / walletSummary.daily_limit
-      : 0;
-
-  const isDisabled =
-    !isValid || isSubmitting || hasInsufficientBalance || amount <= 0;
-
-  const tabOptions: TabOption[] = [
-    { value: "crypto", label: "Crypto" },
-    { value: "fiat", label: "Fiat" },
-  ];
-
   const handleTabChange = (tab: string) => {
     setActiveTab(tab as "fiat" | "crypto");
     reset();
@@ -218,13 +242,14 @@ export default function TransferScreen() {
         }
       >
         <BalanceCard
-          balance={activeTab === "crypto" ? totalValueInUsd : fiatBalance}
+          balance={
+            activeTab === "crypto" ? totalAssetValueBalance : fiatBalance
+          }
           title="Total Balance"
           showTransactionsButton={false}
           showActionButtons={false}
           currency={activeTab === "crypto" ? "USD" : "NGN"}
         />
-
         <View style={styles.limitContainer}>
           <View style={styles.limitHeader}>
             <Text style={styles.limitLabel}>
@@ -245,16 +270,17 @@ export default function TransferScreen() {
 
           <View style={styles.limitRange}>
             <Text style={styles.limitValue}>
-              ₦{walletSummary?.total_today?.toLocaleString() || "0"}
+              {formatAmount(walletSummary?.total_today) || "0"}
             </Text>
             <Text style={styles.limitValue}>
-              ₦{walletSummary?.daily_limit?.toLocaleString() || "0"}
+              {formatAmount(walletSummary?.daily_limit) || "0"}
             </Text>
           </View>
         </View>
 
-        <View style={styles.form}>
+        <View key={activeTab} style={styles.form}>
           <TextInputField
+            key={activeTab}
             label="Username"
             control={control}
             name="username"
@@ -316,7 +342,6 @@ export default function TransferScreen() {
             </View>
           )}
         </View>
-
         {activeTab === "crypto" && selectedCryptoWallet?.symbol && (
           <View style={{ flexDirection: "row", gap: 5 }}>
             <Text style={styles.limitValue}>
@@ -338,21 +363,22 @@ export default function TransferScreen() {
           </View>
         )}
 
-        {hasInsufficientBalance && (
-          <Text
-            style={{
-              fontFamily: getFontFamily(700),
-              fontSize: normalize(18),
-              color: "#f40505ff",
-              marginBottom: 10,
-              textAlign: "center",
-              borderRadius: 10,
-              backgroundColor: "#fffafaff",
-              padding: 20,
-            }}
-          >
-            You do not have enough balance to complete this transfer.
-          </Text>
+        {exceedsDailyLimit && (
+          <View style={styles.warningContainer}>
+            <Text style={styles.warningText}>
+              This amount exceeds your daily transfer limit of{" "}
+              {formatAmount(walletSummary?.daily_limit ?? 0)}. Please reduce the
+              amount or upgrade your limit.
+            </Text>
+          </View>
+        )}
+
+        {!exceedsDailyLimit && hasInsufficientBalance && (
+          <View style={styles.warningContainer}>
+            <Text style={styles.warningText}>
+              You do not have enough balance to complete this transfer.
+            </Text>
+          </View>
         )}
 
         {activeTab === "fiat" && (
@@ -371,7 +397,7 @@ export default function TransferScreen() {
             backgroundColor: isDisabled ? COLORS.fadePrimary : COLORS.secondary,
             borderRadius: 100,
             paddingVertical: 16,
-            marginTop: 30,
+            marginVertical: 30,
           }}
         >
           <Text
@@ -386,7 +412,6 @@ export default function TransferScreen() {
             Continue
           </Text>
         </TouchableOpacity>
-
         <CustomLoading loading={isFetching} />
       </ScrollView>
 
@@ -404,10 +429,24 @@ export default function TransferScreen() {
 
 const styles = StyleSheet.create({
   limitContainer: {
-    marginTop: 20,
+    marginVertical: 10,
     backgroundColor: "#EFF7EC",
     padding: 10,
     borderRadius: 10,
+  },
+  warningContainer: {
+    marginVertical: 12,
+    padding: 10,
+    backgroundColor: "rgba(255, 0, 0, 0.03)",
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(255, 0, 0, 0.3)",
+  },
+  warningText: {
+    color: "#db0b0bff",
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    textAlign: "center",
   },
   form: { marginVertical: 10 },
   label: {
@@ -444,12 +483,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   limitLabel: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     color: "#000",
     fontFamily: getFontFamily("700"),
   },
   upgradeText: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     color: COLORS.secondary,
     fontFamily: getFontFamily("700"),
   },

@@ -21,6 +21,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
 import useAxios from "../hooks/useAxios";
+import { formatAmount } from "../libs/formatNumber";
 
 const schema = yup.object({
   phone: yup
@@ -179,9 +180,9 @@ export default function BuyDataScreen() {
                 : plan.validity_period === 7
                 ? "Weekly"
                 : "Monthly"
-            } Plan (${
-              plan.validity_period
-            } Days) - ₦${plan.amount.toLocaleString()}`,
+            } Plan (${plan.validity_period} Days) - ${formatAmount(
+              plan.amount,
+            )}`,
             value: plan.item_code,
           }))}
           placeholder="Select Data Plan"

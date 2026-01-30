@@ -62,14 +62,15 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     backgroundColor: "#fefdfdff",
-    borderRadius: 8,
+    borderRadius: 800,
     padding: 4,
+    marginBottom: 20,
   },
   tab: {
     flex: 1,
     paddingVertical: 10,
     paddingHorizontal: 16,
-    borderRadius: 6,
+    borderRadius: 600,
     alignItems: "center",
   },
   activeTab: {

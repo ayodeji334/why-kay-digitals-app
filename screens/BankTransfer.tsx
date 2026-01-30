@@ -24,6 +24,7 @@ import {
 } from "iconsax-react-nativejs";
 // import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
+import { formatAmount } from "../libs/formatNumber";
 
 const BankTransferScreen = () => {
   const route = useRoute();
@@ -185,7 +186,7 @@ const BankTransferScreen = () => {
             <Text style={styles.detailLabel}>Amount to Transfer</Text>
             <View style={styles.amountDisplay}>
               <Text style={styles.amountText}>
-                ₦{parseFloat(amount).toLocaleString()}
+                {formatAmount(parseFloat(amount) ?? 0)}
               </Text>
             </View>
           </View>

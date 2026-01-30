@@ -4,6 +4,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { formatAmount } from "../libs/formatNumber";
 import CustomIcon from "./CustomIcon";
 import { DangerIcon } from "../assets";
+import { COLORS } from "../constants/colors";
 
 export default function ConfirmationModal({
   showConfirmModal,
@@ -48,7 +49,7 @@ export default function ConfirmationModal({
           <Text
             style={{
               fontFamily: getFontFamily("800"),
-              fontSize: normalize(25),
+              fontSize: normalize(23),
               marginTop: 10,
             }}
           >
@@ -59,32 +60,21 @@ export default function ConfirmationModal({
             style={{
               marginTop: 10,
               textAlign: "center",
-              fontSize: normalize(17),
+              fontSize: normalize(18),
               fontFamily: getFontFamily(400),
-              color: "#565466",
-            }}
-          >
-            You are about to transfer {formatAmount(data?.amount ?? 0)}.
-          </Text>
-
-          <Text
-            style={{
-              marginTop: 10,
-              textAlign: "center",
-              fontSize: normalize(17),
-              fontFamily: getFontFamily(400),
-              color: "#474747ff",
+              color: "#000",
               maxWidth: 190,
             }}
           >
-            This is a large amount. Please confirm that you want to proceed with
-            this transaction.
+            You are about to transfer {formatAmount(data?.amount ?? 0)}. This is
+            a large amount. Please confirm that you want to proceed with this
+            transaction.
           </Text>
 
           <TouchableOpacity
             onPress={handleProceed}
             style={{
-              backgroundColor: "#00A85A",
+              backgroundColor: COLORS.primary,
               width: "100%",
               paddingVertical: 14,
               borderRadius: 50,
@@ -96,7 +86,7 @@ export default function ConfirmationModal({
                 color: "#fff",
                 textAlign: "center",
                 fontFamily: getFontFamily("800"),
-                fontSize: normalize(16),
+                fontSize: normalize(18),
               }}
             >
               Yes, Proceed
@@ -106,7 +96,7 @@ export default function ConfirmationModal({
           <TouchableOpacity
             onPress={() => setShowConfirmModal(false)}
             style={{
-              backgroundColor: "#EFF7EC",
+              backgroundColor: "#e8e8e8ff",
               width: "100%",
               paddingVertical: 14,
               borderRadius: 50,

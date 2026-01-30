@@ -330,8 +330,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   actionButtonText: {
-    fontFamily: getFontFamily(700),
-    fontSize: 16,
+    fontFamily: getFontFamily(800),
+    fontSize: 14,
     marginLeft: 6,
     color: "white",
   },

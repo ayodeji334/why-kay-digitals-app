@@ -165,7 +165,7 @@ export default function CryptoSwapScreen() {
       fromAmount: (amount / fromAseetMarketPrice).toFixed(8),
       toCoinAmount: (amount / toAssetMarketPrice).toFixed(8),
     };
-  }, [amount, fromAsset.price, toAsset.market_current_value]);
+  }, [amount, fromAsset?.price, toAsset?.market_current_value]);
 
   const insufficientBalance = useMemo(() => {
     if (!fromAsset || !amount || amount <= 0) return false;

@@ -10,11 +10,9 @@ import {
 import ErrorState from "../ErrorState";
 import { getFontFamily, normalize } from "../../constants/settings";
 import { formatAmount } from "../../libs/formatNumber";
-import { useQuery } from "@tanstack/react-query";
 import { COLORS } from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import { ArrowDown, ArrowUp } from "iconsax-react-nativejs";
-import useAxios from "../../hooks/useAxios";
 import { useAssets } from "../../hooks/useAssets";
 import LoadingState from "../LoadingState";
 
