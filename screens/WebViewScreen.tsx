@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
+    fontFamily: getFontFamily("800"),
     color: COLORS.dark,
   },
   errorContainer: {

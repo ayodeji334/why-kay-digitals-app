@@ -1,4 +1,5 @@
 import {
+  Alert,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -9,7 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -33,11 +34,16 @@ const schema = yup.object().shape({
 });
 
 export default function ConfirmSecurityPinScreen() {
-  const { setIsAuthenticated } = useAuthStore(state => state);
+  const navigation = useNavigation();
+  const setUser = useAuthStore(state => state.setUser);
+  const setToken = useAuthStore(state => state.setToken);
+  const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
   const { post } = useAxios();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const route: any = useRoute();
   const { pin } = route.params;
+  const { token, refreshToken, user } = route.params?.params;
+
   const { control, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: { pin: "" },
@@ -48,22 +54,29 @@ export default function ConfirmSecurityPinScreen() {
       showError("PINs do not match");
       return;
     }
+
     try {
       setIsLoading(true);
+
+      setToken(token, refreshToken);
 
       await post("/auth/security-pin/create", {
         security_pin: pin,
         security_pin_confirmation: pin,
       });
 
+      setUser(user);
       setIsAuthenticated(true);
-    } catch (err: unknown) {
+    } catch (err) {
+      console.log("caught error", err);
+
       if (err instanceof AxiosError) {
-        const errorMessage =
-          err.response?.data?.message || "Registration failed. Try again.";
-        showError(errorMessage);
+        showError(
+          err.response?.data?.message || "Registration failed. Try again.",
+        );
       }
     } finally {
+      console.log("Finally");
       setIsLoading(false);
     }
   };
@@ -84,7 +97,7 @@ export default function ConfirmSecurityPinScreen() {
               },
             ]}
           >
-            Check your security pint to kept your account secure.
+            Check your security pin to kept your account secure.
           </Text>
         </View>
 

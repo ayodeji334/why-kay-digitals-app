@@ -59,6 +59,8 @@ export default function NavigationRoot() {
   const username = useAuthStore(state => state.user?.username);
   const uuid = useAuthStore(state => state.user?.uuid);
 
+  console.log(isAuthenticated, username, uuid);
+
   const RootStack = createNativeStackNavigator({
     initialRouteName: isAuthenticated
       ? "Dashboard"
@@ -120,6 +122,22 @@ export default function NavigationRoot() {
           header: () => <CustomHeader showTitle={true} title="New Password" />,
         },
       },
+      CreatePin: {
+        screen: CreateSecurityPinScreen,
+        options: {
+          headerBackTitle: ".",
+          header: () => <CustomHeader title="New Password" />,
+        },
+      },
+      ConfirmPin: {
+        screen: ConfirmSecurityPinScreen,
+        options: {
+          headerBackTitle: ".",
+          header: () => (
+            <CustomHeader showTitle={true} title="Confirm Security Pin" />
+          ),
+        },
+      },
       WebView: {
         screen: WebViewScreen,
         options: {
@@ -136,22 +154,6 @@ export default function NavigationRoot() {
             screen: AppTabs,
             options: {
               headerShown: false,
-            },
-          },
-          CreatePin: {
-            screen: CreateSecurityPinScreen,
-            options: {
-              headerBackTitle: ".",
-              header: () => <CustomHeader title="New Password" />,
-            },
-          },
-          ConfirmPin: {
-            screen: ConfirmSecurityPinScreen,
-            options: {
-              headerBackTitle: ".",
-              header: () => (
-                <CustomHeader showTitle={true} title="Confirm Security Pin" />
-              ),
             },
           },
           ConfirmTransaction: {
@@ -305,7 +307,7 @@ export default function NavigationRoot() {
             },
           },
           Deposit: {
-            screen: DepositScreen,
+            screen: BankTransferScreen,
             options: {
               headerShown: true,
               header: () => (
@@ -355,15 +357,15 @@ export default function NavigationRoot() {
               ),
             },
           },
-          BankTransfer: {
-            screen: BankTransferScreen,
-            options: {
-              headerShown: true,
-              header: () => (
-                <CustomHeader showTitle={true} title="Deposit Fiat" />
-              ),
-            },
-          },
+          // BankTransfer: {
+          //   screen: BankTransferScreen,
+          //   options: {
+          //     headerShown: true,
+          //     header: () => (
+          //       <CustomHeader showTitle={true} title="Deposit Fiat" />
+          //     ),
+          //   },
+          // },
           ContactUs: {
             screen: HelpSupportScreen,
             options: {

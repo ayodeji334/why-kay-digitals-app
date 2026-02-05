@@ -88,7 +88,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
             style={styles.depositButton}
             onPress={() => setDepositModalVisible(true)}
           >
-            <CustomIcon source={PlusCircleIcon} size={20} />
+            <CustomIcon source={PlusCircleIcon} size={16} />
             <Text style={styles.depositText}>Deposit</Text>
           </TouchableOpacity>
 
@@ -97,7 +97,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
             style={styles.withdrawButton}
             onPress={() => setWithdrawModalVisible(true)}
           >
-            <CustomIcon source={ArrowDownLeftIcon} size={20} color="#333" />
+            <CustomIcon source={ArrowDownLeftIcon} size={16} color="#333" />
             <Text style={styles.withdrawText}>Withdraw</Text>
           </TouchableOpacity>
         </View>
@@ -219,13 +219,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderColor: "white",
     borderWidth: 1,
-    borderRadius: 25,
-    paddingVertical: 12,
+    borderRadius: 250,
+    paddingVertical: 10,
     gap: 8,
   },
   depositText: {
     color: "#fff",
-    fontSize: normalize(18),
+    fontSize: normalize(19),
     fontFamily: getFontFamily(700),
   },
   withdrawButton: {
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   },
   withdrawText: {
     color: "#333",
-    fontSize: normalize(18),
+    fontSize: normalize(19),
     fontFamily: getFontFamily(700),
   },
 });

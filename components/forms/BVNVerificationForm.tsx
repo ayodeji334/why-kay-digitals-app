@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -23,7 +22,7 @@ const bvnSchema = yup.object({
 });
 
 const BVNForm = () => {
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
   const setUser = useAuthStore(state => state.setUser);
   const { post } = useAxios();
   const {
@@ -43,7 +42,7 @@ const BVNForm = () => {
     try {
       const response = await post("/kyc/verify-bvn", data);
       console.log(response.data?.data?.user);
-      navigation.navigate("Verification" as never);
+      navigation.replace("Verification" as never);
       setUser(response.data?.data?.user);
 
       reset();

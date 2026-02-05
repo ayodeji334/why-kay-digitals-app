@@ -33,7 +33,7 @@ const AccountLimitsScreen = () => {
   const accountTiers = [
     {
       id: 11,
-      name: "Level 0 Account",
+      name: "Level 1 Account",
       status: user.tier_level === "TIER_0",
       limits: [
         {
@@ -51,7 +51,7 @@ const AccountLimitsScreen = () => {
     },
     {
       id: 1,
-      name: "Level 1 Account",
+      name: "Level 2 Account",
       status: user.tier_level === "TIER_1",
       limits: [
         {
@@ -69,7 +69,7 @@ const AccountLimitsScreen = () => {
     },
     {
       id: 2,
-      name: "Level 2 Account",
+      name: "Level 3 Account",
       status: user.tier_level === "TIER_2",
       limits: [
         {
@@ -90,7 +90,7 @@ const AccountLimitsScreen = () => {
     },
     {
       id: 3,
-      name: "Level 3 Account",
+      name: "Level 4 Account",
       status: user.tier_level === "TIER_3",
       limits: [
         {

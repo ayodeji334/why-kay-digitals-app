@@ -29,6 +29,8 @@ import CustomLoading from "../CustomLoading";
 import { useAssets } from "../../hooks/useAssets";
 import { useWallets } from "../../hooks/useWallet";
 import LoadingBalance from "../LoadingState";
+import { useAuthStore } from "../../stores/authSlice";
+import KYCStatusScreen from "../KYCStatusScreen";
 
 const CryptoWalletSection = () => {
   const [showAddAssetWalletModal, setAddAssetWalletModal] = useState(false);
@@ -37,6 +39,14 @@ const CryptoWalletSection = () => {
   const { apiGet } = useAxios();
   const { assets } = useAssets();
   const { data, isLoading, refetch, isRefetching } = useWallets();
+  const user = useAuthStore(state => state.user);
+
+  const isAlreadyVerified = useMemo(
+    () =>
+      user?.bvn_verification_status === "VERIFIED" &&
+      user?.nin_verification_status === "VERIFIED",
+    [user.bvn_verification_status, user?.nin_verification_status],
+  );
 
   const wallets: any = useMemo(
     () => (Array.isArray(data?.wallets) ? data?.wallets : []),
@@ -235,14 +245,56 @@ const CryptoWalletSection = () => {
       />
 
       <CustomModal
-        height={300}
-        title="Select an Asset"
+        height={250}
+        title={isAlreadyVerified ? "Select an Asset" : ""}
         visible={showAddAssetWalletModal}
         onClose={() => {
           setAddAssetWalletModal(false);
         }}
       >
-        {filteredWallets.length > 0 ? (
+        {!isAlreadyVerified ? (
+          <View
+            style={
+              (styles.emptyModalState,
+              {
+                padding: 10,
+                justifyContent: "center",
+                // alignItems: "center",
+                alignContent: "center",
+                width: "100%",
+                height: "100%",
+                rowGap: 20,
+              })
+            }
+          >
+            <View>
+              <Text style={styles.emptyStateText}>
+                Complete Your KYC Verification
+              </Text>
+              <Text style={styles.emptyStateSubtext}>
+                To access this service, we need to verify your identity. This is
+                a secure one-time process.
+              </Text>
+            </View>
+            <View>
+              <TouchableOpacity
+                onPress={() => {
+                  setAddAssetWalletModal(false);
+                  navigation.navigate("Verification" as never);
+                }}
+                activeOpacity={0.8}
+                style={[
+                  styles.emptyButton,
+                  { backgroundColor: COLORS.primary },
+                ]}
+              >
+                <Text style={styles.emptyButtonText}>
+                  {isAlreadyVerified ? "" : "Start KYC Verification"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : filteredWallets.length > 0 ? (
           <FlatList
             data={filteredWallets}
             keyExtractor={item => item.value}
@@ -505,11 +557,34 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   emptyState: { alignItems: "center", paddingVertical: 40 },
-  emptyStateText: { fontSize: normalize(22), fontFamily: getFontFamily("800") },
+  emptyStateText: {
+    fontSize: normalize(20),
+    fontFamily: getFontFamily("800"),
+    textAlign: "center",
+  },
   emptyStateSubtext: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
     color: "#474748ff",
+    textAlign: "center",
+  },
+  emptyButton: {
+    width: "100%",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 160,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  emptyButtonText: {
+    color: "#fff",
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("700"),
   },
   txItem: {
     flexDirection: "row",

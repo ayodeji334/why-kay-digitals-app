@@ -97,11 +97,7 @@ export function SelectInput({
                   !selectedOption && { color: "#838383" },
                 ]}
               >
-                {selectedOption
-                  ? `${selectedOption.label}${
-                      selectedOption.symbol ? ` (${selectedOption.symbol})` : ""
-                    }`
-                  : placeholder}
+                {selectedOption ? `${selectedOption.label}` : placeholder}
               </Text>
             </View>
             <ArrowDown2 size={15} color="#374151" />
@@ -166,8 +162,7 @@ export function SelectInput({
                         )}
                         <View style={styles.cryptoInfo}>
                           <Text style={styles.optionName}>
-                            {item.symbol}
-                            {` (${item.label})`}
+                            {`${item.label}`}
                           </Text>
                           {item.market_value && (
                             <Text style={styles.optionPrice}>

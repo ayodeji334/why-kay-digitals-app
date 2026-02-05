@@ -20,6 +20,8 @@ import CustomLoading from "../components/CustomLoading";
 import { SelectInput } from "../components/SelectInputField";
 import { useWallets } from "../hooks/useWallet";
 import { useAssets } from "../hooks/useAssets";
+import KYCStatusScreen from "../components/KYCStatusScreen";
+import { useAuthStore } from "../stores/authSlice";
 
 export const formatWithCommas = (value: string) => {
   if (!value) return "";
@@ -95,6 +97,7 @@ export default function CryptoSwapScreen() {
   const navigation: any = useNavigation();
   const { assets, isLoading, refetch } = useAssets();
   const { data, refetch: refetchUserWallets } = useWallets();
+  const user = useAuthStore(state => state.user);
 
   const options = useMemo(
     () =>
@@ -206,169 +209,188 @@ export default function CryptoSwapScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
-      <ScrollView
-        contentContainerStyle={{
-          backgroundColor: "white",
-        }}
-        refreshControl={
-          <RefreshControl onRefresh={onRefresh} refreshing={isLoading} />
-        }
-      >
-        <View style={styles.container}>
-          <View>
-            <View style={{ marginBottom: 4 }}>
-              <SelectInput
-                control={control}
-                name="from_asset"
-                label="Select asset(coin) you want to convert from"
-                options={userWallets}
-                placeholder="Select an asset(coin)"
-                title="Select an asset"
-              />
-            </View>
-            <View style={{ marginVertical: 4 }}>
-              <SelectInput
-                control={control}
-                name="to_asset"
-                label="Select asset(coin) you want to convert to"
-                options={options}
-                placeholder="Select an asset(coin)"
-                title="Select an asset"
-              />
-            </View>
-            <View style={{ marginVertical: 4 }}>
-              <Text style={styles.label}>Amount (USD)</Text>
-              <Controller
-                control={control}
-                name="amount"
-                render={({ field: { onBlur } }) => (
-                  <View style={styles.inputContainer}>
-                    <Text style={styles.dollarSign}>$</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="0.00"
-                      placeholderTextColor="#999"
-                      keyboardType="decimal-pad"
-                      onBlur={onBlur}
-                      value={displayAmount}
-                      onChangeText={text => {
-                        const formatted = formatWithCommas(text);
-                        const numeric = parseToNumber(formatted);
+      {user?.bvn_verification_status !== "VERIFIED" ||
+      user?.nin_verification_status !== "VERIFIED" ? (
+        <KYCStatusScreen />
+      ) : (
+        <ScrollView
+          contentContainerStyle={{
+            backgroundColor: "white",
+          }}
+          refreshControl={
+            <RefreshControl onRefresh={onRefresh} refreshing={isLoading} />
+          }
+        >
+          <View style={styles.container}>
+            <View>
+              <View style={{ marginBottom: 4 }}>
+                <SelectInput
+                  control={control}
+                  name="from_asset"
+                  label="Select asset(coin) you want to convert from"
+                  options={userWallets}
+                  placeholder="Select an asset(coin)"
+                  title="Select an asset"
+                />
+              </View>
+              <View style={{ marginVertical: 4 }}>
+                <SelectInput
+                  control={control}
+                  name="to_asset"
+                  label="Select asset(coin) you want to convert to"
+                  options={options}
+                  placeholder="Select an asset(coin)"
+                  title="Select an asset"
+                />
+              </View>
+              <View style={{ marginVertical: 4 }}>
+                <Text style={styles.label}>Amount (USD)</Text>
+                <Controller
+                  control={control}
+                  name="amount"
+                  render={({ field: { onBlur } }) => (
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.dollarSign}>$</Text>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="0.00"
+                        placeholderTextColor="#999"
+                        keyboardType="decimal-pad"
+                        onBlur={onBlur}
+                        value={displayAmount}
+                        onChangeText={text => {
+                          const formatted = formatWithCommas(text);
+                          const numeric = parseToNumber(formatted);
 
-                        setDisplayAmount(formatted);
-                        setValue("amount", numeric, {
-                          shouldValidate: true,
-                        });
-                      }}
-                    />
-                  </View>
+                          setDisplayAmount(formatted);
+                          setValue("amount", numeric, {
+                            shouldValidate: true,
+                          });
+                        }}
+                      />
+                    </View>
+                  )}
+                />
+
+                {errors.amount && (
+                  <Text style={styles.error}>{errors.amount.message}</Text>
                 )}
-              />
-
-              {errors.amount && (
-                <Text style={styles.error}>{errors.amount.message}</Text>
-              )}
-              {fromAsset && amount > 0 && (
-                <Text style={styles.approx}>
-                  Approximately {fromAmount} {fromAsset?.symbol} will debited
-                  from your {symbol} wallet
-                </Text>
-              )}
-            </View>
-            <View
-              style={{
-                marginVertical: 10,
-                backgroundColor: "#EFF7EC",
-                padding: 10,
-                borderRadius: 10,
-              }}
-            >
-              <Text style={[styles.note, { color: "black" }]}>
-                Transaction Breakdown
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
-                >
-                  Your {symbol} Wallet balance:
-                </Text>
-                <Text style={styles.balance}>{balance || 0}</Text>
+                {fromAsset && amount > 0 && (
+                  <Text style={styles.approx}>
+                    Approximately {fromAmount} {fromAsset?.symbol} will debited
+                    from your {symbol} wallet
+                  </Text>
+                )}
               </View>
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  marginVertical: 10,
+                  backgroundColor: "#EFF7EC",
+                  padding: 10,
+                  borderRadius: 10,
                 }}
               >
-                <Text
-                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                <Text style={[styles.note, { color: "black" }]}>
+                  Transaction Breakdown
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  Your {symbol} Wallet balance in USD:
-                </Text>
-                <Text style={styles.balance}>
-                  {formatAmount(
-                    Number(balance) * Number(price) || 0,
-                    false,
-                    "USD",
-                  )}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
+                  >
+                    Your {symbol} Wallet balance:
+                  </Text>
+                  <Text style={styles.balance}>{balance || 0}</Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  {symbol} Market Current Price in USD:
-                </Text>
-                <Text style={styles.balance}>
-                  {formatAmount(Number(fromAsset?.price) || 0, false, "USD")}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
+                  >
+                    Your {symbol} Wallet balance in USD:
+                  </Text>
+                  <Text style={styles.balance}>
+                    {formatAmount(
+                      Number(balance) * Number(price) || 0,
+                      false,
+                      "USD",
+                    )}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  {toAsset?.symbol} Market Current Price in USD:
-                </Text>
-                <Text style={styles.balance}>
-                  {formatAmount(
-                    Number(toAsset?.market_current_value) || 0,
-                    false,
-                    "USD",
-                  )}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
+                  >
+                    {symbol} Market Current Price in USD:
+                  </Text>
+                  <Text style={styles.balance}>
+                    {formatAmount(Number(fromAsset?.price) || 0, false, "USD")}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  Service Network Fee:
-                </Text>
-                <Text style={styles.balance}>
-                  {formatAmount(2, false, "USD")}
-                </Text>
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
+                  >
+                    {toAsset?.symbol} Market Current Price in USD:
+                  </Text>
+                  <Text style={styles.balance}>
+                    {formatAmount(
+                      Number(toAsset?.market_current_value) || 0,
+                      false,
+                      "USD",
+                    )}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
+                  >
+                    Service Network Fee:
+                  </Text>
+                  <Text style={styles.balance}>
+                    {formatAmount(2, false, "USD")}
+                  </Text>
+                </View>
               </View>
-            </View>
-            {/* <View
+              {/* <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
@@ -379,58 +401,59 @@ export default function CryptoSwapScreen() {
                 {formatAmount(amount * 0.01, false, "USD")}
               </Text>
             </View> */}
-            <View style={styles.paymentContainer}>
-              <Text style={styles.note}>You'll receive</Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={styles.ngn}>Estimated amount:</Text>
-                <Text style={styles.ngn}>
-                  {toCoinAmount} {toAsset?.symbol || ""}
+              <View style={styles.paymentContainer}>
+                <Text style={styles.note}>You'll receive</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text style={styles.ngn}>Estimated amount:</Text>
+                  <Text style={styles.ngn}>
+                    {toCoinAmount} {toAsset?.symbol || ""}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Insufficient balance warning */}
+              {insufficientBalance && fromAsset && (
+                <View style={styles.warningContainer}>
+                  <Text style={styles.warningText}>
+                    Insufficient balance! You need {requiredAssetAmount}{" "}
+                    {fromAsset.symbol} but you only have {balance}{" "}
+                    {fromAsset.symbol}
+                  </Text>
+                </View>
+              )}
+
+              <View style={{ paddingVertical: 10 }}>
+                <Text
+                  style={{
+                    color: "#3b3b3bff",
+                    fontFamily: getFontFamily("400"),
+                    textAlign: "center",
+                  }}
+                >
+                  Note: Cryptocurrency prices are volatile. Estimated amounts
+                  may change due to market fluctuations between initiating and
+                  completing your swap. Final conversion rates are determined at
+                  execution time. By proceeding, you acknowledge and accept
+                  these market risks.
                 </Text>
               </View>
             </View>
 
-            {/* Insufficient balance warning */}
-            {insufficientBalance && fromAsset && (
-              <View style={styles.warningContainer}>
-                <Text style={styles.warningText}>
-                  Insufficient balance! You need {requiredAssetAmount}{" "}
-                  {fromAsset.symbol} but you only have {balance}{" "}
-                  {fromAsset.symbol}
-                </Text>
-              </View>
-            )}
-
-            <View style={{ paddingVertical: 10 }}>
-              <Text
-                style={{
-                  color: "#3b3b3bff",
-                  fontFamily: getFontFamily("400"),
-                  textAlign: "center",
-                }}
-              >
-                Note: Cryptocurrency prices are volatile. Estimated amounts may
-                change due to market fluctuations between initiating and
-                completing your swap. Final conversion rates are determined at
-                execution time. By proceeding, you acknowledge and accept these
-                market risks.
-              </Text>
-            </View>
+            <TouchableOpacity
+              style={[styles.button, !canSubmit && styles.buttonDisabled]}
+              onPress={handleSubmit(onSubmit)}
+              disabled={!canSubmit}
+            >
+              <Text style={styles.buttonText}>Continue</Text>
+            </TouchableOpacity>
           </View>
-
-          <TouchableOpacity
-            style={[styles.button, !canSubmit && styles.buttonDisabled]}
-            onPress={handleSubmit(onSubmit)}
-            disabled={!canSubmit}
-          >
-            <Text style={styles.buttonText}>Continue</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      )}
 
       <CustomLoading loading={isLoading} />
     </SafeAreaView>

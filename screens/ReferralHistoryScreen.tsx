@@ -155,7 +155,7 @@ const StatCard: React.FC<{
         styles.statTitle,
         {
           textAlign: direction,
-          fontSize: normalize(18),
+          fontSize: normalize(28),
           fontFamily: getFontFamily("800"),
         },
       ]}
@@ -305,19 +305,19 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   emptyStateTitle: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(22),
+    fontFamily: getFontFamily("800"),
     color: "#374151",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 4,
   },
   emptyStateDescription: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("400"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
     color: "#6B7280",
     textAlign: "center",
     lineHeight: normalize(22),
-    marginBottom: 24,
+    marginBottom: 20,
   },
   inviteButton: {
     backgroundColor: COLORS.secondary,
@@ -326,8 +326,8 @@ const styles = StyleSheet.create({
     borderRadius: 38,
   },
   inviteButtonText: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
     color: "#fff",
   },
   header: {
@@ -383,25 +383,25 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     gap: 8,
     backgroundColor: "#F3F4F6",
-    borderRadius: 10,
+    borderRadius: 1000,
   },
   tab: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     backgroundColor: "#F3F4F6",
-    borderRadius: 8,
+    borderRadius: 800,
     gap: 8,
   },
   activeTab: {
     backgroundColor: COLORS.primary,
   },
   tabTitle: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(19),
+    fontFamily: getFontFamily("800"),
   },
   activeTabTitle: {
     color: "#fff",

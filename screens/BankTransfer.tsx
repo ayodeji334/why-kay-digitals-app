@@ -25,12 +25,12 @@ import {
 // import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
 import { formatAmount } from "../libs/formatNumber";
+import KYCStatusScreen from "../components/KYCStatusScreen";
 
 const BankTransferScreen = () => {
   const route = useRoute();
   // const { apiGet } = useAxios();
   const navigation = useNavigation();
-  const { amount }: any = route.params;
   // const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
@@ -84,16 +84,6 @@ const BankTransferScreen = () => {
     Alert.alert(
       "Confirm Soon",
       `Features coming soon! In the meantime, please wait for automatic verification of your deposit.`,
-      // [
-      //   {
-      //     text: "No, Cancel",
-      //     style: "cancel",
-      //   },
-      //   {
-      //     text: "Yes, I have",
-      //     onPress: checkPaymentStatus,
-      //   },
-      // ],
     );
   };
 
@@ -137,147 +127,142 @@ const BankTransferScreen = () => {
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            Transfer to your virtual account
-          </Text>
-          <Text style={styles.instructionText}>
-            Make a bank transfer to any of these account numbers and your Whykay
-            Digitals Wallet will be funded immediately in your fiat wallet.
-          </Text>
-        </View>
-
-        {/* Virtual Account Details */}
-        <View style={styles.accountSection}>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Account Name</Text>
-            <View style={styles.copyableField}>
-              <Text style={styles.detailValue} numberOfLines={1}>
-                {primaryBankAccount.account_name}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Bank Name</Text>
-            <View style={styles.copyableField}>
-              <Text style={styles.detailValue}>
-                {primaryBankAccount.bank_name}
-              </Text>
-            </View>
-          </View>
-
-          {/* Account Number */}
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Account Number</Text>
-            <View style={styles.copyableField}>
-              <Text style={[styles.detailValue, styles.accountNumber]}>
-                {primaryBankAccount.account_number}
-              </Text>
-            </View>
-          </View>
-
-          {/* Amount */}
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Amount to Transfer</Text>
-            <View style={styles.amountDisplay}>
-              <Text style={styles.amountText}>
-                {formatAmount(parseFloat(amount) ?? 0)}
-              </Text>
-            </View>
-          </View>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() =>
-              copyToClipboard(
-                primaryBankAccount.account_number,
-                "accountNumber",
-              )
-            }
-            style={styles.copyButton}
-          >
-            <Text
-              style={{
-                color: "white",
-                fontSize: normalize(19),
-                fontFamily: getFontFamily(700),
-              }}
-            >
-              Tap to copy account details
+      {user?.bvn_verification_status !== "VERIFIED" ? (
+        <KYCStatusScreen />
+      ) : (
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>
+              Transfer to your virtual account
             </Text>
-            {copiedField === "accountNumber" ? (
-              <Check size={13} color="white" />
-            ) : (
-              <CopySuccess size={13} color="white" />
-            )}
-          </TouchableOpacity>
-        </View>
-
-        {/* Show additional accounts if available */}
-        {bankAccounts.length > 1 && (
-          <View style={styles.additionalAccounts}>
-            <Text style={styles.additionalTitle}>Additional Accounts</Text>
-            {bankAccounts
-              .filter((account: any) => !account.is_primary)
-              .map((account: any, index: number) => (
-                <View
-                  key={account.account_number}
-                  style={styles.additionalAccount}
-                >
-                  <View style={styles.additionalAccountInfo}>
-                    <Text style={styles.additionalBankName}>
-                      {account.bank_name}
-                    </Text>
-                    <Text style={styles.additionalAccountNumber}>
-                      {account.account_number}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() =>
-                      copyToClipboard(
-                        account.account_number,
-                        `account-${index}`,
-                      )
-                    }
-                    style={styles.additionalCopyButton}
-                  >
-                    <CopySuccess size={16} color={COLORS.primary} />
-                  </TouchableOpacity>
-                </View>
-              ))}
+            <Text style={styles.instructionText}>
+              Make a bank transfer to any of these account numbers and your
+              Whykay Digitals Wallet will be funded immediately in your fiat
+              wallet.
+            </Text>
           </View>
-        )}
 
-        <InfoCard
-          IconComponent={<InfoCircle />}
-          title="Important Notes:"
-          description={[
-            "Transfers typically reflect within 5-10 minutes",
-            "Transfer exactly the amount shown above",
-            "Use only the account details provided above",
-            "This virtual account is dedicated to your profile",
-          ]}
-        />
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={styles.primaryButton}
-            onPress={handleIHaveMadeDeposit}
-            // disabled={isCheckingPayment}
-          >
-            {/* {isCheckingPayment ? (
+          {/* Virtual Account Details */}
+          <View style={styles.accountSection}>
+            <View style={styles.detailItem}>
+              <Text style={styles.detailLabel}>Account Name</Text>
+              <View style={styles.copyableField}>
+                <Text style={styles.detailValue} numberOfLines={1}>
+                  {primaryBankAccount.account_name}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.detailItem}>
+              <Text style={styles.detailLabel}>Bank Name</Text>
+              <View style={styles.copyableField}>
+                <Text style={styles.detailValue}>
+                  {primaryBankAccount.bank_name}
+                </Text>
+              </View>
+            </View>
+
+            {/* Account Number */}
+            <View style={styles.detailItem}>
+              <Text style={styles.detailLabel}>Account Number</Text>
+              <View style={styles.copyableField}>
+                <Text style={[styles.detailValue, styles.accountNumber]}>
+                  {primaryBankAccount.account_number}
+                </Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() =>
+                copyToClipboard(
+                  primaryBankAccount.account_number,
+                  "accountNumber",
+                )
+              }
+              style={styles.copyButton}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: normalize(19),
+                  fontFamily: getFontFamily(700),
+                }}
+              >
+                Tap to copy account details
+              </Text>
+              {copiedField === "accountNumber" ? (
+                <Check size={13} color="white" />
+              ) : (
+                <CopySuccess size={13} color="white" />
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {/* Show additional accounts if available */}
+          {bankAccounts.length > 1 && (
+            <View style={styles.additionalAccounts}>
+              <Text style={styles.additionalTitle}>Additional Accounts</Text>
+              {bankAccounts
+                .filter((account: any) => !account.is_primary)
+                .map((account: any, index: number) => (
+                  <View
+                    key={account.account_number}
+                    style={styles.additionalAccount}
+                  >
+                    <View style={styles.additionalAccountInfo}>
+                      <Text style={styles.additionalBankName}>
+                        {account.bank_name}
+                      </Text>
+                      <Text style={styles.additionalAccountNumber}>
+                        {account.account_number}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() =>
+                        copyToClipboard(
+                          account.account_number,
+                          `account-${index}`,
+                        )
+                      }
+                      style={styles.additionalCopyButton}
+                    >
+                      <CopySuccess size={16} color={COLORS.primary} />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+            </View>
+          )}
+
+          <InfoCard
+            IconComponent={<InfoCircle />}
+            title="Important Notes:"
+            description={[
+              "Transfers typically reflect within 5-10 minutes",
+              "Transfer exactly the amount shown above",
+              "Use only the account details provided above",
+              "This virtual account is dedicated to your profile",
+            ]}
+          />
+          {/* <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.primaryButton}
+              onPress={handleIHaveMadeDeposit}
+              // disabled={isCheckingPayment}
+            >
+              {/* {isCheckingPayment ? (
               <ActivityIndicator color="#FFFFFF" size="small" />
             ) : ( */}
-            <Text style={styles.primaryButtonText}>I have made deposit</Text>
-            {/* )} */}
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+          {/* <Text style={styles.primaryButtonText}>I have made deposit</Text> */}
+          {/* )}
+            </TouchableOpacity>
+          </View> */}
+        </ScrollView>
+      )}
 
       {/* <CustomLoading loading={isCheckingPayment} /> */}
     </SafeAreaView>

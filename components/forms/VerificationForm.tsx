@@ -27,8 +27,7 @@ type FormData = {
 };
 
 const VerificationForm = ({ email }: { email: string }) => {
-  const navigation = useNavigation();
-  const { setUser, setToken } = useAuthStore(state => state);
+  const navigation: any = useNavigation();
   const { post } = useAxios();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { control, handleSubmit, watch } = useForm<FormData>({
@@ -36,7 +35,6 @@ const VerificationForm = ({ email }: { email: string }) => {
     defaultValues: { otp: "" },
   });
   const queryClient = useQueryClient();
-  const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
   const { countdown, reset, isActive } = useCountdown(20);
   const otp = watch("otp");
 
@@ -52,20 +50,13 @@ const VerificationForm = ({ email }: { email: string }) => {
       showSuccess("Token verified!");
 
       const authData = response.data?.data?.auth;
-
-      if (authData?.accessToken && authData?.refreshToken) {
-        setToken(authData.accessToken);
-      }
-
-      if (response.data?.data?.user) {
-        setUser(response.data?.data?.user);
-      }
+      const user = response.data?.data?.user;
+      const token = authData?.accessToken;
+      const refreshToken = authData?.refreshToken;
 
       queryClient.prefetchQuery({ queryKey: ["assets"] });
 
-      setIsAuthenticated(true);
-
-      navigation.navigate("CreatePin" as never);
+      navigation.navigate("CreatePin" as never, { user, token, refreshToken });
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         const errorMessage =
@@ -107,23 +98,20 @@ const VerificationForm = ({ email }: { email: string }) => {
     <View style={styles.container}>
       <OtpInputField control={control} name="otp" boxes={6} />
 
-      {otp.length === 0 && (
-        <View style={styles.resendWrapper}>
-          <Text style={styles.infoText}>Didn’t get the code? </Text>
-          <TouchableOpacity disabled={countdown > 0} onPress={handleResend}>
-            <Text
-              style={[
-                styles.resendText,
-                countdown > 0 && styles.disabledResend,
-              ]}
-            >
-              {countdown > 0
-                ? `Resend in 00:${countdown.toString().padStart(2, "0")}s`
-                : "Resend"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* {otp.length === 0 && ( */}
+      <View style={styles.resendWrapper}>
+        <Text style={styles.infoText}>Didn’t get the code? </Text>
+        <TouchableOpacity disabled={countdown > 0} onPress={handleResend}>
+          <Text
+            style={[styles.resendText, countdown > 0 && styles.disabledResend]}
+          >
+            {countdown > 0
+              ? `Resend in 00:${countdown.toString().padStart(2, "0")}s`
+              : "Resend"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      {/* )} */}
 
       <TouchableOpacity
         style={styles.button}
@@ -153,14 +141,14 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontFamily: getFontFamily(700),
-    fontSize: normalize(18),
+    fontSize: normalize(19),
     marginTop: 2,
     marginLeft: 1,
     color: COLORS.darkBackground,
   },
   resendText: {
     fontFamily: getFontFamily(700),
-    fontSize: normalize(18),
+    fontSize: normalize(20),
     marginTop: 2,
     marginLeft: 1,
     color: COLORS.secondary,

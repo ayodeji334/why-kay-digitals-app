@@ -3,8 +3,8 @@ import { getItem } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 
-// export const BASE_URL = "https://www.ayodejijava.com.ng/v1";
-export const BASE_URL = "http://10.128.116.13:8000/v1";
+export const BASE_URL = "https://www.ayodejijava.com.ng/v1";
+// export const BASE_URL = "http://localhost:8000/v1";
 
 const badRequestStatusCodes = [400, 403, 404, 422, 500];
 
@@ -21,7 +21,6 @@ export function createAxiosClient(): AxiosInstance {
     },
   });
 
-  // REQUEST
   client.interceptors.request.use(config => {
     const token = useAuthStore.getState().token;
 
@@ -32,7 +31,6 @@ export function createAxiosClient(): AxiosInstance {
     return config;
   });
 
-  // RESPONSE
   client.interceptors.response.use(
     res => res,
     async error => {

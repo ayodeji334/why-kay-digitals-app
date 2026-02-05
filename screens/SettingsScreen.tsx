@@ -122,9 +122,17 @@ export default function SettingsScreen() {
     navigation.navigate("EditProfile" as never);
   };
 
-  const needsVerification = useMemo(() => {
-    return user?.tier_level === "TIER_0" || user?.bank_accounts?.length === 0;
-  }, [user]);
+  const hasCompleteVerification = useMemo(
+    () =>
+      user?.nin_verification_status === "VERIFIED" &&
+      user?.bvn_verification_status === "VERIFIED" &&
+      user?.selfie_verification_status === "VERIFIED",
+    [
+      user?.nin_verification_status,
+      user?.bvn_verification_status,
+      user?.selfie_verification_status,
+    ],
+  );
 
   // const handleKYCPress = () => {
   //   navigation.navigate("Verification" as never);
@@ -145,13 +153,13 @@ export default function SettingsScreen() {
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.profileSection, { marginVertical: 19 }]}>
+        <View style={[styles.profileSection, { marginVertical: 20 }]}>
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
               alignContent: "center",
-              marginBottom: 10,
+              justifyContent: "center",
             }}
           >
             <Image
@@ -185,7 +193,7 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
-        {needsVerification && (
+        {!hasCompleteVerification && (
           <View style={styles.verificationBanner}>
             <View style={styles.verificationIcon}>
               <CustomIcon
@@ -212,8 +220,8 @@ export default function SettingsScreen() {
               onPress={() => navigation.navigate("Verification" as never)}
               style={{
                 backgroundColor: COLORS.primary,
-                borderRadius: 9,
-                paddingHorizontal: 10,
+                borderRadius: 900,
+                paddingHorizontal: 15,
                 paddingVertical: 7,
                 flexDirection: "row",
                 alignItems: "center",
@@ -222,12 +230,12 @@ export default function SettingsScreen() {
             >
               <Text
                 style={{
-                  color: COLORS.whiteBackground,
-                  fontSize: normalize(18),
-                  fontFamily: getFontFamily("700"),
+                  color: "white",
+                  fontSize: normalize(16),
+                  fontFamily: getFontFamily("800"),
                 }}
               >
-                View Identity
+                Verify Identity
               </Text>
               <ArrowRight2 size={13} color={COLORS.whiteBackground} />
             </TouchableOpacity>
@@ -410,7 +418,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F0FDF4",
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 6,
+    borderRadius: 600,
     flexDirection: "row",
     gap: 1,
     alignItems: "center",
@@ -418,7 +426,7 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: COLORS.primary,
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     textAlign: "center",
   },
   kycSubtitle: {

@@ -33,12 +33,7 @@ interface StepCardProps {
   IconComponent: React.ComponentType<any>;
 }
 
-const StepCard: React.FC<StepCardProps> = ({
-  step,
-  title,
-  description,
-  IconComponent,
-}) => (
+const StepCard: React.FC<StepCardProps> = ({ title, description }) => (
   <View style={styles.stepCard}>
     {/* <View style={styles.stepHeader}>
       <View style={styles.stepNumber}>
@@ -221,7 +216,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   balanceAmount: {
-    fontSize: normalize(24),
+    fontSize: normalize(26),
     fontFamily: getFontFamily("800"),
     color: "#fff",
   },
@@ -370,7 +365,7 @@ const styles = StyleSheet.create({
   },
   historyButtonText: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#fff",
   },
 });

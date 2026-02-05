@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -29,6 +29,7 @@ const schema = yup.object().shape({
 
 export default function CreateSecurityPinScreen() {
   const navigation: any = useNavigation();
+  const route = useRoute();
   const { control, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: { pin: "" },
@@ -40,7 +41,10 @@ export default function CreateSecurityPinScreen() {
       return;
     }
 
-    navigation.navigate("ConfirmPin" as never, { pin: data.pin } as never);
+    navigation.navigate(
+      "ConfirmPin" as never,
+      { pin: data.pin, ...route } as never,
+    );
   };
 
   return (

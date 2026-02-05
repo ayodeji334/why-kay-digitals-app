@@ -25,7 +25,7 @@ import { useFiatBalance } from "../hooks/useFiatBalance";
 const HomeScreen = () => {
   const user = useUser();
   const navigation = useNavigation();
-  const { refetch, isRefetching, isLoading } = useFiatBalance();
+  const { refetch, isRefetching } = useFiatBalance();
 
   const hasCompleteVerification = useMemo(
     () =>
@@ -46,10 +46,7 @@ const HomeScreen = () => {
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl
-            refreshing={isRefetching || isLoading}
-            onRefresh={refetch}
-          />
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
         }
       >
         <View style={styles.header}>
@@ -99,18 +96,18 @@ const HomeScreen = () => {
               style={{
                 backgroundColor: COLORS.whiteBackground,
                 borderRadius: 20,
-                paddingHorizontal: 10,
+                paddingHorizontal: 18,
                 paddingVertical: 7,
               }}
             >
               <Text
                 style={{
                   color: COLORS.secondary,
-                  fontSize: normalize(18),
-                  fontFamily: getFontFamily("400"),
+                  fontSize: normalize(16),
+                  fontFamily: getFontFamily("800"),
                 }}
               >
-                View Identity
+                Verify Identity
               </Text>
             </TouchableOpacity>
           </View>

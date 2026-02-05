@@ -16,17 +16,13 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { InfoCircle } from "iconsax-react-nativejs";
 import InfoCard from "../components/InfoCard";
 import { formatAmount } from "../libs/formatNumber";
+import KYCStatusScreen from "../components/KYCStatusScreen";
 
 const DepositScreen = () => {
   const navigation: any = useNavigation();
   const user = useAuthStore(state => state.user);
   const [amount, setAmount] = useState("");
   const [amountError, setAmountError] = useState("");
-
-  const isBvnVerified = useMemo(
-    () => user?.bvn && user?.tier_level !== "TIER_0",
-    [user],
-  );
 
   const transactionLimits: any = {
     TIER_0: { max: 0, description: "Verify BVN to unlock limits" },
@@ -83,30 +79,12 @@ const DepositScreen = () => {
     navigation.navigate("BankTransfer" as never, { amount, currency: "NGN" });
   };
 
+  console.log(user);
+
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
-      {!isBvnVerified ? (
-        <ScrollView
-          contentContainerStyle={styles.scrollCentered}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>
-              Verify Your Identity to Continue
-            </Text>
-            <Text style={styles.emptyDescription}>
-              You need to verify your identity to make deposits and access all
-              features on the platform.
-            </Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Verification" as never)}
-              activeOpacity={0.8}
-              style={styles.emptyButton}
-            >
-              <Text style={styles.emptyButtonText}>Verify BVN Now</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+      {user?.bvn_verification_status !== "VERIFIED" ? (
+        <KYCStatusScreen />
       ) : (
         <>
           <ScrollView

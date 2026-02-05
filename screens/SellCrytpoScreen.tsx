@@ -27,6 +27,8 @@ import useAxios from "../hooks/useAxios";
 import { TradeIntent } from "./Rates";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import NoWallet from "../components/NoWallet";
+import { useAuthStore } from "../stores/authSlice";
+import KYCStatusScreen from "../components/KYCStatusScreen";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -49,7 +51,13 @@ export default function CryptoSellScreen() {
   const { intent } = route.params;
   const [displayAmount, setDisplayAmount] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  console.log(intent);
+  const user = useAuthStore(state => state.user);
+  const isAlreadyVerified = useMemo(
+    () =>
+      user?.bvn_verification_status === "VERIFIED" ||
+      user?.nin_verification_status === "VERIFIED",
+    [user.bvn_verification_status, user?.nin_verification_status],
+  );
 
   const selectedAssetUuid = intent.assetId ?? "";
 
@@ -136,6 +144,10 @@ export default function CryptoSellScreen() {
       refetch();
     }, [refetch]),
   );
+
+  if (!isAlreadyVerified) {
+    return <KYCStatusScreen />;
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>

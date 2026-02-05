@@ -59,6 +59,7 @@ const LoginForm: React.FC = () => {
 
       // fetch wallets
       queryClient.prefetchQuery({ queryKey: ["assets"] });
+      queryClient.prefetchQuery({ queryKey: ["banks"] });
 
       setToken(auth.accessToken, auth.refreshToken);
       setUser(user);
