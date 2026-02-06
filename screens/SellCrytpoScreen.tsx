@@ -52,12 +52,12 @@ export default function CryptoSellScreen() {
   const [displayAmount, setDisplayAmount] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const user = useAuthStore(state => state.user);
-  const isAlreadyVerified = useMemo(
-    () =>
-      user?.bvn_verification_status === "VERIFIED" ||
-      user?.nin_verification_status === "VERIFIED",
-    [user.bvn_verification_status, user?.nin_verification_status],
-  );
+  // const isAlreadyVerified = useMemo(
+  //   () =>
+  //     user?.bvn_verification_status === "VERIFIED" ||
+  //     user?.nin_verification_status === "VERIFIED",
+  //   [user.bvn_verification_status, user?.nin_verification_status],
+  // );
 
   const selectedAssetUuid = intent.assetId ?? "";
 
@@ -145,9 +145,9 @@ export default function CryptoSellScreen() {
     }, [refetch]),
   );
 
-  if (!isAlreadyVerified) {
-    return <KYCStatusScreen />;
-  }
+  // if (!isAlreadyVerified) {
+  //   return <KYCStatusScreen />;
+  // }
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>

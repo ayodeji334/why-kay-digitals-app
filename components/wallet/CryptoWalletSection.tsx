@@ -41,12 +41,12 @@ const CryptoWalletSection = () => {
   const { data, isLoading, refetch, isRefetching } = useWallets();
   const user = useAuthStore(state => state.user);
 
-  const isAlreadyVerified = useMemo(
-    () =>
-      user?.bvn_verification_status === "VERIFIED" &&
-      user?.nin_verification_status === "VERIFIED",
-    [user.bvn_verification_status, user?.nin_verification_status],
-  );
+  // const isAlreadyVerified = useMemo(
+  //   () =>
+  //     user?.bvn_verification_status === "VERIFIED" &&
+  //     user?.nin_verification_status === "VERIFIED",
+  //   [user.bvn_verification_status, user?.nin_verification_status],
+  // );
 
   const wallets: any = useMemo(
     () => (Array.isArray(data?.wallets) ? data?.wallets : []),
@@ -246,55 +246,14 @@ const CryptoWalletSection = () => {
 
       <CustomModal
         height={250}
-        title={isAlreadyVerified ? "Select an Asset" : ""}
+        // title={isAlreadyVerified ? "Select an Asset" : ""}
+        title={"Select an Asset"}
         visible={showAddAssetWalletModal}
         onClose={() => {
           setAddAssetWalletModal(false);
         }}
       >
-        {!isAlreadyVerified ? (
-          <View
-            style={
-              (styles.emptyModalState,
-              {
-                padding: 10,
-                justifyContent: "center",
-                // alignItems: "center",
-                alignContent: "center",
-                width: "100%",
-                height: "100%",
-                rowGap: 20,
-              })
-            }
-          >
-            <View>
-              <Text style={styles.emptyStateText}>
-                Complete Your KYC Verification
-              </Text>
-              <Text style={styles.emptyStateSubtext}>
-                To access this service, we need to verify your identity. This is
-                a secure one-time process.
-              </Text>
-            </View>
-            <View>
-              <TouchableOpacity
-                onPress={() => {
-                  setAddAssetWalletModal(false);
-                  navigation.navigate("Verification" as never);
-                }}
-                activeOpacity={0.8}
-                style={[
-                  styles.emptyButton,
-                  { backgroundColor: COLORS.primary },
-                ]}
-              >
-                <Text style={styles.emptyButtonText}>
-                  {isAlreadyVerified ? "" : "Start KYC Verification"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : filteredWallets.length > 0 ? (
+        {filteredWallets.length > 0 ? (
           <FlatList
             data={filteredWallets}
             keyExtractor={item => item.value}

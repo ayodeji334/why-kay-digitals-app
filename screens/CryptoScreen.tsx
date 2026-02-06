@@ -33,12 +33,12 @@ const CryptoWalletScreen = () => {
   const { action: currentAction = "buy" } = route.params ?? {};
   const { assets, isLoading, isRefetching, refetch } = useAssets();
   const user = useAuthStore(state => state.user);
-  const isAlreadyVerified = useMemo(
-    () =>
-      user?.bvn_verification_status === "VERIFIED" &&
-      user?.nin_verification_status === "VERIFIED",
-    [user.bvn_verification_status, user?.nin_verification_status],
-  );
+  // const isAlreadyVerified = useMemo(
+  //   () =>
+  //     user?.bvn_verification_status === "VERIFIED" &&
+  //     user?.nin_verification_status === "VERIFIED",
+  //   [user.bvn_verification_status, user?.nin_verification_status],
+  // );
 
   // Filter by search query
   const filteredAssets = useMemo(() => {
@@ -109,9 +109,9 @@ const CryptoWalletScreen = () => {
     </TouchableOpacity>
   );
 
-  if (!isAlreadyVerified) {
-    return <KYCStatusScreen />;
-  }
+  // if (!isAlreadyVerified) {
+  //   return <KYCStatusScreen />;
+  // }
 
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>

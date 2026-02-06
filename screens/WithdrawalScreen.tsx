@@ -22,8 +22,6 @@ import BankAccountModal from "./BankAccountModal";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import ConfirmationModal from "../components/ConfirmationModal";
 import useAxios from "../hooks/useAxios";
-import KYCStatusScreen from "../components/KYCStatusScreen";
-import { useAuthStore } from "../stores/authSlice";
 
 const schema = yup.object({
   amount: yup
@@ -49,7 +47,6 @@ export default function WithdrawScreen() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingPayload, setPendingPayload] = useState<any>(null);
   const [accountDetails, setAccountDetails] = useState<any>(null);
-  const user = useAuthStore(state => state.user);
 
   const {
     data: walletSummary,
@@ -151,110 +148,110 @@ export default function WithdrawScreen() {
       edges={["right", "bottom"]}
       style={{ flex: 1, backgroundColor: "#fff", paddingHorizontal: 16 }}
     >
-      {user?.bvn_verification_status !== "VERIFIED" ? (
+      {/* {user?.bvn_verification_status !== "VERIFIED" ? (
         <KYCStatusScreen />
       ) : (
-        <>
-          <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-          <ScrollView
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefreshing}
-                onRefresh={async () => {
-                  setIsRefreshing(true);
-                  try {
-                    await refetchWallet();
-                    await refetchBanks();
-                  } finally {
-                    setIsRefreshing(false);
-                  }
-                }}
-                colors={[COLORS.secondary]}
-              />
-            }
-            showsVerticalScrollIndicator={false}
-          >
-            <BalanceLimitCard walletSummary={walletSummary} />
-
-            <WithdrawalForm control={control} />
-
-            {isBalanceSufficient && !!amount && (
-              <Text
-                style={{
-                  fontFamily: getFontFamily(700),
-                  fontSize: normalize(15),
-                  color: "red",
-                  marginBottom: 10,
-                  textAlign: "center",
-                  borderRadius: 10,
-                  backgroundColor: "#fff0f0ff",
-                  padding: 20,
-                  paddingHorizontal: 30,
-                }}
-              >
-                You do not have enough funds in your wallet to complete this
-                withdrawal. Please top up your wallet and try again.
-              </Text>
-            )}
-
-            <BankAccountSelector
-              bankName={
-                bankOptions.find((bank: any) => bank.value === bankCode)
-                  ?.label || null
+        <> */}
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={async () => {
+              setIsRefreshing(true);
+              try {
+                await refetchWallet();
+                await refetchBanks();
+              } finally {
+                setIsRefreshing(false);
               }
-              accountName={accountDetails?.accountName || null}
-              accountNumber={accountDetails?.accountNumber || null}
-              setShowBankModal={setShowBankModal}
-            />
-
-            <SaveAsBeneficiarySwitch
-              value={saveBeneficiary}
-              onValueChange={setSaveBeneficiary}
-              disabled={loading}
-            />
-
-            <TouchableOpacity
-              activeOpacity={0.9}
-              onPress={handleSubmit(onSubmit)}
-              style={{
-                backgroundColor: !isDisabled ? COLORS.secondary : "#ccc",
-                borderRadius: 100,
-                paddingVertical: 16,
-                marginTop: 30,
-              }}
-              disabled={isDisabled}
-            >
-              <Text
-                style={{
-                  color: "#fff",
-                  fontSize: normalize(18),
-                  textAlign: "center",
-                  fontFamily: getFontFamily("700"),
-                }}
-              >
-                Withdraw
-              </Text>
-            </TouchableOpacity>
-
-            <CustomLoading loading={isLoading} />
-          </ScrollView>
-
-          <BankAccountModal
-            visible={showBankModal}
-            onClose={() => setShowBankModal(false)}
-            bankOptions={bankOptions}
-            setAccountDetails={setAccountDetails}
-            setValue={setValue}
+            }}
+            colors={[COLORS.secondary]}
           />
+        }
+        showsVerticalScrollIndicator={false}
+      >
+        <BalanceLimitCard walletSummary={walletSummary} />
 
-          <ConfirmationModal
-            data={{ amount }}
-            handleProceed={handleProceed}
-            setShowConfirmModal={setShowConfirmModal}
-            showConfirmModal={showConfirmModal && amount > 50000}
-          />
-        </>
-      )}
+        <WithdrawalForm control={control} />
+
+        {isBalanceSufficient && !!amount && (
+          <Text
+            style={{
+              fontFamily: getFontFamily(700),
+              fontSize: normalize(15),
+              color: "red",
+              marginBottom: 10,
+              textAlign: "center",
+              borderRadius: 10,
+              backgroundColor: "#fff0f0ff",
+              padding: 20,
+              paddingHorizontal: 30,
+            }}
+          >
+            You do not have enough funds in your wallet to complete this
+            withdrawal. Please top up your wallet and try again.
+          </Text>
+        )}
+
+        <BankAccountSelector
+          bankName={
+            bankOptions.find((bank: any) => bank.value === bankCode)?.label ||
+            null
+          }
+          accountName={accountDetails?.accountName || null}
+          accountNumber={accountDetails?.accountNumber || null}
+          setShowBankModal={setShowBankModal}
+        />
+
+        <SaveAsBeneficiarySwitch
+          value={saveBeneficiary}
+          onValueChange={setSaveBeneficiary}
+          disabled={loading}
+        />
+
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={handleSubmit(onSubmit)}
+          style={{
+            backgroundColor: !isDisabled ? COLORS.secondary : "#ccc",
+            borderRadius: 100,
+            paddingVertical: 16,
+            marginTop: 30,
+          }}
+          disabled={isDisabled}
+        >
+          <Text
+            style={{
+              color: "#fff",
+              fontSize: normalize(18),
+              textAlign: "center",
+              fontFamily: getFontFamily("700"),
+            }}
+          >
+            Withdraw
+          </Text>
+        </TouchableOpacity>
+
+        <CustomLoading loading={isLoading} />
+      </ScrollView>
+
+      <BankAccountModal
+        visible={showBankModal}
+        onClose={() => setShowBankModal(false)}
+        bankOptions={bankOptions}
+        setAccountDetails={setAccountDetails}
+        setValue={setValue}
+      />
+
+      <ConfirmationModal
+        data={{ amount }}
+        handleProceed={handleProceed}
+        setShowConfirmModal={setShowConfirmModal}
+        showConfirmModal={showConfirmModal && amount > 50000}
+      />
+      {/* </> */}
+      {/* // )} */}
     </SafeAreaView>
   );
 }

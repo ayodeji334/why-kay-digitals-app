@@ -220,229 +220,226 @@ export default function TransferScreen() {
       edges={["right", "bottom"]}
       style={{ flex: 1, backgroundColor: "#fff", paddingHorizontal: 16 }}
     >
-      {user?.bvn_verification_status !== "VERIFIED" ||
+      {/* {user?.bvn_verification_status !== "VERIFIED" ||
       user?.nin_verification_status !== "VERIFIED" ? (
         <KYCStatusScreen />
-      ) : (
-        <>
-          <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      ) : ( */}
+      <>
+        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-          <TabSwitcher
-            tabs={tabOptions}
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            containerStyle={{
-              backgroundColor: "#f3f3f3ff",
-              marginVertical: 10,
-            }}
-            activeTabStyle={{ backgroundColor: COLORS.primary }}
-            activeTabTextStyle={{ color: "#fff" }}
-          />
+        <TabSwitcher
+          tabs={tabOptions}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          containerStyle={{
+            backgroundColor: "#f3f3f3ff",
+            marginVertical: 10,
+          }}
+          activeTabStyle={{ backgroundColor: COLORS.primary }}
+          activeTabTextStyle={{ color: "#fff" }}
+        />
 
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefreshing}
-                onRefresh={async () => {
-                  setIsRefreshing(true);
-                  await refetch();
-                  setIsRefreshing(false);
-                }}
-                colors={[COLORS.secondary]}
-              />
-            }
-          >
-            <BalanceCard
-              balance={
-                activeTab === "crypto" ? totalAssetValueBalance : fiatBalance
-              }
-              title="Total Balance"
-              showTransactionsButton={false}
-              showActionButtons={false}
-              currency={activeTab === "crypto" ? "USD" : "NGN"}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={async () => {
+                setIsRefreshing(true);
+                await refetch();
+                setIsRefreshing(false);
+              }}
+              colors={[COLORS.secondary]}
             />
-            <View style={styles.limitContainer}>
-              <View style={styles.limitHeader}>
-                <Text style={styles.limitLabel}>
-                  Daily Limit: ₦
-                  {walletSummary?.daily_limit?.toLocaleString() || "0"}
-                </Text>
-                <Text style={styles.upgradeText}>Upgrade Limit</Text>
-              </View>
-
-              <View style={styles.progressBarBackground}>
-                <View
-                  style={[
-                    styles.progressBarFill,
-                    { width: `${Math.min(progress * 100, 100)}%` },
-                  ]}
-                />
-              </View>
-
-              <View style={styles.limitRange}>
-                <Text style={styles.limitValue}>
-                  {formatAmount(walletSummary?.total_today) || "0"}
-                </Text>
-                <Text style={styles.limitValue}>
-                  {formatAmount(walletSummary?.daily_limit) || "0"}
-                </Text>
-              </View>
+          }
+        >
+          <BalanceCard
+            balance={
+              activeTab === "crypto" ? totalAssetValueBalance : fiatBalance
+            }
+            title="Total Balance"
+            showTransactionsButton={false}
+            showActionButtons={false}
+            currency={activeTab === "crypto" ? "USD" : "NGN"}
+          />
+          <View style={styles.limitContainer}>
+            <View style={styles.limitHeader}>
+              <Text style={styles.limitLabel}>
+                Daily Limit: ₦
+                {walletSummary?.daily_limit?.toLocaleString() || "0"}
+              </Text>
+              <Text style={styles.upgradeText}>Upgrade Limit</Text>
             </View>
 
-            <View key={activeTab} style={styles.form}>
-              <TextInputField
-                key={activeTab}
-                label="Username"
-                control={control}
-                name="username"
-                placeholder="Enter receipient username"
+            <View style={styles.progressBarBackground}>
+              <View
+                style={[
+                  styles.progressBarFill,
+                  { width: `${Math.min(progress * 100, 100)}%` },
+                ]}
               />
+            </View>
 
-              {activeTab === "crypto" && (
-                <View style={{ marginVertical: 4 }}>
-                  <SelectInput
-                    control={control}
-                    name="asset_id"
-                    label="Choose Asset(coin)"
-                    options={userWallets}
-                    placeholder="Select an asset(coin)"
-                    title="Select an asset"
-                  />
-                </View>
-              )}
+            <View style={styles.limitRange}>
+              <Text style={styles.limitValue}>
+                {formatAmount(walletSummary?.total_today) || "0"}
+              </Text>
+              <Text style={styles.limitValue}>
+                {formatAmount(walletSummary?.daily_limit) || "0"}
+              </Text>
+            </View>
+          </View>
 
+          <View key={activeTab} style={styles.form}>
+            <TextInputField
+              key={activeTab}
+              label="Username"
+              control={control}
+              name="username"
+              placeholder="Enter receipient username"
+            />
+
+            {activeTab === "crypto" && (
               <View style={{ marginVertical: 4 }}>
-                <Text style={styles.label}>
-                  Amount in{" "}
-                  {activeTab === "fiat" ? "Naira (₦)" : "Dollars (USD)"}
-                </Text>
-                <Controller
+                <SelectInput
                   control={control}
-                  name="amount"
-                  render={({ field: { onBlur, onChange } }) => (
-                    <View style={styles.inputContainer}>
-                      <Text style={styles.dollarSign}>
-                        {activeTab === "fiat" ? "₦" : "$"}
-                      </Text>
-                      <TextInput
-                        style={styles.input}
-                        value={displayAmount}
-                        placeholder="0.00"
-                        placeholderTextColor="#999"
-                        keyboardType="decimal-pad"
-                        onBlur={onBlur}
-                        onChangeText={text => {
-                          const formatted = formatWithCommas(text);
-                          const numeric = parseToNumber(formatted);
-                          onChange(numeric);
-                          setDisplayAmount(formatted);
-                        }}
-                      />
-                    </View>
-                  )}
+                  name="asset_id"
+                  label="Choose Asset(coin)"
+                  options={userWallets}
+                  placeholder="Select an asset(coin)"
+                  title="Select an asset"
                 />
               </View>
+            )}
 
-              {activeTab === "fiat" && (
-                <View style={{ marginVertical: 4 }}>
-                  <TextInputField
-                    label="Narration"
-                    control={control}
-                    name="description"
-                    placeholder="Enter description"
-                  />
-                </View>
-              )}
+            <View style={{ marginVertical: 4 }}>
+              <Text style={styles.label}>
+                Amount in {activeTab === "fiat" ? "Naira (₦)" : "Dollars (USD)"}
+              </Text>
+              <Controller
+                control={control}
+                name="amount"
+                render={({ field: { onBlur, onChange } }) => (
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.dollarSign}>
+                      {activeTab === "fiat" ? "₦" : "$"}
+                    </Text>
+                    <TextInput
+                      style={styles.input}
+                      value={displayAmount}
+                      placeholder="0.00"
+                      placeholderTextColor="#999"
+                      keyboardType="decimal-pad"
+                      onBlur={onBlur}
+                      onChangeText={text => {
+                        const formatted = formatWithCommas(text);
+                        const numeric = parseToNumber(formatted);
+                        onChange(numeric);
+                        setDisplayAmount(formatted);
+                      }}
+                    />
+                  </View>
+                )}
+              />
             </View>
-            {activeTab === "crypto" && selectedCryptoWallet?.symbol && (
-              <View style={{ flexDirection: "row", gap: 5 }}>
-                <Text style={styles.limitValue}>
-                  Your {selectedCryptoWallet?.symbol} Wallet Balance and USD
-                  Value:
-                </Text>
-                <Text style={{ flexDirection: "row", gap: 10 }}>
-                  <Text style={styles.limitValue}>
-                    {selectedCryptoWallet?.balance}{" "}
-                    {selectedCryptoWallet?.symbol}
-                  </Text>
-                  <Text style={styles.limitValue}> = </Text>
-                  <Text style={styles.limitValue}>
-                    {formatAmount(
-                      selectedCryptoWallet?.balance *
-                        selectedCryptoWallet?.price,
-                      false,
-                      "USD",
-                    ) || "0"}
-                  </Text>
-                </Text>
-              </View>
-            )}
-
-            {exceedsDailyLimit && (
-              <View style={styles.warningContainer}>
-                <Text style={styles.warningText}>
-                  This amount exceeds your daily transfer limit of{" "}
-                  {formatAmount(walletSummary?.daily_limit ?? 0)}. Please reduce
-                  the amount or upgrade your limit.
-                </Text>
-              </View>
-            )}
-
-            {!exceedsDailyLimit && hasInsufficientBalance && (
-              <View style={styles.warningContainer}>
-                <Text style={styles.warningText}>
-                  You do not have enough balance to complete this transfer.
-                </Text>
-              </View>
-            )}
 
             {activeTab === "fiat" && (
-              <SaveAsBeneficiarySwitch
-                value={saveBeneficiary}
-                onValueChange={setSaveBeneficiary}
-                disabled={isSubmitting}
-              />
+              <View style={{ marginVertical: 4 }}>
+                <TextInputField
+                  label="Narration"
+                  control={control}
+                  name="description"
+                  placeholder="Enter description"
+                />
+              </View>
             )}
-
-            <TouchableOpacity
-              activeOpacity={0.9}
-              onPress={handleSubmit(onSubmit)}
-              disabled={isDisabled}
-              style={{
-                backgroundColor: isDisabled
-                  ? COLORS.fadePrimary
-                  : COLORS.secondary,
-                borderRadius: 100,
-                paddingVertical: 16,
-                marginVertical: 30,
-              }}
-            >
-              <Text
-                style={{
-                  color: "#fff",
-                  fontSize: normalize(18),
-                  textAlign: "center",
-                  fontFamily: getFontFamily("700"),
-                  opacity: isDisabled ? 0.4 : 1,
-                }}
-              >
-                Continue
+          </View>
+          {activeTab === "crypto" && selectedCryptoWallet?.symbol && (
+            <View style={{ flexDirection: "row", gap: 5 }}>
+              <Text style={styles.limitValue}>
+                Your {selectedCryptoWallet?.symbol} Wallet Balance and USD
+                Value:
               </Text>
-            </TouchableOpacity>
-            <CustomLoading loading={isFetching} />
-          </ScrollView>
+              <Text style={{ flexDirection: "row", gap: 10 }}>
+                <Text style={styles.limitValue}>
+                  {selectedCryptoWallet?.balance} {selectedCryptoWallet?.symbol}
+                </Text>
+                <Text style={styles.limitValue}> = </Text>
+                <Text style={styles.limitValue}>
+                  {formatAmount(
+                    selectedCryptoWallet?.balance * selectedCryptoWallet?.price,
+                    false,
+                    "USD",
+                  ) || "0"}
+                </Text>
+              </Text>
+            </View>
+          )}
+
+          {exceedsDailyLimit && (
+            <View style={styles.warningContainer}>
+              <Text style={styles.warningText}>
+                This amount exceeds your daily transfer limit of{" "}
+                {formatAmount(walletSummary?.daily_limit ?? 0)}. Please reduce
+                the amount or upgrade your limit.
+              </Text>
+            </View>
+          )}
+
+          {!exceedsDailyLimit && hasInsufficientBalance && (
+            <View style={styles.warningContainer}>
+              <Text style={styles.warningText}>
+                You do not have enough balance to complete this transfer.
+              </Text>
+            </View>
+          )}
 
           {activeTab === "fiat" && (
-            <ConfirmationModal
-              data={{ amount }}
-              showConfirmModal={showConfirmModal}
-              setShowConfirmModal={setShowConfirmModal}
-              handleProceed={handleProceed}
+            <SaveAsBeneficiarySwitch
+              value={saveBeneficiary}
+              onValueChange={setSaveBeneficiary}
+              disabled={isSubmitting}
             />
           )}
-        </>
-      )}
+
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={handleSubmit(onSubmit)}
+            disabled={isDisabled}
+            style={{
+              backgroundColor: isDisabled
+                ? COLORS.fadePrimary
+                : COLORS.secondary,
+              borderRadius: 100,
+              paddingVertical: 16,
+              marginVertical: 30,
+            }}
+          >
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: normalize(18),
+                textAlign: "center",
+                fontFamily: getFontFamily("700"),
+                opacity: isDisabled ? 0.4 : 1,
+              }}
+            >
+              Continue
+            </Text>
+          </TouchableOpacity>
+          <CustomLoading loading={isFetching} />
+        </ScrollView>
+
+        {activeTab === "fiat" && (
+          <ConfirmationModal
+            data={{ amount }}
+            showConfirmModal={showConfirmModal}
+            setShowConfirmModal={setShowConfirmModal}
+            handleProceed={handleProceed}
+          />
+        )}
+      </>
+      {/* )} */}
     </SafeAreaView>
   );
 }

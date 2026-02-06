@@ -58,12 +58,12 @@ export default function CryptoBuyScreen() {
     mode: "onChange",
   });
   const user = useAuthStore(state => state.user);
-  const isAlreadyVerified = useMemo(
-    () =>
-      user?.bvn_verification_status === "VERIFIED" ||
-      user?.nin_verification_status === "VERIFIED",
-    [user.bvn_verification_status, user?.nin_verification_status],
-  );
+  // const isAlreadyVerified = useMemo(
+  //   () =>
+  //     user?.bvn_verification_status === "VERIFIED" ||
+  //     user?.nin_verification_status === "VERIFIED",
+  //   [user.bvn_verification_status, user?.nin_verification_status],
+  // );
 
   const { assets } = useAssets();
 
@@ -109,9 +109,9 @@ export default function CryptoBuyScreen() {
     });
   };
 
-  if (!isAlreadyVerified) {
-    return <KYCStatusScreen />;
-  }
+  // if (!isAlreadyVerified) {
+  //   return <KYCStatusScreen />;
+  // }
 
   const hasInsufficientBalance = useMemo(() => {
     if (!ngnAmount) return false;

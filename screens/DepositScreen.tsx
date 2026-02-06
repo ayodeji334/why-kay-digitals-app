@@ -83,96 +83,92 @@ const DepositScreen = () => {
 
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
-      {user?.bvn_verification_status !== "VERIFIED" ? (
-        <KYCStatusScreen />
-      ) : (
-        <>
-          <ScrollView
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>
-                How much would you like to deposit?
-              </Text>
+      <>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>
+              How much would you like to deposit?
+            </Text>
 
-              <TextInput
-                style={[
-                  styles.amountInput,
-                  amountError && styles.amountInputError,
-                ]}
-                placeholder={`Enter amount up to ₦${maxAmount.toLocaleString()}`}
-                placeholderTextColor="#999"
-                keyboardType="numeric"
-                value={amount}
-                onChangeText={handleAmountChange}
-              />
-
-              {amountError ? (
-                <Text style={styles.errorText}>{amountError}</Text>
-              ) : (
-                amount && (
-                  <Text style={styles.amountDisplay}>
-                    {formatAmount(parseFloat(amount), false, "NGN", 0)}
-                  </Text>
-                )
-              )}
-
-              {amount && maxAmount > 0 && (
-                <View style={styles.progressContainer}>
-                  <View style={styles.progressBar}>
-                    <View
-                      style={[
-                        styles.progressFill,
-                        {
-                          width: `${Math.min(
-                            (parseFloat(amount) / maxAmount) * 100,
-                            100,
-                          )}%`,
-                          backgroundColor:
-                            parseFloat(amount) > maxAmount
-                              ? "#EF4444"
-                              : "#22C55E",
-                        },
-                      ]}
-                    />
-                  </View>
-                  <Text style={styles.progressText}>
-                    {Math.min(
-                      (parseFloat(amount) / maxAmount) * 100,
-                      100,
-                    ).toFixed(0)}
-                    % of your limit
-                  </Text>
-                </View>
-              )}
-
-              {(user?.tier_level === "TIER_1" ||
-                user?.tier_level === "TIER_2") && (
-                <InfoCard
-                  IconComponent={<InfoCircle />}
-                  title="Want higher limits?"
-                  description="Complete additional verification to increase your transaction limits up to ₦1,000,000"
-                />
-              )}
-            </View>
-          </ScrollView>
-
-          <View style={styles.bottomButtonWrapper}>
-            <TouchableOpacity
-              activeOpacity={0.8}
+            <TextInput
               style={[
-                styles.continueButton,
-                (!amount || amountError) && styles.continueButtonDisabled,
+                styles.amountInput,
+                amountError && styles.amountInputError,
               ]}
-              onPress={handleContinue}
-              disabled={!amount || !!amountError}
-            >
-              <Text style={styles.continueButtonText}>Continue to Deposit</Text>
-            </TouchableOpacity>
+              placeholder={`Enter amount up to ₦${maxAmount.toLocaleString()}`}
+              placeholderTextColor="#999"
+              keyboardType="numeric"
+              value={amount}
+              onChangeText={handleAmountChange}
+            />
+
+            {amountError ? (
+              <Text style={styles.errorText}>{amountError}</Text>
+            ) : (
+              amount && (
+                <Text style={styles.amountDisplay}>
+                  {formatAmount(parseFloat(amount), false, "NGN", 0)}
+                </Text>
+              )
+            )}
+
+            {amount && maxAmount > 0 && (
+              <View style={styles.progressContainer}>
+                <View style={styles.progressBar}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      {
+                        width: `${Math.min(
+                          (parseFloat(amount) / maxAmount) * 100,
+                          100,
+                        )}%`,
+                        backgroundColor:
+                          parseFloat(amount) > maxAmount
+                            ? "#EF4444"
+                            : "#22C55E",
+                      },
+                    ]}
+                  />
+                </View>
+                <Text style={styles.progressText}>
+                  {Math.min(
+                    (parseFloat(amount) / maxAmount) * 100,
+                    100,
+                  ).toFixed(0)}
+                  % of your limit
+                </Text>
+              </View>
+            )}
+
+            {(user?.tier_level === "TIER_1" ||
+              user?.tier_level === "TIER_2") && (
+              <InfoCard
+                IconComponent={<InfoCircle />}
+                title="Want higher limits?"
+                description="Complete additional verification to increase your transaction limits up to ₦1,000,000"
+              />
+            )}
           </View>
-        </>
-      )}
+        </ScrollView>
+
+        <View style={styles.bottomButtonWrapper}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={[
+              styles.continueButton,
+              (!amount || amountError) && styles.continueButtonDisabled,
+            ]}
+            onPress={handleContinue}
+            disabled={!amount || !!amountError}
+          >
+            <Text style={styles.continueButtonText}>Continue to Deposit</Text>
+          </TouchableOpacity>
+        </View>
+      </>
     </SafeAreaView>
   );
 };
