@@ -213,11 +213,9 @@ export default function SendScreen() {
                     Wallet Balance in USD:
                   </Text>
                   <Text style={styles.balance}>
-                    {`${balance} ${symbol} = ${formatAmount(
-                      balance * price,
-                      false,
-                      "USD",
-                    )}`}
+                    {`${balance} ${symbol} = ${formatAmount(balance * price, {
+                      currency: "USD",
+                    })}`}
                   </Text>
                 </View>
                 <View
@@ -235,7 +233,7 @@ export default function SendScreen() {
                     Network Fee::
                   </Text>
                   <Text style={styles.balance}>
-                    {formatAmount(2.0, false, "USD")}
+                    {formatAmount(2.0, { currency: "USD" })}
                   </Text>
                 </View>
               </View>

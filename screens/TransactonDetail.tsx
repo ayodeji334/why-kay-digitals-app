@@ -94,7 +94,10 @@ const TransactionDetailScreen = () => {
             {transaction?.medium?.toUpperCase() === "CRYPTO"
               ? transaction?.meta?.amount +
                 (transaction?.meta?.asset_symbol ?? "")
-              : formatAmount(transaction?.amount, false, "NGN", 2)}
+              : formatAmount(transaction?.amount, {
+                  currency: "USD",
+                  decimalPlace: 2,
+                })}
           </Text>
           <Text
             style={{
@@ -136,34 +139,39 @@ const TransactionDetailScreen = () => {
             label="Amount"
             value={
               transaction?.medium?.toUpperCase() === "CRYPTO"
-                ? formatAmount(
-                    transaction?.meta?.amount_in_naira ?? 0,
-                    false,
-                    "NGN",
-                    2,
-                  )
-                : formatAmount(transaction?.amount, false, "NGN", 2)
+                ? formatAmount(transaction?.meta?.amount_in_naira ?? 0, {
+                    currency: "USD",
+                    decimalPlace: 2,
+                  })
+                : formatAmount(transaction?.amount, {
+                    currency: "USD",
+                    decimalPlace: 2,
+                  })
             }
             color={getDirectionColor()}
           />
           <DetailRow
             label="Fee"
-            value={formatAmount(transaction?.fee, false, "NGN", 2)}
+            value={formatAmount(transaction?.fee, {
+              currency: "USD",
+              decimalPlace: 2,
+            })}
           />
           <DetailRow
             label="Net Amount"
-            value={formatAmount(transaction?.net_amount, false, "NGN", 2)}
+            value={formatAmount(transaction?.net_amount, {
+              currency: "USD",
+              decimalPlace: 2,
+            })}
           />
           {transaction?.meta?.exchange_rate && (
             <DetailRow
               label="Exchange Rate"
               value={
-                formatAmount(
-                  transaction?.meta?.exchange_rate,
-                  false,
-                  "NGN",
-                  2,
-                ) + "/$"
+                formatAmount(transaction?.meta?.exchange_rate, {
+                  currency: "USD",
+                  decimalPlace: 2,
+                }) + "/$"
               }
             />
           )}

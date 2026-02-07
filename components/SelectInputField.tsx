@@ -166,7 +166,10 @@ export function SelectInput({
                           </Text>
                           {item.market_value && (
                             <Text style={styles.optionPrice}>
-                              {formatAmount(item.market_value, false, "USD", 2)}
+                              {formatAmount(item.market_value, {
+                                currency: "USD",
+                                decimalPlace: 2,
+                              })}
                             </Text>
                           )}
                         </View>

@@ -62,9 +62,9 @@ export default function ConfirmTransactionScreen() {
         transaction.category === "CRYPTO_SWAP" &&
         transaction.status === "pending"
       ) {
-        navigation.navigate("PendingSwap", { transaction });
+        navigation.replace("PendingSwap", { transaction });
       } else {
-        navigation.navigate("TransactionDetail", { transaction });
+        navigation.replace("TransactionDetail", { transaction });
       }
     } finally {
       setIsLoading(false);

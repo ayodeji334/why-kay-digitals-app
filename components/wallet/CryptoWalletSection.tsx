@@ -330,12 +330,15 @@ const AssetItem = React.memo(({ asset, onPress }: any) => (
           {asset.name} ({asset.symbol})
         </Text>
         <Text style={styles.assetSymbol}>
-          {formatAmount(asset.price, false, "USD")}
+          {formatAmount(asset.price, { currency: "USD" })}
         </Text>
       </View>
     </View>
     <View style={styles.assetRight}>
       <Text style={styles.assetPrice}>{asset.balance}</Text>
+      <Text style={[styles.assetPrice, { fontSize: 17 }]}>
+        {formatAmount(asset.balance * asset.price, { currency: "USD" })}
+      </Text>
     </View>
   </TouchableOpacity>
 ));

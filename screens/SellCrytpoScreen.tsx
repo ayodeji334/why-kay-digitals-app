@@ -265,8 +265,7 @@ export default function CryptoSellScreen() {
                       {formatAmount(
                         Number(assetDetails?.balance) *
                           Number(assetDetails?.market_current_value) || 0,
-                        false,
-                        "USD",
+                        { currency: "USD" },
                       )}
                     </Text>
                   </View>
@@ -308,7 +307,7 @@ export default function CryptoSellScreen() {
                       Service Network Fee:
                     </Text>
                     <Text style={styles.balance}>
-                      {formatAmount(2, false, "USD")}
+                      {formatAmount(2, { currency: "USD" })}
                     </Text>
                   </View>
                 </View>
@@ -350,10 +349,10 @@ export default function CryptoSellScreen() {
                     {formatAmount(
                       Number(assetDetails?.balance) *
                         Number(assetDetails?.market_current_value) || 0,
-                      false,
-                      "USD",
+                      { currency: "USD" },
                     )}{" "}
-                    which is less than {formatAmount(amount, false, "USD")}
+                    which is less than{" "}
+                    {formatAmount(amount, { currency: "USD" })}
                   </Text>
                 </View>
               )}

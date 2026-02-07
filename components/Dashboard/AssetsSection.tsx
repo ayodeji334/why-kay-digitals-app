@@ -111,9 +111,7 @@ const AssetsSection = () => {
                       <Text style={styles.assetBalance}>
                         {formatAmount(
                           parseFloat(asset.market_current_value || 0),
-                          false,
-                          "USD",
-                          2,
+                          { currency: "USD", decimalPlace: 2 },
                         )}
                       </Text>
                       {asset.change === "up" ? (
@@ -126,12 +124,10 @@ const AssetsSection = () => {
                   <View style={styles.assetStats}>
                     <Text style={styles.assetLabel}>Rate:</Text>
                     <Text style={styles.assetValue}>
-                      {formatAmount(
-                        asset.sell_rate?.toString(),
-                        false,
-                        "NGN",
-                        2,
-                      )}{" "}
+                      {formatAmount(asset.sell_rate?.toString(), {
+                        currency: "USD",
+                        decimalPlace: 2,
+                      })}{" "}
                       /$
                     </Text>
                   </View>

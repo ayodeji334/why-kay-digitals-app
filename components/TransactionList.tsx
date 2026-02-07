@@ -90,12 +90,12 @@ const TransactionItem = ({ item }: any) => {
               ? `+ ${
                   item?.medium.toUpperCase() === "CRYPTO"
                     ? item?.amount.toString()
-                    : formatAmount(item?.amount, false)
+                    : formatAmount(item?.amount)
                 }`
               : `- ${
                   item?.medium.toUpperCase() === "CRYPTO"
                     ? item?.amount.toString()
-                    : formatAmount(item?.amount, false)
+                    : formatAmount(item?.amount)
                 }`}
           </Text>
         </View>

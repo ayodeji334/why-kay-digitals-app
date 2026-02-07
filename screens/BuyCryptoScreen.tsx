@@ -232,7 +232,7 @@ export default function CryptoBuyScreen() {
                     {assetDetails?.symbol} Network Fee:
                   </Text>
                   <Text style={styles.balance}>
-                    {formatAmount(2, false, "USD")}
+                    {formatAmount(2, { currency: "USD" })}
                   </Text>
                 </View>
               </View>
@@ -254,8 +254,8 @@ export default function CryptoBuyScreen() {
               <View style={styles.warningContainer}>
                 <Text style={styles.warningText}>
                   Insufficient balance! Your current fiat balance is{" "}
-                  {formatAmount(fiatBalance, false, "NGN")} which is less than{" "}
-                  {formatAmount(ngnAmount || 0, false, "NGN")}{" "}
+                  {formatAmount(fiatBalance, { currency: "USD" })} which is less
+                  than {formatAmount(ngnAmount || 0, { currency: "USD" })}{" "}
                 </Text>
               </View>
             )}

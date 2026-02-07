@@ -318,11 +318,10 @@ export default function CryptoSwapScreen() {
                   Your {symbol} Wallet balance in USD:
                 </Text>
                 <Text style={styles.balance}>
-                  {formatAmount(
-                    Number(balance) * Number(price) || 0,
-                    false,
-                    "USD",
-                  )}
+                  {formatAmount(Number(balance) * Number(price) || 0, {
+                    currency: "USD",
+                    decimalPlace: 2,
+                  })}
                 </Text>
               </View>
               <View
@@ -337,7 +336,9 @@ export default function CryptoSwapScreen() {
                   {symbol} Market Current Price in USD:
                 </Text>
                 <Text style={styles.balance}>
-                  {formatAmount(Number(fromAsset?.price) || 0, false, "USD")}
+                  {formatAmount(Number(fromAsset?.price) || 0, {
+                    currency: "USD",
+                  })}
                 </Text>
               </View>
               <View
@@ -352,11 +353,10 @@ export default function CryptoSwapScreen() {
                   {toAsset?.symbol} Market Current Price in USD:
                 </Text>
                 <Text style={styles.balance}>
-                  {formatAmount(
-                    Number(toAsset?.market_current_value) || 0,
-                    false,
-                    "USD",
-                  )}
+                  {formatAmount(Number(toAsset?.market_current_value) || 0, {
+                    currency: "USD",
+                    decimalPlace: 2,
+                  })}
                 </Text>
               </View>
               <View
@@ -371,7 +371,7 @@ export default function CryptoSwapScreen() {
                   Service Network Fee:
                 </Text>
                 <Text style={styles.balance}>
-                  {formatAmount(2, false, "USD")}
+                  {formatAmount(2, { currency: "USD" })}
                 </Text>
               </View>
             </View>
@@ -383,7 +383,7 @@ export default function CryptoSwapScreen() {
             >
               <Text style={styles.min}>
                 Estimated Network Fee:{" "}
-                {formatAmount(amount * 0.01, false, "USD")}
+                {formatAmount(amount * 0.01, { currency: "USD"})}
               </Text>
             </View> */}
             <View style={styles.paymentContainer}>

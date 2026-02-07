@@ -16,7 +16,6 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { InfoCircle } from "iconsax-react-nativejs";
 import InfoCard from "../components/InfoCard";
 import { formatAmount } from "../libs/formatNumber";
-import KYCStatusScreen from "../components/KYCStatusScreen";
 
 const DepositScreen = () => {
   const navigation: any = useNavigation();
@@ -110,7 +109,7 @@ const DepositScreen = () => {
             ) : (
               amount && (
                 <Text style={styles.amountDisplay}>
-                  {formatAmount(parseFloat(amount), false, "NGN", 0)}
+                  {formatAmount(parseFloat(amount), { currency: "USD" })}
                 </Text>
               )
             )}

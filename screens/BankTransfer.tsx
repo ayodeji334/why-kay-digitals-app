@@ -24,7 +24,6 @@ import {
 } from "iconsax-react-nativejs";
 // import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
-import { formatAmount } from "../libs/formatNumber";
 import KYCStatusScreen from "../components/KYCStatusScreen";
 
 const BankTransferScreen = () => {

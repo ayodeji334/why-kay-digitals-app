@@ -63,9 +63,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
       <View style={styles.balanceAmount}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={styles.amount}>
-            {visible
-              ? formatAmount(balance ?? 0, false, currency)
-              : "**********"}
+            {visible ? formatAmount(balance ?? 0, { currency }) : "**********"}
           </Text>
         </View>
         <TouchableOpacity

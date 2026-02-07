@@ -179,14 +179,14 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Wallet Balance</Text>
           <Text style={styles.infoValue}>
-            {formatAmount(parseFloat(wallet.balance) || 0, false, "USD")}
+            {formatAmount(parseFloat(wallet.balance) || 0, { currency: "USD" })}
           </Text>
         </View>
 
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Market Value</Text>
           <Text style={styles.infoValue}>
-            {formatAmount(parseFloat(wallet.price) || 0, false, "USD")}
+            {formatAmount(parseFloat(wallet.price) || 0, { currency: "USD" })}
           </Text>
         </View>
       </View>

@@ -368,8 +368,7 @@ export default function TransferScreen() {
                 <Text style={styles.limitValue}>
                   {formatAmount(
                     selectedCryptoWallet?.balance * selectedCryptoWallet?.price,
-                    false,
-                    "USD",
+                    { currency: "USD" },
                   ) || "0"}
                 </Text>
               </Text>
