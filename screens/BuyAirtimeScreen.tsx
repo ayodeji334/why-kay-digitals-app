@@ -182,7 +182,7 @@ export default function BuyAirtimeScreen() {
                     amount === amountValue && styles.quickAmountTextActive,
                   ]}
                 >
-                  {formatAmount(amountValue, { currency: "USD" })}
+                  {formatAmount(amountValue)}
                 </Text>
               </TouchableOpacity>
             ))}

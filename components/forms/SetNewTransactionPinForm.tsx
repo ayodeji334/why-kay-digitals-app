@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -10,6 +10,7 @@ import { AxiosError } from "axios";
 import { showError, showSuccess } from "../../utlis/toast";
 import useAxios from "../../hooks/useAxios";
 import OtpInputField from "../OtpInputField";
+import { useNavigation } from "@react-navigation/native";
 
 const loginSchema = yup.object().shape({
   token: yup
@@ -35,6 +36,7 @@ type SetNewTransactionPinFormInputs = {
 };
 
 const SetNewTransactionPinForm: React.FC<any> = () => {
+  const navigation = useNavigation();
   const { patch } = useAxios();
   const [loading, setIsLoading] = useState<boolean>(false);
   const { control, handleSubmit, reset } =
@@ -53,13 +55,15 @@ const SetNewTransactionPinForm: React.FC<any> = () => {
       reset();
 
       setIsLoading(false);
+      navigation.goBack();
     } catch (err: unknown) {
-      setIsLoading(false);
       if (err instanceof AxiosError) {
         const errorMessage =
           err.response?.data?.message || "Set New Password failed. Try again.";
         showError(errorMessage);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -68,7 +72,7 @@ const SetNewTransactionPinForm: React.FC<any> = () => {
       <OtpInputField
         control={control}
         name="token"
-        isSecuredText={true}
+        isSecuredText={false}
         boxes={6}
         label="Token"
       />

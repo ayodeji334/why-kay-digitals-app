@@ -282,99 +282,116 @@ export default function CryptoSwapScreen() {
                 </Text>
               )}
             </View>
-            <View
-              style={{
-                marginVertical: 10,
-                backgroundColor: "#EFF7EC",
-                padding: 10,
-                borderRadius: 10,
-              }}
-            >
-              <Text style={[styles.note, { color: "black" }]}>
-                Transaction Breakdown
-              </Text>
+            {fromAsset && toAsset && (
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  marginVertical: 10,
+                  backgroundColor: "#EFF7EC",
+                  padding: 10,
+                  borderRadius: 10,
                 }}
               >
-                <Text
-                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                <Text style={[styles.note, { color: "black" }]}>
+                  Transaction Breakdown
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  Your {symbol} Wallet balance:
-                </Text>
-                <Text style={styles.balance}>{balance || 0}</Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
+                  >
+                    Your {symbol} Wallet balance:
+                  </Text>
+                  <Text style={styles.balance}>{balance || 0}</Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  Your {symbol} Wallet balance in USD:
-                </Text>
-                <Text style={styles.balance}>
-                  {formatAmount(Number(balance) * Number(price) || 0, {
-                    currency: "USD",
-                    decimalPlace: 2,
-                  })}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
+                  >
+                    Your {symbol} Wallet balance in USD:
+                  </Text>
+                  <Text style={styles.balance}>
+                    {formatAmount(Number(balance) * Number(price) || 0, {
+                      currency: "USD",
+                      decimalPlace: 2,
+                    })}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  {symbol} Market Current Price in USD:
-                </Text>
-                <Text style={styles.balance}>
-                  {formatAmount(Number(fromAsset?.price) || 0, {
-                    currency: "USD",
-                  })}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
+                  >
+                    {symbol} Market Current Price in USD:
+                  </Text>
+                  <Text style={styles.balance}>
+                    {formatAmount(Number(fromAsset?.price) || 0, {
+                      currency: "USD",
+                    })}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  {toAsset?.symbol} Market Current Price in USD:
-                </Text>
-                <Text style={styles.balance}>
-                  {formatAmount(Number(toAsset?.market_current_value) || 0, {
-                    currency: "USD",
-                    decimalPlace: 2,
-                  })}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={[styles.balance, { fontFamily: getFontFamily("800") }]}
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
+                  >
+                    {toAsset?.symbol} Market Current Price in USD:
+                  </Text>
+                  <Text style={styles.balance}>
+                    {formatAmount(Number(toAsset?.market_current_value) || 0, {
+                      currency: "USD",
+                      decimalPlace: 2,
+                    })}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  Service Network Fee:
-                </Text>
-                <Text style={styles.balance}>
-                  {formatAmount(2, { currency: "USD" })}
-                </Text>
+                  <Text
+                    style={[
+                      styles.balance,
+                      { fontFamily: getFontFamily("800") },
+                    ]}
+                  >
+                    Service Network Fee:
+                  </Text>
+                  <Text style={styles.balance}>
+                    {formatAmount(2, { currency: "USD" })}
+                  </Text>
+                </View>
               </View>
-            </View>
+            )}
             {/* <View
               style={{
                 flexDirection: "row",

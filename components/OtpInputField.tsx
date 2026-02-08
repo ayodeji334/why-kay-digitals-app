@@ -75,6 +75,31 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
 
             <View style={styles.container}>
               {Array.from({ length: boxes }, (_, index) => (
+                // <TextInput
+                //   key={index}
+                //   ref={el => {
+                //     if (el) inputs.current[index] = el;
+                //   }}
+                //   style={[
+                //     styles.box,
+                //     boxStyle,
+                //     error ? styles.errorBorder : null,
+                //   ]}
+                //   keyboardType="number-pad"
+                //   maxLength={1}
+                //   value={otpArray[index] || ""}
+                //   onChangeText={text => handleChange(text, index)}
+                //   onKeyPress={e => handleKeyPress(e, index)}
+                //   textContentType="oneTimeCode"
+                //   secureTextEntry={isSecuredText}
+                //   selectionColor="transparent"
+                //   caretHidden={isSecuredText}
+                //   placeholder={isSecuredText ? "*" : "*"}
+                //   placeholderTextColor="#999"
+                //   autoCapitalize="none"
+                //   maxFontSizeMultiplier={0}
+                //   autoCorrect={false}
+                // />
                 <TextInput
                   key={index}
                   ref={el => {
@@ -87,14 +112,18 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                   ]}
                   keyboardType="number-pad"
                   maxLength={1}
-                  value={otpArray[index] || ""}
+                  value={
+                    isSecuredText && otpArray[index]
+                      ? "*"
+                      : otpArray[index] || ""
+                  }
                   onChangeText={text => handleChange(text, index)}
                   onKeyPress={e => handleKeyPress(e, index)}
                   textContentType="oneTimeCode"
-                  secureTextEntry={isSecuredText}
+                  secureTextEntry={false} // disable native masking
                   selectionColor="transparent"
                   caretHidden={isSecuredText}
-                  placeholder={isSecuredText ? "*" : "*"}
+                  placeholder="*"
                   placeholderTextColor="#999"
                   autoCapitalize="none"
                   maxFontSizeMultiplier={0}
@@ -117,7 +146,10 @@ const styles = StyleSheet.create({
   },
   container: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    gap: 10,
+    alignItems: "center",
+    alignContent: "center",
+    justifyContent: "center",
   },
   box: {
     width: 50,

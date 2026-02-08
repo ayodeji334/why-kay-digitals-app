@@ -22,6 +22,7 @@ import useAxios from "../../hooks/useAxios";
 import parsePhoneNumberFromString from "libphonenumber-js";
 import PhoneNumberInputField from "../PhoneNumberInputField";
 import EmailInputField from "../EmailInputField";
+import { OneSignal } from "react-native-onesignal";
 
 const registerSchema = yup.object().shape({
   username: yup
@@ -148,9 +149,10 @@ const RegisterForm: React.FC = () => {
   }, [username]);
 
   const handleRegister = async (values: any) => {
+    const userOneSignalID = await OneSignal.User.getOnesignalId();
     try {
       setLoading(true);
-      await post("/auth/register", values);
+      await post("/auth/register", { ...values, device_id: userOneSignalID });
       showSuccess("Registration successful! Please verify your email.");
       navigation.navigate(
         "VerifyCode" as never,
