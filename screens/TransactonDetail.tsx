@@ -95,7 +95,7 @@ const TransactionDetailScreen = () => {
               ? transaction?.meta?.amount +
                 (transaction?.meta?.asset_symbol ?? "")
               : formatAmount(transaction?.amount, {
-                  currency: "USD",
+                  currency: transaction?.currency || "NGN",
                   decimalPlace: 2,
                 })}
           </Text>
@@ -153,14 +153,14 @@ const TransactionDetailScreen = () => {
           <DetailRow
             label="Fee"
             value={formatAmount(transaction?.fee, {
-              currency: "USD",
+              currency: transaction?.currency || "NGN",
               decimalPlace: 2,
             })}
           />
           <DetailRow
             label="Net Amount"
             value={formatAmount(transaction?.net_amount, {
-              currency: "USD",
+              currency: transaction?.currency || "NGN",
               decimalPlace: 2,
             })}
           />
@@ -199,7 +199,9 @@ const TransactionDetailScreen = () => {
           />
           <DetailRow
             label="Occurred At"
-            value={formatDate(transaction?.occurred_at)}
+            value={
+              transaction?.occurred_at && formatDate(transaction?.occurred_at)
+            }
           />
         </View>
 

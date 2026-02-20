@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
+  StatusBar,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -20,8 +21,10 @@ import CustomLoading from "../components/CustomLoading";
 import { SelectInput } from "../components/SelectInputField";
 import { useWallets } from "../hooks/useWallet";
 import { useAssets } from "../hooks/useAssets";
-import KYCStatusScreen from "../components/KYCStatusScreen";
+// import KYCStatusScreen from "../components/KYCStatusScreen";
 import { useAuthStore } from "../stores/authSlice";
+import useAxios from "../hooks/useAxios";
+import { useMutation } from "@tanstack/react-query";
 
 export const formatWithCommas = (value: string) => {
   if (!value) return "";
@@ -97,7 +100,7 @@ export default function CryptoSwapScreen() {
   const navigation: any = useNavigation();
   const { assets, isLoading, refetch } = useAssets();
   const { data, refetch: refetchUserWallets } = useWallets();
-  const user = useAuthStore(state => state.user);
+  // const user = useAuthStore(state => state.user);
 
   const options = useMemo(
     () =>
@@ -145,9 +148,10 @@ export default function CryptoSwapScreen() {
   const balance = Number(fromAsset?.balance ?? 0);
   const price = Number(fromAsset?.price ?? 0);
   const symbol = fromAsset?.symbol ?? "";
+  const { post } = useAxios();
 
-  const { fromAmount, toCoinAmount } = useMemo(() => {
-    if (!amount || !fromAsset.price || !toAsset.market_current_value) {
+  const { fromAmount } = useMemo(() => {
+    if (!amount || !fromAsset?.price || !toAsset?.market_current_value) {
       return {
         fromAmount: 0,
         toCoinAmount: 0,
@@ -188,16 +192,34 @@ export default function CryptoSwapScreen() {
     return (usdAmount / fromMarketPrice).toFixed(8);
   }, [amount, fromAsset]);
 
-  const onSubmit = async (values: any) => {
-    const payload = {
-      ...values,
-      amount: Number(values.amount),
-      url: "/wallets/user/swap-crypto",
-    };
+  const swapMutation = useMutation({
+    mutationFn: async (values: any) => {
+      return await post("crypto/request-quote", {
+        ...values,
+        amount: Number(values.amount),
+      });
+    },
+    onSuccess: response => {
+      navigation.navigate("ConversionQuote" as never, {
+        quote: response?.data?.data ?? {},
+      });
+    },
+    onError: error => {
+      console.error("Swap failed:", error);
+    },
+  });
 
-    navigation.navigate("ConfirmTransaction" as never, {
-      payload,
-    });
+  const onSubmit = async (values: any) => {
+    // const payload = {
+    //   ...values,
+    //   amount: Number(values.amount),
+    //   url: "/wallets/user/swap-crypto",
+    // };
+
+    swapMutation.mutate(values);
+    // navigation.navigate("ConfirmTransaction" as never, {
+    //   payload,
+    // });
   };
 
   const onRefresh = async () => {
@@ -208,14 +230,15 @@ export default function CryptoSwapScreen() {
   const canSubmit = isValid && !insufficientBalance && amount > 0;
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
-      {/* {user?.bvn_verification_status !== "VERIFIED" ||
-      user?.nin_verification_status !== "VERIFIED" ? (
-        <KYCStatusScreen />
-      ) : ( */}
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "white" }}
+      edges={["bottom", "right", "left"]}
+    >
+      <StatusBar barStyle="dark-content" />
       <ScrollView
         contentContainerStyle={{
           backgroundColor: "white",
+          flex: 1,
         }}
         refreshControl={
           <RefreshControl onRefresh={onRefresh} refreshing={isLoading} />
@@ -282,7 +305,8 @@ export default function CryptoSwapScreen() {
                 </Text>
               )}
             </View>
-            {fromAsset && toAsset && (
+
+            {/* {fromAsset && toAsset && (
               <View
                 style={{
                   marginVertical: 10,
@@ -391,7 +415,8 @@ export default function CryptoSwapScreen() {
                   </Text>
                 </View>
               </View>
-            )}
+            )} */}
+
             {/* <View
               style={{
                 flexDirection: "row",
@@ -403,7 +428,7 @@ export default function CryptoSwapScreen() {
                 {formatAmount(amount * 0.01, { currency: "USD"})}
               </Text>
             </View> */}
-            <View style={styles.paymentContainer}>
+            {/* <View style={styles.paymentContainer}>
               <Text style={styles.note}>You'll receive</Text>
               <View
                 style={{
@@ -416,9 +441,8 @@ export default function CryptoSwapScreen() {
                   {toCoinAmount} {toAsset?.symbol || ""}
                 </Text>
               </View>
-            </View>
+            </View> */}
 
-            {/* Insufficient balance warning */}
             {insufficientBalance && fromAsset && (
               <View style={styles.warningContainer}>
                 <Text style={styles.warningText}>
@@ -428,6 +452,19 @@ export default function CryptoSwapScreen() {
                 </Text>
               </View>
             )}
+          </View>
+
+          <View>
+            <TouchableOpacity
+              style={[
+                styles.button,
+                (!canSubmit || swapMutation.isPending) && styles.buttonDisabled,
+              ]}
+              onPress={handleSubmit(onSubmit)}
+              disabled={!canSubmit || swapMutation.isPending}
+            >
+              <Text style={styles.buttonText}>Continue</Text>
+            </TouchableOpacity>
 
             <View style={{ paddingVertical: 10 }}>
               <Text
@@ -437,26 +474,14 @@ export default function CryptoSwapScreen() {
                   textAlign: "center",
                 }}
               >
-                Note: Cryptocurrency prices are volatile. Estimated amounts may
-                change due to market fluctuations between initiating and
-                completing your swap. Final conversion rates are determined at
-                execution time. By proceeding, you acknowledge and accept these
-                market risks.
+                The market prices are volatile. Estimated amounts may change due
+                to market fluctuations between initiating and completing your
+                swap.
               </Text>
             </View>
           </View>
-
-          <TouchableOpacity
-            style={[styles.button, !canSubmit && styles.buttonDisabled]}
-            onPress={handleSubmit(onSubmit)}
-            disabled={!canSubmit}
-          >
-            <Text style={styles.buttonText}>Continue</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
-      {/* )} */}
-
       <CustomLoading loading={isLoading} />
     </SafeAreaView>
   );
@@ -468,7 +493,7 @@ const styles = StyleSheet.create({
     padding: normalize(20),
     backgroundColor: "#fff",
     justifyContent: "space-between",
-    paddingBottom: 30,
+    paddingBottom: 10,
   },
   label: {
     fontSize: normalize(18),
@@ -480,8 +505,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: normalize(8),
+    borderRadius: 8,
     paddingHorizontal: normalize(16),
+    paddingVertical: 1,
     marginBottom: normalize(10),
     gap: 5,
   },

@@ -20,10 +20,7 @@ const WelcomeScreen = () => {
   const navigation: any = useNavigation();
 
   return (
-    <SafeAreaView
-      edges={["right", "bottom", "left", "top"]}
-      style={styles.container}
-    >
+    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={"#03001A"} />
       <ScrollView
         style={styles.scrollContainer}

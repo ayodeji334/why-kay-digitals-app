@@ -53,8 +53,8 @@ export default function ConfirmTransactionScreen() {
         ...rest,
       });
 
-      queryClient.refetchQueries({ queryKey: ["fiat-balance"] });
-      queryClient.refetchQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["fiat-balance"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
 
       const transaction = response?.data?.data;
 

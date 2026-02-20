@@ -19,6 +19,23 @@ export default function BalanceLimitCard({ walletSummary }: any) {
         showActionButtons={false}
       />
 
+      <Text
+        style={{
+          fontFamily: getFontFamily(700),
+          fontSize: 13,
+          color: "black",
+          borderRadius: 10,
+        }}
+      >
+        Note: The balance shown above is your{" "}
+        <Text style={{ fontFamily: getFontFamily("900") }}>
+          withdrawable balance
+        </Text>
+        — the amount you can withdraw from the platform. It does not include
+        your total balance, which may contain deposits that are reserved for
+        trading only
+      </Text>
+
       <View style={styles.limitContainer}>
         <View style={styles.limitHeader}>
           <Text style={styles.limitLabel}>

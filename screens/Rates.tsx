@@ -328,7 +328,7 @@ export default function CryptoRatesScreen() {
           <Text style={styles.label}>Expected Amount (₦)</Text>
           <View style={styles.rateBox}>
             <Text style={styles.rateText}>
-              {formatAmount(currentRate, { currency: "USD" })}
+              {formatAmount(currentRate, { currency: "NGN" })}
             </Text>
           </View>
         </View>

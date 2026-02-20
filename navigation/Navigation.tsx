@@ -53,6 +53,7 @@ import SendScreen from "../screens/SendCrypto";
 import ConfirmCryptoWithdrawalScreen from "../screens/ConfirmCryptoWithdrawScreen";
 import NotificationsScreen from "../screens/Notifications";
 import PendingSwapScreen from "../screens/PendingSwapTransactionScreen";
+import ConversionQuote from "../screens/ConversionQuote";
 
 export default function NavigationRoot() {
   const isAuthenticated = useIsAuthenticated();
@@ -197,6 +198,19 @@ export default function NavigationRoot() {
                   showTitle={true}
                   showBack={false}
                   title="Transaction Detail"
+                />
+              ),
+            },
+          },
+          ConversionQuote: {
+            screen: ConversionQuote,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader
+                  showTitle={true}
+                  showBack={false}
+                  title="Conversion Quote Detail"
                 />
               ),
             },
