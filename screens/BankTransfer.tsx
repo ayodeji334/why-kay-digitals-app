@@ -5,11 +5,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
+  RefreshControl,
   // ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRoute, useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 // import useAxios from "../api/axios";
@@ -22,270 +21,34 @@ import {
   InfoCircle,
   WalletAdd,
 } from "iconsax-react-nativejs";
-// import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
 import KYCStatusScreen from "../components/KYCStatusScreen";
 import useAxios from "../hooks/useAxios";
 import { useQuery } from "@tanstack/react-query";
 import CustomLoading from "../components/CustomLoading";
 
-// const BankTransferScreen = () => {
-//   const route = useRoute();
-//   // const { apiGet } = useAxios();
-//   const navigation = useNavigation();
-//   // const [isCheckingPayment, setIsCheckingPayment] = useState(false);
-//   const [copiedField, setCopiedField] = useState<string | null>(null);
-
-//   // Get user bank accounts from store
-//   const user = useAuthStore(state => state.user);
-//   const bankAccounts = user?.bank_accounts || [];
-//   const data =
-//     bankAccounts.find((account: any) => account.is_primary) || bankAccounts[0];
-
-//   const copyToClipboard = async (text: string, field: string) => {
-//     try {
-//       Clipboard.setString(text);
-//       showSuccess("Copied to clipboard");
-//       setCopiedField(field);
-
-//       setTimeout(() => {
-//         setCopiedField(null);
-//       }, 600);
-//     } catch (error) {
-//       showError("Failed to copy");
-//     }
-//   };
-
-//   // const checkPaymentStatus = async () => {
-//   //   try {
-//   //     setIsCheckingPayment(true);
-//   //     const response = await apiGet("/payments/status");
-
-//   //     if (response.data?.success) {
-//   //       const paymentStatus = response.data.data.status;
-
-//   //       if (paymentStatus === "successful") {
-//   //         showSuccess("Payment received successfully!");
-//   //         navigation.navigate("DepositSuccess" as never);
-//   //       } else if (paymentStatus === "pending") {
-//   //         showError("Payment is still processing. Please wait a few minutes.");
-//   //       } else {
-//   //         showError("Payment not found. Please try again.");
-//   //       }
-//   //     } else {
-//   //       showError("Unable to check payment status");
-//   //     }
-//   //   } catch (error) {
-//   //     showError("Failed to check payment status");
-//   //   } finally {
-//   //     setIsCheckingPayment(false);
-//   //   }
-//   // };
-
-//   // const handleIHaveMadeDeposit = () => {
-//   //   Alert.alert(
-//   //     "Confirm Soon",
-//   //     `Features coming soon! In the meantime, please wait for automatic verification of your deposit.`,
-//   //   );
-//   // };
-
-//   // Empty state component
-//   const EmptyBankAccountsState = () => (
-//     <View style={styles.emptyState}>
-//       <View style={styles.emptyIcon}>
-//         <WalletAdd size={40} color="#666" />
-//       </View>
-//       <Text style={styles.emptyTitle}>No Virtual Account Found</Text>
-//       <Text style={styles.emptyDescription}>
-//         You need to create a virtual account before you can make deposits. This
-//         only takes a moment and is required for secure transactions.
-//       </Text>
-//       <TouchableOpacity
-//         style={styles.emptyButton}
-//         onPress={() => navigation.navigate("Verification" as never)}
-//       >
-//         <Text style={styles.emptyButtonText}>Create Virtual Account</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-
-//   // Show empty state if no bank accounts
-//   if (!data) {
-//     return (
-//       <SafeAreaView
-//         edges={["right", "bottom", "left"]}
-//         style={styles.container}
-//       >
-//         <ScrollView
-//           style={styles.scrollView}
-//           showsVerticalScrollIndicator={false}
-//           contentContainerStyle={styles.emptyContainer}
-//         >
-//           <EmptyBankAccountsState />
-//         </ScrollView>
-//       </SafeAreaView>
-//     );
-//   }
-
-//   return (
-//     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-//       {user?.bvn_verification_status !== "VERIFIED" ? (
-//         <KYCStatusScreen />
-//       ) : (
-//         <ScrollView
-//           style={styles.scrollView}
-//           showsVerticalScrollIndicator={false}
-//         >
-//           <View style={styles.section}>
-//             <Text style={styles.sectionTitle}>
-//               Transfer to your virtual account
-//             </Text>
-//             <Text style={styles.instructionText}>
-//               Make a bank transfer to any of these account numbers and your
-//               Whykay Digitals Wallet will be funded immediately in your fiat
-//               wallet.
-//             </Text>
-//           </View>
-
-//           {/* Virtual Account Details */}
-//           <View style={styles.accountSection}>
-//             <View style={styles.detailItem}>
-//               <Text style={styles.detailLabel}>Account Name</Text>
-//               <View style={styles.copyableField}>
-//                 <Text style={styles.detailValue} numberOfLines={1}>
-//                   {data.account_name}
-//                 </Text>
-//               </View>
-//             </View>
-
-//             <View style={styles.detailItem}>
-//               <Text style={styles.detailLabel}>Bank Name</Text>
-//               <View style={styles.copyableField}>
-//                 <Text style={styles.detailValue}>
-//                   {data.bank_name}
-//                 </Text>
-//               </View>
-//             </View>
-
-//             {/* Account Number */}
-//             <View style={styles.detailItem}>
-//               <Text style={styles.detailLabel}>Account Number</Text>
-//               <View style={styles.copyableField}>
-//                 <Text style={[styles.detailValue, styles.accountNumber]}>
-//                   {data.account_number}
-//                 </Text>
-//               </View>
-//             </View>
-
-//             <TouchableOpacity
-//               activeOpacity={0.8}
-//               onPress={() =>
-//                 copyToClipboard(
-//                   data.account_number,
-//                   "accountNumber",
-//                 )
-//               }
-//               style={styles.copyButton}
-//             >
-//               <Text
-//                 style={{
-//                   color: "white",
-//                   fontSize: normalize(19),
-//                   fontFamily: getFontFamily(700),
-//                 }}
-//               >
-//                 Tap to copy account details
-//               </Text>
-//               {copiedField === "accountNumber" ? (
-//                 <Check size={13} color="white" />
-//               ) : (
-//                 <CopySuccess size={13} color="white" />
-//               )}
-//             </TouchableOpacity>
-//           </View>
-
-//           {/* Show additional accounts if available */}
-//           {/* {bankAccounts.length > 1 && (
-//             <View style={styles.additionalAccounts}>
-//               <Text style={styles.additionalTitle}>Additional Accounts</Text>
-//               {bankAccounts
-//                 .filter((account: any) => !account.is_primary)
-//                 .map((account: any, index: number) => (
-//                   <View
-//                     key={account.account_number}
-//                     style={styles.additionalAccount}
-//                   >
-//                     <View style={styles.additionalAccountInfo}>
-//                       <Text style={styles.additionalBankName}>
-//                         {account.bank_name}
-//                       </Text>
-//                       <Text style={styles.additionalAccountNumber}>
-//                         {account.account_number}
-//                       </Text>
-//                     </View>
-//                     <TouchableOpacity
-//                       onPress={() =>
-//                         copyToClipboard(
-//                           account.account_number,
-//                           `account-${index}`,
-//                         )
-//                       }
-//                       style={styles.additionalCopyButton}
-//                     >
-//                       <CopySuccess size={16} color={COLORS.primary} />
-//                     </TouchableOpacity>
-//                   </View>
-//                 ))}
-//             </View>
-//           )} */}
-
-//           <InfoCard
-//             IconComponent={<InfoCircle />}
-//             title="Important Notes:"
-//             description={[
-//               "Transfers typically reflect within 5-10 minutes",
-//               "Transfer exactly the amount shown above",
-//               "Use only the account details provided above",
-//               "This virtual account is dedicated to your profile",
-//             ]}
-//           />
-//           {/* <View style={styles.buttonContainer}>
-//             <TouchableOpacity
-//               activeOpacity={0.8}
-//               style={styles.primaryButton}
-//               onPress={handleIHaveMadeDeposit}
-//               // disabled={isCheckingPayment}
-//             >
-//               {/* {isCheckingPayment ? (
-//               <ActivityIndicator color="#FFFFFF" size="small" />
-//             ) : ( */}
-//           {/* <Text style={styles.primaryButtonText}>I have made deposit</Text> */}
-//           {/* )}
-//             </TouchableOpacity>
-//           </View> */}
-//         </ScrollView>
-//       )}
-
-//       {/* <CustomLoading loading={isCheckingPayment} /> */}
-//     </SafeAreaView>
-//   );
-// };
-
 const BankTransferScreen = () => {
   const { apiGet } = useAxios();
-  const navigation = useNavigation();
   const [copiedField, setCopiedField] = useState<string | null>(null);
-
+  const [refreshing, setRefreshing] = useState(false);
   const user = useAuthStore(state => state.user);
 
-  // Fetch user bank accounts with react-query
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["userBankAccounts"],
     queryFn: async () => {
       const response = await apiGet(`/users/user/virtual-account`);
       return response.data.data || {};
     },
   });
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const copyToClipboard = async (text: string, field: string) => {
     try {
@@ -301,37 +64,42 @@ const BankTransferScreen = () => {
     }
   };
 
-  const EmptyBankAccountsState = () => (
-    <View style={styles.emptyState}>
-      <View style={styles.emptyIcon}>
-        <WalletAdd size={40} color="#666" />
-      </View>
-      <Text style={styles.emptyTitle}>No Virtual Account Found</Text>
-      <Text style={styles.emptyDescription}>
-        You need to create a virtual account before you can make deposits. This
-        only takes a moment and is required for secure transactions.
-      </Text>
-      <TouchableOpacity
-        style={styles.emptyButton}
-        onPress={() => navigation.navigate("Verification" as never)}
-      >
-        <Text style={styles.emptyButtonText}>Create Virtual Account</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  if (isLoading) {
+    return <CustomLoading loading={isLoading} />;
+  }
 
-  if (!data) {
+  if (user?.bvn_verification_status === "VERIFIED" && !data) {
     return (
       <SafeAreaView
         edges={["right", "bottom", "left"]}
         style={styles.container}
       >
         <ScrollView
-          style={styles.scrollView}
+          style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.emptyContainer}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
-          <EmptyBankAccountsState />
+          <View style={styles.emptyState}>
+            <View style={styles.emptyIcon}>
+              <WalletAdd size={40} color="#666" />
+            </View>
+            <Text style={styles.emptyTitle}>No Virtual Account</Text>
+            <Text style={styles.emptyDescription}>
+              You need to create a virtual account before you can make deposits.
+              This only takes a moment and is required for secure transactions.
+              Please ensure your BVN is verified to activate your virtual
+              account.
+            </Text>
+            <TouchableOpacity
+              style={styles.emptyButton}
+              onPress={() => refetch()}
+            >
+              <Text style={styles.emptyButtonText}>Try again</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </SafeAreaView>
     );
@@ -345,13 +113,16 @@ const BankTransferScreen = () => {
         <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>
               Transfer to your virtual account
             </Text>
             <Text style={styles.instructionText}>
-              Make a bank transfer to any of these account numbers and your
+              Make a bank transfer to any of these account number and your
               Whykay Digitals Wallet will be funded immediately in your fiat
               wallet.
             </Text>
@@ -419,8 +190,6 @@ const BankTransferScreen = () => {
           />
         </ScrollView>
       )}
-
-      <CustomLoading loading={isLoading} />
     </SafeAreaView>
   );
 };
@@ -469,9 +238,9 @@ const styles = StyleSheet.create({
   },
   emptyButton: {
     backgroundColor: COLORS.primary,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingHorizontal: 44,
+    paddingVertical: 10,
+    borderRadius: 800,
     width: "100%",
   },
   emptyButtonText: {

@@ -3,12 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { normalize, getFontFamily } from "../constants/settings";
 import { COLORS } from "../constants/colors";
-import {
-  ShieldSearch,
-  User,
-  DocumentText,
-  TickCircle,
-} from "iconsax-react-nativejs";
+import { ShieldSearch, User } from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
 
@@ -16,10 +11,9 @@ export default function KYCStatusScreen() {
   const navigation = useNavigation();
   const user = useAuthStore(state => state.user);
   const isAlreadyVerified = useMemo(
-    () =>
-      user?.bvn_verification_status === "VERIFIED" ||
-      user?.nin_verification_status === "VERIFIED",
-    [user.bvn_verification_status, user?.nin_verification_status],
+    () => user?.bvn_verification_status === "VERIFIED",
+    // user?.nin_verification_status === "VERIFIED",
+    [user.bvn_verification_status],
   );
 
   return (
@@ -37,7 +31,7 @@ export default function KYCStatusScreen() {
               <ShieldSearch size={30} color={COLORS.primary} variant="Linear" />
             </View>
             <Text style={styles.emptyTitle}>
-              Complete Your KYC Verification
+              Complete Your BVN Verification
             </Text>
             <Text style={styles.emptyDescription}>
               To access this service, we need to verify your identity. This is a
@@ -61,7 +55,7 @@ export default function KYCStatusScreen() {
                 </View>
               </View>
 
-              <View style={styles.requirementRow}>
+              {/* <View style={styles.requirementRow}>
                 <View style={[styles.requirementIcon]}>
                   <DocumentText
                     size={15}
@@ -75,9 +69,9 @@ export default function KYCStatusScreen() {
                     Provide a valid National Identification Number (NIN)
                   </Text>
                 </View>
-              </View>
+              </View> */}
 
-              <View style={styles.requirementRow}>
+              {/* <View style={styles.requirementRow}>
                 <View style={[styles.requirementIcon]}>
                   <TickCircle
                     size={15}
@@ -91,7 +85,7 @@ export default function KYCStatusScreen() {
                     A quick photo to confirm your identity
                   </Text>
                 </View>
-              </View>
+              </View> */}
             </View>
           </View>
         </View>
@@ -103,7 +97,7 @@ export default function KYCStatusScreen() {
             style={[styles.emptyButton, { backgroundColor: COLORS.primary }]}
           >
             <Text style={styles.emptyButtonText}>
-              {isAlreadyVerified ? "Continue " : "Start "} KYC Verification
+              {isAlreadyVerified ? "Continue " : "Start "} BVN Verification
             </Text>
           </TouchableOpacity>
 

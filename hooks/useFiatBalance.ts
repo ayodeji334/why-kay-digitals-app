@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import useAxios from "../hooks/useAxios"; // adjust path
+import useAxios from "../hooks/useAxios";
 
 export function useFiatBalance() {
   const { apiGet } = useAxios();
@@ -18,7 +18,6 @@ export function useFiatBalance() {
   } = useQuery({
     queryKey: ["fiat-balance"],
     queryFn: fetchFiatBalance,
-    refetchInterval: 10000,
   });
 
   return { fiatBalance, isLoading, isError, refetch, isRefetching };

@@ -29,6 +29,7 @@ import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import NoWallet from "../components/NoWallet";
 import { useAuthStore } from "../stores/authSlice";
 import KYCStatusScreen from "../components/KYCStatusScreen";
+import CustomLoading from "../components/CustomLoading";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -52,6 +53,9 @@ export default function CryptoSellScreen() {
   const [displayAmount, setDisplayAmount] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const user = useAuthStore(state => state.user);
+
+  console.log(user);
+  console.log(intent);
   // const isAlreadyVerified = useMemo(
   //   () =>
   //     user?.bvn_verification_status === "VERIFIED" ||
@@ -75,7 +79,11 @@ export default function CryptoSellScreen() {
     mode: "onChange",
   });
 
-  const { data: assetDetails, refetch } = useQuery({
+  const {
+    data: assetDetails,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["asset-detail", selectedAssetUuid],
     queryFn: async () => {
       if (!selectedAssetUuid) return null;
@@ -372,7 +380,7 @@ export default function CryptoSellScreen() {
         )}
       </ScrollView>
 
-      {/* <CustomLoading loading={isFetching} /> */}
+      <CustomLoading loading={isLoading} />
     </SafeAreaView>
   );
 }
