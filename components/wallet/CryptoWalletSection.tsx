@@ -29,8 +29,8 @@ import CustomLoading from "../CustomLoading";
 import { useAssets } from "../../hooks/useAssets";
 import { useWallets } from "../../hooks/useWallet";
 import LoadingBalance from "../LoadingState";
-import { useAuthStore } from "../../stores/authSlice";
-import KYCStatusScreen from "../KYCStatusScreen";
+// import { useAuthStore } from "../../stores/authSlice";
+// import KYCStatusScreen from "../KYCStatusScreen";
 
 const CryptoWalletSection = () => {
   const [showAddAssetWalletModal, setAddAssetWalletModal] = useState(false);
@@ -39,7 +39,7 @@ const CryptoWalletSection = () => {
   const { apiGet } = useAxios();
   const { assets } = useAssets();
   const { data, isLoading, refetch, isRefetching } = useWallets();
-  const user = useAuthStore(state => state.user);
+  // const user = useAuthStore(state => state.user);
 
   // const isAlreadyVerified = useMemo(
   //   () =>

@@ -66,45 +66,39 @@ const registerSchema = yup.object().shape({
   how_do_heard_about_us: yup.string().required("Please select an option"),
 });
 
-// src/utils/debounce.ts
-export function debounce<T extends (...args: any[]) => void>(
-  func: T,
-  delay: number,
-): (...args: Parameters<T>) => void {
-  let timeoutId: any;
-
-  return (...args: Parameters<T>) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-
-    timeoutId = setTimeout(() => {
-      func(...args);
-    }, delay);
-  };
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
 }
 
 const RegisterForm: React.FC = () => {
   const { apiGet, post } = useAxios();
-  const { showSuccess } = useToastHelpers();
+  const { showSuccess, showError } = useToastHelpers();
   const navigation: any = useNavigation();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [checkingUsername, setCheckingUsername] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
+  const [checkingUsername, setCheckingUsername] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<{
     available?: boolean;
     message?: string;
   }>({});
 
-  const { control, handleSubmit, setError, setValue, clearErrors, trigger } =
+  const { control, handleSubmit, setError, setValue, clearErrors } =
     useForm<any>({
       resolver: yupResolver(registerSchema),
-      mode: "onBlur",
+      mode: "onChange",
     });
 
   const username = useWatch({ control, name: "username" });
 
-  const checkUsernameAvailability = useCallback(
-    debounce(async (usernameValue: string) => {
+  // Debounced username value (3s delay)
+  const debouncedUsername = useDebounce(username, 1000);
+
+  useEffect(() => {
+    const checkUsernameAvailability = async (usernameValue: string) => {
       if (!usernameValue || usernameValue.length < 5) {
         setUsernameStatus({});
         clearErrors("username");
@@ -116,7 +110,6 @@ const RegisterForm: React.FC = () => {
         const res = await apiGet(
           `/auth/check-username?username=${usernameValue}`,
         );
-
         setUsernameStatus({
           available: res.data.available,
           message: res.data.message,
@@ -132,7 +125,7 @@ const RegisterForm: React.FC = () => {
         }
 
         setValue("username", usernameValue.trim());
-      } catch (err) {
+      } catch {
         setUsernameStatus({
           available: false,
           message: "Error checking username",
@@ -140,13 +133,12 @@ const RegisterForm: React.FC = () => {
       } finally {
         setCheckingUsername(false);
       }
-    }, 400),
-    [],
-  );
+    };
 
-  useEffect(() => {
-    checkUsernameAvailability(username);
-  }, [username]);
+    if (debouncedUsername) {
+      checkUsernameAvailability(debouncedUsername);
+    }
+  }, [debouncedUsername, apiGet, setError, clearErrors, setValue]);
 
   const handleRegister = async (values: any) => {
     const userOneSignalID = await OneSignal.User.getOnesignalId();
@@ -183,7 +175,7 @@ const RegisterForm: React.FC = () => {
       {checkingUsername && (
         <Text style={styles.checkingText}>Checking availability...</Text>
       )}
-      {!checkingUsername && usernameStatus.available && (
+      {!checkingUsername && usernameStatus.message && (
         <Text
           style={[
             styles.checkingText,
@@ -200,32 +192,35 @@ const RegisterForm: React.FC = () => {
         name="email"
         placeholder="Enter your email address"
       />
+
       <PhoneNumberInputField
         label="Phone Number"
         control={control}
-        trigger={trigger}
         name="phone_number"
-        placeholder="Enter your phone number"
+        placeholder="Enter phone number"
       />
       <PasswordInputField
         label="Password"
         control={control}
-        showHints={true}
+        showHints
         name="password"
         placeholder="Enter your password"
       />
+
       <PasswordInputField
         label="Confirm Password"
         control={control}
         name="password_confirmation"
         placeholder="Confirm your password"
       />
+
       <TextInputField
         label="Referral Code (Optional)"
         control={control}
         name="referral_code"
         placeholder="Enter referral code"
       />
+
       <SelectInput
         options={[{ label: "Social Media", value: "Social" }]}
         label="How did you hear about us?"
@@ -251,6 +246,174 @@ const RegisterForm: React.FC = () => {
     </View>
   );
 };
+
+// const RegisterForm: React.FC = () => {
+//   const { apiGet, post } = useAxios();
+//   const { showSuccess } = useToastHelpers();
+//   const navigation: any = useNavigation();
+//   const [loading, setLoading] = useState<boolean>(false);
+//   const [checkingUsername, setCheckingUsername] = useState<boolean>(false);
+//   const [usernameStatus, setUsernameStatus] = useState<{
+//     available?: boolean;
+//     message?: string;
+//   }>({});
+
+//   const { control, handleSubmit, setError, setValue, clearErrors, trigger } =
+//     useForm<any>({
+//       resolver: yupResolver(registerSchema),
+//       mode: "onBlur",
+//     });
+
+//   const username = useWatch({ control, name: "username" });
+
+//   const checkUsernameAvailability = useCallback(
+//     debounce(async (usernameValue: string) => {
+//       if (!usernameValue || usernameValue.length < 5) {
+//         setUsernameStatus({});
+//         clearErrors("username");
+//         return;
+//       }
+
+//       setCheckingUsername(true);
+//       try {
+//         const res = await apiGet(
+//           `/auth/check-username?username=${usernameValue}`,
+//         );
+
+//         setUsernameStatus({
+//           available: res.data.available,
+//           message: res.data.message,
+//         });
+
+//         if (res.data.available === false) {
+//           setError("username", {
+//             type: "manual",
+//             message: "Username is already taken",
+//           });
+//         } else {
+//           clearErrors("username");
+//         }
+
+//         setValue("username", usernameValue.trim());
+//       } catch (err) {
+//         setUsernameStatus({
+//           available: false,
+//           message: "Error checking username",
+//         });
+//       } finally {
+//         setCheckingUsername(false);
+//       }
+//     }, 400),
+//     [],
+//   );
+
+//   useEffect(() => {
+//     checkUsernameAvailability(username);
+//   }, [username]);
+
+//   const handleRegister = async (values: any) => {
+//     const userOneSignalID = await OneSignal.User.getOnesignalId();
+//     try {
+//       setLoading(true);
+//       await post("/auth/register", { ...values, device_id: userOneSignalID });
+//       showSuccess("Registration successful! Please verify your email.");
+//       navigation.navigate(
+//         "VerifyCode" as never,
+//         { email: values.email } as never,
+//       );
+//     } catch (err: unknown) {
+//       if (err instanceof AxiosError) {
+//         const errorMessage =
+//           err.response?.data?.message || "Registration failed. Try again.";
+//         showError(errorMessage);
+//       }
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const disableSubmit =
+//     loading || checkingUsername || usernameStatus.available === false;
+
+//   return (
+//     <View style={styles.container}>
+//       <TextInputField
+//         label="Create Username"
+//         control={control}
+//         name="username"
+//         placeholder="Choose a username"
+//       />
+//       {checkingUsername && (
+//         <Text style={styles.checkingText}>Checking availability...</Text>
+//       )}
+//       {!checkingUsername && usernameStatus.available && (
+//         <Text
+//           style={[
+//             styles.checkingText,
+//             usernameStatus.available ? styles.available : styles.taken,
+//           ]}
+//         >
+//           {usernameStatus.message}
+//         </Text>
+//       )}
+
+//       <EmailInputField
+//         label="Email"
+//         control={control}
+//         name="email"
+//         placeholder="Enter your email address"
+//       />
+//       <PhoneNumberInputField
+//         label="Phone Number"
+//         control={control}
+//         trigger={trigger}
+//         name="phone_number"
+//         placeholder="Enter your phone number"
+//       />
+//       <PasswordInputField
+//         label="Password"
+//         control={control}
+//         showHints={true}
+//         name="password"
+//         placeholder="Enter your password"
+//       />
+//       <PasswordInputField
+//         label="Confirm Password"
+//         control={control}
+//         name="password_confirmation"
+//         placeholder="Confirm your password"
+//       />
+//       <TextInputField
+//         label="Referral Code (Optional)"
+//         control={control}
+//         name="referral_code"
+//         placeholder="Enter referral code"
+//       />
+//       <SelectInput
+//         options={[{ label: "Social Media", value: "Social" }]}
+//         label="How did you hear about us?"
+//         control={control}
+//         name="how_do_heard_about_us"
+//         placeholder="Select option"
+//       />
+
+//       <TouchableOpacity
+//         activeOpacity={0.8}
+//         style={[styles.button, disableSubmit && { opacity: 0.6 }]}
+//         onPress={handleSubmit(handleRegister)}
+//         disabled={disableSubmit}
+//       >
+//         {loading ? (
+//           <ActivityIndicator color="#fff" />
+//         ) : (
+//           <Text style={styles.buttonText}>Continue</Text>
+//         )}
+//       </TouchableOpacity>
+
+//       <CustomLoading loading={loading} />
+//     </View>
+//   );
+// };
 
 export default RegisterForm;
 

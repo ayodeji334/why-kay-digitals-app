@@ -144,7 +144,7 @@ const TransactionDetailScreen = () => {
                     decimalPlace: 2,
                   })
                 : formatAmount(transaction?.amount, {
-                    currency: "USD",
+                    currency: "NGN",
                     decimalPlace: 2,
                   })
             }
