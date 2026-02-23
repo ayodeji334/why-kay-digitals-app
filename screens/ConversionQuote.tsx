@@ -24,7 +24,7 @@ export default function ConversionQuote() {
   const navigation: any = useNavigation();
   const { quote: initialQuote }: any = route.params;
   const [quote, setQuote] = useState(initialQuote);
-  const [timeRemaining, setTimeRemaining] = useState(10);
+  const [timeRemaining, setTimeRemaining] = useState(8);
   const [isExpired, setIsExpired] = useState(false);
 
   const swapMutation = useMutation({
@@ -36,7 +36,7 @@ export default function ConversionQuote() {
     },
     onSuccess: response => {
       setQuote(response?.data?.data ?? {});
-      setTimeRemaining(10);
+      setTimeRemaining(8);
       setIsExpired(false);
     },
     onError: (error: any) => {

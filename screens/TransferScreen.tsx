@@ -20,14 +20,14 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import TabSwitcher, { TabOption } from "../components/TabSwitcher";
 import { COLORS } from "../constants/colors";
 import { normalize, getFontFamily } from "../constants/settings";
-import useAxios from "../hooks/useAxios";
+// import useAxios from "../hooks/useAxios";
 import BalanceCard from "../components/Dashboard/BalanceCard";
 import { formatAmount } from "../libs/formatNumber";
 import TextInputField from "../components/TextInputField";
 import { SelectInput } from "../components/SelectInputField";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import { useWallets } from "../hooks/useWallet";
-import { useAuthStore } from "../stores/authSlice";
+// import { useAuthStore } from "../stores/authSlice";
 import { useSummaryDetail } from "../hooks/useSummaryDetail";
 
 const fiatSchema = yup.object({
@@ -53,15 +53,13 @@ const cryptoSchema = yup.object({
 
 export default function TransferScreen() {
   const navigation = useNavigation<any>();
-  const { apiGet } = useAxios();
+  // const { apiGet } = useAxios();
   const [activeTab, setActiveTab] = useState<"fiat" | "crypto">("crypto");
   const [saveBeneficiary, setSaveBeneficiary] = useState(true);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingPayload, setPendingPayload] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const user = useAuthStore(state => state.user);
-
-  console.log(user);
+  // const user = useAuthStore(state => state.user);
 
   const {
     data: { wallets, totalAssetValueBalance },

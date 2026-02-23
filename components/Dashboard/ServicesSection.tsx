@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { getFontFamily, normalize } from "../../constants/settings";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../constants/colors";
 import CustomIcon from "../CustomIcon";
 import {
@@ -23,8 +23,10 @@ import {
   TransferIcon,
 } from "../../assets";
 import { TradeIntent } from "../../screens/Rates";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ServicesSection = () => {
+  const queryClient = useQueryClient();
   const navigation: any = useNavigation();
   const mainServices: Array<{
     id: number;
@@ -133,6 +135,13 @@ const ServicesSection = () => {
     // Default navigation for other screens
     navigation.navigate(service.screenName as never);
   };
+
+  useFocusEffect(() => {
+    queryClient.prefetchQuery({ queryKey: ["supported-pairs"] });
+    queryClient.prefetchQuery({ queryKey: ["electricityProviders"] });
+    queryClient.prefetchQuery({ queryKey: ["user-wallets"] });
+    queryClient.prefetchQuery({ queryKey: ["assets"] });
+  });
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

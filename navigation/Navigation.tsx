@@ -26,7 +26,7 @@ import ReferAndEarnScreen from "../screens/ReferAndEarnScreen";
 import ReferralHistoryScreen from "../screens/ReferralHistoryScreen";
 import BiometricsScreen from "../screens/EnableBiometricScreen";
 import { useAuthStore, useIsAuthenticated } from "../stores/authSlice";
-import DepositScreen from "../screens/DepositScreen";
+// import DepositScreen from "../screens/DepositScreen";
 import BankTransferScreen from "../screens/BankTransfer";
 import BVNVerificationScreen from "../screens/BVNVerificationScreen";
 import IdentityVerificationScreen from "../screens/IdentityVerificationScreen";
