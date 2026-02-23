@@ -4,20 +4,20 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
+  // TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import NINVerificationForm from "../components/forms/NINVerificationForm";
-import { useUser } from "../stores/authSlice";
-import { useNavigation } from "@react-navigation/native";
+// import { useUser } from "../stores/authSlice";
+// import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 
 export default function IdentityVerificationScreen() {
-  const user = useUser();
-  const navigation = useNavigation();
+  // const user = useUser();
+  // const navigation = useNavigation();
 
-  const isProfileComplete = !!user?.first_name && !!user?.last_name;
+  // const isProfileComplete = !!user?.first_name && !!user?.last_name;
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
@@ -25,7 +25,7 @@ export default function IdentityVerificationScreen() {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
-        {!isProfileComplete ? (
+        {/* {!isProfileComplete ? (
           <View style={styles.infoSection}>
             <Text style={styles.subtitle}>
               To verify your NIN, please update your profile with the same first
@@ -43,19 +43,19 @@ export default function IdentityVerificationScreen() {
               <Text style={styles.editButtonText}>Go to Edit Profile</Text>
             </TouchableOpacity>
           </View>
-        ) : (
-          <>
-            <Text style={styles.subtitle}>
-              We'll authenticate your National Identification Number (NIN) by
-              matching it with a live selfie for secure identity verification.
-              This process ensures regulatory compliance and account security.
-            </Text>
+        ) : ( */}
+        <>
+          <Text style={styles.subtitle}>
+            We'll authenticate your National Identification Number (NIN) by
+            matching it with a live selfie for secure identity verification.
+            This process ensures regulatory compliance and account security.
+          </Text>
 
-            <View style={styles.formSection}>
-              <NINVerificationForm />
-            </View>
-          </>
-        )}
+          <View style={styles.formSection}>
+            <NINVerificationForm />
+          </View>
+        </>
+        {/* )} */}
       </ScrollView>
     </SafeAreaView>
   );

@@ -197,26 +197,25 @@ export default function ConversionQuote() {
           </View>
         </View>
         <View style={styles.buttonBox}>
-          <TouchableOpacity
-            onPress={handleConfirm}
-            disabled={isExpired}
-            style={[styles.confirmButton, isExpired && styles.disabledButton]}
-          >
-            <Text style={styles.confirmText}>
-              {isExpired
-                ? "Quote Expired"
-                : `Confirm Quote (${timeRemaining}s)`}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleRequestNewQuote}
-            style={styles.cancelButton}
-          >
-            <Text style={styles.cancelText}>
-              {isExpired ? "Request New Quote" : "Cancel Quote"}
-            </Text>
-          </TouchableOpacity>
+          {!isExpired && (
+            <TouchableOpacity
+              onPress={handleConfirm}
+              disabled={isExpired}
+              style={[styles.confirmButton, isExpired && styles.disabledButton]}
+            >
+              <Text style={styles.confirmText}>
+                {`Confirm Quote (${timeRemaining}s)`}
+              </Text>
+            </TouchableOpacity>
+          )}
+          {isExpired && (
+            <TouchableOpacity
+              onPress={handleRequestNewQuote}
+              style={styles.cancelButton}
+            >
+              <Text style={styles.cancelText}>Request New Quote</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
 
@@ -295,9 +294,8 @@ const styles = StyleSheet.create({
   },
   assetAmount: { alignItems: "flex-end" },
   assetValue: {
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("900"),
     fontSize: 19,
-    fontWeight: "900",
     color: "#111",
   },
   swapIconBox: { alignItems: "center" },

@@ -10,7 +10,6 @@ import {
   TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useQuery } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -29,7 +28,7 @@ import { SelectInput } from "../components/SelectInputField";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import { useWallets } from "../hooks/useWallet";
 import { useAuthStore } from "../stores/authSlice";
-import KYCStatusScreen from "../components/KYCStatusScreen";
+import { useSummaryDetail } from "../hooks/useSummaryDetail";
 
 const fiatSchema = yup.object({
   username: yup.string().required("Username is required"),
@@ -62,31 +61,26 @@ export default function TransferScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const user = useAuthStore(state => state.user);
 
+  console.log(user);
+
   const {
     data: { wallets, totalAssetValueBalance },
   } = useWallets();
+
   const [displayAmount, setDisplayAmount] = useState("");
 
   const userWallets: any[] = useMemo(() => {
     if (!wallets || wallets.length === 0) return [];
     return wallets.map((asset: any) => ({
       ...asset,
-      label: asset.asset_name ?? asset.name ?? "",
+      label: asset.symbol ?? asset.name ?? "",
       value: asset.asset_id ?? asset.uuid ?? "",
       symbol: asset.symbol ?? "",
       logo_url: asset.logo ?? "",
     }));
   }, [wallets]);
 
-  const {
-    data: walletSummary,
-    refetch,
-    isFetching,
-  } = useQuery({
-    queryKey: ["wallet-summary"],
-    queryFn: async () =>
-      (await apiGet("/transactions/user/daily-summary")).data.data,
-  });
+  const { isLoading, walletSummary, refetch } = useSummaryDetail();
 
   const fiatForm = useForm<any>({
     resolver: yupResolver(fiatSchema),
@@ -426,7 +420,7 @@ export default function TransferScreen() {
               Continue
             </Text>
           </TouchableOpacity>
-          <CustomLoading loading={isFetching} />
+          <CustomLoading loading={isLoading} />
         </ScrollView>
 
         {activeTab === "fiat" && (

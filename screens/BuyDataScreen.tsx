@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
 import useAxios from "../hooks/useAxios";
 import { formatAmount } from "../libs/formatNumber";
+import { useQuery } from "@tanstack/react-query";
 
 const schema = yup.object({
   phone: yup
@@ -47,7 +48,6 @@ const formatPhoneNumber = (phone: string) => {
 export default function BuyDataScreen() {
   const [saveBeneficiary, setSaveBeneficiary] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [dataPlans, setDataPlans] = useState<any[]>([]);
   const { apiGet } = useAxios();
   const navigation: any = useNavigation();
   const {
@@ -55,7 +55,6 @@ export default function BuyDataScreen() {
     handleSubmit,
     setValue,
     watch,
-    // reset,
     formState: { errors, isDirty, isValid },
   } = useForm({
     resolver: yupResolver(schema),
@@ -74,7 +73,7 @@ export default function BuyDataScreen() {
       setLoading(true);
 
       const selectedPlan = dataPlans.find(
-        plan => plan.item_code === values.plan,
+        (plan: any) => plan.item_code === values.plan,
       );
 
       if (!selectedPlan) {
@@ -102,16 +101,16 @@ export default function BuyDataScreen() {
     }
   };
 
-  useEffect(() => {
-    if (!selectedNetwork) return;
-    setLoading(true);
-    apiGet(`/bills/data-plans/${selectedNetwork}`)
-      .then(res => {
-        setDataPlans(res.data?.data || []);
-      })
-      .catch(() => setDataPlans([]))
-      .finally(() => setLoading(false));
-  }, [selectedNetwork]);
+  const { data: dataPlans = [], isLoading } = useQuery({
+    queryKey: ["dataPlans", selectedNetwork],
+    queryFn: async () => {
+      if (!selectedNetwork) return [];
+      const res = await apiGet(`/bills/data-plans/${selectedNetwork}`);
+      return res.data?.data || [];
+    },
+    enabled: !!selectedNetwork,
+    refetchOnWindowFocus: false,
+  });
 
   const networks = [
     { id: "mtn", label: "MTN", logo: require("../assets/mtn-logo.jpg") },
@@ -173,7 +172,7 @@ export default function BuyDataScreen() {
           control={control}
           name="plan"
           label="Data Plan"
-          options={dataPlans.map(plan => ({
+          options={dataPlans.map((plan: any) => ({
             label: `${plan.biller_name} ${
               plan.validity_period === 1
                 ? "Daily"
@@ -185,7 +184,9 @@ export default function BuyDataScreen() {
             )}`,
             value: plan.item_code,
           }))}
-          placeholder="Select Data Plan"
+          placeholder={
+            isLoading ? "Loading network plans..." : "Select Data Plan"
+          }
         />
 
         <SaveAsBeneficiarySwitch
@@ -198,7 +199,7 @@ export default function BuyDataScreen() {
           <TouchableOpacity
             style={styles.button}
             onPress={handleSubmit(onSubmit)}
-            disabled={loading || (isDirty && !isValid)}
+            disabled={loading}
           >
             <Text style={styles.buttonText}>
               {loading ? "Processing..." : "Proceed"}
@@ -206,7 +207,7 @@ export default function BuyDataScreen() {
           </TouchableOpacity>
         </View>
 
-        <CustomLoading loading={loading} />
+        {/* <CustomLoading loading={isLoading} /> */}
       </ScrollView>
     </SafeAreaView>
   );

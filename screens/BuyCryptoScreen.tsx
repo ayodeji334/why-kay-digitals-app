@@ -57,7 +57,7 @@ export default function CryptoBuyScreen() {
     },
     mode: "onChange",
   });
-  const user = useAuthStore(state => state.user);
+  // const user = useAuthStore(state => state.user);
   // const isAlreadyVerified = useMemo(
   //   () =>
   //     user?.bvn_verification_status === "VERIFIED" ||
@@ -217,7 +217,7 @@ export default function CryptoBuyScreen() {
                     /$
                   </Text>
                 </View>
-                <View
+                {/* <View
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
@@ -234,7 +234,7 @@ export default function CryptoBuyScreen() {
                   <Text style={styles.balance}>
                     {formatAmount(2, { currency: "USD" })}
                   </Text>
-                </View>
+                </View> */}
               </View>
               <View style={styles.paymentContainer}>
                 <View
@@ -254,8 +254,8 @@ export default function CryptoBuyScreen() {
               <View style={styles.warningContainer}>
                 <Text style={styles.warningText}>
                   Insufficient balance! Your current fiat balance is{" "}
-                  {formatAmount(fiatBalance, { currency: "USD" })} which is less
-                  than {formatAmount(ngnAmount || 0, { currency: "USD" })}{" "}
+                  {formatAmount(fiatBalance, { currency: "NGN" })} which is less
+                  than {formatAmount(ngnAmount || 0, { currency: "NGN" })}{" "}
                 </Text>
               </View>
             )}

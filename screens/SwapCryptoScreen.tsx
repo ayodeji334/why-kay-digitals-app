@@ -24,7 +24,7 @@ import { useAssets } from "../hooks/useAssets";
 // import KYCStatusScreen from "../components/KYCStatusScreen";
 import { useAuthStore } from "../stores/authSlice";
 import useAxios from "../hooks/useAxios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const formatWithCommas = (value: string) => {
   if (!value) return "";
@@ -100,33 +100,20 @@ export default function CryptoSwapScreen() {
   const navigation: any = useNavigation();
   const { assets, isLoading, refetch } = useAssets();
   const { data, refetch: refetchUserWallets } = useWallets();
-  // const user = useAuthStore(state => state.user);
+  const axios = useAxios();
 
-  const options = useMemo(
-    () =>
-      (assets &&
-        assets.map((option: any) => ({
-          ...option,
-          label: option.name,
-          value: option.id,
-        }))) ||
-      [],
-    [assets],
-  );
-
-  const userWallets = useMemo(
-    () =>
-      Array.isArray(data?.wallets)
-        ? data?.wallets.map((asset: any) => ({
-            ...asset,
-            label: asset?.asset_name ?? asset?.name ?? "",
-            value: asset?.asset_id ?? asset?.uuid ?? "",
-            symbol: asset?.symbol ?? "",
-            logo_url: asset?.logo ?? "",
-          }))
-        : [],
-    [data?.wallets],
-  );
+  const { data: supportedPairs } = useQuery({
+    queryKey: ["supported-pairs"],
+    queryFn: async () => {
+      const response = await axios.apiGet("crypto/conversion/supported-pairs", {
+        params: {
+          accountType: "eb_convert_funding", // optional, can be dynamic //
+          fromAsset: "BTC",
+        },
+      });
+      return response.data ?? [];
+    },
+  });
 
   const {
     control,
@@ -140,10 +127,56 @@ export default function CryptoSwapScreen() {
     mode: "onChange",
   });
 
+  const userWallets = useMemo(
+    () =>
+      Array.isArray(data?.wallets)
+        ? data?.wallets.map((asset: any) => ({
+            ...asset,
+            label: asset?.symbol ?? asset?.name ?? "",
+            value: asset?.asset_id ?? asset?.uuid ?? "",
+            symbol: asset?.symbol ?? "",
+            logo_url: asset?.logo ?? "",
+          }))
+        : [],
+    [data?.wallets],
+  );
+
   const fromAssetId = watch("from_asset");
   const toAssetId = watch("to_asset");
   const amount = watch("amount");
   const fromAsset = userWallets.find((opt: any) => opt.value === fromAssetId);
+  const selectedSymbol = fromAsset?.symbol ?? "";
+
+  const availableConversions = useMemo(() => {
+    if (!supportedPairs || !selectedSymbol) return [];
+    return supportedPairs.filter(
+      (pair: any) => pair.fromCoin === selectedSymbol,
+    );
+  }, [supportedPairs, selectedSymbol]);
+
+  console.log(availableConversions);
+
+  // Build options only from available conversions
+  const options = useMemo(() => {
+    if (!assets || availableConversions.length === 0) return [];
+
+    // Extract the list of allowed toCoin symbols
+    const allowedSymbols = availableConversions.map((pair: any) => pair.toCoin);
+
+    console.log(allowedSymbols);
+
+    // Filter assets to only those that match allowedSymbols
+    return assets
+      .filter((asset: any) => allowedSymbols.includes(asset.symbol))
+      .map((option: any) => ({
+        ...option,
+        label: option.symbol,
+        value: option.id,
+      }));
+  }, [assets, availableConversions]);
+
+  console.log(options);
+
   const toAsset = options.find((opt: any) => opt.value === toAssetId);
   const balance = Number(fromAsset?.balance ?? 0);
   const price = Number(fromAsset?.price ?? 0);
@@ -256,6 +289,7 @@ export default function CryptoSwapScreen() {
                 title="Select an asset"
               />
             </View>
+
             <View style={{ marginVertical: 4 }}>
               <SelectInput
                 control={control}

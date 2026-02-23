@@ -38,7 +38,7 @@ export function useAssets() {
   } = useQuery({
     queryKey: ["assets"],
     queryFn: fetchAssets,
-    refetchInterval: 10000,
+    refetchInterval: 90000,
   });
 
   return { assets, isLoading, isRefetching, refetch, error, isError };

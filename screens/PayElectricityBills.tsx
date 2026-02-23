@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
-  Switch,
+  TextInput,
 } from "react-native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -20,6 +20,8 @@ import CustomLoading from "../components/CustomLoading";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
 import useAxios from "../hooks/useAxios";
+import { formatWithCommas } from "./SwapCryptoScreen";
+import { useQuery } from "@tanstack/react-query";
 
 // Validation schema
 const schema = yup.object({
@@ -31,7 +33,7 @@ const schema = yup.object({
   amount: yup
     .number()
     .typeError("Amount must be a number")
-    .positive("Amount must be greater than zero")
+    .positive("Amount is required")
     .required("Amount is required"),
 });
 
@@ -44,39 +46,43 @@ interface ElectricityProvider {
   status: boolean;
 }
 
-interface ElectricityFormData {
-  provider: string;
-  meter_number: string;
-  amount: string;
-}
+// interface ElectricityFormData {
+//   provider: string;
+//   meter_number: string;
+//   amount: string;
+// }
 
 export default function PayElectricityBillsScreen() {
   const [loading, setLoading] = useState(false);
   const { apiGet } = useAxios();
   const [isPrepaid, setIsPrepaid] = useState(true);
   const [saveBeneficiary, setSaveBeneficiary] = useState(true);
-  const [providers, setProviders] = useState<ElectricityProvider[]>([]);
   const navigation: any = useNavigation();
+  const [amount, setAmount] = useState("");
 
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting, isValid },
+    setValue,
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     mode: "onChange",
+    defaultValues: {
+      amount: 0,
+    },
   });
 
-  useEffect(() => {
-    setLoading(true);
+  console.log(errors);
 
-    apiGet(`/bills/electricity-bills-providers`)
-      .then(res => {
-        setProviders(res.data?.data || []);
-      })
-      .catch(() => setProviders([]))
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: providers = [], isLoading } = useQuery({
+    queryKey: ["electricityProviders"],
+    queryFn: async () => {
+      const res = await apiGet(`/bills/electricity-bills-providers`);
+      return res.data?.data || [];
+    },
+    refetchOnWindowFocus: false,
+  });
 
   const handleFormSubmit = async (data: any) => {
     try {
@@ -98,8 +104,7 @@ export default function PayElectricityBillsScreen() {
     }
   };
 
-  // Format providers for SelectInput component
-  const providerOptions = providers.map(provider => ({
+  const providerOptions = providers.map((provider: ElectricityProvider) => ({
     label: provider.name,
     value: provider.code || provider.id,
     icon: provider.logo,
@@ -118,19 +123,20 @@ export default function PayElectricityBillsScreen() {
           name="provider"
           label="Select Provider"
           placeholder={
-            loading ? "Loading providers..." : "Select electricity provider"
+            isLoading ? "Loading providers..." : "Select electricity provider"
           }
           options={providerOptions}
         />
 
-        <NumberInputField
-          placeholder="Enter Meter Number"
-          label="Meter Number"
-          name="meter_number"
-          control={control}
-        />
+        <View style={{ marginTop: 10 }}>
+          <NumberInputField
+            placeholder="Enter Meter Number"
+            label="Meter Number"
+            name="meter_number"
+            control={control}
+          />
+        </View>
 
-        {/* Payment Type Selection */}
         <View style={styles.paymentTypeContainer}>
           <TouchableOpacity
             style={[
@@ -169,12 +175,39 @@ export default function PayElectricityBillsScreen() {
           </TouchableOpacity>
         </View>
 
-        <NumberInputField
+        {/* <NumberInputField
           placeholder="Enter the amount you want to buy"
           label="Enter Amount"
           name="amount"
           control={control}
-        />
+        /> */}
+
+        <View style={{ marginBottom: 2, marginTop: 10 }}>
+          <Text style={styles.label}>Amount</Text>
+          <View style={styles.inputContainer}>
+            <Text style={styles.dollarSign}>₦</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              placeholderTextColor={"#aeaeaeff"}
+              placeholder="0.00"
+              value={amount}
+              onChangeText={text => {
+                const numericText = text.replace(/,/g, "");
+                const parsed = parseFloat(numericText);
+
+                const formatted = formatWithCommas(numericText);
+                setValue("amount", parsed, { shouldValidate: true });
+                setAmount(formatted);
+              }}
+            />
+          </View>
+
+          {/* Show validation error */}
+          {errors.amount && (
+            <Text style={styles.errorText}>{errors.amount.message}</Text>
+          )}
+        </View>
 
         <SaveAsBeneficiarySwitch
           value={saveBeneficiary}
@@ -182,19 +215,15 @@ export default function PayElectricityBillsScreen() {
           disabled={loading}
         />
 
-        {/* Submit Button */}
         <TouchableOpacity
-          style={[styles.button, { opacity: !isValid || loading ? 0.7 : 1 }]}
+          style={[styles.button]}
           onPress={handleSubmit(handleFormSubmit)}
-          disabled={loading || !isValid || isSubmitting}
+          disabled={loading}
         >
           <Text style={styles.buttonText}>
             {loading ? "Processing..." : "Continue"}
           </Text>
         </TouchableOpacity>
-
-        {/* Loading Indicators */}
-        <CustomLoading loading={loading} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -207,6 +236,40 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  label: {
+    marginBottom: 6,
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
+    color: "#000000ff",
+  },
+  errorText: {
+    color: "red",
+    fontSize: normalize(14),
+    marginTop: 4,
+    fontFamily: getFontFamily("600"),
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 8,
+    gap: 5,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: normalize(16),
+    fontSize: normalize(26),
+    fontFamily: getFontFamily("800"),
+    color: "#000",
+  },
+  dollarSign: {
+    fontSize: normalize(26),
+    fontFamily: getFontFamily("800"),
+    color: "#000",
+    paddingLeft: 15,
   },
   content: {
     paddingHorizontal: 16,

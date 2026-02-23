@@ -33,12 +33,19 @@ const BankTransferScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const user = useAuthStore(state => state.user);
 
+  console.log(user);
+
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["userBankAccounts"],
     queryFn: async () => {
       const response = await apiGet(`/users/user/virtual-account`);
       return response.data.data || {};
     },
+    enabled:
+      user?.bvn_verification_status &&
+      user?.bvn_verification_status === "VERIFIED" &&
+      user?.banks &&
+      user?.banks.length === 0,
   });
 
   const onRefresh = async () => {

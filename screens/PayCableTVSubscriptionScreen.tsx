@@ -22,6 +22,7 @@ import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
 import useAxios from "../hooks/useAxios";
 import { formatAmount } from "../libs/formatNumber";
+import { useQuery } from "@tanstack/react-query";
 
 // Validation Schema
 const schema = yup.object({
@@ -35,7 +36,6 @@ const schema = yup.object({
 
 export default function PayCableTVSubscriptionScreen() {
   const [loading, setLoading] = useState(false);
-  const [tvPlans, setTvPlans] = useState<any[]>([]);
   const [saveBeneficiary, setSaveBeneficiary] = useState(false);
   const { apiGet } = useAxios();
   const navigation: any = useNavigation();
@@ -58,11 +58,24 @@ export default function PayCableTVSubscriptionScreen() {
 
   const selectedNetwork = watch("network");
 
+  const { data: tvPlans = [], isLoading } = useQuery({
+    queryKey: ["tvPlans", selectedNetwork],
+    queryFn: async () => {
+      if (!selectedNetwork) return [];
+      const res = await apiGet(`/bills/cable-tv-plans/${selectedNetwork}`);
+      return res.data?.data || [];
+    },
+    enabled: !!selectedNetwork, // only run when selectedNetwork is truthy
+    refetchOnWindowFocus: false,
+  });
+
   const onSubmit = async (values: any) => {
     try {
       setLoading(true);
 
-      const selectedPlan = tvPlans.find(plan => plan.item_code === values.plan);
+      const selectedPlan = tvPlans.find(
+        (plan: any) => plan.item_code === values.plan,
+      );
 
       if (!selectedPlan) {
         showError("Please select a valid subscription plan");
@@ -90,16 +103,6 @@ export default function PayCableTVSubscriptionScreen() {
   };
 
   // Fetch plans for selected cable provider
-  useEffect(() => {
-    if (!selectedNetwork) return;
-    setLoading(true);
-    apiGet(`/bills/cable-tv-plans/${selectedNetwork}`)
-      .then(res => {
-        setTvPlans(res.data?.data || []);
-      })
-      .catch(() => setTvPlans([]))
-      .finally(() => setLoading(false));
-  }, [selectedNetwork]);
 
   const networks = [
     { id: "dstv", label: "DSTV", logo: require("../assets/dstv-icon.png") },
@@ -162,7 +165,7 @@ export default function PayCableTVSubscriptionScreen() {
           label="Subscription Plan"
           options={
             tvPlans.length
-              ? tvPlans.map(plan => ({
+              ? tvPlans.map((plan: any) => ({
                   label: `${plan.biller_name || plan.name} - ${formatAmount(
                     plan.amount,
                   )}`,
@@ -170,7 +173,11 @@ export default function PayCableTVSubscriptionScreen() {
                 }))
               : []
           }
-          placeholder="Select Subscription Plan"
+          placeholder={
+            isLoading
+              ? "Loading subscription plans..."
+              : "Select Subscription Plan"
+          }
         />
 
         <SaveAsBeneficiarySwitch
@@ -181,20 +188,15 @@ export default function PayCableTVSubscriptionScreen() {
 
         <View style={styles.buttonWrapper}>
           <TouchableOpacity
-            style={[
-              styles.button,
-              (loading || (isDirty && !isValid)) && { opacity: 0.7 },
-            ]}
+            style={[styles.button]}
             onPress={handleSubmit(onSubmit)}
-            disabled={loading || (isDirty && !isValid)}
+            disabled={loading}
           >
             <Text style={styles.buttonText}>
               {loading ? "Processing..." : "Proceed"}
             </Text>
           </TouchableOpacity>
         </View>
-
-        <CustomLoading loading={loading} />
       </ScrollView>
     </SafeAreaView>
   );

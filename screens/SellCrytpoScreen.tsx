@@ -300,7 +300,7 @@ export default function CryptoSellScreen() {
                       /$
                     </Text>
                   </View>
-                  <View
+                  {/* <View
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
@@ -317,7 +317,7 @@ export default function CryptoSellScreen() {
                     <Text style={styles.balance}>
                       {formatAmount(2, { currency: "USD" })}
                     </Text>
-                  </View>
+                  </View> */}
                 </View>
                 <View
                   style={{

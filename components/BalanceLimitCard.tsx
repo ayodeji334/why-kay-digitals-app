@@ -13,7 +13,7 @@ export default function BalanceLimitCard({ walletSummary }: any) {
   return (
     <>
       <BalanceCard
-        balance={walletSummary?.balance}
+        balance={walletSummary?.withdrawable_balance}
         title="Wallet Balance"
         showTransactionsButton={false}
         showActionButtons={false}

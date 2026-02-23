@@ -4,19 +4,19 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
+  // TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BVNForm from "../components/forms/BVNVerificationForm";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useUser } from "../stores/authSlice";
+// import { useUser } from "../stores/authSlice";
 import { COLORS } from "../constants/colors";
-import { useNavigation } from "@react-navigation/native";
+// import { useNavigation } from "@react-navigation/native";
 
 export default function BVNVerificationScreen() {
-  const user = useUser();
-  const navigation = useNavigation();
-  const isProfileComplete = !!user?.first_name && !!user?.last_name;
+  // const user = useUser();
+  // const navigation = useNavigation();
+  // const isProfileComplete = !!user?.first_name && !!user?.last_name;
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
@@ -24,7 +24,7 @@ export default function BVNVerificationScreen() {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
-        {!isProfileComplete ? (
+        {/* {!isProfileComplete ? (
           <View style={styles.infoSection}>
             <Text style={styles.subtitle}>
               To verify your NIN, please update your profile with the same first
@@ -42,17 +42,17 @@ export default function BVNVerificationScreen() {
               <Text style={styles.editButtonText}>Go to Edit Profile</Text>
             </TouchableOpacity>
           </View>
-        ) : (
-          <>
-            <Text style={styles.subtitle}>
-              We'll match your BVN details with a live selfie to confirm your
-              identity. This process is quick and secure.
-            </Text>
-            <View style={styles.formSection}>
-              <BVNForm />
-            </View>
-          </>
-        )}
+        ) : ( */}
+        <>
+          <Text style={styles.subtitle}>
+            We'll match your BVN details with a live selfie to confirm your
+            identity. This process is quick and secure.
+          </Text>
+          <View style={styles.formSection}>
+            <BVNForm />
+          </View>
+        </>
+        {/* )} */}
       </ScrollView>
     </SafeAreaView>
   );
