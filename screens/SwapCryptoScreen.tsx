@@ -154,16 +154,12 @@ export default function CryptoSwapScreen() {
     );
   }, [supportedPairs, selectedSymbol]);
 
-  console.log(availableConversions);
-
   // Build options only from available conversions
   const options = useMemo(() => {
     if (!assets || availableConversions.length === 0) return [];
 
     // Extract the list of allowed toCoin symbols
     const allowedSymbols = availableConversions.map((pair: any) => pair.toCoin);
-
-    console.log(allowedSymbols);
 
     // Filter assets to only those that match allowedSymbols
     return assets
@@ -174,8 +170,6 @@ export default function CryptoSwapScreen() {
         value: option.id,
       }));
   }, [assets, availableConversions]);
-
-  console.log(options);
 
   const toAsset = options.find((opt: any) => opt.value === toAssetId);
   const balance = Number(fromAsset?.balance ?? 0);

@@ -55,12 +55,18 @@ export default function ConversionQuote() {
       return response;
     },
     onSuccess: response => {
-      console.log(response?.data);
+      const transaction = response?.data?.data ?? {};
       setTimeRemaining(0);
       setIsExpired(false);
-      navigation.replace("TransactionDetail", {
-        transaction: response?.data?.data,
-      });
+
+      if (
+        transaction?.category === "CRYPTO_SWAP" &&
+        transaction?.status === "pending"
+      ) {
+        navigation.replace("PendingSwap", { transaction });
+      } else {
+        navigation.replace("TransactionDetail", { transaction });
+      }
     },
     onError: (error: any) => {
       console.error("Confirmation failed:", error);

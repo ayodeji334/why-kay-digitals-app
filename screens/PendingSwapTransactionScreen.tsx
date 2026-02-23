@@ -49,7 +49,6 @@ const PendingSwapScreen = () => {
             />
             <View>
               <ArrowRight size={20} color="#333" />
-              <ArrowLeft size={20} color="#333" />
             </View>
             <Image
               source={{ uri: transaction?.to_asset_logo }}
@@ -58,13 +57,9 @@ const PendingSwapScreen = () => {
           </View>
           <Text style={styles.title}>Transaction Processing</Text>
           <Text style={styles.message}>
-            Your swap of{" "}
-            {formatAmount(Number(transaction?.meta?.amount), {
-              currency: "USD",
-            })}{" "}
-            worth of {transaction?.meta?.asset_symbol} to{" "}
+            Your asset conversion from {transaction?.meta?.asset_symbol} to{" "}
             {transaction?.meta?.to_asset_symbol} is currently being processed.
-            We’ll notify you as soon as there is an update.
+            We’ll notify you as soon as the process is completed.
           </Text>
         </View>
 
@@ -90,13 +85,13 @@ const styles = StyleSheet.create({
   },
   icon: { width: 80, height: 80, marginBottom: 20 },
   title: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("800"),
+    fontSize: normalize(24),
+    fontFamily: getFontFamily("900"),
     color: COLORS.dark,
     marginBottom: 12,
   },
   message: {
-    fontSize: normalize(18),
+    fontSize: normalize(19),
     fontFamily: getFontFamily("700"),
     color: "#000",
     textAlign: "center",
