@@ -16,13 +16,10 @@ import { useNavigation } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { formatAmount } from "../libs/formatNumber";
 import CustomLoading from "../components/CustomLoading";
 import { SelectInput } from "../components/SelectInputField";
 import { useWallets } from "../hooks/useWallet";
 import { useAssets } from "../hooks/useAssets";
-// import KYCStatusScreen from "../components/KYCStatusScreen";
-import { useAuthStore } from "../stores/authSlice";
 import useAxios from "../hooks/useAxios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -107,7 +104,7 @@ export default function CryptoSwapScreen() {
     queryFn: async () => {
       const response = await axios.apiGet("crypto/conversion/supported-pairs", {
         params: {
-          accountType: "eb_convert_funding", // optional, can be dynamic //
+          accountType: "eb_convert_funding",
           fromAsset: "BTC",
         },
       });
@@ -154,14 +151,11 @@ export default function CryptoSwapScreen() {
     );
   }, [supportedPairs, selectedSymbol]);
 
-  // Build options only from available conversions
   const options = useMemo(() => {
     if (!assets || availableConversions.length === 0) return [];
 
-    // Extract the list of allowed toCoin symbols
     const allowedSymbols = availableConversions.map((pair: any) => pair.toCoin);
 
-    // Filter assets to only those that match allowedSymbols
     return assets
       .filter((asset: any) => allowedSymbols.includes(asset.symbol))
       .map((option: any) => ({
@@ -255,6 +249,8 @@ export default function CryptoSwapScreen() {
   };
 
   const canSubmit = isValid && !insufficientBalance && amount > 0;
+
+  console.log(options);
 
   return (
     <SafeAreaView

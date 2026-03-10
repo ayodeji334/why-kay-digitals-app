@@ -8,7 +8,7 @@ import {
   StatusBar,
   TextInput,
 } from "react-native";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { SelectInput } from "../components/SelectInputField";
@@ -16,7 +16,6 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import CustomLoading from "../components/CustomLoading";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
 import useAxios from "../hooks/useAxios";
@@ -29,7 +28,7 @@ const schema = yup.object({
   meter_number: yup
     .string()
     .required("Meter number is required")
-    .matches(/^[0-9]{6,12}$/, "Invalid meter number"),
+    .matches(/^[0-9]{6,13}$/, "Invalid meter number"),
   amount: yup
     .number()
     .typeError("Amount must be a number")
@@ -39,11 +38,12 @@ const schema = yup.object({
 
 // Types
 interface ElectricityProvider {
-  id: string;
+  biller_code: string;
   name: string;
   logo: string;
   code: string;
   status: boolean;
+  short_name: string;
 }
 
 // interface ElectricityFormData {
@@ -54,11 +54,14 @@ interface ElectricityProvider {
 
 export default function PayElectricityBillsScreen() {
   const [loading, setLoading] = useState(false);
-  const { apiGet } = useAxios();
+  const { post, apiGet } = useAxios();
   const [isPrepaid, setIsPrepaid] = useState(true);
   const [saveBeneficiary, setSaveBeneficiary] = useState(true);
   const navigation: any = useNavigation();
   const [amount, setAmount] = useState("");
+  const [meterValid, setMeterValid] = useState(false);
+  const [validatingMeter, setValidatingMeter] = useState(false);
+  const [userDetail, setUserDetail] = useState<any>(null);
 
   const {
     control,
@@ -84,19 +87,64 @@ export default function PayElectricityBillsScreen() {
     refetchOnWindowFocus: false,
   });
 
+  console.log(providers);
+
+  const [selectedProviderItems, setSelectedProviderItems] = useState<any[]>([]);
+
+  const handleProviderChange = (providerValue: string) => {
+    const provider = providers.find(
+      (p: any) => p.biller_code === providerValue || p.code === providerValue,
+    );
+    if (provider) {
+      setSelectedProviderItems(provider.items || []);
+    } else {
+      setSelectedProviderItems([]);
+    }
+  };
+
+  const hasPrepaid = selectedProviderItems.some((item: any) =>
+    item.biller_name?.toLowerCase().includes("prepaid"),
+  );
+
+  const hasPostpaid = selectedProviderItems.some((item: any) =>
+    item.biller_name?.toLowerCase().includes("postpaid"),
+  );
+
   const handleFormSubmit = async (data: any) => {
     try {
       setLoading(true);
 
+      // Find the selected provider option
+      const selectedOption = providerOptions.find(
+        (p: any) => p.value === data.provider || p.label === data.provider,
+      );
+
+      // Pick the first item_code based on prepaid/postpaid selection
+      let selectedItemCode = "";
+      if (isPrepaid) {
+        const prepaidItem = selectedProviderItems.find((item: any) =>
+          item.biller_name?.toLowerCase().includes("prepaid"),
+        );
+        selectedItemCode = prepaidItem?.item_code || "";
+      } else {
+        const postpaidItem = selectedProviderItems.find((item: any) =>
+          item.biller_name?.toLowerCase().includes("postpaid"),
+        );
+        selectedItemCode = postpaidItem?.item_code || "";
+      }
+
       const payload = {
         customer: data.meter_number,
         amount: parseFloat(data.amount),
-        item_code: data.provider,
-        biller_name: data.provider,
+        biller_name: selectedOption?.value,
+        item_code: selectedItemCode,
+        provider_short_name: selectedOption?.name,
         save_as_beneficiary: saveBeneficiary,
         type: isPrepaid ? "Prepaid" : "Postpaid",
         url: "/bills/buy-electricity",
       };
+
+      console.log(payload);
 
       navigation.navigate("ConfirmTransaction" as never, { payload });
     } finally {
@@ -104,11 +152,65 @@ export default function PayElectricityBillsScreen() {
     }
   };
 
-  const providerOptions = providers.map((provider: ElectricityProvider) => ({
-    label: provider.name,
-    value: provider.code || provider.id,
-    icon: provider.logo,
-  }));
+  const validateMeterNumber = async (
+    meterNumber: string,
+    itemCode: string,
+    providerCode: string,
+  ) => {
+    try {
+      setValidatingMeter(true);
+      const res = await post(`/bills/validate`, {
+        item_code: itemCode,
+        code: providerCode,
+        customer: meterNumber,
+      });
+
+      if (res.data?.success) {
+        setMeterValid(true);
+        setUserDetail(res?.data?.data);
+      } else {
+        setMeterValid(false);
+        setUserDetail(null);
+      }
+    } catch (error) {
+      console.error("Meter validation failed", error);
+      setMeterValid(false);
+      setUserDetail(null);
+    } finally {
+      setValidatingMeter(false);
+    }
+  };
+
+  const meterNumber = useWatch({ control, name: "meter_number" });
+  const providerCode = useWatch({ control, name: "provider" });
+
+  useEffect(() => {
+    if (!meterNumber || !providerCode) return;
+
+    let selectedItem: any;
+    if (isPrepaid) {
+      selectedItem = selectedProviderItems.find((item: any) =>
+        item.biller_name?.toLowerCase().includes("prepaid"),
+      );
+    } else {
+      selectedItem = selectedProviderItems.find((item: any) =>
+        item.biller_name?.toLowerCase().includes("postpaid"),
+      );
+    }
+
+    if (selectedItem?.item_code) {
+      validateMeterNumber(meterNumber, selectedItem.item_code, providerCode);
+    }
+  }, [meterNumber, providerCode, isPrepaid, selectedProviderItems]);
+
+  const providerOptions = providers
+    .filter((p: any) => p.name.toLowerCase().includes("bills"))
+    .map((provider: ElectricityProvider) => ({
+      label: provider.name,
+      value: provider.code || provider.biller_code,
+      icon: provider.logo,
+      name: provider?.short_name,
+    }));
 
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
@@ -126,6 +228,7 @@ export default function PayElectricityBillsScreen() {
             isLoading ? "Loading providers..." : "Select electricity provider"
           }
           options={providerOptions}
+          onChange={(value: string) => handleProviderChange(value)}
         />
 
         <View style={{ marginTop: 10 }}>
@@ -142,9 +245,10 @@ export default function PayElectricityBillsScreen() {
             style={[
               styles.paymentTypeButton,
               isPrepaid && styles.paymentTypeButtonActive,
+              (!hasPrepaid || loading) && { opacity: 0.5 },
             ]}
             onPress={() => setIsPrepaid(true)}
-            disabled={loading}
+            disabled={!hasPrepaid || loading}
           >
             <Text
               style={[
@@ -160,9 +264,10 @@ export default function PayElectricityBillsScreen() {
             style={[
               styles.paymentTypeButton,
               !isPrepaid && styles.paymentTypeButtonActive,
+              (!hasPostpaid || loading) && { opacity: 0.5 },
             ]}
             onPress={() => setIsPrepaid(false)}
-            disabled={loading}
+            disabled={!hasPostpaid || loading}
           >
             <Text
               style={[
@@ -175,12 +280,18 @@ export default function PayElectricityBillsScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* <NumberInputField
-          placeholder="Enter the amount you want to buy"
-          label="Enter Amount"
-          name="amount"
-          control={control}
-        /> */}
+        {!validatingMeter && userDetail && (
+          <View style={styles.detailsContainer}>
+            <View style={{ paddingVertical: 5 }}>
+              <Text style={styles.detailsLabel}>Name</Text>
+              <Text style={styles.detailsValue}>{userDetail?.name}</Text>
+            </View>
+            <View style={{ paddingVertical: 5 }}>
+              <Text style={styles.detailsLabel}>Address</Text>
+              <Text style={styles.detailsValue}>{userDetail?.address}</Text>
+            </View>
+          </View>
+        )}
 
         <View style={{ marginBottom: 2, marginTop: 10 }}>
           <Text style={styles.label}>Amount</Text>
@@ -216,12 +327,19 @@ export default function PayElectricityBillsScreen() {
         />
 
         <TouchableOpacity
-          style={[styles.button]}
+          style={[
+            styles.button,
+            (!meterValid || validatingMeter) && { opacity: 0.5 },
+          ]}
           onPress={handleSubmit(handleFormSubmit)}
-          disabled={loading}
+          disabled={loading || !meterValid || validatingMeter}
         >
           <Text style={styles.buttonText}>
-            {loading ? "Processing..." : "Continue"}
+            {loading
+              ? "Processing..."
+              : validatingMeter
+              ? "Validating..."
+              : "Continue"}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -292,24 +410,43 @@ const styles = StyleSheet.create({
   paymentTypeButton: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#c1c1c1ff",
     borderRadius: 10,
     paddingVertical: 14,
     alignItems: "center",
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#fff",
   },
   paymentTypeButtonActive: {
     borderColor: COLORS.secondary,
-    backgroundColor: "#FFF8E1",
+    backgroundColor: "#fff",
   },
   paymentTypeText: {
     fontSize: normalize(18),
-    color: "#6B7280",
-    fontFamily: getFontFamily("700"),
+    color: "#000",
+    fontFamily: getFontFamily("800"),
   },
   paymentTypeTextActive: {
     color: COLORS.secondary,
     fontFamily: getFontFamily("700"),
+  },
+  detailsContainer: {
+    marginVertical: 10,
+    paddingHorizontal: 17,
+    paddingVertical: 10,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  detailsLabel: {
+    fontSize: 12,
+    fontFamily: getFontFamily("900"),
+    color: "#000",
+  },
+  detailsValue: {
+    fontSize: 13,
+    fontFamily: getFontFamily("700"),
+    color: "#000",
   },
   button: {
     backgroundColor: COLORS.secondary,

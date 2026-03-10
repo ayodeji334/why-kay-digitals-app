@@ -46,7 +46,7 @@ const NINVerificationForm = () => {
 
       const response = await post("/kyc/verify-nin", data);
 
-      navigation.navigate("Verification" as never);
+      navigation.goBack();
 
       setUser(response.data?.data?.user);
 

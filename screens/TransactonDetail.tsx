@@ -17,18 +17,44 @@ import { formatDate } from "../libs/formatDate";
 import { formatAmount } from "../libs/formatNumber";
 import { COLORS } from "../constants/colors";
 import CustomIcon from "../components/CustomIcon";
-import { ShareIcon } from "../assets";
+import { CopyIcon, ShareIcon } from "../assets";
+import Clipboard from "@react-native-clipboard/clipboard";
 
 const DetailRow: React.FC<{
   label: string;
   value?: string | number;
   color?: string;
-}> = ({ label, value, color = "#000" }) => (
-  <View style={styles.row}>
-    <Text style={styles.label}>{label}</Text>
-    <Text style={[styles.value, { color }]}>{value ?? "-"}</Text>
-  </View>
-);
+  copyable?: boolean; // new optional prop
+}> = ({ label, value, color = "#000", copyable = false }) => {
+  const handleCopy = () => {
+    if (value) {
+      Clipboard.setString(String(value));
+    }
+  };
+
+  return (
+    <View style={styles.row}>
+      <Text style={styles.label}>{label}</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text style={[styles.value, { color }]}>{value ?? "-"}</Text>
+        {copyable && value ? (
+          <TouchableOpacity
+            onPress={handleCopy}
+            style={{ marginLeft: 6, padding: 4 }}
+          >
+            <CustomIcon source={CopyIcon} size={12} color="#0a580dff" />
+          </TouchableOpacity>
+        ) : null}
+      </View>
+    </View>
+  );
+};
 
 const TransactionDetailScreen = () => {
   const navigation: any = useNavigation();
@@ -130,17 +156,37 @@ const TransactionDetailScreen = () => {
           </Text>
         </View>
 
+        {transaction?.meta?.data?.recharge_token && (
+          <View
+            style={{
+              backgroundColor: "#F9FAFB",
+              paddingHorizontal: 10,
+              marginBottom: 20,
+            }}
+          >
+            <DetailRow
+              label="Token"
+              value={
+                transaction?.meta?.data?.recharge_token
+                  .match(/.{1,4}/g)
+                  ?.join("-") || ""
+              }
+              copyable
+            />
+          </View>
+        )}
+
         <View style={styles.detailsContainer}>
           <DetailRow
             label="Transaction ID"
-            value={transaction?.uuid.split("-").join("")}
+            value={transaction?.uuid?.split("-")?.join("")}
           />
           <DetailRow
             label="Amount"
             value={
               transaction?.medium?.toUpperCase() === "CRYPTO"
                 ? formatAmount(transaction?.meta?.amount_in_naira ?? 0, {
-                    currency: "USD",
+                    currency: "NGN",
                     decimalPlace: 2,
                   })
                 : formatAmount(transaction?.amount, {
@@ -296,6 +342,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 13,
     borderBottomWidth: 1,
     borderBottomColor: "#E5E7EB",

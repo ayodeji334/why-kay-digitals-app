@@ -108,6 +108,7 @@ export default function WithdrawScreen() {
   }, [banksData]);
 
   const onSubmit = (values: any) => {
+    console.log("clicked");
     const payload = {
       account_number: values.account_number,
       bank_code: values.bank_code,
@@ -116,8 +117,6 @@ export default function WithdrawScreen() {
       url: "/transactions/withdrawal",
       save_as_beneficiary: saveBeneficiary,
     };
-
-    console.log(values);
 
     if (parseInt(values.amount) > 50000) {
       setPendingPayload(payload);

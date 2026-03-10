@@ -97,7 +97,7 @@ export function SelectInput({
                   !selectedOption && { color: "#838383" },
                 ]}
               >
-                {selectedOption ? `${selectedOption.label}` : placeholder}
+                {selectedOption ? selectedOption.label : placeholder}
               </Text>
             </View>
             <ArrowDown2 size={15} color="#374151" />

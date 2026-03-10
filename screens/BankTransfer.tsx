@@ -33,8 +33,6 @@ const BankTransferScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const user = useAuthStore(state => state.user);
 
-  console.log(user);
-
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["userBankAccounts"],
     queryFn: async () => {
@@ -57,6 +55,8 @@ const BankTransferScreen = () => {
     }
   };
 
+  console.log(data);
+
   const copyToClipboard = async (text: string, field: string) => {
     try {
       Clipboard.setString(text);
@@ -75,7 +75,11 @@ const BankTransferScreen = () => {
     return <CustomLoading loading={isLoading} />;
   }
 
-  if (user?.bvn_verification_status === "VERIFIED" && !data) {
+  if (
+    user?.bvn_verification_status === "VERIFIED" &&
+    data &&
+    Object.keys(data).length <= 0
+  ) {
     return (
       <SafeAreaView
         edges={["right", "bottom", "left"]}
@@ -91,7 +95,7 @@ const BankTransferScreen = () => {
         >
           <View style={styles.emptyState}>
             <View style={styles.emptyIcon}>
-              <WalletAdd size={40} color="#666" />
+              <WalletAdd size={30} color="#000" />
             </View>
             <Text style={styles.emptyTitle}>No Virtual Account</Text>
             <Text style={styles.emptyDescription}>
@@ -100,10 +104,7 @@ const BankTransferScreen = () => {
               Please ensure your BVN is verified to activate your virtual
               account.
             </Text>
-            <TouchableOpacity
-              style={styles.emptyButton}
-              onPress={() => refetch()}
-            >
+            <TouchableOpacity style={styles.emptyButton} onPress={onRefresh}>
               <Text style={styles.emptyButtonText}>Try again</Text>
             </TouchableOpacity>
           </View>
@@ -140,7 +141,7 @@ const BankTransferScreen = () => {
               <Text style={styles.detailLabel}>Account Name</Text>
               <View style={styles.copyableField}>
                 <Text style={styles.detailValue} numberOfLines={1}>
-                  {data.account_name}
+                  {data?.account_name}
                 </Text>
               </View>
             </View>
@@ -148,7 +149,7 @@ const BankTransferScreen = () => {
             <View style={styles.detailItem}>
               <Text style={styles.detailLabel}>Bank Name</Text>
               <View style={styles.copyableField}>
-                <Text style={styles.detailValue}>{data.bank_name}</Text>
+                <Text style={styles.detailValue}>BLOOMS MICROFINANCE BANK</Text>
               </View>
             </View>
 
@@ -156,7 +157,7 @@ const BankTransferScreen = () => {
               <Text style={styles.detailLabel}>Account Number</Text>
               <View style={styles.copyableField}>
                 <Text style={[styles.detailValue, styles.accountNumber]}>
-                  {data.account_number}
+                  {data?.account_number}
                 </Text>
               </View>
             </View>
@@ -214,11 +215,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
   },
   emptyState: {
     alignItems: "center",
-    paddingVertical: 40,
+    paddingVertical: 0,
+    marginTop: -150,
   },
   emptyIcon: {
     width: 40,
@@ -231,17 +233,17 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: normalize(20),
-    fontFamily: getFontFamily("800"),
+    fontFamily: getFontFamily("900"),
     color: "#000000",
     marginBottom: 12,
     textAlign: "center",
   },
   emptyDescription: {
-    fontSize: normalize(16),
+    fontSize: 13,
+    fontFamily: getFontFamily("400"),
     color: "black",
     textAlign: "center",
-    lineHeight: 14,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   emptyButton: {
     backgroundColor: COLORS.primary,

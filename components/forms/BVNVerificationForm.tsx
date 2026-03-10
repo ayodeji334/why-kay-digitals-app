@@ -42,7 +42,7 @@ const BVNForm = () => {
     try {
       const response = await post("/kyc/verify-bvn", data);
       console.log(response.data?.data?.user);
-      navigation.replace("Verification" as never);
+      navigation.goBack();
       setUser(response.data?.data?.user);
 
       reset();

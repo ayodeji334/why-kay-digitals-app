@@ -152,8 +152,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   box: {
-    width: 50,
-    height: 55,
+    width: 44,
+    height: 44,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
