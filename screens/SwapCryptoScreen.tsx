@@ -603,7 +603,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: COLORS.primary,
-    paddingVertical: normalize(20),
+    paddingVertical: 14,
     borderRadius: 100,
     alignItems: "center",
     marginTop: 20,
