@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: COLORS.secondary,
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderRadius: 40,
     justifyContent: "center",
     alignContent: "center",

@@ -152,14 +152,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   box: {
-    width: 44,
-    height: 44,
+    width: 45,
+    height: 45,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    textAlign: "center",
-    fontFamily: getFontFamily(800),
-    fontSize: normalize(30),
+    textAlign: "center", // centers text horizontally
+    textAlignVertical: "center", // centers text vertically (Android)
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#000",
   },
   label: {
     fontFamily: getFontFamily("700"),
