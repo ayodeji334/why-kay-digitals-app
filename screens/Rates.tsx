@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   View,
   Text,
@@ -29,241 +29,162 @@ export type TradeIntent = {
   rate?: number;
 };
 
+export type TradeTab = "buy" | "sell";
+interface RateCategory {
+  label: string;
+  min_amount: string;
+  max_amount: string;
+  value: string;
+}
+
+interface Rate {
+  id: number;
+  type: "buy" | "sell";
+  default_value: string;
+  categories: RateCategory[];
+}
+
+interface CryptoOption {
+  id: string;
+  value: string;
+  label: string;
+  logo_url: string;
+  symbol: string;
+  market_value: number;
+  rates: Rate[];
+  is_buy_enabled: boolean;
+  is_sell_enabled: boolean;
+}
+
+/**
+ * Given a rate object and a USD amount, returns the applicable
+ * rate value (category-specific or default).
+ */
+const resolveRate = (
+  rate: Rate,
+  amountNum: number,
+): {
+  value: number;
+  source: "category" | "base";
+  label?: string;
+  min?: string;
+  max?: string;
+} => {
+  if (
+    amountNum > 0 &&
+    Array.isArray(rate.categories) &&
+    rate.categories.length > 0
+  ) {
+    const matched = rate.categories.find(
+      cat =>
+        amountNum >= Number(cat.min_amount) &&
+        amountNum < Number(cat.max_amount),
+    );
+
+    if (matched) {
+      return {
+        source: "category",
+        value: Number(matched.value),
+        label: matched.label,
+        min: matched.min_amount,
+        max: matched.max_amount,
+      };
+    }
+  }
+
+  return { source: "base", value: Number(rate.default_value) };
+};
+
+/**
+ * Sell tab uses the "buy" rate type (platform buys from user).
+ * Buy tab uses the "sell" rate type (platform sells to user).
+ */
+const getRateType = (tab: TradeTab): "buy" | "sell" =>
+  tab === "sell" ? "buy" : "sell";
+
 export default function CryptoRatesScreen() {
-  const [activeTab, setActiveTab] = useState("sell");
+  const [activeTab, setActiveTab] = useState<TradeTab>("sell");
   const [selectedCrypto, setSelectedCrypto] = useState<string | null>(null);
-  const [amount, setAmount] = useState("");
-  const [cryptoOptions, setCryptoOptions] = useState<Array<any>>([]);
+  const [rawAmount, setRawAmount] = useState(""); // FIX: store raw numeric string, no commas
+  const [cryptoOptions, setCryptoOptions] = useState<CryptoOption[]>([]);
+
   const { apiGet } = useAxios();
   const navigation: any = useNavigation();
-
-  const crypto: any = cryptoOptions.find(
-    (c: any) => c.value === selectedCrypto,
-  );
-
-  // Calculate exchange rate (USD to NGN)
-  const exchangeRate: number = useMemo(() => {
-    if (!selectedCrypto || !crypto?.rates) return 0;
-
-    const rate = crypto.rates.find((r: any) =>
-      activeTab === "sell" ? r.type === "buy" : r.type === "sell",
-    );
-
-    if (!rate) return 0;
-
-    // Check for category-specific rates based on amount
-    if (amount) {
-      const amountNum = parseFloat(amount);
-
-      if (!isNaN(amountNum) && rate.categories && rate.categories.length > 0) {
-        const category = rate.categories.find(
-          (cat: any) =>
-            amountNum >= parseFloat(cat.min_amount) &&
-            amountNum < parseFloat(cat.max_amount),
-        );
-
-        if (category) {
-          return parseFloat(category.value);
-        }
-      }
-    }
-
-    // Return default rate
-    return parseFloat(rate.default_value);
-  }, [amount, crypto, activeTab, selectedCrypto]);
-
-  // Calculate current rate (total NGN value)
-  const currentRate: number = useMemo(() => {
-    if (!amount || !selectedCrypto) return 0;
-
-    if (!crypto || !crypto.rates) return 0;
-
-    const amountNum = parseFloat(amount);
-    if (isNaN(amountNum)) return 0;
-
-    const rate = crypto.rates.find((r: any) =>
-      activeTab === "sell" ? r.type === "buy" : r.type === "sell",
-    );
-
-    if (!rate) return 0;
-
-    const category = rate.categories.find(
-      (cat: any) =>
-        amountNum >= parseFloat(cat.min_amount) &&
-        amountNum < parseFloat(cat.max_amount),
-    );
-
-    const rateValue = category
-      ? parseFloat(category.value)
-      : parseFloat(rate.default_value);
-
-    return amountNum * rateValue;
-  }, [amount, crypto, activeTab]);
-
-  const coinAmount = useMemo(() => {
-    if (!amount) return 0;
-
-    if (!crypto || !crypto.market_value) return 0;
-
-    const amountNum = parseFloat(amount);
-    const marketValueNum = parseFloat(crypto.market_value);
-
-    if (isNaN(amountNum) || isNaN(marketValueNum) || marketValueNum === 0)
-      return 0;
-
-    return amountNum / marketValueNum;
-  }, [amount, crypto]);
 
   const { data, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ["rates"],
     queryFn: async () => {
-      try {
-        const res = await apiGet("/crypto-assets/available/rates");
-        return res?.data?.data ?? [];
-      } catch (error) {
-        throw error;
-      }
+      const res = await apiGet("/crypto-assets/available/rates");
+      return res?.data?.data ?? [];
     },
   });
 
-  const getRateForCrypto = useMemo(() => {
-    if (!selectedCrypto || !data?.assets) return 0;
+  useEffect(() => {
+    if (!Array.isArray(data)) return;
 
-    const crypto = data.find((asset: any) => asset.name === selectedCrypto);
-    if (!crypto) return 0;
+    const options: CryptoOption[] = data.map((asset: any) => ({
+      id: asset.uuid,
+      value: asset.uuid,
+      label: `${asset.symbol} (${asset.name})`,
+      logo_url: asset.logo_url,
+      symbol: asset.symbol,
+      market_value: Number(asset.market_current_value ?? 0),
+      rates: asset.rates ?? [],
+      is_buy_enabled: asset.is_buy_enabled,
+      is_sell_enabled: asset.is_sell_enabled,
+    }));
 
-    const rateType = activeTab === "sell" ? "sell" : "buy";
-    const rates = crypto.rates.filter((rate: any) => rate.type === rateType);
+    setCryptoOptions(options);
+  }, [data]); // FIX: removed getRateForCrypto dep that caused infinite loop
 
-    if (rates.length === 0) return 0;
+  const crypto = useMemo(
+    () => cryptoOptions.find(c => c.value === selectedCrypto) ?? null,
+    [cryptoOptions, selectedCrypto],
+  );
 
-    // Use the latest rate (assuming higher ID means more recent)
-    const latestRate = rates.reduce((latest: any, current: any) =>
-      current.id > latest.id ? current : latest,
-    );
+  const amountNum = useMemo(() => {
+    const n = parseFloat(rawAmount);
+    return isNaN(n) || n <= 0 ? 0 : n;
+  }, [rawAmount]);
 
-    // If amount is provided, check for category-specific rates
-    if (amount) {
-      const amountNum = parseFloat(amount);
-      if (
-        !isNaN(amountNum) &&
-        latestRate.categories &&
-        latestRate.categories.length > 0
-      ) {
-        const matchingCategory = latestRate.categories.find((category: any) => {
-          const min = parseFloat(category.min_amount);
-          const max = parseFloat(category.max_amount);
-          return amountNum >= min && amountNum <= max;
-        });
+  const rateInfo = useMemo(() => {
+    if (!crypto || !Array.isArray(crypto.rates)) return null;
 
-        if (matchingCategory) {
-          return parseFloat(matchingCategory.value);
-        }
-      }
-    }
+    const rateType = getRateType(activeTab);
+    const matchedRate = crypto.rates.find(r => r.type === rateType);
+    if (!matchedRate) return null;
 
-    // Return default value if no category matches or no amount provided
-    return parseFloat(latestRate.default_value);
-  }, [selectedCrypto, activeTab, amount, data]);
+    const resolved = resolveRate(matchedRate, amountNum);
 
-  const appliedRate = useMemo(() => {
-    if (!crypto || !amount) return null;
-
-    const amountNum = Number(amount);
-    if (isNaN(amountNum) || amountNum <= 0) return null;
-
-    const rate = crypto.rates?.find(
-      (r: any) => r.type === (activeTab === "sell" ? "buy" : "sell"),
-    );
-
-    if (!rate) return null;
-
-    if (Array.isArray(rate.categories) && rate.categories.length > 0) {
-      const matchedCategory = rate.categories.find((cat: any) => {
-        const min = Number(cat.min_amount);
-        const max = Number(cat.max_amount);
-
-        return amountNum >= min && amountNum < max;
-      });
-
-      if (matchedCategory) {
-        return {
-          source: "category",
-          label: matchedCategory.label,
-          min: matchedCategory.min_amount,
-          max: matchedCategory.max_amount,
-          value: Number(matchedCategory.value),
-        };
-      }
-    }
-
-    // fallback to base rate
     return {
-      source: "base",
-      value: Number(rate.value),
+      ...resolved,
+      totalNgn: amountNum > 0 ? amountNum * resolved.value : 0,
+      coinAmount:
+        amountNum > 0 && crypto.market_value > 0
+          ? amountNum / crypto.market_value
+          : 0,
     };
-  }, [crypto, amount, activeTab]);
+  }, [crypto, activeTab, amountNum]);
 
-  const onPress = () => {
+  const onPressTrade = useCallback(() => {
     if (!selectedCrypto || !crypto) {
       showError("Please select an asset");
       return;
     }
 
     const intent: TradeIntent = {
-      assetId: crypto?.value,
-      symbol: crypto?.symbol,
-      action: activeTab === "buy" ? "buy" : "sell",
+      assetId: crypto.value,
+      symbol: crypto.symbol,
+      action: activeTab,
       source: "rates",
-      amount: amount,
-      rate: currentRate,
+      amount: rawAmount,
+      rate: rateInfo?.totalNgn ?? 0,
     };
 
-    if (activeTab === "buy") {
-      navigation.navigate("BuyCrypto", { intent });
-    } else {
-      navigation.navigate("SellCrypto", { intent });
-    }
-  };
-
-  useEffect(() => {
-    if (Array.isArray(data)) {
-      const options = data.map((asset: any) => ({
-        id: asset.uuid,
-        value: asset.uuid,
-        label: `${asset.symbol} (${asset.name})`,
-        // symbol: asset.symbol,
-        logo_url: asset.logo_url,
-        balance: parseFloat(asset.market_current_value ?? 0),
-        rate: parseFloat(
-          asset.rates?.find((r: any) => r.type === "sell")?.default_value ?? 0,
-        ),
-        change: Math.random() > 0.5 ? "up" : "down",
-        changePercentage: (Math.random() * 20 - 10).toFixed(2),
-        rates: asset.rates,
-        market_value: parseFloat(asset.market_current_value ?? 0),
-        is_buy_enabled: asset.is_buy_enabled,
-        is_sell_enabled: asset.is_sell_enabled,
-      }));
-
-      setCryptoOptions(options);
-
-      // if (!selectedCrypto && options.length > 0) {
-      //   setSelectedCrypto(options[0].value); // ✅ use uuid consistently
-      // }
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (cryptoOptions.length > 0) {
-      const updatedOptions = cryptoOptions.map((option: any) => ({
-        ...option,
-        rate: getRateForCrypto,
-      }));
-
-      setCryptoOptions(updatedOptions);
-    }
-  }, [getRateForCrypto]);
+    navigation.navigate(activeTab === "buy" ? "BuyCrypto" : "SellCrypto", {
+      intent,
+    });
+  }, [selectedCrypto, crypto, activeTab, rawAmount, rateInfo, navigation]);
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
@@ -272,16 +193,17 @@ export default function CryptoRatesScreen() {
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={() => refetch()}
+            onRefresh={refetch}
             colors={["#E89E00"]}
           />
         }
       >
+        {/* ── Tabs ── */}
         <View style={styles.tabs}>
-          {["sell", "buy"].map(tab => (
+          {(["sell", "buy"] as TradeTab[]).map(tab => (
             <TouchableOpacity
               key={tab}
-              style={[styles.tab, activeTab === tab ? styles.activeTab : {}]}
+              style={[styles.tab, activeTab === tab && styles.activeTab]}
               onPress={() => setActiveTab(tab)}
             >
               <Text
@@ -297,91 +219,95 @@ export default function CryptoRatesScreen() {
           ))}
         </View>
 
+        {/* ── Coin selector ── */}
         <SelectInput
-          label="Cryptocurrency"
+          label="Coin"
           options={cryptoOptions}
           onChange={setSelectedCrypto}
-          title="Select an asset Wallet"
-          placeholder="Select an asset wallet"
+          title="Select an asset coin"
+          placeholder="Select an asset coin"
         />
 
+        {/* ── USD amount input ── */}
         <View style={{ marginBottom: 2, marginTop: 10 }}>
           <Text style={styles.label}>Amount in USD ($)</Text>
           <View style={styles.inputContainer}>
             <Text style={styles.dollarSign}>$</Text>
             <TextInput
               style={styles.input}
-              keyboardType="numeric"
-              placeholderTextColor={"#aeaeaeff"}
+              keyboardType="decimal-pad"
+              placeholderTextColor="#aeaeaeff"
               placeholder="0.00"
-              value={amount}
+              value={rawAmount}
+              // FIX: store raw numeric string — no commas so parseFloat works correctly
               onChangeText={text => {
-                const formatted = formatWithCommas(text);
-
-                setAmount(formatted);
+                const cleaned = text.replace(/[^0-9.]/g, "");
+                // prevent multiple decimal points
+                const parts = cleaned.split(".");
+                const safe =
+                  parts.length > 2
+                    ? `${parts[0]}.${parts.slice(1).join("")}`
+                    : cleaned;
+                setRawAmount(safe);
               }}
             />
           </View>
         </View>
 
+        {/* ── Expected NGN ── */}
         <View style={{ marginVertical: 12 }}>
           <Text style={styles.label}>Expected Amount (₦)</Text>
           <View style={styles.rateBox}>
             <Text style={styles.rateText}>
-              {formatAmount(currentRate, { currency: "NGN" })}
+              {formatAmount(rateInfo?.totalNgn ?? 0, { currency: "NGN" })}
             </Text>
           </View>
         </View>
 
-        {selectedCrypto && amount && parseFloat(amount) > 0 && (
+        {/* ── Rate breakdown — only when coin + valid amount selected ── */}
+        {selectedCrypto && amountNum > 0 && rateInfo && (
           <View style={styles.infoContainer}>
-            {/* Exchange Rate */}
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Exchange Rate:</Text>
               <Text style={styles.infoValue}>
-                $1 = {formatAmount(exchangeRate)}
+                $1 = {formatAmount(rateInfo.value)}
               </Text>
             </View>
 
-            {/* Rate Category */}
-            {appliedRate && (
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Rate Category:</Text>
-                <Text style={styles.infoValue}>
-                  {appliedRate.source === "category"
-                    ? appliedRate.label
-                    : "Default rate"}
-                </Text>
-              </View>
-            )}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Rate Category:</Text>
+              <Text style={styles.infoValue}>
+                {rateInfo.source === "category"
+                  ? rateInfo.label
+                  : "Default rate"}
+              </Text>
+            </View>
 
-            {/* Rate Used */}
-            {appliedRate && (
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Rate Used:</Text>
-                <Text style={styles.infoValue}>
-                  {formatAmount(appliedRate.value)}
-                </Text>
-              </View>
-            )}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Rate Used:</Text>
+              <Text style={styles.infoValue}>
+                {formatAmount(rateInfo.value)}
+              </Text>
+            </View>
 
-            {/* Estimated Crypto */}
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Estimated {crypto?.symbol}:</Text>
               <Text style={styles.infoValue}>
-                {formatNumber(coinAmount, { decimalPlace: 8 })} {crypto?.symbol}
+                {formatNumber(rateInfo.coinAmount, { decimalPlace: 8 })}{" "}
+                {crypto?.symbol}
               </Text>
             </View>
           </View>
         )}
 
         <TouchableOpacity
-          onPress={onPress}
+          onPress={onPressTrade}
           activeOpacity={0.8}
           style={styles.tradeButton}
         >
           <Text style={styles.tradeButtonText}>Trade Crypto</Text>
         </TouchableOpacity>
+
         <Text
           style={[
             styles.label,

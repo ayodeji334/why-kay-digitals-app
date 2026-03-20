@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   label: {
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     fontSize: normalize(18),
     marginBottom: 6,
     color: "#000",

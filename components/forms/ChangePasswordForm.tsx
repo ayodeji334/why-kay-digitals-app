@@ -85,7 +85,7 @@ const ChangePasswordForm: React.FC<{}> = () => {
       />
 
       <TouchableOpacity
-        activeOpacity={0.6}
+        activeOpacity={0.8}
         style={styles.button}
         onPress={handleSubmit(onSubmit)}
       >

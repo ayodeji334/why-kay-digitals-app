@@ -60,7 +60,7 @@ export default function WalletScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "white" },
-  scrollContainer: { flex: 1, padding: 20 },
+  scrollContainer: { paddingHorizontal: 20, paddingTop: 20 },
   actionsContainer: {
     flexWrap: "wrap",
     flexDirection: "row",

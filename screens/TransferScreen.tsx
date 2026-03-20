@@ -62,7 +62,7 @@ export default function TransferScreen() {
   // const user = useAuthStore(state => state.user);
 
   const {
-    data: { wallets, totalAssetValueBalance },
+    data: { wallets = [], totalAssetValueBalance = 0 },
   } = useWallets();
 
   const [displayAmount, setDisplayAmount] = useState("");
@@ -75,6 +75,7 @@ export default function TransferScreen() {
       value: asset.asset_id ?? asset.uuid ?? "",
       symbol: asset.symbol ?? "",
       logo_url: asset.logo ?? "",
+      price: asset?.value,
     }));
   }, [wallets]);
 
@@ -130,7 +131,7 @@ export default function TransferScreen() {
 
     if (!selectedCryptoWallet) return true;
 
-    return amount > selectedCryptoWallet.balance * selectedCryptoWallet?.price;
+    return amount > selectedCryptoWallet?.price;
   }, [
     amount,
     activeTab,
@@ -257,8 +258,8 @@ export default function TransferScreen() {
           <View style={styles.limitContainer}>
             <View style={styles.limitHeader}>
               <Text style={styles.limitLabel}>
-                Daily Limit: ₦
-                {walletSummary?.daily_limit?.toLocaleString() || "0"}
+                Daily Limit:
+                {formatAmount(walletSummary?.daily_limit) || "0"}
               </Text>
               <Text style={styles.upgradeText}>Upgrade Limit</Text>
             </View>
@@ -300,6 +301,7 @@ export default function TransferScreen() {
                   options={userWallets}
                   placeholder="Select an asset(coin)"
                   title="Select an asset"
+                  showWalletPrice={true}
                 />
               </View>
             )}
@@ -346,7 +348,7 @@ export default function TransferScreen() {
               </View>
             )}
           </View>
-          {activeTab === "crypto" && selectedCryptoWallet?.symbol && (
+          {/* {activeTab === "crypto" && selectedCryptoWallet?.symbol && (
             <View style={{ flexDirection: "row", gap: 5 }}>
               <Text style={styles.limitValue}>
                 Your {selectedCryptoWallet?.symbol} Wallet Balance and USD
@@ -365,7 +367,7 @@ export default function TransferScreen() {
                 </Text>
               </Text>
             </View>
-          )}
+          )} */}
 
           {exceedsDailyLimit && (
             <View style={styles.warningContainer}>
@@ -467,7 +469,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: normalize(8),
+    borderRadius: 10,
     paddingHorizontal: normalize(16),
     marginBottom: normalize(10),
     gap: 5,
@@ -484,6 +486,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(26),
     fontFamily: getFontFamily("700"),
     color: "#000",
+    borderRadius: 10,
   },
   limitHeader: {
     flexDirection: "row",

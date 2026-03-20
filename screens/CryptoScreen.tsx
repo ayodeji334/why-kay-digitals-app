@@ -119,10 +119,10 @@ const CryptoWalletScreen = () => {
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search Asset"
+          placeholder="Search coin"
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholderTextColor="#999"
+          placeholderTextColor="#6b6b6b"
         />
       </View>
 
@@ -153,7 +153,8 @@ const styles = StyleSheet.create({
   searchContainer: { paddingHorizontal: 16, paddingVertical: 12 },
   searchInput: {
     backgroundColor: "#fff",
-    padding: 15,
+    padding: 12,
+    paddingHorizontal: 14,
     borderRadius: 100,
     fontSize: 14,
     fontFamily: getFontFamily("700"),

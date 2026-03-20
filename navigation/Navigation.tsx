@@ -34,7 +34,7 @@ import TwoFactorAuthenticationScreen from "../screens/TwoFactorAuthenticationScr
 import ConfirmTwoFactorAuthenticationScreen from "../screens/ConfirmTwoFactorAuthentication";
 import AccountLimitsScreen from "../screens/AccountLimitScreen";
 import BuyDataScreen from "../screens/BuyDataScreen";
-import TransactionDetailScreen from "../screens/TransactonDetail";
+import TransactionDetailScreen from "../screens/TransactionDetail";
 import ConfirmTransactionScreen from "../screens/ConfirmTransactionScreen";
 import BuyAirtimeScreen from "../screens/BuyAirtimeScreen";
 import PayCableTVSubscriptionScreen from "../screens/PayCableTVSubscriptionScreen";
@@ -171,7 +171,10 @@ export default function NavigationRoot() {
             options: {
               headerBackTitle: ".",
               header: () => (
-                <CustomHeader showTitle={true} title="Confirm Transaction" />
+                <CustomHeader
+                  showTitle={true}
+                  title="Confirm Crypto Withdrawal"
+                />
               ),
             },
           },
@@ -428,7 +431,7 @@ export default function NavigationRoot() {
             options: {
               headerShown: true,
               header: () => (
-                <CustomHeader showTitle={true} title="Select Wallet" />
+                <CustomHeader showTitle={true} title="Select Coin" />
               ),
             },
           },
@@ -446,7 +449,7 @@ export default function NavigationRoot() {
               header: () => (
                 <CustomHeader
                   showTitle
-                  title={route.params?.title ?? "Receive Crypto"}
+                  title={route.params?.title ?? "Wallet Detail"}
                 />
               ),
             }),

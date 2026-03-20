@@ -18,8 +18,6 @@ export function useAssets() {
           market_current_value: asset.market_price ?? 0,
           sell_rate: parseFloat(asset?.sell_rate ?? 0),
           buy_rate: parseFloat(asset?.buy_rate ?? 0),
-          change: Math.random() > 0.5 ? "up" : "down",
-          changePercentage: (Math.random() * 20 - 10).toFixed(2),
         })) ?? []
       );
     } catch (error) {
@@ -35,11 +33,19 @@ export function useAssets() {
     refetch,
     error,
     isError,
+    isFetching,
   } = useQuery({
     queryKey: ["assets"],
     queryFn: fetchAssets,
-    refetchInterval: 6000,
   });
 
-  return { assets, isLoading, isRefetching, refetch, error, isError };
+  return {
+    assets,
+    isLoading,
+    isRefetching,
+    refetch,
+    error,
+    isError,
+    isFetching,
+  };
 }

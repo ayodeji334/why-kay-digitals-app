@@ -38,7 +38,6 @@ const InfoCard: React.FC<InfoCardProps> = ({
     <View
       style={[
         {
-          flex: 1,
           marginVertical: 20,
           backgroundColor: "#5AB2431A",
           borderRadius: 10,
@@ -50,7 +49,6 @@ const InfoCard: React.FC<InfoCardProps> = ({
     >
       <View
         style={{
-          flex: 1,
           flexDirection: "row",
           alignItems: "flex-start",
           gap: 9,

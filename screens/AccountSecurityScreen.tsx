@@ -21,7 +21,6 @@ import {
   ShieldCheckIcon,
 } from "../assets";
 import CustomIcon from "../components/CustomIcon";
-import { useState } from "react";
 
 interface MenuItemProps {
   title: string;
@@ -126,8 +125,8 @@ export default function AccountSecurityScreen() {
             IconComponent={<CustomIcon source={PadlockIcon} size={20} />}
           />
           <MenuItem
-            title="Google Authentication"
-            subtitle="Enable Google Authenticator for extra protection"
+            title="2FA Authentication"
+            subtitle="Enable Authenticator for extra protection"
             onPress={() =>
               navigation.navigate("TwoFactorAuthentication" as never)
             }

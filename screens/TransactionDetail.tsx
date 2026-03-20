@@ -24,7 +24,7 @@ const DetailRow: React.FC<{
   label: string;
   value?: string | number;
   color?: string;
-  copyable?: boolean; // new optional prop
+  copyable?: boolean;
 }> = ({ label, value, color = "#000", copyable = false }) => {
   const handleCopy = () => {
     if (value) {
@@ -35,19 +35,18 @@ const DetailRow: React.FC<{
   return (
     <View style={styles.row}>
       <Text style={styles.label}>{label}</Text>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Text style={[styles.value, { color }]}>{value ?? "-"}</Text>
+
+      <View style={styles.valueContainer}>
+        <Text
+          style={[styles.value, { color }]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {value ?? "-"}
+        </Text>
+
         {copyable && value ? (
-          <TouchableOpacity
-            onPress={handleCopy}
-            style={{ marginLeft: 6, padding: 4 }}
-          >
+          <TouchableOpacity onPress={handleCopy} style={styles.copyButton}>
             <CustomIcon source={CopyIcon} size={12} color="#0a580dff" />
           </TouchableOpacity>
         ) : null}
@@ -61,12 +60,12 @@ const TransactionDetailScreen = () => {
   const route = useRoute();
   const { transaction }: any = route.params;
 
-  console.log(transaction);
-
   const isSuccess = useMemo(
     () => transaction?.status?.toLowerCase() === "successful",
     [transaction?.status],
   );
+
+  console.log(transaction);
 
   const isProcessing = useMemo(
     () =>
@@ -134,7 +133,7 @@ const TransactionDetailScreen = () => {
           >
             {isSuccess
               ? transaction?.category === "CRYPTO_DEPOSIT"
-                ? `Your ${transaction?.meta?.asset_symbol} purchase was successful`
+                ? `Your ${transaction?.meta?.asset_symbol} deposit was successful`
                 : transaction?.category === "CRYPTO_WITHDRAW"
                 ? `Your ${transaction?.meta?.asset_symbol} withdrawal was successful`
                 : transaction?.category === "CABLETV"
@@ -151,7 +150,7 @@ const TransactionDetailScreen = () => {
                 ? "Your withdrawal was successful"
                 : "Transaction completed successfully"
               : isProcessing
-              ? "Trasnsaction is pending the confirmation"
+              ? "Transaction is pending the confirmation"
               : "Transaction failed"}
           </Text>
         </View>
@@ -180,16 +179,25 @@ const TransactionDetailScreen = () => {
           <DetailRow
             label="Transaction ID"
             value={transaction?.uuid?.split("-")?.join("")}
+            copyable
           />
+          {(transaction?.category === "CRYPTO_DEPOSIT" ||
+            transaction?.category === "CRYPTO_WITHDRAW") && (
+            <DetailRow
+              label="Blockchain Trx ID"
+              value={transaction?.meta?.tx_reference}
+              copyable
+            />
+          )}
           <DetailRow
             label="Amount"
             value={
               transaction?.medium?.toUpperCase() === "CRYPTO"
-                ? formatAmount(transaction?.meta?.amount_in_naira ?? 0, {
-                    currency: "NGN",
+                ? formatAmount(transaction?.meta?.amount_in_usd || 0, {
+                    currency: "USD",
                     decimalPlace: 2,
                   })
-                : formatAmount(transaction?.amount, {
+                : formatAmount(transaction?.amount || 0, {
                     currency: "NGN",
                     decimalPlace: 2,
                   })
@@ -199,14 +207,16 @@ const TransactionDetailScreen = () => {
           <DetailRow
             label="Fee"
             value={formatAmount(transaction?.fee, {
-              currency: transaction?.currency || "NGN",
+              currency:
+                transaction?.medium?.toUpperCase() === "CRYPTO" ? "USD" : "NGN",
               decimalPlace: 2,
             })}
           />
           <DetailRow
             label="Net Amount"
             value={formatAmount(transaction?.net_amount, {
-              currency: transaction?.currency || "NGN",
+              currency:
+                transaction?.medium?.toUpperCase() === "CRYPTO" ? "USD" : "NGN",
               decimalPlace: 2,
             })}
           />
@@ -215,7 +225,7 @@ const TransactionDetailScreen = () => {
               label="Exchange Rate"
               value={
                 formatAmount(transaction?.meta?.exchange_rate, {
-                  currency: "USD",
+                  currency: "NGN",
                   decimalPlace: 2,
                 }) + "/$"
               }
@@ -242,6 +252,7 @@ const TransactionDetailScreen = () => {
           <DetailRow
             label="Reference"
             value={transaction?.reference.split("-").join("")}
+            copyable
           />
           <DetailRow
             label="Occurred At"
@@ -304,23 +315,23 @@ const styles = StyleSheet.create({
   headerButton: {
     borderColor: COLORS.secondary,
     borderWidth: 1,
-    padding: 15,
+    padding: 14,
     flex: 1,
     gap: 6,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 20,
+    borderRadius: 40,
   },
   goBackButton: {
     backgroundColor: COLORS.secondary,
-    padding: 15,
+    padding: 14,
     flex: 1,
     gap: 6,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 20,
+    borderRadius: 40,
   },
   headerTitle: {
     fontSize: normalize(18),
@@ -346,13 +357,44 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     borderBottomWidth: 1,
     borderBottomColor: "#E5E7EB",
+    columnGap: 9,
   },
-  label: { fontSize: normalize(18), fontFamily: getFontFamily("400") },
+  label: {
+    flex: 1,
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("400"),
+  },
+  valueContainer: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
   value: {
+    flexShrink: 1,
+    minWidth: 0,
     fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
-    flexShrink: 1,
     textAlign: "right",
+  },
+  copyButton: {
+    marginLeft: 6,
+    padding: 4,
+    flexShrink: 0,
+    borderRadius: 1,
+  },
+  setupLabel: {
+    fontSize: normalize(17),
+    fontFamily: getFontFamily("800"),
+    color: "#000",
+    marginBottom: 2,
+  },
+  setupValue: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
+    color: "#444",
+    flex: 1,
   },
 });
 

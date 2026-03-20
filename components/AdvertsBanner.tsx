@@ -12,6 +12,8 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getFontFamily, normalize } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
+import ErrorState from "./ErrorState";
+import LoadingState from "./LoadingState";
 
 type Banner = {
   id: number;
@@ -36,14 +38,18 @@ const AdvertsBanner = () => {
     data: banners,
     isLoading,
     isError,
+    refetch,
   } = useQuery<Banner[]>({
     queryKey: ["banners"],
     queryFn: fetchBanners,
     refetchOnWindowFocus: true,
   });
 
-  if (isLoading) return <Text style={styles.text}>Loading banners...</Text>;
-  if (isError) return <Text style={styles.text}>Error loading banners</Text>;
+  if (isLoading) return <LoadingState message="Laoding advert banners..." />;
+  if (isError)
+    return (
+      <ErrorState error={`Failed to load banners`} handleOnPress={refetch} />
+    );
 
   return (
     <View style={styles.container}>

@@ -149,7 +149,9 @@ const BankTransferScreen = () => {
             <View style={styles.detailItem}>
               <Text style={styles.detailLabel}>Bank Name</Text>
               <View style={styles.copyableField}>
-                <Text style={styles.detailValue}>BLOOMS MICROFINANCE BANK</Text>
+                <Text style={styles.detailValue}>
+                  BLOOMS (MFB) MICROFINANCE BANK
+                </Text>
               </View>
             </View>
 
@@ -187,13 +189,16 @@ const BankTransferScreen = () => {
           </View>
 
           <InfoCard
-            IconComponent={<InfoCircle />}
+            IconComponent={<InfoCircle size={18} />}
             title="Important Notes:"
             description={[
               "Transfers typically reflect within 5-10 minutes",
               "Transfer exactly the amount shown above",
               "Use only the account details provided above",
               "This virtual account is dedicated to your profile",
+              "A deposit fee will be deducted from your wallet balance for each virtual account deposit",
+              "You are only allowed to deposit Naira using your verified name",
+              "If you send money with a different name, the funds will be held for 5 business days for review before a refund is processed",
             ]}
           />
         </ScrollView>

@@ -41,7 +41,6 @@ const BVNForm = () => {
   const onSubmit = async (data: any) => {
     try {
       const response = await post("/kyc/verify-bvn", data);
-      console.log(response.data?.data?.user);
       navigation.goBack();
       setUser(response.data?.data?.user);
 
@@ -77,7 +76,7 @@ const BVNForm = () => {
 
       <TouchableOpacity
         disabled={(!isValid && isDirty) || isSubmitting}
-        activeOpacity={0.6}
+        activeOpacity={0.8}
         style={styles.button}
         onPress={handleSubmit(onSubmit)}
       >

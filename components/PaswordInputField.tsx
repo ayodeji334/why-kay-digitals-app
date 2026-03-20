@@ -74,7 +74,7 @@ const PasswordInputField: React.FC<Props> = ({
               value={value}
             />
             <TouchableOpacity
-              activeOpacity={0.6}
+              activeOpacity={0.8}
               onPress={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <Eye size={20} /> : <EyeSlash size={20} />}

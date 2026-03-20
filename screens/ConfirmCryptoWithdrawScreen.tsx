@@ -13,47 +13,76 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import OtpInputField from "../components/OtpInputField";
 import { useState } from "react";
 import CustomLoading from "../components/CustomLoading";
+import OtpInputField from "../components/OtpInputField";
 import useAxios from "../hooks/useAxios";
-
-type FormData = {
-  pin: string;
-};
+import { AxiosError } from "axios";
+import { showError, showSuccess } from "../utlis/toast";
 
 const schema = yup.object().shape({
+  token: yup
+    .string()
+    .required("Verification token is required")
+    .matches(/^\d+$/, "Token must be numeric"),
   pin: yup
     .string()
-    .length(6, "Code must be 6 digits")
-    .required("Authenticator code is required"),
+    .required("Transaction PIN is required")
+    .length(4, "PIN must be 4 digits"),
+  googleCode: yup
+    .string()
+    .required("Authenticator code is required")
+    .length(6, "Code must be 6 digits"),
 });
 
-export default function ConfirmCryptoWithdrawalScreen() {
+type FormData = {
+  token: string;
+  pin: string;
+  googleCode: string;
+};
+
+export default function ConfirmCryptoWithdrawScreen() {
   const { post } = useAxios();
   const navigation: any = useNavigation();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const route: any = useRoute();
-  const { payload } = route.params;
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { payload, email } = route.params;
+
   const { control, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
-    defaultValues: { pin: "" },
+    defaultValues: { token: "", pin: "", googleCode: "" },
   });
 
-  const handleContinue = async (values: FormData) => {
+  console.log(payload);
+
+  const onSubmit = async (values: FormData) => {
     try {
       setIsLoading(true);
 
       const { url, ...rest } = payload;
 
-      const response = await post(url, {
-        google_2fa_code: values.pin,
+      console.log(rest);
+
+      const response = await post("crypto/user/confirm-withdrawal", {
+        email,
+        verification_token: values.token,
+        transaction_pin: values.pin,
+        google_2fa_code: values.googleCode,
         ...rest,
       });
 
-      navigation.navigate("TransactionDetail" as never, {
+      showSuccess("Withdrawal verified successfully!");
+
+      navigation.navigate("TransactionDetail", {
         transaction: response?.data?.data,
       });
+    } catch (err) {
+      const errorMessage =
+        err instanceof AxiosError
+          ? err.response?.data?.message || "Verification failed. Try again."
+          : "Verification failed. Try again.";
+      showError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -62,33 +91,49 @@ export default function ConfirmCryptoWithdrawalScreen() {
   return (
     <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={{
+          flex: 1,
+          justifyContent: "space-between",
+          paddingBottom: 12,
+        }}
+      >
         <View style={styles.header}>
-          <Text style={styles.title}>Enter Authenticator Code</Text>
-          <Text
-            style={{
-              fontFamily: getFontFamily("400"),
-              fontSize: normalize(18),
-              marginTop: 6,
-              marginLeft: 1,
-            }}
-          >
-            Kindly enter the 6‑digit code from your Google Authenticator app to
-            continue.
+          <Text style={styles.description}>
+            Enter the verification token sent to your email, your transaction
+            PIN, and the 6‑digit code from the Authenticator to continue.
           </Text>
-        </View>
 
-        <OtpInputField
-          control={control}
-          name="pin"
-          boxes={6}
-          isSecuredText={false}
-        />
+          <OtpInputField
+            control={control}
+            name="pin"
+            isSecuredText={true}
+            boxes={4}
+            label="Transaction PIN"
+          />
+
+          <OtpInputField
+            control={control}
+            name="token"
+            isSecuredText={false}
+            boxes={6}
+            label="Verification Token"
+          />
+
+          <OtpInputField
+            control={control}
+            name="googleCode"
+            isSecuredText={false}
+            boxes={6}
+            label="Authenticator Code"
+          />
+        </View>
 
         <TouchableOpacity
           activeOpacity={0.8}
           style={styles.button}
-          onPress={handleSubmit(handleContinue)}
+          onPress={handleSubmit(onSubmit)}
         >
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
@@ -104,18 +149,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
-  button: {
-    marginTop: 30,
-    backgroundColor: COLORS.secondary,
-    padding: 14,
-    borderRadius: 80,
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    textAlign: "center",
-    fontSize: normalize(18),
-  },
   scrollContainer: {
     flex: 1,
     paddingHorizontal: 20,
@@ -124,7 +157,31 @@ const styles = StyleSheet.create({
     marginBottom: 23,
   },
   title: {
-    fontSize: normalize(19),
+    fontSize: normalize(20),
     fontFamily: getFontFamily("800"),
+  },
+  description: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("400"),
+    marginTop: 6,
+    marginBottom: 26,
+    color: COLORS.darkBackground,
+  },
+  errorText: {
+    color: "red",
+    fontSize: normalize(14),
+    marginTop: 4,
+  },
+  button: {
+    marginTop: 30,
+    backgroundColor: COLORS.secondary,
+    padding: 14,
+    borderRadius: 80,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
   },
 });

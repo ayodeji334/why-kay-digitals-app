@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -99,19 +99,6 @@ export default function CryptoSwapScreen() {
   const { data, refetch: refetchUserWallets } = useWallets();
   const axios = useAxios();
 
-  const { data: supportedPairs } = useQuery({
-    queryKey: ["supported-pairs"],
-    queryFn: async () => {
-      const response = await axios.apiGet("crypto/conversion/supported-pairs", {
-        params: {
-          accountType: "eb_convert_funding",
-          fromAsset: "BTC",
-        },
-      });
-      return response.data ?? [];
-    },
-  });
-
   const {
     control,
     handleSubmit,
@@ -127,13 +114,28 @@ export default function CryptoSwapScreen() {
   const userWallets = useMemo(
     () =>
       Array.isArray(data?.wallets)
-        ? data?.wallets.map((asset: any) => ({
-            ...asset,
-            label: asset?.symbol ?? asset?.name ?? "",
-            value: asset?.asset_id ?? asset?.uuid ?? "",
-            symbol: asset?.symbol ?? "",
-            logo_url: asset?.logo ?? "",
-          }))
+        ? data?.wallets
+            .map((asset: any) => ({
+              ...asset,
+              label: asset?.symbol ?? asset?.name ?? "",
+              value: asset?.asset_id ?? asset?.uuid ?? "",
+              symbol: asset?.symbol ?? "",
+              logo_url: asset?.logo ?? "",
+              total_price: asset?.value,
+            }))
+            .sort((a: any, b: any) => {
+              const aPrice = Number(a.price);
+              const bPrice = Number(b.price);
+
+              const aValue = Number(a.value);
+              const bValue = Number(b.value);
+
+              // wallets with no balance sorted by market price desc
+              if (aPrice !== bPrice) return bPrice - aPrice;
+
+              // wallets with balance float to top, sorted by USD value desc
+              if (bValue !== aValue) return bValue - aValue;
+            })
         : [],
     [data?.wallets],
   );
@@ -143,6 +145,21 @@ export default function CryptoSwapScreen() {
   const amount = watch("amount");
   const fromAsset = userWallets.find((opt: any) => opt.value === fromAssetId);
   const selectedSymbol = fromAsset?.symbol ?? "";
+  const symbol = fromAsset?.symbol ?? "";
+
+  const { data: supportedPairs, isFetching } = useQuery({
+    queryKey: ["supported-pairs", symbol],
+    queryFn: async () => {
+      const response = await axios.apiGet("crypto/conversion/supported-pairs", {
+        params: {
+          accountType: "eb_convert_funding",
+          fromAsset: symbol,
+        },
+      });
+      return response.data ?? [];
+    },
+    enabled: !!symbol,
+  });
 
   const availableConversions = useMemo(() => {
     if (!supportedPairs || !selectedSymbol) return [];
@@ -168,7 +185,7 @@ export default function CryptoSwapScreen() {
   const toAsset = options.find((opt: any) => opt.value === toAssetId);
   const balance = Number(fromAsset?.balance ?? 0);
   const price = Number(fromAsset?.price ?? 0);
-  const symbol = fromAsset?.symbol ?? "";
+
   const { post } = useAxios();
 
   const { fromAmount } = useMemo(() => {
@@ -179,10 +196,10 @@ export default function CryptoSwapScreen() {
       };
     }
 
-    const fromAseetMarketPrice = Number(fromAsset?.price || 0);
+    const fromAssetMarketPrice = Number(fromAsset?.price || 0);
     const toAssetMarketPrice = Number(toAsset?.market_current_value || 0);
 
-    if (!fromAseetMarketPrice || !toAssetMarketPrice) {
+    if (!fromAssetMarketPrice || !toAssetMarketPrice) {
       return {
         fromAmount: 0,
         toCoinAmount: 0,
@@ -190,7 +207,7 @@ export default function CryptoSwapScreen() {
     }
 
     return {
-      fromAmount: (amount / fromAseetMarketPrice).toFixed(8),
+      fromAmount: (amount / fromAssetMarketPrice).toFixed(8),
       toCoinAmount: (amount / toAssetMarketPrice).toFixed(8),
     };
   }, [amount, fromAsset?.price, toAsset?.market_current_value]);
@@ -248,9 +265,11 @@ export default function CryptoSwapScreen() {
     refetchUserWallets();
   };
 
-  const canSubmit = isValid && !insufficientBalance && amount > 0;
+  useEffect(() => {
+    setValue("to_asset", "", { shouldValidate: false });
+  }, [fromAssetId, setValue]);
 
-  console.log(options);
+  const canSubmit = isValid && !insufficientBalance && amount > 0;
 
   return (
     <SafeAreaView
@@ -276,7 +295,8 @@ export default function CryptoSwapScreen() {
                 label="Select asset(coin) you want to convert from"
                 options={userWallets}
                 placeholder="Select an asset(coin)"
-                title="Select an asset"
+                title="Select from your wallet"
+                showWalletPrice={true}
               />
             </View>
 
@@ -286,7 +306,13 @@ export default function CryptoSwapScreen() {
                 name="to_asset"
                 label="Select asset(coin) you want to convert to"
                 options={options}
-                placeholder="Select an asset(coin)"
+                placeholder={
+                  isFetching
+                    ? "Loading available pairs..."
+                    : !fromAsset
+                    ? "Select a source asset first"
+                    : "Select an asset to convert to"
+                }
                 title="Select an asset"
               />
             </View>
@@ -324,148 +350,11 @@ export default function CryptoSwapScreen() {
               )}
               {fromAsset && amount > 0 && (
                 <Text style={styles.approx}>
-                  Approximately {fromAmount} {fromAsset?.symbol} will debited
-                  from your {symbol} wallet
+                  Approximately {fromAmount} will debited from your {symbol}{" "}
+                  wallet
                 </Text>
               )}
             </View>
-
-            {/* {fromAsset && toAsset && (
-              <View
-                style={{
-                  marginVertical: 10,
-                  backgroundColor: "#EFF7EC",
-                  padding: 10,
-                  borderRadius: 10,
-                }}
-              >
-                <Text style={[styles.note, { color: "black" }]}>
-                  Transaction Breakdown
-                </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.balance,
-                      { fontFamily: getFontFamily("800") },
-                    ]}
-                  >
-                    Your {symbol} Wallet balance:
-                  </Text>
-                  <Text style={styles.balance}>{balance || 0}</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.balance,
-                      { fontFamily: getFontFamily("800") },
-                    ]}
-                  >
-                    Your {symbol} Wallet balance in USD:
-                  </Text>
-                  <Text style={styles.balance}>
-                    {formatAmount(Number(balance) * Number(price) || 0, {
-                      currency: "USD",
-                      decimalPlace: 2,
-                    })}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.balance,
-                      { fontFamily: getFontFamily("800") },
-                    ]}
-                  >
-                    {symbol} Market Current Price in USD:
-                  </Text>
-                  <Text style={styles.balance}>
-                    {formatAmount(Number(fromAsset?.price) || 0, {
-                      currency: "USD",
-                    })}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.balance,
-                      { fontFamily: getFontFamily("800") },
-                    ]}
-                  >
-                    {toAsset?.symbol} Market Current Price in USD:
-                  </Text>
-                  <Text style={styles.balance}>
-                    {formatAmount(Number(toAsset?.market_current_value) || 0, {
-                      currency: "USD",
-                      decimalPlace: 2,
-                    })}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.balance,
-                      { fontFamily: getFontFamily("800") },
-                    ]}
-                  >
-                    Service Network Fee:
-                  </Text>
-                  <Text style={styles.balance}>
-                    {formatAmount(2, { currency: "USD" })}
-                  </Text>
-                </View>
-              </View>
-            )} */}
-
-            {/* <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.min}>
-                Estimated Network Fee:{" "}
-                {formatAmount(amount * 0.01, { currency: "USD"})}
-              </Text>
-            </View> */}
-            {/* <View style={styles.paymentContainer}>
-              <Text style={styles.note}>You'll receive</Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={styles.ngn}>Estimated amount:</Text>
-                <Text style={styles.ngn}>
-                  {toCoinAmount} {toAsset?.symbol || ""}
-                </Text>
-              </View>
-            </View> */}
 
             {insufficientBalance && fromAsset && (
               <View style={styles.warningContainer}>

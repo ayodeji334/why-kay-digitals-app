@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   View,
   Text,
@@ -13,25 +13,57 @@ import { formatAmount } from "../../libs/formatNumber";
 import { COLORS } from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import { ArrowDown, ArrowUp } from "iconsax-react-nativejs";
-import { useAssets } from "../../hooks/useAssets";
 import LoadingState from "../LoadingState";
+import { useQuery } from "@tanstack/react-query";
+import useAxios from "../../hooks/useAxios";
 
-interface Asset {
-  id: number;
-  uuid: string;
-  name: string;
-  symbol: string;
-  logo_url: string;
-  balance: number;
-  rate: number;
-  change: "up" | "down";
-  changePercentage: string;
-  color: string;
-}
+// Empty state
+const EmptyAssetsState = ({ refetch }: { refetch: () => void }) => (
+  <View style={styles.emptyState}>
+    <Text style={styles.emptyTitle}>No Data Found</Text>
+    <Text style={styles.emptyDescription}>
+      There are no asset report available at the moment. Please try again later.
+    </Text>
+    <TouchableOpacity
+      onPress={() => refetch()}
+      activeOpacity={0.9}
+      style={styles.emptyButton}
+    >
+      <Text style={styles.emptyButtonText}>Refresh</Text>
+    </TouchableOpacity>
+  </View>
+);
 
 const AssetsSection = () => {
   const navigation = useNavigation();
-  const { assets, isLoading, isError, error, refetch } = useAssets();
+  const { apiGet } = useAxios();
+
+  const {
+    data: assets,
+    isLoading,
+    refetch,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["rates"],
+    queryFn: async () => {
+      const res = await apiGet("/wallets/crypto-assets/sell-rates");
+      return res?.data?.data ?? [];
+    },
+    refetchInterval: 2000,
+  });
+
+  const filteredAssets = useMemo(() => {
+    if (!Array.isArray(assets) || assets.length === 0) {
+      return [];
+    }
+
+    return [...assets].sort((a, b) => {
+      const aPrice = Number(a?.market_current_value) || 0;
+      const bPrice = Number(b?.market_current_value) || 0;
+      return bPrice - aPrice;
+    });
+  }, [assets]);
 
   if (isLoading) {
     return <LoadingState message="Laoding assets market rates..." />;
@@ -48,24 +80,6 @@ const AssetsSection = () => {
     );
   }
 
-  // Empty state
-  const EmptyAssetsState = () => (
-    <View style={styles.emptyState}>
-      <Text style={styles.emptyTitle}>No Data Found</Text>
-      <Text style={styles.emptyDescription}>
-        There are no asset report available at the moment. Please try again
-        later.
-      </Text>
-      <TouchableOpacity
-        onPress={() => refetch()}
-        activeOpacity={0.9}
-        style={styles.emptyButton}
-      >
-        <Text style={styles.emptyButtonText}>Refresh</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
@@ -81,13 +95,13 @@ const AssetsSection = () => {
         )}
       </View>
 
-      {assets.length > 0 ? (
+      {filteredAssets.length > 0 ? (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.assetsList}
         >
-          {assets.map((asset: any) => (
+          {filteredAssets.map((asset: any) => (
             <View key={asset.uuid} style={styles.assetCard}>
               <View style={styles.assetHeader}>
                 {asset.logo_url && (
@@ -137,7 +151,7 @@ const AssetsSection = () => {
           ))}
         </ScrollView>
       ) : (
-        <EmptyAssetsState />
+        <EmptyAssetsState refetch={refetch} />
       )}
     </View>
   );

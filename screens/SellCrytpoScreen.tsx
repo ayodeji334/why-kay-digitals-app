@@ -483,13 +483,13 @@ const styles = StyleSheet.create({
   },
   cryptoInfo: { flex: 1 },
   optionName: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(19),
+    fontFamily: getFontFamily("800"),
     color: "#374151",
   },
   optionLogo: {
-    width: 32,
-    height: 32,
+    width: 30,
+    height: 30,
     borderRadius: 120,
     borderWidth: 1,
     borderColor: "#cdcdcdff",

@@ -6,9 +6,12 @@ import {
   Text,
   ViewStyle,
   TextStyle,
+  TouchableOpacity,
 } from "react-native";
 import { Controller } from "react-hook-form";
 import { getFontFamily, normalize } from "../constants/settings";
+import Clipboard from "@react-native-clipboard/clipboard";
+import { COLORS } from "../constants/colors";
 
 interface OtpInputFieldProps {
   control: any;
@@ -38,35 +41,70 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
       control={control}
       name={name}
       render={({ field: { onChange, value }, fieldState: { error } }) => {
-        const otpArray = value ? value.split("") : [];
+        // single source of truth — always derived from form value
+        const otpArray: string[] = value
+          ? value.split("").slice(0, boxes)
+          : Array(boxes).fill("");
+
+        // ─── Handlers ───────────────────────────────────────────────────────
 
         const handleChange = (text: string, index: number) => {
-          if (text.length > 1) {
-            const newOtp = text.slice(0, boxes).split("");
+          // FIX: handle paste (text.length > 1) — works because maxLength is now `boxes`
+          const cleaned = text.replace(/\D/g, "");
+
+          if (cleaned.length > 1) {
+            const newOtp = [...otpArray];
+            cleaned
+              .slice(0, boxes)
+              .split("")
+              .forEach((char, i) => {
+                if (index + i < boxes) newOtp[index + i] = char;
+              });
             onChange(newOtp.join(""));
-            newOtp.forEach((digit, i) => {
-              if (inputs.current[i])
-                inputs.current[i].setNativeProps({ text: digit });
-            });
-            inputs.current[newOtp.length - 1]?.focus();
+            const nextIndex = Math.min(index + cleaned.length, boxes - 1);
+            inputs.current[nextIndex]?.focus();
             return;
           }
-          otpArray[index] = text;
-          onChange(otpArray.join(""));
-          if (text && index < boxes - 1) inputs.current[index + 1]?.focus();
+
+          // single character typed
+          const newOtp = [...otpArray];
+          newOtp[index] = cleaned;
+          onChange(newOtp.join(""));
+          if (cleaned && index < boxes - 1) {
+            inputs.current[index + 1]?.focus();
+          }
         };
 
         const handleKeyPress = (e: any, index: number) => {
           if (e.nativeEvent.key === "Backspace") {
-            if (otpArray[index]) {
-              otpArray[index] = "";
-              onChange(otpArray.join(""));
+            const newOtp = [...otpArray];
+            if (newOtp[index]) {
+              newOtp[index] = "";
+              onChange(newOtp.join(""));
             } else if (index > 0) {
+              newOtp[index - 1] = "";
+              onChange(newOtp.join(""));
               inputs.current[index - 1]?.focus();
-              otpArray[index - 1] = "";
-              onChange(otpArray.join(""));
             }
           }
+        };
+
+        const handlePaste = async (index: number) => {
+          try {
+            const text = await Clipboard.getString();
+            if (!text) return;
+            const cleaned = text.replace(/\D/g, "").slice(0, boxes);
+            if (!cleaned) return;
+
+            const newOtp = [...otpArray];
+            cleaned.split("").forEach((char, i) => {
+              if (index + i < boxes) newOtp[index + i] = char;
+            });
+
+            onChange(newOtp.join(""));
+            const nextIndex = Math.min(index + cleaned.length, boxes - 1);
+            inputs.current[nextIndex]?.focus();
+          } catch {}
         };
 
         return (
@@ -75,60 +113,54 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
 
             <View style={styles.container}>
               {Array.from({ length: boxes }, (_, index) => (
-                // <TextInput
-                //   key={index}
-                //   ref={el => {
-                //     if (el) inputs.current[index] = el;
-                //   }}
-                //   style={[
-                //     styles.box,
-                //     boxStyle,
-                //     error ? styles.errorBorder : null,
-                //   ]}
-                //   keyboardType="number-pad"
-                //   maxLength={1}
-                //   value={otpArray[index] || ""}
-                //   onChangeText={text => handleChange(text, index)}
-                //   onKeyPress={e => handleKeyPress(e, index)}
-                //   textContentType="oneTimeCode"
-                //   secureTextEntry={isSecuredText}
-                //   selectionColor="transparent"
-                //   caretHidden={isSecuredText}
-                //   placeholder={isSecuredText ? "*" : "*"}
-                //   placeholderTextColor="#999"
-                //   autoCapitalize="none"
-                //   maxFontSizeMultiplier={0}
-                //   autoCorrect={false}
-                // />
-                <TextInput
+                <TouchableOpacity
                   key={index}
-                  ref={el => {
-                    if (el) inputs.current[index] = el;
-                  }}
+                  activeOpacity={1}
+                  onLongPress={() => handlePaste(index)}
+                  onPress={() => inputs.current[index]?.focus()}
                   style={[
                     styles.box,
                     boxStyle,
                     error ? styles.errorBorder : null,
                   ]}
-                  keyboardType="number-pad"
-                  maxLength={1}
-                  value={
-                    isSecuredText && otpArray[index]
-                      ? "*"
-                      : otpArray[index] || ""
-                  }
-                  onChangeText={text => handleChange(text, index)}
-                  onKeyPress={e => handleKeyPress(e, index)}
-                  textContentType="oneTimeCode"
-                  secureTextEntry={false} // disable native masking
-                  selectionColor="transparent"
-                  caretHidden={isSecuredText}
-                  placeholder="*"
-                  placeholderTextColor="#999"
-                  autoCapitalize="none"
-                  maxFontSizeMultiplier={0}
-                  autoCorrect={false}
-                />
+                >
+                  <TextInput
+                    ref={el => {
+                      if (el) inputs.current[index] = el;
+                    }}
+                    style={styles.hiddenInput}
+                    keyboardType="number-pad"
+                    maxLength={boxes}
+                    value={otpArray[index] || ""}
+                    onChangeText={text => handleChange(text, index)}
+                    onKeyPress={e => handleKeyPress(e, index)}
+                    textContentType="oneTimeCode"
+                    secureTextEntry={false}
+                    selectionColor={COLORS.primary}
+                    caretHidden={false}
+                    autoCapitalize="none"
+                    maxFontSizeMultiplier={0}
+                    autoCorrect={false}
+                    contextMenuHidden={false}
+                    selection={
+                      otpArray[index]
+                        ? { start: 1, end: 1 }
+                        : { start: 0, end: 0 }
+                    }
+                  />
+
+                  <Text style={styles.boxText} pointerEvents="none">
+                    {otpArray[index] ? (
+                      isSecuredText ? (
+                        "●"
+                      ) : (
+                        otpArray[index]
+                      )
+                    ) : (
+                      <Text style={styles.placeholder}>●</Text>
+                    )}
+                  </Text>
+                </TouchableOpacity>
               ))}
             </View>
 
@@ -148,8 +180,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
     alignItems: "center",
-    alignContent: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   box: {
     width: 45,
@@ -157,15 +188,48 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    textAlign: "center", // centers text horizontally
-    textAlignVertical: "center", // centers text vertically (Android)
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#000",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    alignSelf: "center",
+    backgroundColor: "white",
+  },
+  hiddenInput: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1,
+    color: "transparent",
+    backgroundColor: "transparent",
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    textAlign: "center",
+    textAlignVertical: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    paddingTop: 0,
+    paddingBottom: 0,
+    lineHeight: 40,
+  },
+  boxText: {
+    position: "absolute",
+    fontSize: 26,
+    fontFamily: getFontFamily("800"),
+    color: "black",
+    textAlign: "center",
+    textAlignVertical: "center",
+    zIndex: 0,
+    pointerEvents: "none",
+  },
+  placeholder: {
+    fontSize: 26,
+    color: "#ccc",
+    fontFamily: getFontFamily("800"),
+    alignContent: "center",
   },
   label: {
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(17),
+    fontFamily: getFontFamily("800"),
+    fontSize: normalize(18),
     marginBottom: 6,
     color: "#000",
   },

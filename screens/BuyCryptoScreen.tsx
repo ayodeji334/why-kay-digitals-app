@@ -344,8 +344,8 @@ const styles = StyleSheet.create({
     color: "#0a0a0aff",
   },
   optionLogo: {
-    width: 32,
-    height: 32,
+    width: 30,
+    height: 30,
     borderRadius: 120,
     borderWidth: 1,
     borderColor: "#cdcdcdff",

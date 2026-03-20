@@ -29,144 +29,97 @@ import CustomLoading from "../CustomLoading";
 import { useAssets } from "../../hooks/useAssets";
 import { useWallets } from "../../hooks/useWallet";
 import LoadingBalance from "../LoadingState";
-// import { useAuthStore } from "../../stores/authSlice";
-// import KYCStatusScreen from "../KYCStatusScreen";
 
 const CryptoWalletSection = () => {
-  const [showAddAssetWalletModal, setAddAssetWalletModal] = useState(false);
+  const [showAddAssetWalletModal, setShowAddAssetWalletModal] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const navigation: any = useNavigation();
+  const navigation = useNavigation<any>();
   const { apiGet } = useAxios();
   const { assets } = useAssets();
   const { data, isLoading, refetch, isRefetching } = useWallets();
-  // const user = useAuthStore(state => state.user);
+  const wallets = Array.isArray(data?.wallets) ? data.wallets : [];
+  const walletList = wallets
+    .filter((w: any) => w.type === "crypto")
+    .sort((a: any, b: any) => {
+      const aValue = Number(a.value);
+      const bValue = Number(b.value);
+      const aPrice = Number(a.price);
+      const bPrice = Number(b.price);
 
-  // const isAlreadyVerified = useMemo(
-  //   () =>
-  //     user?.bvn_verification_status === "VERIFIED" &&
-  //     user?.nin_verification_status === "VERIFIED",
-  //   [user.bvn_verification_status, user?.nin_verification_status],
-  // );
+      if (bValue !== aValue) return bValue - aValue;
 
-  const wallets: any = useMemo(
-    () => (Array.isArray(data?.wallets) ? data?.wallets : []),
-    [data?.wallets],
-  );
+      return bPrice - aPrice;
+    });
 
-  const walletList = useMemo(
-    () => wallets.filter((wallet: any) => wallet.type === "crypto"),
-    [wallets],
-  );
-
+  // Assets not yet added as wallets
   const filteredWallets = useMemo(() => {
     if (!assets.length) return [];
 
     const existingAssetIds = new Set(walletList.map((w: any) => w.asset_id));
 
     return assets
-      .filter((asset: any) => !existingAssetIds.has(asset.id))
-      .map((asset: any) => ({
+      .filter(asset => !existingAssetIds.has(asset.id))
+      .map(asset => ({
         ...asset,
         label: `${asset.name} (${asset.symbol})`,
         value: asset.id,
       }));
   }, [assets, walletList]);
 
-  // Memoize total value
-  const totalValueInUsd = useMemo(() => {
-    return walletList.reduce(
-      (sum: number, w: any) => sum + (parseFloat(w.value) || 0),
-      0,
-    );
-  }, [walletList]);
+  console.log("Wallets", walletList);
 
-  const handleGenerateWallet = useCallback(
-    async (assetId: string) => {
-      if (!assetId) return;
-
-      setIsGenerating(true);
-
-      try {
-        await apiGet(`wallets/user/${assetId}/generate-wallet`);
-        refetch();
-        showSuccess("Wallet created successfully");
-      } catch (error) {
-        console.error("Generate wallet error:", error);
-        showError("Failed to generate wallet");
-      } finally {
-        setIsGenerating(false);
-      }
-    },
-    [apiGet, refetch],
+  // Total balance
+  const totalValueInUsd = useMemo(
+    () =>
+      walletList.reduce(
+        (sum: any, w: any) => sum + (parseFloat(w.value) || 0),
+        0,
+      ),
+    [walletList],
   );
 
-  // Memoize navigation handlers
-  const handleBuy = useCallback(() => {
+  // Wallet generation
+  const handleGenerateWallet = async (assetId: string) => {
+    if (!assetId) return;
+    setIsGenerating(true);
+    try {
+      await apiGet(`wallets/user/${assetId}/generate-wallet`);
+      refetch();
+      showSuccess("Wallet created successfully");
+    } catch (error) {
+      console.error("Generate wallet error:", error);
+      showError("Failed to generate wallet");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Navigation helpers
+  const navigateTrade = (action: TradeIntent["action"]) => {
     navigation.navigate("SelectAsset", {
-      action: "buy",
+      action,
       source: "home",
       amount: "0",
     } as TradeIntent);
-  }, [navigation]);
+  };
 
-  const handleWithdrawal = useCallback(() => {
-    navigation.navigate("SelectAsset", {
-      action: "withdraw",
-      source: "home",
-      amount: "0",
-    } as TradeIntent);
-  }, [navigation]);
-
-  const handleSell = useCallback(() => {
-    navigation.navigate("SelectAsset", {
-      action: "sell",
-      source: "home",
-      amount: "0",
-    } as TradeIntent);
-  }, [navigation]);
-
-  const handleDeposit = useCallback(() => {
-    navigation.navigate("SelectAsset", {
-      action: "deposit",
-      source: "home",
-      amount: "0",
-    } as TradeIntent);
-  }, [navigation]);
-
-  const handleSwap = useCallback(() => {
-    navigation.navigate("SwapCrypto");
-  }, [navigation]);
-
-  const handleNavigate = (item: any) => {
+  const handleNavigateWallet = (item: any) => {
     navigation.navigate("CryptoWalletDeposit", {
-      crypto: { ...item, uuid: item?.asset_id },
+      crypto: { ...item, uuid: item.asset_id },
     });
   };
 
-  // Memoize icons
-  const ReceiveIcon = useMemo(
-    () => (
+  // Icons
+  const icons = {
+    receive: (
       <CustomIcon source={ReceiveCryptoIcon} size={20} color={COLORS.primary} />
     ),
-    [],
-  );
-
-  const BuyIcon = useMemo(
-    () => <CustomIcon source={TagsIcon} size={20} color={COLORS.primary} />,
-    [],
-  );
-
-  const SellIcon = useMemo(
-    () => (
+    buy: <CustomIcon source={TagsIcon} size={20} color={COLORS.primary} />,
+    sell: (
       <CustomIcon source={SellCryptoIcon} size={18} color={COLORS.primary} />
     ),
-    [],
-  );
-
-  const SwapIcon = useMemo(
-    () => <CustomIcon source={RefreshIcon} size={20} color={COLORS.primary} />,
-    [],
-  );
+    swap: <CustomIcon source={RefreshIcon} size={20} color={COLORS.primary} />,
+  };
 
   return (
     <View style={styles.container}>
@@ -178,13 +131,12 @@ const CryptoWalletSection = () => {
             colors={[COLORS.primary]}
           />
         }
-        data={Array.isArray(walletList) ? walletList : []}
-        keyExtractor={(item: any) => item.asset_id}
+        data={walletList}
+        keyExtractor={item => item.asset_id}
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         ListHeaderComponent={
           <>
-            {/* Balance */}
             <BalanceCard
               balance={totalValueInUsd}
               title="Total Balance"
@@ -193,28 +145,42 @@ const CryptoWalletSection = () => {
               currency="USD"
             />
 
-            {/* Actions */}
             <View style={styles.actionsContainer}>
               <ActionCard
                 title="Send"
-                source={BuyIcon}
-                onPress={handleWithdrawal}
+                source={icons.buy}
+                onPress={() => navigateTrade("withdraw")}
               />
               <ActionCard
                 title="Receive"
-                source={ReceiveIcon}
-                onPress={handleDeposit}
+                source={icons.receive}
+                onPress={() => navigateTrade("deposit")}
               />
-              <ActionCard title="Buy" source={BuyIcon} onPress={handleBuy} />
-              <ActionCard title="Sell" source={SellIcon} onPress={handleSell} />
-              <ActionCard title="Swap" source={SwapIcon} onPress={handleSwap} />
+
+              <ActionCard
+                title="Buy"
+                source={icons.buy}
+                onPress={() => navigateTrade("buy")}
+              />
+
+              <ActionCard
+                title="Sell"
+                source={icons.sell}
+                onPress={() => navigateTrade("sell")}
+              />
+
+              <ActionCard
+                title="Swap"
+                source={icons.swap}
+                onPress={() => navigation.navigate("SwapCrypto")}
+              />
             </View>
 
-            {/* Assets Header */}
+            {/* Assets header */}
             <View style={styles.assetsHeader}>
               <Text style={styles.sectionTitle}>Assets</Text>
               <TouchableOpacity
-                onPress={() => setAddAssetWalletModal(true)}
+                onPress={() => setShowAddAssetWalletModal(true)}
                 activeOpacity={0.68}
                 style={styles.generateButton}
               >
@@ -225,7 +191,7 @@ const CryptoWalletSection = () => {
           </>
         }
         renderItem={({ item }) => (
-          <AssetItem asset={item} onPress={() => handleNavigate(item)} />
+          <AssetItem asset={item} onPress={() => handleNavigateWallet(item)} />
         )}
         ListEmptyComponent={
           isLoading ? (
@@ -239,19 +205,14 @@ const CryptoWalletSection = () => {
             </View>
           )
         }
-        contentContainerStyle={{
-          paddingBottom: 40,
-        }}
+        contentContainerStyle={{ paddingBottom: 40 }}
       />
 
       <CustomModal
         height={250}
-        // title={isAlreadyVerified ? "Select an Asset" : ""}
-        title={"Select an Asset"}
+        title="Select an Asset"
         visible={showAddAssetWalletModal}
-        onClose={() => {
-          setAddAssetWalletModal(false);
-        }}
+        onClose={() => setShowAddAssetWalletModal(false)}
       >
         {filteredWallets.length > 0 ? (
           <FlatList
@@ -260,7 +221,7 @@ const CryptoWalletSection = () => {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => {
-                  setAddAssetWalletModal(false);
+                  setShowAddAssetWalletModal(false);
                   handleGenerateWallet(item.value);
                 }}
                 style={styles.assetOption}
@@ -346,8 +307,8 @@ const AssetItem = React.memo(({ asset, onPress }: any) => (
 export default CryptoWalletSection;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "white" },
-  scrollContainer: { flex: 1, padding: 0 },
+  container: { backgroundColor: "white" },
+  scrollContainer: { flex: 1, paddingBottom: 20 },
   tabContainer: {
     flexDirection: "row",
     justifyContent: "center",

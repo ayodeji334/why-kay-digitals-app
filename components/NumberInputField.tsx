@@ -76,8 +76,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     color: "#1A1A1A",
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(20),
     backgroundColor: "#FFFFFF",
   },
   errorBorder: {
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: getFontFamily("800"),
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     marginBottom: 8,
     color: "#000",
   },

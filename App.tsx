@@ -17,10 +17,7 @@ if (!__DEV__) {
 
 function App() {
   OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-  // Initialize with your OneSignal App ID
   OneSignal.initialize("c78f896b-eca6-4a03-9a1d-f49da347bf1d");
-  // Use this method to prompt for push notifications.
-  // We recommend removing this method after testing and instead use In-App Messages to prompt for notification permission.
   OneSignal.Notifications.requestPermission(false);
 
   return (

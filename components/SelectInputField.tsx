@@ -38,6 +38,7 @@ interface SelectInputProps {
   onSelect?: (value: any) => void;
   title?: string;
   showSearchBox?: boolean;
+  showWalletPrice?: boolean;
 }
 
 export function SelectInput({
@@ -52,6 +53,7 @@ export function SelectInput({
   onChange: externalOnChange,
   title = "Select an option",
   showSearchBox = true,
+  showWalletPrice = false,
 }: SelectInputProps) {
   const [visible, setVisible] = useState(false);
   const [search, setSearch] = useState("");
@@ -142,6 +144,7 @@ export function SelectInput({
                 data={options.filter(opt =>
                   opt.label?.toLowerCase().includes(search?.toLowerCase()),
                 )}
+                showsVerticalScrollIndicator={false}
                 keyExtractor={(item, index) => `${item.value}-${index + 0.456}`}
                 renderItem={({ item }) => (
                   <Pressable
@@ -160,23 +163,65 @@ export function SelectInput({
                             style={styles.optionLogo}
                           />
                         )}
+
                         <View style={styles.cryptoInfo}>
                           <Text style={styles.optionName}>
                             {`${item.label}`}
                           </Text>
-                          {item.market_value && (
+                          {item?.market_value ? (
                             <Text style={styles.optionPrice}>
                               {formatAmount(item.market_value, {
                                 currency: "USD",
                                 decimalPlace: 2,
                               })}
                             </Text>
-                          )}
+                          ) : undefined}
                         </View>
+
+                        {showWalletPrice ? (
+                          <View
+                            style={{
+                              flexDirection: "column",
+                              alignItems: "flex-end",
+                              alignContent: "flex-end",
+                            }}
+                          >
+                            {item?.balance && (
+                              <Text style={styles.optionName}>
+                                {item?.balance}
+                              </Text>
+                            )}
+                            {item?.total_price ? (
+                              <Text style={styles.optionName}>
+                                {`${formatAmount(item?.total_price, {
+                                  currency: "USD",
+                                })}`}
+                              </Text>
+                            ) : (
+                              <Text style={styles.optionName}>
+                                {`${formatAmount(item?.price, {
+                                  currency: "USD",
+                                })}`}
+                              </Text>
+                            )}
+                          </View>
+                        ) : undefined}
                       </View>
                     </View>
                   </Pressable>
                 )}
+                ListEmptyComponent={
+                  <View style={{ paddingVertical: 20, alignItems: "center" }}>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontFamily: getFontFamily("700"),
+                      }}
+                    >
+                      No options found
+                    </Text>
+                  </View>
+                }
               />
             </View>
           </View>
@@ -203,9 +248,8 @@ export function SelectInput({
 
 const styles = StyleSheet.create({
   label: {
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    marginBottom: 6,
+    fontFamily: getFontFamily("800"),
+    fontSize: normalize(17),
   },
   input: {
     borderWidth: 1,
@@ -226,8 +270,8 @@ const styles = StyleSheet.create({
   },
   selectedCryptoInfo: { flex: 1, marginLeft: 12 },
   selectedCryptoName: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(19),
+    fontFamily: getFontFamily("800"),
   },
   cryptoLogo: {
     width: 26,
@@ -265,18 +309,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#F9FAFB",
   },
   option: { borderBottomWidth: 2, borderBottomColor: "#ecececff" },
-  optionContent: { padding: 10 },
-  cryptoRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+  optionContent: { padding: 10, width: "100%" },
+  cryptoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+    flex: 1,
+  },
   cryptoInfo: { flex: 1 },
   optionName: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
-    color: "#374151",
+    color: "#000",
   },
   optionPrice: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    color: "#6B7280",
+    color: "#343435",
   },
   error: {
     color: "#FF3B30",

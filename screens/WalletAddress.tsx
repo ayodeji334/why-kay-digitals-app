@@ -17,13 +17,16 @@ import { formatAmount } from "../libs/formatNumber";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { showError, showSuccess } from "../utlis/toast";
 import { useNavigation } from "@react-navigation/native";
+import CustomIcon from "../components/CustomIcon";
+import { WalletIcon } from "../assets";
+import useAxios from "../hooks/useAxios";
 
-interface WalletAddress {
-  id: string;
-  address: string;
-  chain: string;
-  is_default: boolean;
-}
+// interface WalletAddress {
+//   id: string;
+//   address: string;
+//   chain: string;
+//   is_default: boolean;
+// }
 
 interface Wallet {
   id: string;
@@ -36,22 +39,40 @@ interface Wallet {
   buy_rate: string;
   sell_rate: string;
   chains: string[];
-  addresses: WalletAddress[];
+  addresses: any[];
+  asset_id: string;
 }
 
 interface WalletDetailsProps {
   wallet: Wallet;
   onNetworkChange?: (network: string) => Promise<void>;
+  refetchWallets?: () => void;
 }
 
 const WalletDetails: React.FC<WalletDetailsProps> = ({
   wallet,
   onNetworkChange,
+  refetchWallets,
 }) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { apiGet } = useAxios();
   const navigation: any = useNavigation();
   const [selectedNetwork, setSelectedNetwork] = useState<string>(
-    wallet.chains?.[0] ?? "",
+    wallet?.chains?.[0] ?? "",
   );
+
+  const handleGenerateWallet = async () => {
+    setIsGenerating(true);
+    try {
+      await apiGet(
+        `wallets/user/${wallet?.asset_id}/generate-wallet-address?network=${selectedNetwork}`,
+      );
+
+      refetchWallets?.();
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const selectedAddress = useMemo(() => {
     if (!selectedNetwork) return null;
@@ -72,6 +93,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
   }, [selectedNetwork]);
 
   const handleNetworkChange = async (network: string) => {
+    console.log("networks", network);
     if (network === selectedNetwork) return;
 
     setSelectedNetwork(network);
@@ -118,105 +140,209 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {selectedAddress?.address && (
-        <View style={styles.qrContainer}>
-          <QRCode value={selectedAddress.address} size={180} />
-        </View>
-      )}
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        <View style={{ paddingTop: 10 }}>
+          {selectedAddress?.address ? (
+            <View style={styles.qrContainer}>
+              <QRCode value={selectedAddress.address} size={180} />
+            </View>
+          ) : (
+            <View style={styles.header}>
+              <View style={styles.walletCircle}>
+                <CustomIcon
+                  source={WalletIcon}
+                  size={25}
+                  color={COLORS.primary}
+                />
+              </View>
+              <Text style={styles.title}>No Wallet Address</Text>
+            </View>
+          )}
 
-      <View style={styles.notesSection}>
-        <Text style={styles.notesText}>
-          Use a crypto wallet to scan the QR code. Double-check that the address
-          displayed matches the one provided here. Sending to the wrong address
-          may result in permanent loss. Ensure you're sending on the correct
-          network ({formattedNetworkName})
-        </Text>
-      </View>
+          {/* Notes */}
+          <View style={styles.notesSection}>
+            {selectedAddress?.address ? (
+              <Text style={styles.notesText}>
+                Use a crypto wallet to scan the QR code or copy the address
+                above. Always confirm that the address matches the one shown
+                here before sending funds. Sending to an incorrect address may
+                result in permanent loss of funds. Also ensure you are sending
+                through the correct network
+                <Text style={{ fontFamily: getFontFamily("900") }}>
+                  {" "}
+                  ({formattedNetworkName})
+                </Text>
+                .
+              </Text>
+            ) : (
+              <Text style={styles.notesText}>
+                A receiving address has not been generated yet for{" "}
+                <Text style={{ fontFamily: getFontFamily("900") }}>
+                  {wallet?.name} ({selectedNetwork})
+                </Text>
+                . Generate a wallet address to start receiving{" "}
+                <Text style={{ fontFamily: getFontFamily("900") }}>
+                  {wallet?.name}
+                </Text>{" "}
+                via the{" "}
+                <Text style={{ fontFamily: getFontFamily("900") }}>
+                  {selectedNetwork}
+                </Text>{" "}
+                network.
+              </Text>
+            )}
+          </View>
 
-      {/* Network Selection */}
-      <View style={{ marginVertical: 10 }}>
-        <Text style={styles.modalLabel}>Asset Networks</Text>
-        <SelectInput
-          options={wallet.chains.map(chain => ({
-            label: chain.toUpperCase(),
-            value: chain,
-          }))}
-          placeholder="Select a network"
-          title="Select a network"
-          value={selectedNetwork}
-          showSearchBox={false}
-          onSelect={option => handleNetworkChange(option.value)}
-        />
-      </View>
+          {/* Network Selection */}
+          <View style={{ marginVertical: 10 }}>
+            <Text style={styles.modalLabel}>Asset Networks</Text>
+            <SelectInput
+              options={wallet?.chains.map(chain => ({
+                label: chain.toUpperCase(),
+                value: chain,
+              }))}
+              placeholder="Select a network"
+              title="Select a network"
+              value={selectedNetwork}
+              showSearchBox={false}
+              onSelect={option => handleNetworkChange(option.value)}
+            />
+          </View>
 
-      {/* Receiving Address */}
-      <View style={styles.sectionBox}>
-        <Text style={styles.label}>Receiving Address</Text>
-        <View style={styles.addressRow}>
-          <Text numberOfLines={1} style={styles.addressText}>
-            {selectedAddress?.address ?? "No address available"}
-          </Text>
-
+          {/* Receiving Address */}
           {selectedAddress?.address && (
-            <TouchableOpacity
-              style={styles.copyButton}
-              onPress={() => copyToClipboard(selectedAddress.address)}
-            >
-              <Copy size={15} color={COLORS.primary} />
-            </TouchableOpacity>
+            <View style={styles.sectionBox}>
+              <Text style={styles.label}>Receiving Address</Text>
+              <View style={styles.addressRow}>
+                <Text numberOfLines={1} style={styles.addressText}>
+                  {selectedAddress?.address}
+                </Text>
+                <TouchableOpacity
+                  style={styles.copyButton}
+                  onPress={() => copyToClipboard(selectedAddress.address)}
+                >
+                  <Copy size={15} color={COLORS.primary} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
+          {/* Wallet Info */}
+          {selectedAddress?.address && (
+            <View style={styles.infoSection}>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Network</Text>
+                <Text style={styles.infoValue}>{formattedNetworkName}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Wallet Balance</Text>
+                <Text style={styles.infoValue}>
+                  {formatAmount(parseFloat(wallet.balance) || 0, {
+                    currency: "USD",
+                  })}
+                </Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Market Value</Text>
+                <Text style={styles.infoValue}>
+                  {formatAmount(parseFloat(wallet.price) || 0, {
+                    currency: "USD",
+                  })}
+                </Text>
+              </View>
+            </View>
           )}
         </View>
-      </View>
 
-      {/* Wallet Info */}
-      <View style={styles.infoSection}>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Network</Text>
-          <Text style={styles.infoValue}>{formattedNetworkName}</Text>
+        {selectedAddress?.address && (
+          <View style={styles.actionsContainer}>
+            <TouchableOpacity
+              activeOpacity={0.9}
+              style={styles.shareButton}
+              onPress={handleShare}
+            >
+              <Text style={styles.actionButtonText}>Share Address</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.9}
+              style={styles.viewRatesButton}
+              onPress={handleNavigation}
+            >
+              <Text style={[styles.actionButtonText, { color: "black" }]}>
+                View Rates
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </ScrollView>
+
+      {!selectedAddress?.address && (
+        <View style={styles.bottomActions}>
+          <TouchableOpacity
+            disabled={isGenerating}
+            style={[styles.generateButton, isGenerating && { opacity: 0.6 }]}
+            activeOpacity={0.9}
+            onPress={handleGenerateWallet}
+          >
+            <Text style={styles.generateButtonText}>
+              {isGenerating
+                ? "Generating..."
+                : `Generate ${selectedNetwork.toUpperCase()} Wallet Address`}
+            </Text>
+          </TouchableOpacity>
         </View>
-
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Wallet Balance</Text>
-          <Text style={styles.infoValue}>
-            {formatAmount(parseFloat(wallet.balance) || 0, { currency: "USD" })}
-          </Text>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Market Value</Text>
-          <Text style={styles.infoValue}>
-            {formatAmount(parseFloat(wallet.price) || 0, { currency: "USD" })}
-          </Text>
-        </View>
-      </View>
-
-      {/* Actions */}
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-          <Text style={styles.actionButtonText}>Share Address</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.viewRatesButton}
-          onPress={handleNavigation}
-        >
-          <Text style={[styles.actionButtonText, { color: "black" }]}>
-            View Rates
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      )}
+    </View>
   );
 };
 
 export default WalletDetails;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  header: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
+  screen: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    paddingBottom: 20,
+  },
+  header: { alignItems: "center", marginBottom: 0 },
   logo: { width: 40, height: 40, marginRight: 10 },
-  title: { fontFamily: getFontFamily(700), fontSize: 18, color: "black" },
+  title: { fontFamily: getFontFamily(800), fontSize: 19, color: "black" },
+  section: {
+    marginVertical: 15,
+  },
+  label: {
+    fontSize: 16,
+    fontFamily: getFontFamily(700),
+    color: "black",
+    marginBottom: 8,
+  },
+  note: {
+    marginTop: 10,
+    textAlign: "center",
+    fontSize: 13,
+    fontFamily: getFontFamily(400),
+    color: "#363737",
+    lineHeight: 18,
+  },
+  generateButton: {
+    width: "100%",
+    paddingVertical: 14,
+    borderRadius: 30,
+    backgroundColor: COLORS.primary,
+    alignItems: "center",
+  },
+  generateButtonText: {
+    color: "white",
+    fontFamily: getFontFamily(800),
+    fontSize: 14,
+  },
   qrContainer: {
     alignSelf: "center",
     marginBottom: 10,
@@ -224,6 +350,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     padding: 10,
+  },
+  walletCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 35,
+    backgroundColor: "#F3F4F6",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 15,
   },
   networkSection: { marginBottom: 20 },
   sectionLabel: {
@@ -277,12 +412,20 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     textAlign: "center",
   },
-  label: {
-    fontFamily: getFontFamily(800),
-    fontSize: 15,
-    marginBottom: 6,
-    color: "black",
+  subtitle: {
+    textAlign: "center",
+    fontSize: 14,
+    fontFamily: getFontFamily(400),
+    color: "#4B5563",
+    lineHeight: 20,
+    maxWidth: 260,
   },
+  // label: {
+  //   fontFamily: getFontFamily(800),
+  //   fontSize: 15,
+  //   marginBottom: 6,
+  //   color: "black",
+  // },
   addressRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -335,4 +478,32 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     color: "white",
   },
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: "#fff",
+  // },
+  scrollContent: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  bottomActions: {
+    paddingHorizontal: 20,
+  },
+  // shareButton: {
+  //   flex: 1,
+  //   marginRight: 10,
+  //   backgroundColor: COLORS.primary,
+  //   paddingVertical: 14,
+  //   borderRadius: 30,
+  //   alignItems: "center",
+  // },
+  // viewRatesButton: {
+  //   flex: 1,
+  //   marginLeft: 10,
+  //   borderWidth: 1,
+  //   borderColor: "#555",
+  //   paddingVertical: 14,
+  //   borderRadius: 30,
+  //   alignItems: "center",
+  // },
 });
