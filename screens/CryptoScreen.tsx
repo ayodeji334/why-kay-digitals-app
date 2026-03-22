@@ -32,10 +32,7 @@ const CryptoWalletScreen = () => {
   const route = useRoute<RouteProp<CryptoWalletScreenRoute, "CryptoWallets">>();
   const { action: currentAction = "buy" } = route.params ?? {};
   const { assets, isLoading, isRefetching, refetch } = useAssets();
-
   const { data: { wallets = [] } = {}, refetch: refetchWallets } = useWallets();
-
-  console.log(wallets);
 
   // Merge: wallets first (have balance), then assets not yet in any wallet
   const mergedList = useMemo(() => {
@@ -129,7 +126,7 @@ const CryptoWalletScreen = () => {
   const renderCryptoItem = ({ item }: any) => {
     const balance = Number(item?.balance ?? 0);
     const balanceInUsd = Number(item?.value ?? 0);
-
+    console.log(item);
     return (
       <TouchableOpacity
         activeOpacity={0.8}
@@ -149,14 +146,18 @@ const CryptoWalletScreen = () => {
             <Text style={styles.cryptoSymbol}>{item.name}</Text>
           </View>
         </View>
-        <View style={styles.cryptoRight}>
-          <Text style={styles.cryptoBalance}>
-            {formatNumber(balance, { decimalPlace: 8 })}
-          </Text>
-          <Text style={styles.cryptoValue}>
-            {formatAmount(balanceInUsd, { currency: "USD" })}
-          </Text>
-        </View>
+        {item?.hasWallet ? (
+          <View style={styles.cryptoRight}>
+            <Text style={styles.cryptoBalance}>
+              {formatNumber(balance, { decimalPlace: 8 })}
+            </Text>
+            <Text style={styles.cryptoValue}>
+              {formatAmount(balanceInUsd, { currency: "USD" })}
+            </Text>
+          </View>
+        ) : (
+          <></>
+        )}
       </TouchableOpacity>
     );
   };

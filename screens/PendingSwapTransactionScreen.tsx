@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  // Image,
   TouchableOpacity,
   StatusBar,
   Image,
@@ -12,15 +11,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { formatAmount } from "../libs/formatNumber";
-import { ArrowLeft, ArrowRight } from "iconsax-react-nativejs";
+import { ArrowRight } from "iconsax-react-nativejs";
 
 const PendingSwapScreen = () => {
   const navigation: any = useNavigation();
   const route = useRoute();
   const { transaction }: any = route.params;
-
-  console.log(transaction);
 
   const handleContinue = () => {
     navigation.reset({

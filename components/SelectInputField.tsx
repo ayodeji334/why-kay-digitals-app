@@ -291,6 +291,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     padding: 20,
     maxHeight: "80%",
+    paddingBottom: 40,
   },
   modalTitle: {
     fontFamily: getFontFamily("900"),

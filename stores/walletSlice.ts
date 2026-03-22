@@ -57,8 +57,6 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log(res?.data?.data);
-
       if (!res.data?.success) throw new Error(res.data?.message);
 
       set({

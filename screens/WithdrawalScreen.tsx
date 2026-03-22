@@ -27,6 +27,7 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import useAxios from "../hooks/useAxios";
 import { useSummaryDetail } from "../hooks/useSummaryDetail";
 import { formatWithCommas } from "./SwapCryptoScreen";
+import { formatAmount } from "../libs/formatNumber";
 
 const schema = yup.object({
   amount: yup
@@ -68,7 +69,6 @@ export default function WithdrawScreen() {
   } = useForm({
     resolver: yupResolver(schema),
     mode: "onChange",
-    // reValidateMode: "onChange",
   });
 
   const bankCode = watch("bank_code");
@@ -82,8 +82,28 @@ export default function WithdrawScreen() {
     return currentWalletBalance < amount;
   }, [currentWalletBalance, amount]);
 
-  const isDisabled =
-    !amount || isSubmitting || loading || !bankCode || isBalanceSufficient;
+  // const isDisabled =
+  //   !amount || isSubmitting || loading || !bankCode || isBalanceSufficient;
+
+  const dailyLimit = walletSummary?.daily_limit ?? 0;
+  const todayVolume = walletSummary?.total_today ?? 0;
+
+  const exceedsDailyLimit = useMemo(() => {
+    if (!amount || !dailyLimit) return false;
+
+    return amount + todayVolume > dailyLimit;
+  }, [amount, dailyLimit]);
+
+  const isDisabled = useMemo(
+    () =>
+      loading ||
+      isSubmitting ||
+      isBalanceSufficient ||
+      exceedsDailyLimit ||
+      !bankCode ||
+      amount <= 0,
+    [loading, isSubmitting, isBalanceSufficient, exceedsDailyLimit, amount],
+  );
 
   const { data: banksData, refetch: refetchBanks } = useQuery({
     queryKey: ["banks"],
@@ -108,7 +128,6 @@ export default function WithdrawScreen() {
   }, [banksData]);
 
   const onSubmit = (values: any) => {
-    console.log("clicked");
     const payload = {
       account_number: values.account_number,
       bank_code: values.bank_code,
@@ -196,6 +215,16 @@ export default function WithdrawScreen() {
           <Text style={styles.amountNote}>Minimum of ₦1,000</Text>
         </View>
 
+        {exceedsDailyLimit && (
+          <View style={styles.warningContainer}>
+            <Text style={styles.warningText}>
+              This amount exceeds your daily transfer limit of{" "}
+              {formatAmount(walletSummary?.daily_limit ?? 0)}. Please reduce the
+              amount or upgrade your limit.
+            </Text>
+          </View>
+        )}
+
         {isBalanceSufficient && !!amount && (
           <View style={styles.warningContainer}>
             <Text style={styles.warningText}>
@@ -277,7 +306,7 @@ const styles = StyleSheet.create({
   },
   warningText: {
     color: "#db0b0bff",
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("800"),
     textAlign: "center",
   },

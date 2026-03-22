@@ -124,7 +124,7 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                     error ? styles.errorBorder : null,
                   ]}
                 >
-                  <TextInput
+                  {/* <TextInput
                     ref={el => {
                       if (el) inputs.current[index] = el;
                     }}
@@ -147,6 +147,25 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                         ? { start: 1, end: 1 }
                         : { start: 0, end: 0 }
                     }
+                  /> */}
+                  <TextInput
+                    ref={el => {
+                      if (el) inputs.current[index] = el;
+                    }}
+                    style={styles.hiddenInput}
+                    keyboardType="number-pad"
+                    maxLength={boxes}
+                    value={otpArray[index] || ""}
+                    onChangeText={text => handleChange(text, index)}
+                    onKeyPress={e => handleKeyPress(e, index)}
+                    textContentType="oneTimeCode"
+                    secureTextEntry={false}
+                    selectionColor={COLORS.primary}
+                    caretHidden={true}
+                    autoCapitalize="none"
+                    maxFontSizeMultiplier={0}
+                    autoCorrect={false}
+                    contextMenuHidden={false}
                   />
 
                   <Text style={styles.boxText} pointerEvents="none">

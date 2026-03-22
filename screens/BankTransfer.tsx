@@ -55,8 +55,6 @@ const BankTransferScreen = () => {
     }
   };
 
-  console.log(data);
-
   const copyToClipboard = async (text: string, field: string) => {
     try {
       Clipboard.setString(text);

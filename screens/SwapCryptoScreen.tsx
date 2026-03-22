@@ -117,7 +117,7 @@ export default function CryptoSwapScreen() {
         ? data?.wallets
             .map((asset: any) => ({
               ...asset,
-              label: asset?.symbol ?? asset?.name ?? "",
+              label: `${asset?.name} (${asset?.symbol})`,
               value: asset?.asset_id ?? asset?.uuid ?? "",
               symbol: asset?.symbol ?? "",
               logo_url: asset?.logo ?? "",

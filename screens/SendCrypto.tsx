@@ -168,9 +168,9 @@ export default function SendScreen() {
 
   const networkOptions = useMemo(() => {
     const chains = assetDetails?.available_chains ?? [];
-    return chains.map((chain: string) => ({
-      label: chain,
-      value: chain,
+    return chains.map((chain: any) => ({
+      label: `${chain?.chain} (${chain.chain_type?.toUpperCase()})`,
+      value: chain?.chain,
     }));
   }, [assetDetails?.available_chains]);
 

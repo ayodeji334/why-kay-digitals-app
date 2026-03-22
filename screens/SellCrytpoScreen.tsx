@@ -27,8 +27,6 @@ import useAxios from "../hooks/useAxios";
 import { TradeIntent } from "./Rates";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import NoWallet from "../components/NoWallet";
-import { useAuthStore } from "../stores/authSlice";
-import KYCStatusScreen from "../components/KYCStatusScreen";
 import CustomLoading from "../components/CustomLoading";
 
 type CryptoSellScreenParams = {
@@ -52,16 +50,6 @@ export default function CryptoSellScreen() {
   const { intent } = route.params;
   const [displayAmount, setDisplayAmount] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const user = useAuthStore(state => state.user);
-
-  console.log(user);
-  console.log(intent);
-  // const isAlreadyVerified = useMemo(
-  //   () =>
-  //     user?.bvn_verification_status === "VERIFIED" ||
-  //     user?.nin_verification_status === "VERIFIED",
-  //   [user.bvn_verification_status, user?.nin_verification_status],
-  // );
 
   const selectedAssetUuid = intent.assetId ?? "";
 
@@ -152,10 +140,6 @@ export default function CryptoSellScreen() {
       refetch();
     }, [refetch]),
   );
-
-  // if (!isAlreadyVerified) {
-  //   return <KYCStatusScreen />;
-  // }
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
@@ -300,24 +284,6 @@ export default function CryptoSellScreen() {
                       /$
                     </Text>
                   </View>
-                  {/* <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.balance,
-                        { fontFamily: getFontFamily("800") },
-                      ]}
-                    >
-                      Service Network Fee:
-                    </Text>
-                    <Text style={styles.balance}>
-                      {formatAmount(2, { currency: "USD" })}
-                    </Text>
-                  </View> */}
                 </View>
                 <View
                   style={{

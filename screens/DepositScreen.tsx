@@ -78,8 +78,6 @@ const DepositScreen = () => {
     navigation.navigate("BankTransfer" as never, { amount, currency: "NGN" });
   };
 
-  console.log(user);
-
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
       <>

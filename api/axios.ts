@@ -3,8 +3,8 @@ import { getItem } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 
-// export const BASE_URL = "https://www.ayodejijava.com.ng/v1";
-export const BASE_URL = "https://1c62-102-89-75-116.ngrok-free.app/v1";
+export const BASE_URL = "https://www.ayodejijava.com.ng/v1";
+// export const BASE_URL = "https://1c62-102-89-75-116.ngrok-free.app/v1";
 
 const badRequestStatusCodes = [400, 403, 404, 422, 500];
 

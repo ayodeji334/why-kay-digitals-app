@@ -65,8 +65,6 @@ const TransactionDetailScreen = () => {
     [transaction?.status],
   );
 
-  console.log(transaction);
-
   const isProcessing = useMemo(
     () =>
       transaction?.status?.toLowerCase() === "processing" ||

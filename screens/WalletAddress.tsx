@@ -21,13 +21,6 @@ import CustomIcon from "../components/CustomIcon";
 import { WalletIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
 
-// interface WalletAddress {
-//   id: string;
-//   address: string;
-//   chain: string;
-//   is_default: boolean;
-// }
-
 interface Wallet {
   id: string;
   name: string;
@@ -38,7 +31,7 @@ interface Wallet {
   value: string;
   buy_rate: string;
   sell_rate: string;
-  chains: string[];
+  chains: any;
   addresses: any[];
   asset_id: string;
 }
@@ -58,7 +51,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
   const { apiGet } = useAxios();
   const navigation: any = useNavigation();
   const [selectedNetwork, setSelectedNetwork] = useState<string>(
-    wallet?.chains?.[0] ?? "",
+    wallet?.chains?.[0]?.chain ?? "",
   );
 
   const handleGenerateWallet = async () => {
@@ -93,7 +86,6 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
   }, [selectedNetwork]);
 
   const handleNetworkChange = async (network: string) => {
-    console.log("networks", network);
     if (network === selectedNetwork) return;
 
     setSelectedNetwork(network);
@@ -156,7 +148,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
               <View style={styles.walletCircle}>
                 <CustomIcon
                   source={WalletIcon}
-                  size={25}
+                  size={20}
                   color={COLORS.primary}
                 />
               </View>
@@ -202,9 +194,9 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
           <View style={{ marginVertical: 10 }}>
             <Text style={styles.modalLabel}>Asset Networks</Text>
             <SelectInput
-              options={wallet?.chains.map(chain => ({
-                label: chain.toUpperCase(),
-                value: chain,
+              options={wallet?.chains.map((chain: any) => ({
+                label: `${chain?.chain} (${chain.chain_type?.toUpperCase()})`,
+                value: chain?.chain,
               }))}
               placeholder="Select a network"
               title="Select a network"
@@ -233,30 +225,28 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
           )}
 
           {/* Wallet Info */}
-          {selectedAddress?.address && (
-            <View style={styles.infoSection}>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Network</Text>
-                <Text style={styles.infoValue}>{formattedNetworkName}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Wallet Balance</Text>
-                <Text style={styles.infoValue}>
-                  {formatAmount(parseFloat(wallet.balance) || 0, {
-                    currency: "USD",
-                  })}
-                </Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Market Value</Text>
-                <Text style={styles.infoValue}>
-                  {formatAmount(parseFloat(wallet.price) || 0, {
-                    currency: "USD",
-                  })}
-                </Text>
-              </View>
+          <View style={styles.infoSection}>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Network</Text>
+              <Text style={styles.infoValue}>{formattedNetworkName}</Text>
             </View>
-          )}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Wallet Balance</Text>
+              <Text style={styles.infoValue}>
+                {formatAmount(parseFloat(wallet.balance) || 0, {
+                  currency: "USD",
+                })}
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Market Value</Text>
+              <Text style={styles.infoValue}>
+                {formatAmount(parseFloat(wallet.price) || 0, {
+                  currency: "USD",
+                })}
+              </Text>
+            </View>
+          </View>
         </View>
 
         {selectedAddress?.address && (
@@ -273,7 +263,9 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
               style={styles.viewRatesButton}
               onPress={handleNavigation}
             >
-              <Text style={[styles.actionButtonText, { color: "black" }]}>
+              <Text
+                style={[styles.actionButtonText, { color: COLORS.primary }]}
+              >
                 View Rates
               </Text>
             </TouchableOpacity>
@@ -420,12 +412,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     maxWidth: 260,
   },
-  // label: {
-  //   fontFamily: getFontFamily(800),
-  //   fontSize: 15,
-  //   marginBottom: 6,
-  //   color: "black",
-  // },
   addressRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -453,8 +439,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 13,
   },
-  infoLabel: { fontFamily: getFontFamily(700), fontSize: 14, color: "#374151" },
-  infoValue: { fontFamily: getFontFamily(700), fontSize: 14, color: "black" },
+  infoLabel: { fontFamily: getFontFamily(800), fontSize: 14, color: "black" },
+  infoValue: { fontFamily: getFontFamily(800), fontSize: 14, color: "black" },
   actionsContainer: { marginTop: 30 },
   shareButton: {
     flexDirection: "row",
@@ -467,7 +453,7 @@ const styles = StyleSheet.create({
   },
   viewRatesButton: {
     borderWidth: 1,
-    borderColor: "#555",
+    borderColor: COLORS.primary,
     paddingVertical: 14,
     borderRadius: 30,
     alignItems: "center",
@@ -478,10 +464,6 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     color: "white",
   },
-  // container: {
-  //   flex: 1,
-  //   backgroundColor: "#fff",
-  // },
   scrollContent: {
     flex: 1,
     paddingHorizontal: 20,
@@ -489,21 +471,4 @@ const styles = StyleSheet.create({
   bottomActions: {
     paddingHorizontal: 20,
   },
-  // shareButton: {
-  //   flex: 1,
-  //   marginRight: 10,
-  //   backgroundColor: COLORS.primary,
-  //   paddingVertical: 14,
-  //   borderRadius: 30,
-  //   alignItems: "center",
-  // },
-  // viewRatesButton: {
-  //   flex: 1,
-  //   marginLeft: 10,
-  //   borderWidth: 1,
-  //   borderColor: "#555",
-  //   paddingVertical: 14,
-  //   borderRadius: 30,
-  //   alignItems: "center",
-  // },
 });

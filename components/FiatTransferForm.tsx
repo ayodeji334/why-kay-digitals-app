@@ -29,8 +29,6 @@ export default function TransferForm({
     [availableAssets],
   );
 
-  console.log(userWallets);
-
   return (
     <View style={styles.form}>
       <TextInputField

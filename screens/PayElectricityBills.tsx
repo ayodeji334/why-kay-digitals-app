@@ -76,8 +76,6 @@ export default function PayElectricityBillsScreen() {
     },
   });
 
-  console.log(errors);
-
   const { data: providers = [], isLoading } = useQuery({
     queryKey: ["electricityProviders"],
     queryFn: async () => {
@@ -86,8 +84,6 @@ export default function PayElectricityBillsScreen() {
     },
     refetchOnWindowFocus: false,
   });
-
-  console.log(providers);
 
   const [selectedProviderItems, setSelectedProviderItems] = useState<any[]>([]);
 
@@ -143,8 +139,6 @@ export default function PayElectricityBillsScreen() {
         type: isPrepaid ? "Prepaid" : "Postpaid",
         url: "/bills/buy-electricity",
       };
-
-      console.log(payload);
 
       navigation.navigate("ConfirmTransaction" as never, { payload });
     } finally {

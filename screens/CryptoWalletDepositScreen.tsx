@@ -14,6 +14,8 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import WalletDetails from "./WalletAddress";
 import { useWallets } from "../hooks/useWallet";
 import { ArrowDown, ArrowUp, Send } from "iconsax-react-nativejs";
+import CustomIcon from "../components/CustomIcon";
+import { RefreshIcon } from "../assets";
 
 const CryptoWalletDepositScreen = () => {
   const route: any = useRoute();
@@ -24,6 +26,8 @@ const CryptoWalletDepositScreen = () => {
     data: { wallets },
     refetch,
   } = useWallets();
+
+  console.log(wallets);
 
   const selectedAssetUuid = route.params?.crypto
     ? route.params?.crypto?.uuid
@@ -96,6 +100,13 @@ const CryptoWalletDepositScreen = () => {
           },
         }),
     },
+    {
+      label: "Swap",
+      icon: (
+        <CustomIcon source={RefreshIcon} size={10} color={COLORS.primary} />
+      ),
+      onPress: () => asset && navigation.navigate("SwapCrypto"),
+    },
   ];
 
   return (
@@ -116,6 +127,7 @@ const CryptoWalletDepositScreen = () => {
           refetchWallets={refreshWallets}
         />
       </ScrollView>
+
       <View style={styles.actionsRow}>
         {actions.map(({ label, onPress }) => (
           <TouchableOpacity
@@ -143,17 +155,19 @@ const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: "row",
     paddingHorizontal: 20,
-    paddingVertical: 17,
+    paddingVertical: 14,
     backgroundColor: "#fff",
     columnGap: 17,
+    borderTopWidth: 1,
+    borderTopColor: "#e7e7e7",
   },
   actionButton: {
     alignItems: "center",
+    backgroundColor: "#f7f7f7",
     gap: 6,
     opacity: 1,
-    paddingHorizontal: 32,
+    paddingHorizontal: 2,
     paddingVertical: 9,
-    backgroundColor: COLORS.primary,
     borderRadius: 340,
     flex: 1,
   },
@@ -161,14 +175,14 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: COLORS.fadePrimary, // or whatever your light tint is
+    backgroundColor: COLORS.fadePrimary,
     alignItems: "center",
     justifyContent: "center",
   },
   actionLabel: {
-    fontSize: 12,
-    fontFamily: getFontFamily(800),
-    color: COLORS.whiteBackground,
+    fontSize: 13,
+    fontFamily: getFontFamily(900),
+    color: COLORS.primary,
     fontWeight: "500",
   },
   header: {
