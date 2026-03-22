@@ -17,8 +17,8 @@ import CustomLoading from "../components/CustomLoading";
 import { TradeIntent } from "./Rates";
 import { COLORS } from "../constants/colors";
 import { useAssets } from "../hooks/useAssets";
-import { useAuthStore } from "../stores/authSlice";
-import KYCStatusScreen from "../components/KYCStatusScreen";
+import { formatAmount, formatNumber } from "../libs/formatNumber";
+import { useWallets } from "../hooks/useWallet";
 
 type CryptoWalletScreenRoute = {
   CryptoWallets: {
@@ -32,23 +32,62 @@ const CryptoWalletScreen = () => {
   const route = useRoute<RouteProp<CryptoWalletScreenRoute, "CryptoWallets">>();
   const { action: currentAction = "buy" } = route.params ?? {};
   const { assets, isLoading, isRefetching, refetch } = useAssets();
-  const user = useAuthStore(state => state.user);
-  // const isAlreadyVerified = useMemo(
-  //   () =>
-  //     user?.bvn_verification_status === "VERIFIED" &&
-  //     user?.nin_verification_status === "VERIFIED",
-  //   [user.bvn_verification_status, user?.nin_verification_status],
-  // );
 
-  // Filter by search query
+  const { data: { wallets = [] } = {}, refetch: refetchWallets } = useWallets();
+
+  console.log(wallets);
+
+  // Merge: wallets first (have balance), then assets not yet in any wallet
+  const mergedList = useMemo(() => {
+    const walletAssetIds = new Set((wallets ?? []).map((w: any) => w.asset_id));
+
+    const walletsWithBalance = (wallets ?? []).map((w: any) => ({
+      ...w,
+      uuid: w.asset_id,
+      logo_url: w.logo,
+      hasWallet: true,
+    }));
+
+    const assetsWithoutWallet = (assets ?? [])
+      .filter((a: any) => !walletAssetIds.has(a.uuid))
+      .map((a: any) => ({
+        ...a,
+        balance: "0.00000000",
+        value: "0.00000000",
+        price: a.market_current_value ?? "0",
+        hasWallet: false,
+      }));
+
+    return [...walletsWithBalance, ...assetsWithoutWallet];
+  }, [wallets, assets]);
+
+  const refetchData = () => {
+    refetch();
+    refetchWallets();
+  };
+
+  // Filter + sort
   const filteredAssets = useMemo(() => {
-    if (!searchQuery) return assets;
-    return assets.filter(
-      (asset: any) =>
-        asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        asset.symbol.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-  }, [assets, searchQuery]);
+    const filtered = !searchQuery
+      ? mergedList
+      : mergedList.filter(
+          (item: any) =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.symbol.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
+
+    return [...filtered].sort((a: any, b: any) => {
+      const aValue = Number(a.value ?? 0);
+      const bValue = Number(b.value ?? 0);
+
+      if (aValue !== bValue) return bValue - aValue;
+
+      const aBalance = Number(a.balance ?? 0);
+      const bBalance = Number(b.balance ?? 0);
+
+      return bBalance - aBalance;
+    });
+  }, [mergedList, searchQuery]);
 
   // Navigate on asset select
   const handleAssetPress = (asset: any) => {
@@ -87,31 +126,40 @@ const CryptoWalletScreen = () => {
     }
   };
 
-  const renderCryptoItem = ({ item }: any) => (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      style={styles.cryptoItem}
-      onPress={() => handleAssetPress(item)}
-    >
-      <View style={styles.cryptoLeft}>
-        {item.logo_url && (
-          <Image
-            source={{ uri: item.logo_url }}
-            resizeMode="contain"
-            style={styles.assetIcon}
-          />
-        )}
-        <View style={styles.cryptoInfo}>
-          <Text style={styles.cryptoName}>{item.symbol}</Text>
-          <Text style={styles.cryptoSymbol}>{item.name}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+  const renderCryptoItem = ({ item }: any) => {
+    const balance = Number(item?.balance ?? 0);
+    const balanceInUsd = Number(item?.value ?? 0);
 
-  // if (!isAlreadyVerified) {
-  //   return <KYCStatusScreen />;
-  // }
+    return (
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={styles.cryptoItem}
+        onPress={() => handleAssetPress(item)}
+      >
+        <View style={styles.cryptoLeft}>
+          {item.logo_url && (
+            <Image
+              source={{ uri: item.logo_url }}
+              resizeMode="contain"
+              style={styles.assetIcon}
+            />
+          )}
+          <View style={styles.cryptoInfo}>
+            <Text style={styles.cryptoName}>{item.symbol}</Text>
+            <Text style={styles.cryptoSymbol}>{item.name}</Text>
+          </View>
+        </View>
+        <View style={styles.cryptoRight}>
+          <Text style={styles.cryptoBalance}>
+            {formatNumber(balance, { decimalPlace: 8 })}
+          </Text>
+          <Text style={styles.cryptoValue}>
+            {formatAmount(balanceInUsd, { currency: "USD" })}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
@@ -130,7 +178,7 @@ const CryptoWalletScreen = () => {
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={refetch}
+            onRefresh={refetchData}
             colors={[COLORS.primary]}
           />
         }
@@ -165,6 +213,7 @@ const styles = StyleSheet.create({
   cryptoItem: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#dcdcdcff",
@@ -172,6 +221,21 @@ const styles = StyleSheet.create({
   cryptoLeft: { flexDirection: "row", alignItems: "center" },
   assetIcon: { width: 30, height: 30, borderRadius: 20, marginRight: 12 },
   cryptoInfo: { flexDirection: "column" },
-  cryptoName: { fontSize: 15, fontFamily: getFontFamily(800) },
+  cryptoName: { fontSize: 13, fontFamily: getFontFamily(800) },
   cryptoSymbol: { fontSize: 12, fontFamily: getFontFamily(700), color: "#000" },
+  cryptoRight: {
+    alignItems: "flex-end",
+    gap: 3,
+  },
+  cryptoBalance: {
+    fontSize: 13,
+    fontFamily: getFontFamily(900),
+    fontWeight: "600",
+    color: "#000",
+  },
+  cryptoValue: {
+    fontFamily: getFontFamily(900),
+    fontSize: 13,
+    color: "#000",
+  },
 });

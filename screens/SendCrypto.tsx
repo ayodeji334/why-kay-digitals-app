@@ -70,7 +70,8 @@ export default function SendScreen() {
 
   const { intent } = route.params;
   const selectedAssetUuid = intent?.assetId ?? "";
-
+  const scannedValueRef = useRef<string | null>(null);
+  const isProcessingRef = useRef(false);
   const [btcEquivalent, setBtcEquivalent] = useState("0.00000000");
   const [displayAmount, setDisplayAmount] = useState("");
   const [showScanner, setShowScanner] = useState(false);
@@ -132,11 +133,6 @@ export default function SendScreen() {
   const marketPrice = Number(assetDetails?.market_current_value ?? 0);
   const symbol = assetDetails?.symbol ?? "";
   const balanceInUsd = balance * marketPrice;
-
-  console.log(assetDetails);
-
-  const scannedValueRef = useRef<string | null>(null);
-  const isProcessingRef = useRef(false);
 
   const codeScanner = useCodeScanner({
     codeTypes: ["qr"],
@@ -321,7 +317,6 @@ export default function SendScreen() {
                   {formatAmount(balanceInUsd, { currency: "USD" })}
                 </Text>
               </View>
-              {/* Wallet Address Input + QR Scanner trigger */}
               <View style={styles.walletAddressRow}>
                 <View style={{ flex: 1 }}>
                   <TextInputField
@@ -343,7 +338,7 @@ export default function SendScreen() {
 
               <SelectInput
                 control={control}
-                name="network"
+                name="chain"
                 label="Select Network"
                 title="Select withdrawal network"
                 placeholder={
@@ -390,7 +385,7 @@ export default function SendScreen() {
               onPress={handleSubmit(onSubmit)}
             >
               {isPending ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color="#fff" size={10} />
               ) : (
                 <Text style={styles.buttonText}>Continue</Text>
               )}

@@ -9,7 +9,7 @@ export function useWallets() {
       queryFn: async () => {
         try {
           const res = await apiGet(`/wallets/user/crypto-wallets`);
-          return res.data.data || { wallets: [], totalAssetValueBalance: 0 };
+          return res?.data?.data ?? { wallets: [], totalAssetValueBalance: 0 };
         } catch (error) {
           throw error;
         }

@@ -1,14 +1,23 @@
 import React, { useMemo, useState } from "react";
-import { StyleSheet, ScrollView, RefreshControl } from "react-native";
+import {
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  View,
+  TouchableOpacity,
+  Text,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily } from "../constants/settings";
 import { COLORS } from "../constants/colors";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import WalletDetails from "./WalletAddress";
 import { useWallets } from "../hooks/useWallet";
+import { ArrowDown, ArrowUp, Send } from "iconsax-react-nativejs";
 
 const CryptoWalletDepositScreen = () => {
   const route: any = useRoute();
+  const navigation = useNavigation<any>();
   const [refreshing, setRefreshing] = useState(false);
 
   const {
@@ -36,6 +45,59 @@ const CryptoWalletDepositScreen = () => {
     return wallets.find((wallet: any) => wallet.asset_id === selectedAssetUuid);
   }, [wallets, selectedAssetUuid]);
 
+  // Derive asset shape expected by navigation
+  const asset = selectedWallet
+    ? { uuid: selectedWallet.asset_id, symbol: selectedWallet.symbol }
+    : null;
+
+  const actions = [
+    {
+      label: "Buy",
+      icon: <ArrowDown size={16} color={COLORS.primary} />,
+      onPress: () =>
+        asset &&
+        navigation.navigate("BuyCrypto", {
+          intent: {
+            assetId: asset.uuid,
+            symbol: asset.symbol,
+            action: "buy",
+            source: "wallets",
+            amount: 0,
+          },
+        }),
+    },
+    {
+      label: "Sell",
+      icon: <ArrowUp size={16} color={COLORS.primary} />,
+      onPress: () =>
+        asset &&
+        navigation.navigate("SellCrypto", {
+          intent: {
+            assetId: asset.uuid,
+            symbol: asset.symbol,
+            action: "sell",
+            source: "wallets",
+            amount: 0,
+          },
+        }),
+    },
+    {
+      label: "Withdraw",
+      icon: <Send size={16} color={COLORS.primary} />,
+      onPress: () =>
+        asset &&
+        navigation.navigate("WithdrawalCrypto", {
+          intent: {
+            assetId: asset.uuid,
+            symbol: asset.symbol,
+            action: "withdraw",
+            source: "wallets",
+            amount: 0,
+          },
+        }),
+    },
+  ];
+
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.screen}>
       <ScrollView
@@ -54,6 +116,19 @@ const CryptoWalletDepositScreen = () => {
           refetchWallets={refreshWallets}
         />
       </ScrollView>
+      <View style={styles.actionsRow}>
+        {actions.map(({ label, onPress }) => (
+          <TouchableOpacity
+            key={label}
+            style={styles.actionButton}
+            onPress={onPress}
+            disabled={!asset}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.actionLabel}>{label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </SafeAreaView>
   );
 };
@@ -64,6 +139,37 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: "#ffffff",
+  },
+  actionsRow: {
+    flexDirection: "row",
+    paddingHorizontal: 20,
+    paddingVertical: 17,
+    backgroundColor: "#fff",
+    columnGap: 17,
+  },
+  actionButton: {
+    alignItems: "center",
+    gap: 6,
+    opacity: 1,
+    paddingHorizontal: 32,
+    paddingVertical: 9,
+    backgroundColor: COLORS.primary,
+    borderRadius: 340,
+    flex: 1,
+  },
+  actionIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: COLORS.fadePrimary, // or whatever your light tint is
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  actionLabel: {
+    fontSize: 12,
+    fontFamily: getFontFamily(800),
+    color: COLORS.whiteBackground,
+    fontWeight: "500",
   },
   header: {
     flexDirection: "row",

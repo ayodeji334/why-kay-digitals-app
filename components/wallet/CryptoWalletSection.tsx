@@ -66,8 +66,6 @@ const CryptoWalletSection = () => {
       }));
   }, [assets, walletList]);
 
-  console.log("Wallets", walletList);
-
   // Total balance
   const totalValueInUsd = useMemo(
     () =>

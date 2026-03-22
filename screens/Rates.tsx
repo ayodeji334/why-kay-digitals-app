@@ -198,7 +198,6 @@ export default function CryptoRatesScreen() {
           />
         }
       >
-        {/* ── Tabs ── */}
         <View style={styles.tabs}>
           {(["sell", "buy"] as TradeTab[]).map(tab => (
             <TouchableOpacity
@@ -254,7 +253,6 @@ export default function CryptoRatesScreen() {
           </View>
         </View>
 
-        {/* ── Expected NGN ── */}
         <View style={{ marginVertical: 12 }}>
           <Text style={styles.label}>Expected Amount (₦)</Text>
           <View style={styles.rateBox}>
@@ -264,7 +262,6 @@ export default function CryptoRatesScreen() {
           </View>
         </View>
 
-        {/* ── Rate breakdown — only when coin + valid amount selected ── */}
         {selectedCrypto && amountNum > 0 && rateInfo && (
           <View style={styles.infoContainer}>
             <View style={styles.infoRow}>

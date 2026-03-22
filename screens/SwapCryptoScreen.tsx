@@ -124,8 +124,8 @@ export default function CryptoSwapScreen() {
               total_price: asset?.value,
             }))
             .sort((a: any, b: any) => {
-              const aPrice = Number(a.price);
-              const bPrice = Number(b.price);
+              const aPrice = Number(a.total_price);
+              const bPrice = Number(b.total_price);
 
               const aValue = Number(a.value);
               const bValue = Number(b.value);
