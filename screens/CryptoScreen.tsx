@@ -14,11 +14,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily } from "../constants/settings";
 import CustomLoading from "../components/CustomLoading";
-import { TradeIntent } from "./Rates";
 import { COLORS } from "../constants/colors";
 import { useAssets } from "../hooks/useAssets";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { useWallets } from "../hooks/useWallet";
+import { TradeIntent } from "../libs/types";
 
 type CryptoWalletScreenRoute = {
   CryptoWallets: {
@@ -126,7 +126,6 @@ const CryptoWalletScreen = () => {
   const renderCryptoItem = ({ item }: any) => {
     const balance = Number(item?.balance ?? 0);
     const balanceInUsd = Number(item?.value ?? 0);
-    console.log(item);
     return (
       <TouchableOpacity
         activeOpacity={0.8}

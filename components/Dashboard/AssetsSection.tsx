@@ -45,12 +45,12 @@ const AssetsSection = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ["rates"],
+    queryKey: ["asset-rates"],
     queryFn: async () => {
       const res = await apiGet("/wallets/crypto-assets/sell-rates");
       return res?.data?.data ?? [];
     },
-    refetchInterval: 2000,
+    refetchInterval: 4000,
   });
 
   const filteredAssets = useMemo(() => {

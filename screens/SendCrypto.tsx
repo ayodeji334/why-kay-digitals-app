@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +9,7 @@ import {
   Linking,
   Alert,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -26,7 +21,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CustomLoading from "../components/CustomLoading";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
-import { TradeIntent } from "./Rates";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import TextInputField from "../components/TextInputField";
 import NoWallet from "../components/NoWallet";
@@ -39,6 +33,7 @@ import {
 } from "react-native-vision-camera";
 import { formatAmount } from "../libs/formatNumber";
 import { SelectInput } from "../components/SelectInputField";
+import { TradeIntent } from "../libs/types";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -48,8 +43,9 @@ type CryptoSellScreenParams = {
 
 const schema = Yup.object().shape({
   amount: Yup.number()
-    .typeError("Enter a valid amount")
+    .min(6, "Minimum amount is 6 USD")
     .positive("Amount must be greater than 0")
+    .typeError("Enter a valid amount")
     .required("Amount is required"),
   wallet_address: Yup.string().required("Wallet address is required"),
   asset_id: Yup.string().required(),
@@ -72,7 +68,7 @@ export default function SendScreen() {
   const selectedAssetUuid = intent?.assetId ?? "";
   const scannedValueRef = useRef<string | null>(null);
   const isProcessingRef = useRef(false);
-  const [btcEquivalent, setBtcEquivalent] = useState("0.00000000");
+  // const [btcEquivalent, setBtcEquivalent] = useState("0.00000000");
   const [displayAmount, setDisplayAmount] = useState("");
   const [showScanner, setShowScanner] = useState(false);
 
@@ -167,38 +163,105 @@ export default function SendScreen() {
   }, [showScanner, setValue]);
 
   const networkOptions = useMemo(() => {
+    if (
+      !assetDetails?.available_chains ||
+      !Array.isArray(assetDetails?.available_chains)
+    ) {
+      return [];
+    }
+
     const chains = assetDetails?.available_chains ?? [];
-    return chains.map((chain: any) => ({
-      label: `${chain?.chain} (${chain.chain_type?.toUpperCase()})`,
-      value: chain?.chain,
-    }));
+
+    return chains
+      .filter((chain: any) => chain.withdraw_enabled)
+      .map((chain: any) => ({
+        ...chain,
+        label: `${chain?.chain} (${chain.chain_type?.toUpperCase()})`,
+        value: chain?.chain,
+      }));
   }, [assetDetails?.available_chains]);
 
-  // auto-select if only one network available
+  const selectedChain = watch("chain");
+
+  const selectedNetwork = useMemo(() => {
+    return networkOptions.find((n: any) => n.value === selectedChain) ?? null;
+  }, [networkOptions, selectedChain]);
+
+  const feeBreakdown = useMemo(() => {
+    if (!selectedNetwork || !amount || amount <= 0 || marketPrice <= 0)
+      return null;
+
+    const precision = selectedNetwork.min_accuracy ?? 6;
+
+    // Convert USD input to coin
+    const coinAmount = amount / marketPrice;
+
+    // Bybit flat fee in coin
+    const bybitFeeCoin = parseFloat(selectedNetwork.withdraw_fee ?? "0");
+
+    // Platform fee: $1 USD converted to coin
+    const platformFeeCoin = 1 / marketPrice;
+
+    // Total fee in coin
+    const totalFeeCoin = bybitFeeCoin + platformFeeCoin;
+
+    // What recipient actually receives
+    const coinAmountAfterFee = coinAmount - totalFeeCoin;
+
+    // What is sent to Bybit (recipient amount + bybit fee so they deduct from it)
+    const coinAmountToBybit = coinAmountAfterFee + bybitFeeCoin;
+
+    // USD equivalents
+    const bybitFeeUsd = bybitFeeCoin * marketPrice;
+    const platformFeeUsd = 1; // always $1
+    const totalFeeUsd = totalFeeCoin * marketPrice;
+    const usdAmountAfterFee = coinAmountAfterFee * marketPrice;
+
+    const isBelowMinimum =
+      coinAmountAfterFee < parseFloat(selectedNetwork.withdraw_min ?? "0");
+    const isTooSmall = coinAmountAfterFee <= 0;
+
+    return {
+      coinAmount: coinAmount.toFixed(precision),
+      bybitFeeCoin: bybitFeeCoin.toFixed(precision),
+      platformFeeCoin: platformFeeCoin.toFixed(precision),
+      totalFeeCoin: totalFeeCoin.toFixed(precision),
+      coinAmountAfterFee: coinAmountAfterFee.toFixed(precision),
+      coinAmountToBybit: coinAmountToBybit.toFixed(precision),
+      bybitFeeUsd: bybitFeeUsd.toFixed(2),
+      platformFeeUsd: platformFeeUsd.toFixed(2),
+      totalFeeUsd: totalFeeUsd.toFixed(2),
+      usdAmountAfterFee: usdAmountAfterFee.toFixed(2),
+      withdrawMin: selectedNetwork.withdraw_min,
+      isBelowMinimum,
+      isTooSmall,
+    };
+  }, [selectedNetwork, amount, marketPrice]);
+
   useEffect(() => {
     if (networkOptions.length === 1) {
       setValue("chain", networkOptions[0].value, { shouldValidate: true });
     }
   }, [networkOptions, setValue]);
 
-  const updateConversion = useCallback(
-    (usdAmount: number) => {
-      if (!isNaN(usdAmount) && marketPrice > 0) {
-        setBtcEquivalent((usdAmount / marketPrice).toFixed(8));
-      } else {
-        setBtcEquivalent("0.00000000");
-      }
-    },
-    [marketPrice],
-  );
+  // const updateConversion = useCallback(
+  //   (usdAmount: number) => {
+  //     if (!isNaN(usdAmount) && marketPrice > 0) {
+  //       setBtcEquivalent((usdAmount / marketPrice).toFixed(8));
+  //     } else {
+  //       setBtcEquivalent("0.00000000");
+  //     }
+  //   },
+  //   [marketPrice],
+  // );
 
-  useEffect(() => {
-    if (amount && amount > 0) {
-      updateConversion(amount);
-    } else {
-      setBtcEquivalent("0.00000000");
-    }
-  }, [amount, updateConversion]);
+  // useEffect(() => {
+  //   if (amount && amount > 0) {
+  //     updateConversion(amount);
+  //   } else {
+  //     setBtcEquivalent("0.00000000");
+  //   }
+  // }, [amount, updateConversion]);
 
   const hasInsufficientBalance = useMemo(() => {
     if (!amount || !assetDetails) return false;
@@ -267,7 +330,12 @@ export default function SendScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={isFetching} onRefresh={() => refetch()} />
+        }
+      >
         {!assetDetails?.wallet_id ? (
           <NoWallet selectedAssetUuid={selectedAssetUuid} onSuccess={refetch} />
         ) : (
@@ -306,9 +374,9 @@ export default function SendScreen() {
                   <Text style={styles.error}>{errors.amount.message}</Text>
                 )}
 
-                <Text style={styles.approx}>
+                {/* <Text style={styles.approx}>
                   Approximately {btcEquivalent} {symbol}
-                </Text>
+                </Text> */}
 
                 {/* FIX: removed stray `{}` */}
                 <Text style={styles.walletBalance}>
@@ -349,6 +417,78 @@ export default function SendScreen() {
                 options={networkOptions}
               />
 
+              {feeBreakdown && (
+                <View style={styles.feeBreakdownContainer}>
+                  <Text style={styles.feeBreakdownTitle}>Fee Breakdown</Text>
+
+                  <View style={styles.feeRow}>
+                    <Text style={styles.feeLabel}>You Send</Text>
+                    <Text style={styles.feeValue}>
+                      {feeBreakdown.coinAmount} {symbol} (≈ $
+                      {amount?.toFixed(2)})
+                    </Text>
+                  </View>
+
+                  <View style={styles.feeDivider} />
+
+                  <View style={styles.feeRow}>
+                    <Text style={styles.feeLabel}>
+                      Network Fee ({selectedNetwork?.chain})
+                    </Text>
+                    <Text style={styles.feeValue}>
+                      {feeBreakdown.bybitFeeCoin} {symbol} (≈ $
+                      {feeBreakdown.bybitFeeUsd})
+                    </Text>
+                  </View>
+
+                  <View style={styles.feeRow}>
+                    <Text style={styles.feeLabel}>Platform Fee</Text>
+                    <Text style={styles.feeValue}>
+                      {feeBreakdown.platformFeeCoin} {symbol} (≈ $1.00)
+                    </Text>
+                  </View>
+
+                  <View style={styles.feeDivider} />
+
+                  <View style={styles.feeRow}>
+                    <Text style={styles.feeLabel}>Total Fees</Text>
+                    <Text style={[styles.feeValue]}>
+                      {feeBreakdown.totalFeeCoin} {symbol} (≈ $
+                      {feeBreakdown.totalFeeUsd})
+                    </Text>
+                  </View>
+
+                  <View style={styles.feeDivider} />
+
+                  <View style={styles.feeRow}>
+                    <Text style={[styles.feeLabel]}>Recipient Gets</Text>
+                    <Text style={[styles.feeValue]}>
+                      {feeBreakdown.coinAmountAfterFee} {symbol} (≈ $
+                      {feeBreakdown.usdAmountAfterFee})
+                    </Text>
+                  </View>
+                </View>
+              )}
+
+              {/* {feeBreakdown && feeBreakdown.isTooSmall && (
+                <View style={styles.warningContainer}>
+                  <Text style={styles.warningText}>
+                    Amount is too small to cover withdrawal fees.
+                  </Text>
+                </View>
+              )} */}
+
+              {/* {feeBreakdown &&
+                !feeBreakdown.isTooSmall &&
+                feeBreakdown.isBelowMinimum && (
+                  <View style={styles.warningContainer}>
+                    <Text style={styles.warningText}>
+                      Minimum withdrawal is {feeBreakdown.withdrawMin} {symbol}.
+                      Please increase your amount.
+                    </Text>
+                  </View>
+                )} */}
+
               {hasInsufficientBalance && (
                 <View style={styles.warningContainer}>
                   <Text style={styles.warningText}>
@@ -361,7 +501,7 @@ export default function SendScreen() {
               )}
 
               <InfoCard
-                IconComponent={<InfoCircle size={20} color={COLORS.primary} />}
+                IconComponent={<InfoCircle size={15} color={COLORS.primary} />}
                 title="Important Notice!"
                 description={[
                   "Double-check the wallet address before confirming.",
@@ -413,7 +553,7 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "red",
-    fontSize: normalize(14),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     marginBottom: normalize(10),
   },
@@ -426,6 +566,51 @@ const styles = StyleSheet.create({
     paddingHorizontal: normalize(16),
     marginBottom: normalize(10),
     gap: 5,
+  },
+  feeBreakdownContainer: {
+    backgroundColor: "#5AB2431A",
+    borderRadius: 12,
+    padding: 16,
+    gap: 10,
+  },
+  feeBreakdownTitle: {
+    color: "#000",
+    fontFamily: getFontFamily("800"),
+    fontSize: 13,
+    marginBottom: 4,
+  },
+  feeRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  feeLabel: {
+    color: "#000",
+    fontFamily: getFontFamily("700"),
+    fontSize: 12,
+    flex: 1,
+  },
+  feeValue: {
+    color: "#000",
+    fontFamily: getFontFamily("900"),
+    fontSize: 12,
+    textAlign: "right",
+    flex: 1,
+  },
+  feeDivider: {
+    height: 1,
+    backgroundColor: "#b1b1b1",
+  },
+  feeWarning: {
+    backgroundColor: "#3a1a1a",
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 4,
+  },
+  feeWarningText: {
+    color: "#ff6b6b",
+    fontFamily: getFontFamily("400"),
+    fontSize: 15,
   },
   dollarSign: {
     fontSize: normalize(26),

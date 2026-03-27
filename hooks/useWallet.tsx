@@ -16,6 +16,8 @@ export function useWallets() {
       },
     });
 
+  console.log(data);
+
   return {
     data,
     isLoading,

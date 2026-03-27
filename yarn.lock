@@ -2152,17 +2152,17 @@
     deepmerge "^4.3.1"
     svgo "^3.0.2"
 
-"@tanstack/query-core@5.90.3":
-  version "5.90.3"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.90.3.tgz#461422437d30aad0a7618122c5e7568095d79cfb"
-  integrity sha512-HtPOnCwmx4dd35PfXU8jjkhwYrsHfuqgC8RCJIwWglmhIUIlzPP0ZcEkDAc+UtAWCiLm7T8rxeEfHZlz3hYMCA==
+"@tanstack/query-core@5.95.0":
+  version "5.95.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.95.0.tgz#a489fd6f9db05e18682d164e830d5368e60e0ebb"
+  integrity sha512-H1/CWCe8tGL3YIVeo770Z6kPbt0B3M1d/iQXIIK1qlFiFt6G2neYdkHgLapOC8uMYNt9DmHjmGukEKgdMk1P+A==
 
-"@tanstack/react-query@^5.90.3":
-  version "5.90.3"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.90.3.tgz#670ed97948c5d4e3c075049f8a01e84d51e0bdc4"
-  integrity sha512-i/LRL6DtuhG6bjGzavIMIVuKKPWx2AnEBIsBfuMm3YoHne0a20nWmsatOCBcVSaT0/8/5YFjNkebHAPLVUSi0Q==
+"@tanstack/react-query@^5.95.0":
+  version "5.95.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.95.0.tgz#675474f3d4e2020a4eb83bfeed3aeb5b7bddb4b0"
+  integrity sha512-EMP8B+BK9zvnAemT8M/y3z/WO0NjZ7fIUY3T3wnHYK6AA3qK/k33i7tPgCXCejhX0cd4I6bJIXN2GmjrHjDBzg==
   dependencies:
-    "@tanstack/query-core" "5.90.3"
+    "@tanstack/query-core" "5.95.0"
 
 "@trysound/sax@0.2.0":
   version "0.2.0"

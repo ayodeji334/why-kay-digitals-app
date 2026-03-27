@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -20,7 +20,6 @@ import CustomIcon from "../CustomIcon";
 import { formatAmount } from "../../libs/formatNumber";
 import { useNavigation } from "@react-navigation/native";
 import { normalize, getFontFamily } from "../../constants/settings";
-import { TradeIntent } from "../../screens/Rates";
 import { Add } from "iconsax-react-nativejs";
 import useAxios from "../../hooks/useAxios";
 import CustomModal from "../CustomModal";
@@ -29,6 +28,7 @@ import CustomLoading from "../CustomLoading";
 import { useAssets } from "../../hooks/useAssets";
 import { useWallets } from "../../hooks/useWallet";
 import LoadingBalance from "../LoadingState";
+import { TradeIntent } from "../../libs/types";
 
 const CryptoWalletSection = () => {
   const [showAddAssetWalletModal, setShowAddAssetWalletModal] = useState(false);

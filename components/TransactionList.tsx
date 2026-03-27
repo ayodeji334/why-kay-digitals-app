@@ -145,7 +145,11 @@ const TransactionSectionList: React.FC<TransactionSectionListProps> = ({
   return (
     <SectionList
       sections={groupedTransactions}
-      keyExtractor={item => item.uuid}
+      keyExtractor={item => {
+        console.log(item?.uuid);
+
+        return item?.uuid;
+      }}
       renderItem={({ item }) =>
         groupedTransactions.length === 0 ? (
           <EmptyTransactionState />

@@ -14,18 +14,20 @@ import { Scan } from "iconsax-react-nativejs";
 import { getFontFamily, normalize } from "../constants/settings";
 import { useUser } from "../stores/authSlice";
 import AssetsSection from "../components/Dashboard/AssetsSection";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import AdvertsBanner from "../components/AdvertsBanner";
 import NotificationBell from "../components/Dashboard/NotificationBell";
 import FiatWalletBalanceCard from "../components/wallet/FiatWalletBalanceCard";
 import { useMemo } from "react";
 import { useFiatBalance } from "../hooks/useFiatBalance";
+import { useQueryClient } from "@tanstack/react-query";
 
 const HomeScreen = () => {
   const user = useUser();
   const navigation = useNavigation();
   const { refetch, isRefetching } = useFiatBalance();
+  const queryClient = useQueryClient();
 
   const hasCompleteVerification = useMemo(
     () =>
@@ -39,9 +41,14 @@ const HomeScreen = () => {
     ],
   );
 
+  useFocusEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["rates"] });
+  });
+
   return (
     <SafeAreaView edges={["left", "right", "top"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}

@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  RefreshControl,
 } from "react-native";
 import CustomLoading from "../components/CustomLoading";
 import { useQuery } from "@tanstack/react-query";
@@ -17,49 +16,10 @@ import { SelectInput } from "../components/SelectInputField";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { useNavigation } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
-import { formatWithCommas } from "./SwapCryptoScreen";
 import { showError } from "../utlis/toast";
+import { formatWithCommas } from "./SwapCryptoScreen";
+import { CryptoOption, Rate, TradeIntent, TradeTab } from "../libs/types";
 
-export type TradeIntent = {
-  assetId?: string;
-  symbol?: string;
-  action?: "buy" | "sell" | "deposit" | "withdraw";
-  source?: "home" | "rates" | "wallet";
-  amount?: string;
-  rate?: number;
-};
-
-export type TradeTab = "buy" | "sell";
-interface RateCategory {
-  label: string;
-  min_amount: string;
-  max_amount: string;
-  value: string;
-}
-
-interface Rate {
-  id: number;
-  type: "buy" | "sell";
-  default_value: string;
-  categories: RateCategory[];
-}
-
-interface CryptoOption {
-  id: string;
-  value: string;
-  label: string;
-  logo_url: string;
-  symbol: string;
-  market_value: number;
-  rates: Rate[];
-  is_buy_enabled: boolean;
-  is_sell_enabled: boolean;
-}
-
-/**
- * Given a rate object and a USD amount, returns the applicable
- * rate value (category-specific or default).
- */
 const resolveRate = (
   rate: Rate,
   amountNum: number,
@@ -95,34 +55,31 @@ const resolveRate = (
   return { source: "base", value: Number(rate.default_value) };
 };
 
-/**
- * Sell tab uses the "buy" rate type (platform buys from user).
- * Buy tab uses the "sell" rate type (platform sells to user).
- */
 const getRateType = (tab: TradeTab): "buy" | "sell" =>
   tab === "sell" ? "buy" : "sell";
 
 export default function CryptoRatesScreen() {
   const [activeTab, setActiveTab] = useState<TradeTab>("sell");
   const [selectedCrypto, setSelectedCrypto] = useState<string | null>(null);
-  const [rawAmount, setRawAmount] = useState(""); // FIX: store raw numeric string, no commas
-  const [cryptoOptions, setCryptoOptions] = useState<CryptoOption[]>([]);
+  const [rawAmount, setRawAmount] = useState("");
+  const [formattedAmount, setFormattedAmount] = useState("");
 
   const { apiGet } = useAxios();
   const navigation: any = useNavigation();
 
-  const { data, isLoading, refetch, isRefetching } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["rates"],
     queryFn: async () => {
       const res = await apiGet("/crypto-assets/available/rates");
-      return res?.data?.data ?? [];
+      return res?.data?.data;
     },
+    refetchInterval: 3000,
+    refetchIntervalInBackground: true,
   });
 
-  useEffect(() => {
-    if (!Array.isArray(data)) return;
-
-    const options: CryptoOption[] = data.map((asset: any) => ({
+  const cryptoOptions = useMemo<CryptoOption[]>(() => {
+    if (!Array.isArray(data)) return [];
+    return data.map((asset: any) => ({
       id: asset.uuid,
       value: asset.uuid,
       label: `${asset.symbol} (${asset.name})`,
@@ -133,9 +90,7 @@ export default function CryptoRatesScreen() {
       is_buy_enabled: asset.is_buy_enabled,
       is_sell_enabled: asset.is_sell_enabled,
     }));
-
-    setCryptoOptions(options);
-  }, [data]); // FIX: removed getRateForCrypto dep that caused infinite loop
+  }, [data]);
 
   const crypto = useMemo(
     () => cryptoOptions.find(c => c.value === selectedCrypto) ?? null,
@@ -188,16 +143,7 @@ export default function CryptoRatesScreen() {
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
-      <ScrollView
-        contentContainerStyle={{ padding: 16 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={refetch}
-            colors={["#E89E00"]}
-          />
-        }
-      >
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
         <View style={styles.tabs}>
           {(["sell", "buy"] as TradeTab[]).map(tab => (
             <TouchableOpacity
@@ -218,101 +164,97 @@ export default function CryptoRatesScreen() {
           ))}
         </View>
 
-        {/* ── Coin selector ── */}
-        <SelectInput
-          label="Coin"
-          options={cryptoOptions}
-          onChange={setSelectedCrypto}
-          title="Select an asset coin"
-          placeholder="Select an asset coin"
-        />
+        <View>
+          <SelectInput
+            label="Coin"
+            options={cryptoOptions}
+            onChange={setSelectedCrypto}
+            title="Select an asset coin"
+            placeholder="Select an asset coin"
+          />
 
-        {/* ── USD amount input ── */}
-        <View style={{ marginBottom: 2, marginTop: 10 }}>
-          <Text style={styles.label}>Amount in USD ($)</Text>
-          <View style={styles.inputContainer}>
-            <Text style={styles.dollarSign}>$</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="decimal-pad"
-              placeholderTextColor="#aeaeaeff"
-              placeholder="0.00"
-              value={rawAmount}
-              // FIX: store raw numeric string — no commas so parseFloat works correctly
-              onChangeText={text => {
-                const cleaned = text.replace(/[^0-9.]/g, "");
-                // prevent multiple decimal points
-                const parts = cleaned.split(".");
-                const safe =
-                  parts.length > 2
-                    ? `${parts[0]}.${parts.slice(1).join("")}`
-                    : cleaned;
-                setRawAmount(safe);
-              }}
-            />
+          <View style={{ marginBottom: 2, marginTop: 10 }}>
+            <Text style={styles.label}>Amount in USD ($)</Text>
+            <View style={styles.inputContainer}>
+              <Text style={styles.dollarSign}>$</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="decimal-pad"
+                placeholderTextColor="#aeaeaeff"
+                placeholder="0.00"
+                value={formattedAmount}
+                onChangeText={text => {
+                  const cleaned = text.replace(/[^0-9.]/g, "");
+                  const parts = cleaned.split(".");
+                  const safe =
+                    parts.length > 2
+                      ? `${parts[0]}.${parts.slice(1).join("")}`
+                      : cleaned;
+
+                  setRawAmount(safe);
+                  const formatted = formatWithCommas(text);
+                  setFormattedAmount(formatted);
+                }}
+              />
+            </View>
           </View>
+
+          <View style={{ marginVertical: 12 }}>
+            <Text style={styles.label}>Expected Amount (₦)</Text>
+            <View style={styles.rateBox}>
+              <Text style={styles.rateText}>
+                {formatAmount(rateInfo?.totalNgn ?? 0, { currency: "NGN" })}
+              </Text>
+            </View>
+          </View>
+
+          {selectedCrypto && amountNum > 0 && rateInfo && (
+            <View style={styles.infoContainer}>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Exchange Rate:</Text>
+                <Text style={styles.infoValue}>
+                  $1 = {formatAmount(rateInfo.value)}
+                </Text>
+              </View>
+
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Rate Category:</Text>
+                <Text style={styles.infoValue}>
+                  {rateInfo.source === "category"
+                    ? rateInfo.label
+                    : "Default rate"}
+                </Text>
+              </View>
+
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Estimated Coin:</Text>
+                <Text style={styles.infoValue}>
+                  {formatNumber(rateInfo.coinAmount, { decimalPlace: 8 })}{" "}
+                  {crypto?.symbol}
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
 
-        <View style={{ marginVertical: 12 }}>
-          <Text style={styles.label}>Expected Amount (₦)</Text>
-          <View style={styles.rateBox}>
-            <Text style={styles.rateText}>
-              {formatAmount(rateInfo?.totalNgn ?? 0, { currency: "NGN" })}
-            </Text>
-          </View>
+        <View>
+          <TouchableOpacity
+            onPress={onPressTrade}
+            activeOpacity={0.8}
+            style={styles.tradeButton}
+          >
+            <Text style={styles.tradeButtonText}>Trade Crypto</Text>
+          </TouchableOpacity>
+
+          <Text
+            style={[
+              styles.label,
+              { textAlign: "center", fontFamily: getFontFamily("400") },
+            ]}
+          >
+            Note: This is an estimated rate. Actual rate may differ.
+          </Text>
         </View>
-
-        {selectedCrypto && amountNum > 0 && rateInfo && (
-          <View style={styles.infoContainer}>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Exchange Rate:</Text>
-              <Text style={styles.infoValue}>
-                $1 = {formatAmount(rateInfo.value)}
-              </Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Rate Category:</Text>
-              <Text style={styles.infoValue}>
-                {rateInfo.source === "category"
-                  ? rateInfo.label
-                  : "Default rate"}
-              </Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Rate Used:</Text>
-              <Text style={styles.infoValue}>
-                {formatAmount(rateInfo.value)}
-              </Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Estimated {crypto?.symbol}:</Text>
-              <Text style={styles.infoValue}>
-                {formatNumber(rateInfo.coinAmount, { decimalPlace: 8 })}{" "}
-                {crypto?.symbol}
-              </Text>
-            </View>
-          </View>
-        )}
-
-        <TouchableOpacity
-          onPress={onPressTrade}
-          activeOpacity={0.8}
-          style={styles.tradeButton}
-        >
-          <Text style={styles.tradeButtonText}>Trade Crypto</Text>
-        </TouchableOpacity>
-
-        <Text
-          style={[
-            styles.label,
-            { textAlign: "center", fontFamily: getFontFamily("400") },
-          ]}
-        >
-          Note: This is an estimated rate. Actual rate may differ.
-        </Text>
       </ScrollView>
 
       <CustomLoading loading={isLoading} />
@@ -401,7 +343,7 @@ const styles = StyleSheet.create({
   infoValue: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
-    color: COLORS.primary,
+    color: COLORS.darkBackground,
   },
   rateBreakdownRow: {
     marginTop: 8,
@@ -455,7 +397,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#D1D5DB",
+    borderColor: "#eeeeee",
   },
   rateText: {
     fontSize: normalize(28),

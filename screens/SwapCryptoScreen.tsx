@@ -156,22 +156,23 @@ export default function CryptoSwapScreen() {
           fromAsset: symbol,
         },
       });
-      return response.data ?? [];
+      return response.data?.data ?? [];
     },
     enabled: !!symbol,
+    staleTime: 86400000,
   });
 
   const availableConversions = useMemo(() => {
     if (!supportedPairs || !selectedSymbol) return [];
-    return supportedPairs.filter(
-      (pair: any) => pair.fromCoin === selectedSymbol,
-    );
+    return supportedPairs;
   }, [supportedPairs, selectedSymbol]);
 
   const options = useMemo(() => {
     if (!assets || availableConversions.length === 0) return [];
 
-    const allowedSymbols = availableConversions.map((pair: any) => pair.toCoin);
+    const allowedSymbols = availableConversions.map(
+      (pair: any) => pair.to_coin,
+    );
 
     return assets
       .filter((asset: any) => allowedSymbols.includes(asset.symbol))

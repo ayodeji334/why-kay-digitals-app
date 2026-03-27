@@ -21,16 +21,16 @@ export default function AppTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: "#03001A",
+        tabBarActiveTintColor: "#010005",
         tabBarInactiveTintColor: "gray",
         tabBarStyle: { height: 60 },
         headerTitleStyle: {
           fontFamily: getFontFamily(700),
-          fontSize: normalize(18),
+          fontSize: normalize(19),
         },
         tabBarLabelStyle: {
           fontFamily: getFontFamily(800),
-          fontSize: normalize(14),
+          fontSize: normalize(15),
         },
       }}
     >

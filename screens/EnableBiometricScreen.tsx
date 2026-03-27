@@ -108,11 +108,7 @@ const BiometricsScreen = () => {
 
       const success = await BiometricService.simplePrompt(promptMessage);
 
-      await handleSendDetailToServer(
-        success,
-        biometricType,
-        user?.biometric_enabled,
-      );
+      await handleSendDetailToServer(success, biometricType, true);
     } catch (err: any) {
       if (err?.code === "ERR_NETWORK") {
         showError("Network error. Please check your connection.");
@@ -158,6 +154,8 @@ const BiometricsScreen = () => {
     navigation.goBack();
   }, [navigation]);
 
+  console.log(user);
+
   const isBiometricEnabled =
     user?.biometric_enabled || useAuthStore(state => state.isBiometricEnabled);
 
@@ -180,7 +178,7 @@ const BiometricsScreen = () => {
 
           <View style={styles.iconContainer}>
             <FingerScan
-              size={normalize(60)}
+              size={normalize(40)}
               color={isBiometricEnabled ? COLORS.primary : COLORS.secondary}
             />
             {isBiometricEnabled && (
@@ -263,16 +261,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   iconContainer: {
-    borderRadius: 40,
+    borderRadius: 30,
     backgroundColor: "#F5F5F5",
     alignItems: "center",
     justifyContent: "center",
-    padding: 30,
+    padding: 29,
     position: "relative",
   },
   enabledBadge: {
     position: "absolute",
-    top: -5,
+    top: 5,
     right: -5,
     backgroundColor: COLORS.primary,
     paddingHorizontal: 8,
@@ -282,7 +280,7 @@ const styles = StyleSheet.create({
   enabledBadgeText: {
     color: "#FFFFFF",
     fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
+    fontSize: normalize(15),
   },
   buttonContainer: {
     width: "100%",
@@ -312,7 +310,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(18),
   },
   disableButtonText: {
-    color: "#000",
+    color: "#fff",
   },
   secondaryButton: {
     width: "100%",

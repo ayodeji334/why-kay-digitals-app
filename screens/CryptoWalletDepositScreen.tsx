@@ -27,8 +27,6 @@ const CryptoWalletDepositScreen = () => {
     refetch,
   } = useWallets();
 
-  console.log(wallets);
-
   const selectedAssetUuid = route.params?.crypto
     ? route.params?.crypto?.uuid
     : null;
@@ -49,7 +47,6 @@ const CryptoWalletDepositScreen = () => {
     return wallets.find((wallet: any) => wallet.asset_id === selectedAssetUuid);
   }, [wallets, selectedAssetUuid]);
 
-  // Derive asset shape expected by navigation
   const asset = selectedWallet
     ? { uuid: selectedWallet.asset_id, symbol: selectedWallet.symbol }
     : null;

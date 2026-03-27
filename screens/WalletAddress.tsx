@@ -194,11 +194,13 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
           <View style={{ marginVertical: 10 }}>
             <Text style={styles.modalLabel}>Asset Networks</Text>
             <SelectInput
-              options={wallet?.chains.map((chain: any) => ({
-                label: `${chain?.chain} (${chain.chain_type?.toUpperCase()})`,
-                value: chain?.chain,
-              }))}
-              placeholder="Select a network"
+              options={(Array.isArray(wallet?.chains) ? wallet.chains : [])
+                .filter((chain: any) => chain.deposit_enabled)
+                .map((chain: any) => ({
+                  label: `${chain?.chain} (${chain.chain_type?.toUpperCase()})`,
+                  value: chain?.chain,
+                }))}
+              placeholder="Select a network."
               title="Select a network"
               value={selectedNetwork}
               showSearchBox={false}

@@ -16,12 +16,10 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { formatAmount } from "../libs/formatNumber";
-import { TradeIntent } from "./Rates";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import { useAssets } from "../hooks/useAssets";
 import { useFiatBalance } from "../hooks/useFiatBalance";
-import { useAuthStore } from "../stores/authSlice";
-import KYCStatusScreen from "../components/KYCStatusScreen";
+import { TradeIntent } from "../libs/types";
 
 type CryptoBuyScreenParams = {
   CryptoBuy: {
@@ -47,6 +45,7 @@ export default function CryptoBuyScreen() {
   const {
     control,
     handleSubmit,
+    setValue,
     watch,
     formState: { errors },
   } = useForm({
@@ -57,13 +56,6 @@ export default function CryptoBuyScreen() {
     },
     mode: "onChange",
   });
-  // const user = useAuthStore(state => state.user);
-  // const isAlreadyVerified = useMemo(
-  //   () =>
-  //     user?.bvn_verification_status === "VERIFIED" ||
-  //     user?.nin_verification_status === "VERIFIED",
-  //   [user.bvn_verification_status, user?.nin_verification_status],
-  // );
 
   const { assets } = useAssets();
 
@@ -109,10 +101,6 @@ export default function CryptoBuyScreen() {
     });
   };
 
-  // if (!isAlreadyVerified) {
-  //   return <KYCStatusScreen />;
-  // }
-
   const hasInsufficientBalance = useMemo(() => {
     if (!ngnAmount) return false;
     return ngnAmount > fiatBalance;
@@ -124,6 +112,8 @@ export default function CryptoBuyScreen() {
       if (!isNaN(numericAmount)) {
         setDisplayAmount(formatWithCommas(numericAmount.toString()));
       }
+
+      setValue("amount", numericAmount);
     }
   }, [intent?.amount]);
 
@@ -137,6 +127,7 @@ export default function CryptoBuyScreen() {
         <View style={styles.container}>
           <View>
             <View style={{ marginBottom: 15 }}>
+              <Text style={styles.label}>Coin</Text>
               <View style={styles.cryptoRow}>
                 {assetDetails?.logo_url && (
                   <Image
@@ -217,24 +208,6 @@ export default function CryptoBuyScreen() {
                     /$
                   </Text>
                 </View>
-                {/* <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.balance,
-                      { fontFamily: getFontFamily("800") },
-                    ]}
-                  >
-                    {assetDetails?.symbol} Network Fee:
-                  </Text>
-                  <Text style={styles.balance}>
-                    {formatAmount(2, { currency: "USD" })}
-                  </Text>
-                </View> */}
               </View>
               <View style={styles.paymentContainer}>
                 <View
@@ -285,20 +258,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   buttonDisabled: {
-    backgroundColor: "#cccccc",
+    backgroundColor: "#9f9f9fff",
     opacity: 0.6,
   },
   label: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
+    fontFamily: getFontFamily("800"),
     marginBottom: normalize(8),
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: normalize(8),
+    borderColor: "#9f9f9fff",
+    borderRadius: normalize(12),
     paddingHorizontal: normalize(16),
     marginBottom: normalize(10),
     gap: 5,
@@ -311,7 +284,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(19),
+    paddingVertical: normalize(15),
     fontSize: normalize(26),
     fontFamily: getFontFamily("800"),
     color: "#000",
@@ -324,7 +297,7 @@ const styles = StyleSheet.create({
   },
   approx: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     marginBottom: normalize(9),
     color: COLORS.primary,
   },

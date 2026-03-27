@@ -22,8 +22,8 @@ import {
   CableTVIcon,
   TransferIcon,
 } from "../../assets";
-import { TradeIntent } from "../../screens/Rates";
 import { useQueryClient } from "@tanstack/react-query";
+import { TradeIntent } from "../../libs/types";
 
 const ServicesSection = () => {
   const queryClient = useQueryClient();

@@ -67,6 +67,7 @@ export default function PayCableTVSubscriptionScreen() {
     },
     enabled: !!selectedNetwork, // only run when selectedNetwork is truthy
     refetchOnWindowFocus: false,
+    staleTime: 864000000,
   });
 
   const onSubmit = async (values: any) => {

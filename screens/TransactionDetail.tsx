@@ -179,8 +179,7 @@ const TransactionDetailScreen = () => {
             value={transaction?.uuid?.split("-")?.join("")}
             copyable
           />
-          {(transaction?.category === "CRYPTO_DEPOSIT" ||
-            transaction?.category === "CRYPTO_WITHDRAW") && (
+          {transaction?.category === "CRYPTO_DEPOSIT" && (
             <DetailRow
               label="Blockchain Trx ID"
               value={transaction?.meta?.tx_reference}

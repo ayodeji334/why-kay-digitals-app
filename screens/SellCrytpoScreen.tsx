@@ -24,10 +24,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { formatAmount } from "../libs/formatNumber";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
-import { TradeIntent } from "./Rates";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import NoWallet from "../components/NoWallet";
 import CustomLoading from "../components/CustomLoading";
+import { TradeIntent } from "../libs/types";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -57,6 +57,7 @@ export default function CryptoSellScreen() {
     control,
     watch,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -79,7 +80,6 @@ export default function CryptoSellScreen() {
         const res = await apiGet(`/wallets/${selectedAssetUuid}`);
         return res?.data?.data ?? null;
       } catch (error) {
-        console.error("Failed to fetch asset details:", error);
         throw error;
       }
     },
@@ -132,6 +132,8 @@ export default function CryptoSellScreen() {
       if (!isNaN(numericAmount)) {
         setDisplayAmount(formatWithCommas(numericAmount.toString()));
       }
+
+      setValue("amount", numericAmount);
     }
   }, [intent?.amount]);
 
@@ -386,7 +388,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: normalize(8),
+    borderRadius: normalize(12),
     paddingHorizontal: normalize(16),
     marginBottom: normalize(10),
     gap: 5,
@@ -399,7 +401,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(19),
+    paddingVertical: normalize(15),
     fontSize: normalize(26),
     fontFamily: getFontFamily("800"),
     color: "#000",

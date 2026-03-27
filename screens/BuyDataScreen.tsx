@@ -109,6 +109,7 @@ export default function BuyDataScreen() {
     },
     enabled: !!selectedNetwork,
     refetchOnWindowFocus: false,
+    staleTime: 864000000,
   });
 
   const networks = [

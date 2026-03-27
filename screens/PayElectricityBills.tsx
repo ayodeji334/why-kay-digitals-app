@@ -83,6 +83,7 @@ export default function PayElectricityBillsScreen() {
       return res.data?.data || [];
     },
     refetchOnWindowFocus: false,
+    staleTime: 864000000,
   });
 
   const [selectedProviderItems, setSelectedProviderItems] = useState<any[]>([]);

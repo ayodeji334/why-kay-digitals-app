@@ -4,7 +4,7 @@ import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 
 export const BASE_URL = "https://www.ayodejijava.com.ng/v1";
-// export const BASE_URL = "https://1c62-102-89-75-116.ngrok-free.app/v1";
+// export const BASE_URL = "https://5ff1-102-88-55-17.ngrok-free.app/v1";
 
 const badRequestStatusCodes = [400, 403, 404, 422, 500];
 
@@ -14,7 +14,7 @@ let failedRequestsQueue: ((token: string) => void)[] = [];
 export function createAxiosClient(): AxiosInstance {
   const client = axios.create({
     baseURL: BASE_URL,
-    timeout: 50000,
+    timeout: 80000,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -37,6 +37,8 @@ export function createAxiosClient(): AxiosInstance {
       const original = error.config as AxiosRequestConfig & {
         _retry?: boolean;
       };
+
+      console.log(error);
 
       if (error.response?.status === 401 && !original._retry) {
         if (isRefreshing) {
@@ -87,6 +89,7 @@ export function createAxiosClient(): AxiosInstance {
       if (badRequestStatusCodes.includes(error.response?.status)) {
         showError(error.response?.data?.message || "Something went wrong");
       } else {
+        console.group(badRequestStatusCodes);
         showError("Network error. Please check your connection.");
       }
 
