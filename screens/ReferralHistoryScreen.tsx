@@ -19,6 +19,8 @@ import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "../libs/formatDate";
 import CustomLoading from "../components/CustomLoading";
 import useAxios from "../hooks/useAxios";
+import { AxiosError } from "axios";
+import { showError } from "../utlis/toast";
 
 // Types
 interface ReferralItem {
@@ -208,8 +210,13 @@ const ReferralHistoryScreen: React.FC = () => {
     setIsRefreshing(true);
     try {
       await refetch();
-    } catch (error) {
-      console.error("Failed to refresh referrals:", error);
+    } catch (err) {
+      console.error("Failed to refresh referrals:", err);
+      if (err instanceof AxiosError) {
+        showError(
+          err.response?.data?.message || "Something went wrong. Try again.",
+        );
+      }
     } finally {
       setIsRefreshing(false);
     }

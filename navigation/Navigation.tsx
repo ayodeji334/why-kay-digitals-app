@@ -208,11 +208,12 @@ export default function NavigationRoot() {
           ConversionQuote: {
             screen: ConversionQuote,
             options: {
+              gestureEnabled: true,
               headerShown: true,
               header: () => (
                 <CustomHeader
                   showTitle={true}
-                  showBack={false}
+                  showBack={true}
                   title="Conversion Quote Detail"
                 />
               ),

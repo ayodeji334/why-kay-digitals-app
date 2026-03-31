@@ -95,6 +95,8 @@ const TransactionDetailScreen = () => {
     } catch (error) {}
   };
 
+  console.log(transaction);
+
   const getDirectionColor = () => {
     if (!transaction?.direction) return "#000";
     return transaction?.direction.toLowerCase() === "debit" ? "#000" : "#000";
@@ -117,7 +119,7 @@ const TransactionDetailScreen = () => {
             {transaction?.medium?.toUpperCase() === "CRYPTO"
               ? transaction?.meta?.amount +
                 (transaction?.meta?.asset_symbol ?? "")
-              : formatAmount(transaction?.amount, {
+              : formatAmount(transaction?.net_amount, {
                   currency: transaction?.currency || "NGN",
                   decimalPlace: 2,
                 })}
@@ -201,14 +203,18 @@ const TransactionDetailScreen = () => {
             }
             color={getDirectionColor()}
           />
-          <DetailRow
-            label="Fee"
-            value={formatAmount(transaction?.fee, {
-              currency:
-                transaction?.medium?.toUpperCase() === "CRYPTO" ? "USD" : "NGN",
-              decimalPlace: 2,
-            })}
-          />
+          {transaction?.category === "CRYPTO_SELL" ? null : (
+            <DetailRow
+              label="Fee"
+              value={formatAmount(transaction?.fee, {
+                currency:
+                  transaction?.medium?.toUpperCase() === "CRYPTO"
+                    ? "USD"
+                    : "NGN",
+                decimalPlace: 4,
+              })}
+            />
+          )}
           <DetailRow
             label="Net Amount"
             value={formatAmount(transaction?.net_amount, {

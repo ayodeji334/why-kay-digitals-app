@@ -8,11 +8,12 @@ import CustomLoading from "../CustomLoading";
 import { COLORS } from "../../constants/colors";
 import { getFontFamily, normalize } from "../../constants/settings";
 import useAxios from "../../hooks/useAxios";
-import { showSuccess } from "../../utlis/toast";
+import { showError, showSuccess } from "../../utlis/toast";
 import InfoCard from "../InfoCard";
 import { InfoCircle } from "iconsax-react-nativejs";
 import { useAuthStore } from "../../stores/authSlice";
 import { useNavigation } from "@react-navigation/native";
+import { AxiosError } from "axios";
 
 const ninSchema = yup.object({
   nin: yup
@@ -53,6 +54,12 @@ const NINVerificationForm = () => {
       reset();
 
       showSuccess("NIN verification successful");
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        showError(
+          err.response?.data?.message || "Something went wrong. Try again.",
+        );
+      }
     } finally {
       setLoading(false);
     }

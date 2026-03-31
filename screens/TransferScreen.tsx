@@ -57,9 +57,8 @@ export default function TransferScreen() {
   const [pendingPayload, setPendingPayload] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const {
-    data: { wallets = [], totalAssetValueBalance = 0 },
-  } = useWallets();
+  const { data: { wallets = [], totalAssetValueBalance = 0 } = {} } =
+    useWallets();
 
   const [displayAmount, setDisplayAmount] = useState("");
 

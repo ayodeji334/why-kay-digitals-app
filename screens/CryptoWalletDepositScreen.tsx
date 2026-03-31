@@ -16,6 +16,8 @@ import { useWallets } from "../hooks/useWallet";
 import { ArrowDown, ArrowUp, Send } from "iconsax-react-nativejs";
 import CustomIcon from "../components/CustomIcon";
 import { RefreshIcon } from "../assets";
+import { AxiosError } from "axios";
+import { showError } from "../utlis/toast";
 
 const CryptoWalletDepositScreen = () => {
   const route: any = useRoute();
@@ -35,8 +37,13 @@ const CryptoWalletDepositScreen = () => {
     try {
       setRefreshing(true);
       await refetch();
-    } catch (error) {
-      console.error("Failed to refresh wallets:", error);
+    } catch (err) {
+      console.error("Failed to refresh wallets:", err);
+      if (err instanceof AxiosError) {
+        showError(
+          err.response?.data?.message || "Something went wrong. Try again.",
+        );
+      }
     } finally {
       setRefreshing(false);
     }

@@ -34,7 +34,6 @@ const CryptoWalletScreen = () => {
   const { assets, isLoading, isRefetching, refetch } = useAssets();
   const { data: { wallets = [] } = {}, refetch: refetchWallets } = useWallets();
 
-  // Merge: wallets first (have balance), then assets not yet in any wallet
   const mergedList = useMemo(() => {
     const walletAssetIds = new Set((wallets ?? []).map((w: any) => w.asset_id));
 

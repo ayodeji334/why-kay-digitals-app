@@ -18,6 +18,8 @@ import { useState } from "react";
 import CustomLoading from "../components/CustomLoading";
 import useAxios from "../hooks/useAxios";
 import { useQueryClient } from "@tanstack/react-query";
+import { showError } from "../utlis/toast";
+import { AxiosError } from "axios";
 
 type FormData = {
   pin: string;
@@ -65,6 +67,10 @@ export default function ConfirmTransactionScreen() {
         navigation.replace("PendingSwap", { transaction });
       } else {
         navigation.replace("TransactionDetail", { transaction });
+      }
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        showError(err.response?.data?.message || "Something went wrong");
       }
     } finally {
       setIsLoading(false);

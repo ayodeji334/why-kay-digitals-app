@@ -88,23 +88,75 @@ export default function CryptoSellScreen() {
 
   const amount = watch("amount");
 
-  const { assetValueEquivalent, ngnAmount } = useMemo(() => {
-    if (!isNaN(amount) && assetDetails) {
+  const { assetValueEquivalent, ngnAmount, feeBreakdown } = useMemo(() => {
+    if (!isNaN(amount) && assetDetails && amount > 0) {
       const marketValue = parseFloat(assetDetails.market_current_value ?? "0");
       const sellRate = parseFloat(assetDetails.sell_rate ?? "0");
+      const symbol = assetDetails.symbol ?? "";
+
+      const stablecoins = ["USDT", "USDC"];
+      const isStablecoin = stablecoins.includes(symbol.toUpperCase());
+
       let cryptoAmount = "0.00000000";
       let ngn = "0.00";
+      let feeBreakdown = null;
+
       if (marketValue > 0) {
-        cryptoAmount = (amount / marketValue).toFixed(8);
+        const coinAmount = amount / marketValue;
+        const platformFeeUsd = isStablecoin ? 0 : amount * 0.001; // 0.1%
+        const platformFeeCoin = isStablecoin ? 0 : coinAmount * 0.001;
+        const netAmountUsd = amount - platformFeeUsd;
+        const netCoinAmount = coinAmount - platformFeeCoin;
+
+        cryptoAmount = coinAmount.toFixed(8);
+
+        if (sellRate > 0) {
+          ngn = formatAmount(netAmountUsd * sellRate);
+        }
+
+        feeBreakdown = {
+          grossUsd: amount,
+          coinAmount: coinAmount.toFixed(8),
+          platformFeeUsd: platformFeeUsd.toFixed(2),
+          platformFeeCoin: platformFeeCoin.toFixed(8),
+          netAmountUsd: netAmountUsd.toFixed(2),
+          netCoinAmount: netCoinAmount.toFixed(8),
+          netNgn: sellRate > 0 ? formatAmount(netAmountUsd * sellRate) : "0.00",
+          isStablecoin,
+        };
       }
-      if (sellRate > 0) {
-        const nairaValue = amount * sellRate;
-        ngn = `${formatAmount(nairaValue)}`;
-      }
-      return { assetValueEquivalent: cryptoAmount, ngnAmount: ngn };
+
+      return {
+        assetValueEquivalent: cryptoAmount,
+        ngnAmount: ngn,
+        feeBreakdown,
+      };
     }
-    return { assetValueEquivalent: "0.00000000", ngnAmount: "0.00" };
+
+    return {
+      assetValueEquivalent: "0.00000000",
+      ngnAmount: "0.00",
+      feeBreakdown: null,
+    };
   }, [amount, assetDetails]);
+
+  // const { assetValueEquivalent, ngnAmount } = useMemo(() => {
+  //   if (!isNaN(amount) && assetDetails) {
+  //     const marketValue = parseFloat(assetDetails.market_current_value ?? "0");
+  //     const sellRate = parseFloat(assetDetails.sell_rate ?? "0");
+  //     let cryptoAmount = "0.00000000";
+  //     let ngn = "0.00";
+  //     if (marketValue > 0) {
+  //       cryptoAmount = (amount / marketValue).toFixed(8);
+  //     }
+  //     if (sellRate > 0) {
+  //       const nairaValue = amount * sellRate;
+  //       ngn = `${formatAmount(nairaValue)}`;
+  //     }
+  //     return { assetValueEquivalent: cryptoAmount, ngnAmount: ngn };
+  //   }
+  //   return { assetValueEquivalent: "0.00000000", ngnAmount: "0.00" };
+  // }, [amount, assetDetails]);
 
   const onSubmit = async (values: any) => {
     const payload = {
@@ -212,7 +264,244 @@ export default function CryptoSellScreen() {
                 <Text style={styles.approx}>
                   Approximately {assetValueEquivalent} {assetDetails?.symbol}
                 </Text>
+
                 <View
+                  style={{
+                    marginVertical: 10,
+                    backgroundColor: "#EFF7EC",
+                    padding: 10,
+                    borderRadius: 10,
+                    gap: 8,
+                  }}
+                >
+                  <Text style={[styles.note, { color: "black" }]}>
+                    Wallet Balance, Exchange Rate & Fee Breakdown
+                  </Text>
+
+                  {/* Wallet balance */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.balance,
+                        { fontFamily: getFontFamily("800") },
+                      ]}
+                    >
+                      Wallet Balance:
+                    </Text>
+                    <Text style={styles.balance}>
+                      {assetDetails?.balance || 0} {assetDetails?.symbol}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.balance,
+                        { fontFamily: getFontFamily("800") },
+                      ]}
+                    >
+                      Balance in USD:
+                    </Text>
+                    <Text style={styles.balance}>
+                      {formatAmount(
+                        Number(assetDetails?.balance) *
+                          Number(assetDetails?.market_current_value) || 0,
+                        { currency: "USD" },
+                      )}
+                    </Text>
+                  </View>
+
+                  {/* Divider */}
+                  <View style={{ height: 1, backgroundColor: "#d4edda" }} />
+
+                  {/* Rate */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.balance,
+                        { fontFamily: getFontFamily("800") },
+                      ]}
+                    >
+                      Sell Rate:
+                    </Text>
+                    <Text style={styles.balance}>
+                      {formatAmount(assetDetails?.sell_rate ?? 0)}/$
+                    </Text>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.balance,
+                        { fontFamily: getFontFamily("800") },
+                      ]}
+                    >
+                      Market Price:
+                    </Text>
+                    <Text style={styles.balance}>
+                      {formatAmount(
+                        Number(assetDetails?.market_current_value) || 0,
+                        { currency: "USD" },
+                      )}
+                      /{assetDetails?.symbol}
+                    </Text>
+                  </View>
+
+                  {/* Fee breakdown — only show when amount is entered */}
+                  {feeBreakdown && amount > 0 && (
+                    <>
+                      <View style={{ height: 1, backgroundColor: "#d4edda" }} />
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.balance,
+                            { fontFamily: getFontFamily("800") },
+                          ]}
+                        >
+                          You Sell:
+                        </Text>
+                        <Text style={styles.balance}>
+                          {feeBreakdown.coinAmount} {assetDetails?.symbol} (≈{" "}
+                          {formatAmount(feeBreakdown.grossUsd, {
+                            currency: "USD",
+                          })}
+                          )
+                        </Text>
+                      </View>
+
+                      {/* {!feeBreakdown.isStablecoin && (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.balance,
+                              {
+                                fontFamily: getFontFamily("800"),
+                                color: "#e05c00",
+                              },
+                            ]}
+                          >
+                            Platform Fee (0.1%):
+                          </Text>
+                          <Text style={[styles.balance, { color: "#e05c00" }]}>
+                            -{feeBreakdown.platformFeeCoin}{" "}
+                            {assetDetails?.symbol} (≈ $
+                            {feeBreakdown.platformFeeUsd})
+                          </Text>
+                        </View>
+                      )} */}
+
+                      {/* {feeBreakdown.isStablecoin && (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.balance,
+                              {
+                                fontFamily: getFontFamily("800"),
+                                color: "#2e7d32",
+                              },
+                            ]}
+                          >
+                            Operation Fee:
+                          </Text>
+                          <Text style={[styles.balance, { color: "#2e7d32" }]}>
+                            No fee for {assetDetails?.symbol}
+                          </Text>
+                        </View>
+                      )} */}
+
+                      <View style={{ height: 1, backgroundColor: "#d4edda" }} />
+
+                      {/* <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.balance,
+                            { fontFamily: getFontFamily("800") },
+                          ]}
+                        >
+                          Net Amount (USD):
+                        </Text>
+                        <Text
+                          style={[
+                            styles.balance,
+                            { fontFamily: getFontFamily("700") },
+                          ]}
+                        >
+                          {formatAmount(Number(feeBreakdown.netAmountUsd), {
+                            currency: "USD",
+                          })}
+                        </Text>
+                      </View> */}
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.balance,
+                            { fontFamily: getFontFamily("800") },
+                          ]}
+                        >
+                          You'll Receive (₦):
+                        </Text>
+                        <Text
+                          style={[
+                            styles.balance,
+                            {
+                              fontFamily: getFontFamily("800"),
+                            },
+                          ]}
+                        >
+                          {feeBreakdown.netNgn}
+                        </Text>
+                      </View>
+                    </>
+                  )}
+                </View>
+                {/* <View
                   style={{
                     marginVertical: 10,
                     backgroundColor: "#EFF7EC",
@@ -286,8 +575,8 @@ export default function CryptoSellScreen() {
                       /$
                     </Text>
                   </View>
-                </View>
-                <View
+                </View> */}
+                {/* <View
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
@@ -303,7 +592,7 @@ export default function CryptoSellScreen() {
                     /$
                   </Text>
                   <Text style={styles.min}>Network Fee: $0.00</Text>
-                </View>
+                </View> */}
 
                 <View style={styles.paymentContainer}>
                   <View
@@ -408,8 +697,8 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "red",
-    fontSize: normalize(14),
-    fontFamily: getFontFamily("400"),
+    fontSize: normalize(19),
+    fontFamily: getFontFamily("800"),
     marginBottom: normalize(10),
   },
   approx: {

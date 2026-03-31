@@ -19,8 +19,9 @@ import { NoResultIcon } from "../assets";
 import { SelectInput } from "../components/SelectInputField";
 import CustomModal from "../components/CustomModal";
 import DatePicker from "../components/DatePicker";
-import { showSuccess } from "../utlis/toast";
+import { showError, showSuccess } from "../utlis/toast";
 import useAxios from "../hooks/useAxios";
+import { AxiosError } from "axios";
 
 export const EmptyTransactionState: React.FC = () => (
   <View style={styles.emptyState}>
@@ -112,6 +113,11 @@ const TransactionHistoryScreen: React.FC = () => {
       await apiGet("/transactions/user/account-statement");
       showSuccess("Account Statement sent to your email");
     } catch (err) {
+      if (err instanceof AxiosError) {
+        showError(
+          err.response?.data?.message || "Something went wrong. Try again.",
+        );
+      }
       console.error(err);
     }
   };

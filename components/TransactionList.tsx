@@ -146,8 +146,6 @@ const TransactionSectionList: React.FC<TransactionSectionListProps> = ({
     <SectionList
       sections={groupedTransactions}
       keyExtractor={item => {
-        console.log(item?.uuid);
-
         return item?.uuid;
       }}
       renderItem={({ item }) =>

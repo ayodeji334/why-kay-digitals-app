@@ -68,7 +68,6 @@ export default function SendScreen() {
   const selectedAssetUuid = intent?.assetId ?? "";
   const scannedValueRef = useRef<string | null>(null);
   const isProcessingRef = useRef(false);
-  // const [btcEquivalent, setBtcEquivalent] = useState("0.00000000");
   const [displayAmount, setDisplayAmount] = useState("");
   const [showScanner, setShowScanner] = useState(false);
 
@@ -244,25 +243,6 @@ export default function SendScreen() {
     }
   }, [networkOptions, setValue]);
 
-  // const updateConversion = useCallback(
-  //   (usdAmount: number) => {
-  //     if (!isNaN(usdAmount) && marketPrice > 0) {
-  //       setBtcEquivalent((usdAmount / marketPrice).toFixed(8));
-  //     } else {
-  //       setBtcEquivalent("0.00000000");
-  //     }
-  //   },
-  //   [marketPrice],
-  // );
-
-  // useEffect(() => {
-  //   if (amount && amount > 0) {
-  //     updateConversion(amount);
-  //   } else {
-  //     setBtcEquivalent("0.00000000");
-  //   }
-  // }, [amount, updateConversion]);
-
   const hasInsufficientBalance = useMemo(() => {
     if (!amount || !assetDetails) return false;
     return amount > balanceInUsd;
@@ -374,10 +354,6 @@ export default function SendScreen() {
                   <Text style={styles.error}>{errors.amount.message}</Text>
                 )}
 
-                {/* <Text style={styles.approx}>
-                  Approximately {btcEquivalent} {symbol}
-                </Text> */}
-
                 {/* FIX: removed stray `{}` */}
                 <Text style={styles.walletBalance}>
                   Wallet Balance: {balance} {symbol}
@@ -442,7 +418,7 @@ export default function SendScreen() {
                   </View>
 
                   <View style={styles.feeRow}>
-                    <Text style={styles.feeLabel}>Platform Fee</Text>
+                    <Text style={styles.feeLabel}>Operation Fee</Text>
                     <Text style={styles.feeValue}>
                       {feeBreakdown.platformFeeCoin} {symbol} (≈ $1.00)
                     </Text>

@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   View,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
 import CustomLoading from "../components/CustomLoading";
 import CustomModal from "../components/CustomModal";
@@ -22,14 +23,49 @@ export default function NotificationsScreen() {
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
   const queryClient = useQueryClient();
 
-  const { data, isLoading, isFetching, refetch } = useQuery({
+  const fetchNotifications = async ({ pageParam = 1 }) => {
+    const res = await apiGet("/notifications/user", {
+      params: { page: pageParam },
+    });
+
+    return {
+      data: res.data?.data?.notifications,
+      pagination: res.data?.data?.pagination,
+    };
+  };
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isRefetching,
+    refetch,
+  } = useInfiniteQuery({
     queryKey: ["notifications"],
-    queryFn: async () => {
-      const res = await apiGet("/notifications/user");
-      return res.data;
+    queryFn: fetchNotifications,
+    initialPageParam: 1,
+    getNextPageParam: lastPage => {
+      return lastPage?.pagination?.current_page <
+        lastPage?.pagination?.last_page
+        ? lastPage.pagination?.current_page + 1
+        : undefined;
     },
-    staleTime: 2000,
   });
+
+  const allNotifications = useMemo(
+    () => data?.pages.flatMap(page => page.data) ?? [],
+    [data?.pages],
+  );
+
+  const filteredNotifications = useMemo(() => {
+    return allNotifications.filter(item => {
+      if (activeTab === "unread") return !item.is_read;
+      if (activeTab === "read") return item.is_read;
+      return true;
+    });
+  }, [allNotifications, activeTab]);
 
   const handleNotificationClick = async (notification: any) => {
     setSelectedNotification(notification);
@@ -46,16 +82,6 @@ export default function NotificationsScreen() {
     }
   };
 
-  const filteredNotifications = useMemo(() => {
-    if (!data) return [];
-
-    return data.filter((item: any) => {
-      if (activeTab === "unread") return !item.is_read;
-      if (activeTab === "read") return item.is_read;
-      return true;
-    });
-  }, [data, activeTab]);
-
   const renderItem = ({ item }: { item: any }) => {
     const isUnread = !item.is_read;
 
@@ -69,11 +95,7 @@ export default function NotificationsScreen() {
           <View style={styles.assetInfo}>
             <Text style={styles.assetName}>{item.title}</Text>
             <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 1,
-              }}
+              style={{ flexDirection: "row", alignItems: "center", gap: 1 }}
             >
               {isUnread && <View style={styles.unreadDot} />}
               <Text style={{ fontSize: 12, fontFamily: getFontFamily("800") }}>
@@ -89,15 +111,27 @@ export default function NotificationsScreen() {
     );
   };
 
+  const renderFooter = () => {
+    if (!isFetchingNextPage) return null;
+    return (
+      <ActivityIndicator
+        size="small"
+        color={COLORS.primary}
+        style={{ marginVertical: 12 }}
+      />
+    );
+  };
+
   return (
     <SafeAreaView edges={["bottom"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={"#fff"} />
+
       <View style={styles.tabContainer}>
-        {["all", "unread", "read"].map(title => (
+        {(["all", "unread", "read"] as const).map(title => (
           <TouchableOpacity
             key={title}
             style={[styles.tabButton, activeTab === title && styles.activeTab]}
-            onPress={() => setActiveTab(title as any)}
+            onPress={() => setActiveTab(title)}
           >
             <Text
               style={[
@@ -112,21 +146,27 @@ export default function NotificationsScreen() {
       </View>
 
       <View style={styles.scrollContainer}>
-        {filteredNotifications?.length ? (
-          <FlatList
-            data={filteredNotifications}
-            keyExtractor={item => item.id.toString()}
-            renderItem={renderItem}
-            refreshing={isFetching}
-            onRefresh={refetch}
-          />
-        ) : (
+        {!isLoading && filteredNotifications.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateText}>No notifications</Text>
             <Text style={styles.emptyStateSubtext}>You're all caught up!</Text>
           </View>
+        ) : (
+          <FlatList
+            data={filteredNotifications}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderItem}
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            onEndReached={() =>
+              hasNextPage && !isFetchingNextPage && fetchNextPage()
+            }
+            onEndReachedThreshold={0.4}
+            ListFooterComponent={renderFooter}
+          />
         )}
       </View>
+
       <CustomModal
         height={300}
         visible={!!selectedNotification}
@@ -146,6 +186,7 @@ export default function NotificationsScreen() {
           </View>
         )}
       </CustomModal>
+
       <CustomLoading loading={isLoading} />
     </SafeAreaView>
   );

@@ -22,6 +22,7 @@ import { useWallets } from "../hooks/useWallet";
 import { useAssets } from "../hooks/useAssets";
 import useAxios from "../hooks/useAxios";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { showError } from "../utlis/toast";
 
 export const formatWithCommas = (value: string) => {
   if (!value) return "";
@@ -243,8 +244,8 @@ export default function CryptoSwapScreen() {
         quote: response?.data?.data ?? {},
       });
     },
-    onError: error => {
-      console.error("Swap failed:", error);
+    onError: (error: any) => {
+      showError(error.response?.data?.message ?? "Something went wrong");
     },
   });
 
@@ -377,7 +378,9 @@ export default function CryptoSwapScreen() {
               onPress={handleSubmit(onSubmit)}
               disabled={!canSubmit || swapMutation.isPending}
             >
-              <Text style={styles.buttonText}>Continue</Text>
+              <Text style={styles.buttonText}>
+                {swapMutation.isPending ? "Please Wait" : "Continue"}
+              </Text>
             </TouchableOpacity>
 
             <View style={{ paddingVertical: 10 }}>

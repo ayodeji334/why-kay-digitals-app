@@ -10,6 +10,7 @@ import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 import { CloseCircle, TickCircle } from "iconsax-react-nativejs";
 import IdentityVerifying from "../components/IdentityVerifying";
+import { AxiosError } from "axios";
 
 export default function SelfieConfirmationScreen() {
   const route = useRoute();
@@ -58,6 +59,11 @@ export default function SelfieConfirmationScreen() {
       setUser(response.data.data?.user);
     } catch (err: any) {
       setStatus("error");
+      if (err instanceof AxiosError) {
+        showError(
+          err.response?.data?.message || "Something went wrong. Try again.",
+        );
+      }
     } finally {
       setIsLoading(false);
     }

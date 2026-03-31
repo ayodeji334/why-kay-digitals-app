@@ -20,6 +20,7 @@ import { useNavigation } from "@react-navigation/native";
 import CustomIcon from "../components/CustomIcon";
 import { WalletIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
+import { AxiosError } from "axios";
 
 interface Wallet {
   id: string;
@@ -93,8 +94,12 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
     if (onNetworkChange) {
       try {
         await onNetworkChange(network);
-      } catch {
-        Alert.alert("Error", "Failed to change network");
+      } catch (err) {
+        if (err instanceof AxiosError) {
+          showError(
+            err.response?.data?.message || "Something went wrong. Try again.",
+          );
+        }
       }
     }
   };
