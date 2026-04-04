@@ -117,8 +117,15 @@ const TransactionDetailScreen = () => {
             style={styles.amount}
           >
             {transaction?.medium?.toUpperCase() === "CRYPTO"
-              ? transaction?.meta?.amount +
-                (transaction?.meta?.asset_symbol ?? "")
+              ? ["failed", "pending"].includes(
+                  transaction.status?.toLowerCase(),
+                )
+                ? formatAmount(transaction?.meta?.amount_in_usd, {
+                    currency: transaction?.currency || "USD",
+                    decimalPlace: 2,
+                  })
+                : transaction?.meta?.amount +
+                  (transaction?.meta?.asset_symbol ?? "")
               : formatAmount(transaction?.amount, {
                   currency: transaction?.currency || "NGN",
                   decimalPlace: 2,
