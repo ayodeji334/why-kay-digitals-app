@@ -128,9 +128,8 @@ const BankTransferScreen = () => {
               Transfer to your virtual account
             </Text>
             <Text style={styles.instructionText}>
-              Make a bank transfer to any of these account number and your
-              Whykay Digitals Wallet will be funded immediately in your fiat
-              wallet.
+              Make a bank transfer to the account number below and your fund
+              will be creddited immediately into your account.
             </Text>
           </View>
 
@@ -190,13 +189,11 @@ const BankTransferScreen = () => {
             IconComponent={<InfoCircle size={18} />}
             title="Important Notes:"
             description={[
+              "Deposits of ₦10,000 and above will attract a ₦50 stamp duty charge in line with government regulations.",
               "Transfers typically reflect within 5-10 minutes",
-              "Transfer exactly the amount shown above",
-              "Use only the account details provided above",
-              "This virtual account is dedicated to your profile",
-              "A deposit fee will be deducted from your wallet balance for each virtual account deposit",
-              "You are only allowed to deposit Naira using your verified name",
-              "If you send money with a different name, the funds will be held for 5 business days for review before a refund is processed",
+              "A transaction fee will be deducted from your wallet balance for each virtual account deposit",
+              "If payment is made using a name that does not match your registered details, the funds will be held for 5 business days for review before a refund is processed.",
+              "Deposits into your account attract a processing fee of 1% of the transaction amount, capped at a maximum of ₦2,000 for transaction of ₦200,000 and above",
             ]}
           />
         </ScrollView>

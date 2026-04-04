@@ -124,30 +124,6 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                     error ? styles.errorBorder : null,
                   ]}
                 >
-                  {/* <TextInput
-                    ref={el => {
-                      if (el) inputs.current[index] = el;
-                    }}
-                    style={styles.hiddenInput}
-                    keyboardType="number-pad"
-                    maxLength={boxes}
-                    value={otpArray[index] || ""}
-                    onChangeText={text => handleChange(text, index)}
-                    onKeyPress={e => handleKeyPress(e, index)}
-                    textContentType="oneTimeCode"
-                    secureTextEntry={false}
-                    selectionColor={COLORS.primary}
-                    caretHidden={false}
-                    autoCapitalize="none"
-                    maxFontSizeMultiplier={0}
-                    autoCorrect={false}
-                    contextMenuHidden={false}
-                    selection={
-                      otpArray[index]
-                        ? { start: 1, end: 1 }
-                        : { start: 0, end: 0 }
-                    }
-                  /> */}
                   <TextInput
                     ref={el => {
                       if (el) inputs.current[index] = el;
@@ -161,7 +137,7 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                     textContentType="oneTimeCode"
                     secureTextEntry={false}
                     selectionColor={COLORS.primary}
-                    caretHidden={true}
+                    // caretHidden={true}
                     autoCapitalize="none"
                     maxFontSizeMultiplier={0}
                     autoCorrect={false}
@@ -197,7 +173,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flexDirection: "row",
-    gap: 10,
+    gap: 16,
     alignItems: "center",
     justifyContent: "flex-start",
   },
@@ -232,7 +208,7 @@ const styles = StyleSheet.create({
   },
   boxText: {
     position: "absolute",
-    fontSize: 26,
+    fontSize: normalize(28),
     fontFamily: getFontFamily("800"),
     color: "black",
     textAlign: "center",
@@ -241,7 +217,7 @@ const styles = StyleSheet.create({
     pointerEvents: "none",
   },
   placeholder: {
-    fontSize: 26,
+    fontSize: normalize(28),
     color: "#ccc",
     fontFamily: getFontFamily("800"),
     alignContent: "center",

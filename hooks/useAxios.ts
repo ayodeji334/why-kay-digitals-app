@@ -22,7 +22,7 @@ interface UseAxiosReturn {
     data?: any,
     config?: AxiosRequestConfig,
   ) => Promise<AxiosResponse<T>>;
-  delete: <T = any>(
+  apiDelete: <T = any>(
     url: string,
     config?: AxiosRequestConfig,
   ) => Promise<AxiosResponse<T>>;
@@ -43,7 +43,7 @@ export default function useAxios(): UseAxiosReturn {
     post: client.post,
     put: client.put,
     patch: client.patch,
-    delete: client.delete,
+    apiDelete: client.delete,
     client,
   };
 }

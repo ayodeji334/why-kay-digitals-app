@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import TextInputField from "../TextInputField";
 import PasswordInputField from "../PaswordInputField";
 import { COLORS } from "../../constants/colors";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { showError } from "../../utlis/toast";
@@ -78,6 +78,11 @@ const LoginForm: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useFocusEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["banks"] });
+    queryClient.invalidateQueries({ queryKey: ["supported-pairs"] });
+  });
 
   return (
     <View style={styles.container}>

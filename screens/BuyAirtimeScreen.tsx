@@ -20,6 +20,9 @@ import TextInputField from "../components/TextInputField";
 import { formatAmount } from "../libs/formatNumber";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
+import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import useAxios from "../hooks/useAxios";
 
 const schema = yup.object({
   phone: yup
@@ -50,6 +53,9 @@ export default function BuyAirtimeScreen() {
   const [loading, setLoading] = useState(false);
   const [saveBeneficiary, setSaveBeneficiary] = useState(false);
   const navigation: any = useNavigation();
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState<string | null>(
+    null,
+  );
   const {
     control,
     handleSubmit,
@@ -60,6 +66,8 @@ export default function BuyAirtimeScreen() {
     resolver: yupResolver(schema),
     mode: "onChange",
   });
+
+  const { apiGet, apiDelete } = useAxios();
 
   const selectedNetwork = watch("network");
   const amount = watch("amount");
@@ -75,6 +83,7 @@ export default function BuyAirtimeScreen() {
         amount: parseFloat(values.amount),
         type: "AIRTIME",
         biller_name: values.network,
+        network: selectedNetwork,
         save_as_beneficiary: saveBeneficiary,
         url: "/bills/buy-airtime",
       };
@@ -106,6 +115,34 @@ export default function BuyAirtimeScreen() {
     },
   ];
 
+  const {
+    data,
+    isLoading: isLoadingSavedData,
+    isError,
+    refetch,
+    isRefetching,
+  } = useQuery({
+    queryKey: ["saved-beneficiaries-airtime"],
+    queryFn: async () => {
+      const res = await apiGet("/beneficiaries/type", {
+        params: { type: "airtime" },
+      });
+      return res?.data?.data || [];
+    },
+  });
+
+  const { mutate: deleteAll, isPending: deleting } = useMutation({
+    mutationFn: async () => {
+      return apiDelete("/beneficiaries/type", {
+        params: { type: "airtime" },
+      });
+    },
+    onSuccess: () => {
+      refetch();
+      setSelectedBeneficiary(null);
+    },
+  });
+
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -119,6 +156,24 @@ export default function BuyAirtimeScreen() {
           placeholder="Phone Number"
           label="Phone Number"
         />
+
+        <View style={{ marginBottom: 10 }}>
+          <SavedBeneficiaries
+            onRefetch={refetch}
+            data={data ?? []}
+            isLoading={isLoadingSavedData}
+            isRefetching={isRefetching}
+            isError={isError}
+            refetch={refetch}
+            onSelect={data => {
+              setValue("phone", data?.identifier);
+              setValue("network", data?.meta?.network);
+            }}
+            selectedBeneficiary={selectedBeneficiary}
+            onDeleteAll={deleteAll}
+            deleting={deleting}
+          />
+        </View>
 
         <View style={{ marginBottom: 20 }}>
           <Text style={styles.subHeader}>Select Network Provider</Text>
@@ -239,7 +294,7 @@ const styles = StyleSheet.create({
   },
   subHeader: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     marginBottom: 12,
     color: "#1A1A1A",
   },

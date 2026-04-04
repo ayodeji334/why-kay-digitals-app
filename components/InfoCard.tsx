@@ -16,7 +16,7 @@ interface InfoCardProps {
   description: string | string[];
   buttonText?: string;
   onButtonPress?: () => void;
-  IconComponent: React.JSX.Element;
+  IconComponent?: React.JSX.Element;
   iconColor?: string;
   iconSize?: number;
   buttonWidth?: DimensionValue;

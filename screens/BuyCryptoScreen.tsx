@@ -20,6 +20,8 @@ import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import { useAssets } from "../hooks/useAssets";
 import { useFiatBalance } from "../hooks/useFiatBalance";
 import { TradeIntent } from "../libs/types";
+import { showError } from "../utlis/toast";
+import useAxios from "../hooks/useAxios";
 
 type CryptoBuyScreenParams = {
   CryptoBuy: {
@@ -31,23 +33,60 @@ const schema = Yup.object().shape({
   asset_id: Yup.string().required("Select the crypto you want to convert from"),
   amount: Yup.number()
     .typeError("Enter a valid amount")
-    .moreThan(0, "Must be more than 0")
+    .min(1, "The amount is too small. The minimum is 6 USD")
     .required("Amount is required"),
 });
 
+function calculateFeeBreakdown(
+  amount: number,
+  marketPrice: number,
+  buyRate: number,
+  symbol: string,
+) {
+  const STABLECOINS = ["USDT", "USDC"];
+  const isStablecoin = STABLECOINS.includes(symbol.toUpperCase());
+
+  const coinAmount = amount / marketPrice;
+  const platformFeeUsd = isStablecoin ? 0 : amount * 0.001;
+  const platformFeeCoin = isStablecoin ? 0 : coinAmount * 0.001;
+  const totalCostUsd = amount + platformFeeUsd;
+  const totalCostNgn = buyRate > 0 ? totalCostUsd * buyRate : 0;
+
+  return {
+    assetValueEquivalent: coinAmount.toFixed(8),
+    ngnAmount: buyRate > 0 ? formatAmount(totalCostNgn) : "0.00",
+    feeBreakdown: {
+      grossUsd: amount,
+      coinAmount: coinAmount.toFixed(8),
+      platformFeeUsd: platformFeeUsd.toFixed(2),
+      platformFeeCoin: platformFeeCoin.toFixed(8),
+      totalCostUsd: totalCostUsd.toFixed(2),
+      totalCostNgn,
+      isStablecoin,
+      currentBuyRate: buyRate,
+      marketCurrentPrice: marketPrice,
+    },
+    symbol,
+  };
+}
+
 export default function CryptoBuyScreen() {
+  const { apiGet } = useAxios();
   const route = useRoute<RouteProp<CryptoBuyScreenParams, "CryptoBuy">>();
   const { intent } = route.params;
   const navigation: any = useNavigation();
   const selectedAssetUuid = intent.assetId ?? "";
   const [displayAmount, setDisplayAmount] = useState("");
   const { fiatBalance } = useFiatBalance();
+  const [feeBreakdown, setFeeBreakdown] = useState<any>(null);
+  const [ngnAmount, setNgnAmount] = useState("0.00");
+
   const {
     control,
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -67,76 +106,67 @@ export default function CryptoBuyScreen() {
     [assets],
   );
 
+  const marketPrice =
+    feeBreakdown?.currentMarketPrice ?? assetDetails?.market_current_value ?? 0;
   const amount = watch("amount");
 
-  const { ngnAmount, feeBreakdown } = useMemo(() => {
-    if (!isNaN(amount) && assetDetails && amount > 0) {
-      const marketValue = parseFloat(assetDetails.market_current_value ?? "0");
-      const buyRate = parseFloat(
-        assetDetails.buy_rate ?? assetDetails.latest_buy_rate ?? "0",
-      );
-      const symbol = assetDetails.symbol ?? "";
+  const onSubmit = async (values: any) => {
+    try {
+      const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
+      const latestRates = res?.data?.asset ?? null;
 
-      const stablecoins = ["USDT", "USDC"];
-      const isStablecoin = stablecoins.includes(symbol.toUpperCase());
-
-      let cryptoAmount = "0.00000000";
-      let ngn = "0.00";
-      let feeBreakdown = null;
-
-      if (marketValue > 0) {
-        const coinAmount = amount / marketValue;
-        const platformFeeUsd = isStablecoin ? 0 : amount * 0.001;
-        const platformFeeCoin = isStablecoin ? 0 : coinAmount * 0.001;
-        const totalCostUsd = amount + platformFeeUsd; // buying costs more
-        const totalCostNgn = buyRate > 0 ? totalCostUsd * buyRate : 0;
-
-        cryptoAmount = coinAmount.toFixed(8);
-
-        if (buyRate > 0) {
-          ngn = formatAmount(totalCostNgn);
-        }
-
-        feeBreakdown = {
-          grossUsd: amount,
-          coinAmount: coinAmount.toFixed(8),
-          platformFeeUsd: platformFeeUsd.toFixed(2),
-          platformFeeCoin: platformFeeCoin.toFixed(8),
-          totalCostUsd: totalCostUsd.toFixed(2),
-          totalCostNgn: buyRate > 0 ? totalCostNgn : "0.00",
-          isStablecoin,
-        };
+      if (!latestRates) {
+        showError("Unable to fetch latest rates.");
+        return;
       }
 
-      return {
-        assetValueEquivalent: cryptoAmount,
-        ngnAmount: ngn,
-        feeBreakdown,
-      };
+      const currentBuyRate = parseFloat(latestRates.buy_rate ?? "0");
+      const usedBuyRate = parseFloat(
+        feeBreakdown?.currentBuyRate ?? assetDetails?.buy_rate ?? "0",
+      );
+
+      if (currentBuyRate > 0 && currentBuyRate !== usedBuyRate) {
+        const recalculated = calculateFeeBreakdown(
+          values.amount,
+          marketPrice,
+          currentBuyRate,
+          assetDetails?.symbol ?? "",
+        );
+
+        setFeeBreakdown(recalculated.feeBreakdown);
+        setNgnAmount(recalculated.ngnAmount);
+
+        showError(
+          "Buy rate has changed. Prices recalculated — please review before continuing.",
+        );
+        return;
+      }
+
+      navigation.navigate("ConfirmTransaction" as never, {
+        payload: { ...values, url: "/wallets/user/buy-crypto" },
+      });
+    } catch (error) {
+      showError("Error checking rates. Try again.");
     }
-
-    return {
-      assetValueEquivalent: "0.00000000",
-      ngnAmount: "0.00",
-      feeBreakdown: null,
-    };
-  }, [amount, assetDetails]);
-
-  const onSubmit = async (values: any) => {
-    const payload = {
-      ...values,
-      url: "/wallets/user/buy-crypto",
-    };
-
-    navigation.navigate("ConfirmTransaction" as never, {
-      payload,
-    });
   };
 
   const hasInsufficientBalance = useMemo(() => {
     if (!feeBreakdown?.totalCostNgn) return false;
     return feeBreakdown?.totalCostNgn > fiatBalance;
   }, [feeBreakdown?.totalCostNgn, fiatBalance]);
+
+  // message to show
+  const insufficientBalanceMessage = useMemo(() => {
+    if (!hasInsufficientBalance) return null;
+
+    // maximum fiat the user can spend including charges
+    const maxBuyable =
+      fiatBalance / (1 + (feeBreakdown?.isStablecoin ? 0 : 0.001));
+
+    return `You can only buy up to ${formatAmount(maxBuyable, {
+      currency: "NGN",
+    })} with your current balance (including charges).`;
+  }, [hasInsufficientBalance, fiatBalance, feeBreakdown]);
 
   useEffect(() => {
     if (intent?.amount) {
@@ -148,6 +178,30 @@ export default function CryptoBuyScreen() {
       setValue("amount", numericAmount);
     }
   }, [intent?.amount]);
+
+  useEffect(() => {
+    if (
+      assetDetails?.buy_rate &&
+      amount > 0 &&
+      marketPrice > 0 &&
+      assetDetails
+    ) {
+      const recalculated = calculateFeeBreakdown(
+        amount,
+        marketPrice,
+        feeBreakdown?.currentBuyRate ?? parseFloat(assetDetails.buy_rate),
+        assetDetails.symbol ?? "",
+      );
+      setFeeBreakdown(recalculated.feeBreakdown);
+      setNgnAmount(recalculated.ngnAmount);
+    }
+  }, [
+    assetDetails?.buy_rate,
+    amount,
+    feeBreakdown?.currentBuyRate,
+    marketPrice,
+    assetDetails,
+  ]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
@@ -176,7 +230,6 @@ export default function CryptoBuyScreen() {
             </View>
             <View>
               <Text style={styles.label}>Enter the amount you want to buy</Text>
-
               <Controller
                 control={control}
                 name="amount"
@@ -207,9 +260,7 @@ export default function CryptoBuyScreen() {
               {hasInsufficientBalance && (
                 <View style={styles.warningContainer}>
                   <Text style={styles.warningText}>
-                    Insufficient balance! Your current fiat balance is{" "}
-                    {formatAmount(fiatBalance, { currency: "NGN" })} which is
-                    less than {ngnAmount}{" "}
+                    {insufficientBalanceMessage}
                   </Text>
                 </View>
               )}
@@ -253,8 +304,8 @@ export default function CryptoBuyScreen() {
                   <Text style={[styles.balance]}>Buy Rate:</Text>
                   <Text style={styles.balance}>
                     {formatAmount(
-                      assetDetails?.buy_rate ??
-                        assetDetails?.latest_buy_rate ??
+                      feeBreakdown?.currentBuyRate ??
+                        assetDetails?.buy_rate ??
                         0,
                     )}
                     /$
@@ -270,8 +321,10 @@ export default function CryptoBuyScreen() {
                   <Text style={[styles.balance]}>Market Price:</Text>
                   <Text style={styles.balance}>
                     {formatAmount(
-                      Number(assetDetails?.market_current_value) || 0,
-                      { currency: "USD" },
+                      Number(feeBreakdown?.marketCurrentPrice) || 0,
+                      {
+                        currency: "USD",
+                      },
                     )}
                     /{assetDetails?.symbol}
                   </Text>
@@ -376,10 +429,12 @@ export default function CryptoBuyScreen() {
               styles.button,
               hasInsufficientBalance && styles.buttonDisabled,
             ]}
-            disabled={hasInsufficientBalance}
+            disabled={hasInsufficientBalance || isSubmitting}
             onPress={handleSubmit(onSubmit)}
           >
-            <Text style={styles.buttonText}>Continue</Text>
+            <Text style={styles.buttonText}>
+              {isSubmitting ? "Please wait..." : "Continue"}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

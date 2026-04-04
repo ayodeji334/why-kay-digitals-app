@@ -13,6 +13,8 @@ import { SelectInput } from "../components/SelectInputField";
 import { COLORS } from "../constants/colors";
 import { normalize, getFontFamily } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
+import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export default function BankAccountModal({
   visible,
@@ -27,6 +29,47 @@ export default function BankAccountModal({
   const [validating, setValidating] = useState(false);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
+  const { apiGet, apiDelete } = useAxios();
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState<string | null>(
+    null,
+  );
+
+  // Fetch beneficiaries
+  const { data, isLoading, isError, refetch, isRefetching } = useQuery({
+    queryKey: ["saved-beneficiaries-banks"],
+    queryFn: async () => {
+      const res = await apiGet("/beneficiaries/type", {
+        params: { type: "bank_transfer" },
+      });
+      return res?.data?.data || [];
+    },
+    refetchOnWindowFocus: true,
+    staleTime: 800000,
+  });
+
+  // Delete all beneficiaries
+  const { mutate: deleteAll, isPending: deleting } = useMutation({
+    mutationFn: async () => {
+      return apiDelete("/beneficiaries/type", {
+        params: { type: "bank_transfer" },
+      });
+    },
+    onSuccess: () => {
+      refetch();
+      setSelectedBeneficiary(null);
+    },
+  });
+
+  const handleSelect = (beneficiary: any) => {
+    setSelectedBeneficiary(beneficiary.uuid);
+    setAccountDetails({
+      accountName: beneficiary?.meta?.account_name,
+      accountNumber: beneficiary?.identifier,
+      bankName: beneficiary?.meta?.bank_name,
+    });
+    setValue("bank_code", beneficiary?.meta?.bank_code);
+    setValue("account_number", beneficiary?.identifier);
+  };
 
   const validateAccount = async () => {
     if (!selectedBank || accountNumber.length !== 10) return;
@@ -38,7 +81,9 @@ export default function BankAccountModal({
       });
 
       if (!response.data?.success) {
-        setError("Account validation failed. Check details and try again.");
+        setError(
+          "Account unavailabe. We cannot verify the receipient's account",
+        );
         setSuccess("");
         setAccountDetails(null);
         return;
@@ -52,7 +97,7 @@ export default function BankAccountModal({
         bankName: selectedBank.label,
       });
     } catch (err) {
-      setError("Unable to validate account. Try again later.");
+      setError("Account unavailabe. We cannot verify the receipient's account");
     } finally {
       setValidating(false);
     }
@@ -67,13 +112,19 @@ export default function BankAccountModal({
 
   const handleSave = () => {
     if (!selectedBank || accountNumber.length !== 10) return;
+    console.log(selectedBank, accountNumber);
     setValue("bank_code", selectedBank.value);
     setValue("account_number", accountNumber);
     onClose();
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={false}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent={false}
+      style={{ backgroundColor: "white" }}
+    >
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
@@ -82,7 +133,7 @@ export default function BankAccountModal({
           <Text style={styles.title}>Add Bank Account</Text>
         </View>
 
-        <ScrollView style={{ paddingHorizontal: 16 }}>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
           <SelectInput
             label="Select Bank"
             value={selectedBank?.value}
@@ -94,7 +145,7 @@ export default function BankAccountModal({
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Account Number</Text>
             <TextInput
-              style={styles.input}
+              style={[error && styles.errorBorder, styles.input]}
               value={accountNumber}
               onChangeText={setAccountNumber}
               placeholder="Enter 10-digit account number"
@@ -136,6 +187,22 @@ export default function BankAccountModal({
           >
             <Text style={styles.buttonText}>Save Recipient</Text>
           </TouchableOpacity>
+          <View style={{ marginVertical: 10 }}>
+            <SavedBeneficiaries
+              data={data ?? []}
+              isLoading={isLoading || isRefetching}
+              isError={isError}
+              refetch={refetch}
+              onSelect={data => {
+                setAccountDetails(data);
+                handleSelect(data);
+                onClose();
+              }}
+              selectedBeneficiary={selectedBeneficiary}
+              onDeleteAll={deleteAll}
+              deleting={deleting}
+            />
+          </View>
         </ScrollView>
       </View>
     </Modal>
@@ -167,16 +234,38 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("900"),
     marginBottom: 8,
   },
+  // input: {
+  //   borderWidth: 1,
+  //   borderColor: "#e0e0e0",
+  //   borderRadius: 8,
+  //   padding: 14,
+  //   fontSize: normalize(16),
+  //   fontFamily: getFontFamily("400"),
+  // },
   input: {
     borderWidth: 1,
-    borderColor: "#e0e0e0",
+    borderColor: "#ccc",
     borderRadius: 8,
-    padding: 14,
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("400"),
+    paddingHorizontal: 16,
+    paddingVertical: 15,
+    color: "#1A1A1A",
+    fontFamily: getFontFamily("800"),
+    fontSize: normalize(18),
+    backgroundColor: "#FFFFFF",
+  },
+  errorBorder: {
+    borderColor: "#FF3B30",
+    borderWidth: 1.5,
+  },
+  errorText: {
+    color: "#FF3B30",
+    marginTop: 6,
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    marginLeft: 4,
   },
   button: {
     backgroundColor: COLORS.secondary,

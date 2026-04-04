@@ -89,13 +89,13 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("700"),
   },
   progressBarBackground: {
-    height: 6,
+    height: 4,
     backgroundColor: "#E5E7EB",
     borderRadius: 3,
     marginTop: 18,
   },
   progressBarFill: {
-    height: 6,
+    height: 4,
     backgroundColor: COLORS.secondary,
     borderRadius: 3,
   },

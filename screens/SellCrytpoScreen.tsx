@@ -28,6 +28,7 @@ import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import NoWallet from "../components/NoWallet";
 import CustomLoading from "../components/CustomLoading";
 import { TradeIntent } from "../libs/types";
+import { showError } from "../utlis/toast";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -35,13 +36,46 @@ type CryptoSellScreenParams = {
   };
 };
 
+type FeeBreakdown = {
+  coinAmount: string;
+  grossUsd: number;
+  netAmountUsd: string;
+  netNgn: string;
+  currentSellRate: number;
+  currentMarketPrice: number;
+};
+
+const STABLECOINS = ["USDT", "USDC"];
+
 const schema = Yup.object().shape({
   asset_id: Yup.string().required("Select the crypto you want to sell"),
   amount: Yup.number()
     .typeError("Enter a valid amount")
-    .moreThan(0, "Must be more than 0")
+    .min(1, "The amount is too small. The minimum is 1 USD")
     .required("Amount is required"),
 });
+
+function calculateSellFeeBreakdown(
+  amount: number,
+  marketPrice: number,
+  sellRate: number,
+) {
+  const coinAmount = amount / marketPrice;
+  const ngnValue = sellRate > 0 ? amount * sellRate : 0;
+
+  return {
+    assetValueEquivalent: coinAmount.toFixed(8),
+    ngnAmount: sellRate > 0 ? formatAmount(ngnValue) : "0.00",
+    feeBreakdown: {
+      coinAmount: coinAmount.toFixed(8),
+      grossUsd: amount,
+      netAmountUsd: amount.toFixed(2),
+      netNgn: sellRate > 0 ? formatAmount(ngnValue) : "0.00",
+      currentSellRate: sellRate,
+      currentMarketPrice: marketPrice,
+    },
+  };
+}
 
 export default function CryptoSellScreen() {
   const navigation: any = useNavigation();
@@ -50,7 +84,8 @@ export default function CryptoSellScreen() {
   const { intent } = route.params;
   const [displayAmount, setDisplayAmount] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-
+  const [latestFeeBreakdown, setLatestFeeBreakdown] = useState<any>(null);
+  const [latestNgnAmount, setLatestNgnAmount] = useState("0.00");
   const selectedAssetUuid = intent.assetId ?? "";
 
   const {
@@ -86,91 +121,86 @@ export default function CryptoSellScreen() {
     enabled: !!selectedAssetUuid,
   });
 
+  const FEE_RATE = useMemo(
+    () => 0.001 * Number(assetDetails?.balance ?? "0"),
+    [assetDetails?.balance],
+  );
+
+  const marketPrice =
+    latestFeeBreakdown?.currentMarketPrice ??
+    assetDetails?.market_current_value ??
+    0;
+
   const amount = watch("amount");
+  const symbol = assetDetails?.symbol ?? "";
+  const isStablecoin = STABLECOINS.includes(symbol.toUpperCase());
 
-  const { assetValueEquivalent, ngnAmount, feeBreakdown } = useMemo(() => {
-    if (!isNaN(amount) && assetDetails && amount > 0) {
-      const marketValue = parseFloat(assetDetails.market_current_value ?? "0");
-      const sellRate = parseFloat(assetDetails.sell_rate ?? "0");
-      const symbol = assetDetails.symbol ?? "";
+  const balanceUsd = useMemo(() => {
+    return Number(assetDetails?.balance ?? "0") * marketPrice;
+  }, [assetDetails?.balance, marketPrice]);
 
-      const stablecoins = ["USDT", "USDC"];
-      const isStablecoin = stablecoins.includes(symbol.toUpperCase());
-
-      let cryptoAmount = "0.00000000";
-      let ngn = "0.00";
-      let feeBreakdown = null;
-
-      if (marketValue > 0) {
-        const coinAmount = amount / marketValue;
-        const platformFeeUsd = isStablecoin ? 0 : amount * 0.001; // 0.1%
-        const platformFeeCoin = isStablecoin ? 0 : coinAmount * 0.001;
-        const netAmountUsd = amount - platformFeeUsd;
-        const netCoinAmount = coinAmount - platformFeeCoin;
-
-        cryptoAmount = coinAmount.toFixed(8);
-
-        if (sellRate > 0) {
-          ngn = formatAmount(netAmountUsd * sellRate);
-        }
-
-        feeBreakdown = {
-          grossUsd: amount,
-          coinAmount: coinAmount.toFixed(8),
-          platformFeeUsd: platformFeeUsd.toFixed(2),
-          platformFeeCoin: platformFeeCoin.toFixed(8),
-          netAmountUsd: netAmountUsd.toFixed(2),
-          netCoinAmount: netCoinAmount.toFixed(8),
-          netNgn: sellRate > 0 ? formatAmount(netAmountUsd * sellRate) : "0.00",
-          isStablecoin,
-        };
-      }
-
-      return {
-        assetValueEquivalent: cryptoAmount,
-        ngnAmount: ngn,
-        feeBreakdown,
-      };
-    }
-
-    return {
-      assetValueEquivalent: "0.00000000",
-      ngnAmount: "0.00",
-      feeBreakdown: null,
-    };
-  }, [amount, assetDetails]);
-
-  // const { assetValueEquivalent, ngnAmount } = useMemo(() => {
-  //   if (!isNaN(amount) && assetDetails) {
-  //     const marketValue = parseFloat(assetDetails.market_current_value ?? "0");
-  //     const sellRate = parseFloat(assetDetails.sell_rate ?? "0");
-  //     let cryptoAmount = "0.00000000";
-  //     let ngn = "0.00";
-  //     if (marketValue > 0) {
-  //       cryptoAmount = (amount / marketValue).toFixed(8);
-  //     }
-  //     if (sellRate > 0) {
-  //       const nairaValue = amount * sellRate;
-  //       ngn = `${formatAmount(nairaValue)}`;
-  //     }
-  //     return { assetValueEquivalent: cryptoAmount, ngnAmount: ngn };
-  //   }
-  //   return { assetValueEquivalent: "0.00000000", ngnAmount: "0.00" };
-  // }, [amount, assetDetails]);
+  const maxSellableUsd = useMemo(() => {
+    if (isStablecoin) return balanceUsd;
+    return balanceUsd / (1 + FEE_RATE);
+  }, [balanceUsd, isStablecoin]);
 
   const onSubmit = async (values: any) => {
-    const payload = {
-      ...values,
-      url: "/wallets/user/sell-crypto",
-    };
-    navigation.navigate("ConfirmTransaction" as never, { payload });
+    try {
+      const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
+      const latestRates = res?.data?.asset ?? null;
+
+      if (!latestRates) {
+        showError("Unable to fetch latest rates.");
+        return;
+      }
+
+      const currentSellRate = parseFloat(latestRates.sell_rate ?? "0");
+      const usedSellRate = parseFloat(
+        latestFeeBreakdown?.currentSellRate ?? "0",
+      );
+
+      const sellRateChanged =
+        currentSellRate > 0 && currentSellRate !== usedSellRate;
+
+      if (sellRateChanged) {
+        const recalculated = calculateSellFeeBreakdown(
+          values.amount,
+          marketPrice,
+          currentSellRate,
+        );
+
+        setLatestFeeBreakdown(recalculated.feeBreakdown);
+        setLatestNgnAmount(recalculated.ngnAmount);
+
+        showError(
+          "Sell rate has changed. Prices recalculated — please review before continuing.",
+        );
+
+        return;
+      }
+
+      const payload = {
+        ...values,
+        url: "/wallets/user/sell-crypto",
+      };
+
+      navigation.navigate("ConfirmTransaction" as never, { payload });
+    } catch (error) {
+      showError("Error checking rates. Try again.");
+    }
   };
 
   const hasInsufficientBalance = useMemo(() => {
-    if (!amount) return false;
-    if (!assetDetails) return true;
-    return amount > assetDetails?.balance * assetDetails?.market_current_value;
-  }, [amount, assetDetails?.balance, assetDetails?.market_current_value]);
+    if (!amount || !assetDetails) return false;
+    return amount > maxSellableUsd;
+  }, [amount, maxSellableUsd]);
+
+  const insufficientBalanceMessage = useMemo(() => {
+    if (!hasInsufficientBalance) return null;
+    return `You can only sell ${formatAmount(maxSellableUsd, {
+      currency: "USD",
+    })} of your balance`;
+  }, [hasInsufficientBalance, maxSellableUsd, symbol]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -194,6 +224,31 @@ export default function CryptoSellScreen() {
       refetch();
     }, [refetch]),
   );
+
+  useEffect(() => {
+    if (
+      assetDetails?.sell_rate &&
+      amount > 0 &&
+      marketPrice > 0 &&
+      assetDetails
+    ) {
+      const recalculated = calculateSellFeeBreakdown(
+        amount,
+        marketPrice,
+        latestFeeBreakdown?.currentSellRate ??
+          parseFloat(assetDetails.sell_rate),
+      );
+
+      setLatestFeeBreakdown(recalculated.feeBreakdown);
+      setLatestNgnAmount(recalculated.ngnAmount);
+    }
+  }, [
+    assetDetails?.sell_rate,
+    amount,
+    latestFeeBreakdown?.currentSellRate,
+    marketPrice,
+    assetDetails,
+  ]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
@@ -261,9 +316,15 @@ export default function CryptoSellScreen() {
                 {errors.amount && (
                   <Text style={styles.error}>{errors.amount.message}</Text>
                 )}
-                <Text style={styles.approx}>
-                  Approximately {assetValueEquivalent} {assetDetails?.symbol}
-                </Text>
+
+                {/* Insufficient balance message with max sellable amount */}
+                {hasInsufficientBalance && insufficientBalanceMessage && (
+                  <Text style={styles.error}>{insufficientBalanceMessage}</Text>
+                )}
+
+                {/* <Text style={styles.approx}>
+                  Approximately {assetValueEquivalent} {symbol}
+                </Text> */}
 
                 <View
                   style={{
@@ -314,14 +375,12 @@ export default function CryptoSellScreen() {
                     </Text>
                     <Text style={styles.balance}>
                       {formatAmount(
-                        Number(assetDetails?.balance) *
-                          Number(assetDetails?.market_current_value) || 0,
+                        Number(assetDetails?.balance) * marketPrice || 0,
                         { currency: "USD" },
                       )}
                     </Text>
                   </View>
 
-                  {/* Divider */}
                   <View style={{ height: 1, backgroundColor: "#d4edda" }} />
 
                   {/* Rate */}
@@ -340,7 +399,7 @@ export default function CryptoSellScreen() {
                       Sell Rate:
                     </Text>
                     <Text style={styles.balance}>
-                      {formatAmount(assetDetails?.sell_rate ?? 0)}/$
+                      {formatAmount(latestFeeBreakdown?.currentSellRate ?? 0)}/$
                     </Text>
                   </View>
 
@@ -359,16 +418,15 @@ export default function CryptoSellScreen() {
                       Market Price:
                     </Text>
                     <Text style={styles.balance}>
-                      {formatAmount(
-                        Number(assetDetails?.market_current_value) || 0,
-                        { currency: "USD" },
-                      )}
+                      {formatAmount(marketPrice || 0, {
+                        currency: "USD",
+                      })}
                       /{assetDetails?.symbol}
                     </Text>
                   </View>
 
                   {/* Fee breakdown — only show when amount is entered */}
-                  {feeBreakdown && amount > 0 && (
+                  {latestFeeBreakdown && amount > 0 && (
                     <>
                       <View style={{ height: 1, backgroundColor: "#d4edda" }} />
 
@@ -387,91 +445,16 @@ export default function CryptoSellScreen() {
                           You Sell:
                         </Text>
                         <Text style={styles.balance}>
-                          {feeBreakdown.coinAmount} {assetDetails?.symbol} (≈{" "}
-                          {formatAmount(feeBreakdown.grossUsd, {
+                          {latestFeeBreakdown?.coinAmount}{" "}
+                          {assetDetails?.symbol} (≈{" "}
+                          {formatAmount(latestFeeBreakdown?.grossUsd, {
                             currency: "USD",
                           })}
                           )
                         </Text>
                       </View>
 
-                      {/* {!feeBreakdown.isStablecoin && (
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Text
-                            style={[
-                              styles.balance,
-                              {
-                                fontFamily: getFontFamily("800"),
-                                color: "#e05c00",
-                              },
-                            ]}
-                          >
-                            Platform Fee (0.1%):
-                          </Text>
-                          <Text style={[styles.balance, { color: "#e05c00" }]}>
-                            -{feeBreakdown.platformFeeCoin}{" "}
-                            {assetDetails?.symbol} (≈ $
-                            {feeBreakdown.platformFeeUsd})
-                          </Text>
-                        </View>
-                      )} */}
-
-                      {/* {feeBreakdown.isStablecoin && (
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Text
-                            style={[
-                              styles.balance,
-                              {
-                                fontFamily: getFontFamily("800"),
-                                color: "#2e7d32",
-                              },
-                            ]}
-                          >
-                            Operation Fee:
-                          </Text>
-                          <Text style={[styles.balance, { color: "#2e7d32" }]}>
-                            No fee for {assetDetails?.symbol}
-                          </Text>
-                        </View>
-                      )} */}
-
                       <View style={{ height: 1, backgroundColor: "#d4edda" }} />
-
-                      {/* <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Text
-                          style={[
-                            styles.balance,
-                            { fontFamily: getFontFamily("800") },
-                          ]}
-                        >
-                          Net Amount (USD):
-                        </Text>
-                        <Text
-                          style={[
-                            styles.balance,
-                            { fontFamily: getFontFamily("700") },
-                          ]}
-                        >
-                          {formatAmount(Number(feeBreakdown.netAmountUsd), {
-                            currency: "USD",
-                          })}
-                        </Text>
-                      </View> */}
 
                       <View
                         style={{
@@ -495,104 +478,12 @@ export default function CryptoSellScreen() {
                             },
                           ]}
                         >
-                          {feeBreakdown.netNgn}
+                          {latestFeeBreakdown?.netNgn}
                         </Text>
                       </View>
                     </>
                   )}
                 </View>
-                {/* <View
-                  style={{
-                    marginVertical: 10,
-                    backgroundColor: "#EFF7EC",
-                    padding: 10,
-                    borderRadius: 10,
-                  }}
-                >
-                  <Text style={[styles.note, { color: "black" }]}>
-                    Wallet Balance, Exchange Rate, and Network Fee Breakdown
-                  </Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.balance,
-                        { fontFamily: getFontFamily("800") },
-                      ]}
-                    >
-                      Wallet balance:
-                    </Text>
-                    <Text style={styles.balance}>
-                      {assetDetails?.balance || 0}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.balance,
-                        { fontFamily: getFontFamily("800") },
-                      ]}
-                    >
-                      Wallet balance in USD:
-                    </Text>
-                    <Text style={styles.balance}>
-                      {formatAmount(
-                        Number(assetDetails?.balance) *
-                          Number(assetDetails?.market_current_value) || 0,
-                        { currency: "USD" },
-                      )}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.balance,
-                        { fontFamily: getFontFamily("800") },
-                      ]}
-                    >
-                      Exchange Rate:
-                    </Text>
-                    <Text style={styles.balance}>
-                      {formatAmount(
-                        assetDetails?.buy_rate ??
-                          assetDetails?.latest_buy_rate ??
-                          0,
-                      )}
-                      /$
-                    </Text>
-                  </View>
-                </View> */}
-                {/* <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text style={styles.rate}>
-                    Rate:{" "}
-                    {formatAmount(
-                      assetDetails?.buy_rate ??
-                        assetDetails?.latest_buy_rate ??
-                        0,
-                    )}
-                    /$
-                  </Text>
-                  <Text style={styles.min}>Network Fee: $0.00</Text>
-                </View> */}
 
                 <View style={styles.paymentContainer}>
                   <View
@@ -602,7 +493,7 @@ export default function CryptoSellScreen() {
                     }}
                   >
                     <Text style={styles.ngn}>You’ll be paid:</Text>
-                    <Text style={styles.ngn}>{ngnAmount}</Text>
+                    <Text style={styles.ngn}>{latestNgnAmount}</Text>
                   </View>
                 </View>
               </View>
@@ -610,14 +501,7 @@ export default function CryptoSellScreen() {
               {hasInsufficientBalance && (
                 <View style={styles.warningContainer}>
                   <Text style={styles.warningText}>
-                    Insufficient balance! Your current balance worth is{" "}
-                    {formatAmount(
-                      Number(assetDetails?.balance) *
-                        Number(assetDetails?.market_current_value) || 0,
-                      { currency: "USD" },
-                    )}{" "}
-                    which is less than{" "}
-                    {formatAmount(amount, { currency: "USD" })}
+                    {insufficientBalanceMessage}
                   </Text>
                 </View>
               )}

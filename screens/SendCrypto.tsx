@@ -34,12 +34,40 @@ import {
 import { formatAmount } from "../libs/formatNumber";
 import { SelectInput } from "../components/SelectInputField";
 import { TradeIntent } from "../libs/types";
+import { useMarketPrice } from "../components/useMarketPrice";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
     intent: TradeIntent;
   };
 };
+
+export function calculateWithdrawFee(
+  amount: number,
+  withdrawFee: number,
+  withdrawPercentageFee: number,
+  feeType: number = 1,
+): { handling_fee: number; amount_after_fee: number } {
+  let handlingFee = 0.0;
+
+  if (feeType === 0) {
+    handlingFee =
+      withdrawPercentageFee !== 0
+        ? (amount / (1 - withdrawPercentageFee)) * withdrawPercentageFee +
+          withdrawFee
+        : withdrawFee;
+  } else {
+    handlingFee =
+      withdrawPercentageFee !== 0
+        ? withdrawFee + (amount - withdrawFee) * withdrawPercentageFee
+        : withdrawFee;
+  }
+
+  return {
+    handling_fee: parseFloat(handlingFee.toFixed(8)),
+    amount_after_fee: parseFloat((amount - handlingFee).toFixed(8)),
+  };
+}
 
 const schema = Yup.object().shape({
   amount: Yup.number()
@@ -63,15 +91,15 @@ export default function SendScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<RouteProp<CryptoSellScreenParams, "CryptoSell">>();
   const { apiGet, post } = useAxios();
-
   const { intent } = route.params;
   const selectedAssetUuid = intent?.assetId ?? "";
   const scannedValueRef = useRef<string | null>(null);
   const isProcessingRef = useRef(false);
   const [displayAmount, setDisplayAmount] = useState("");
   const [showScanner, setShowScanner] = useState(false);
-
   const device = useCameraDevice("back");
+
+  const { data: livePrice } = useMarketPrice(selectedAssetUuid);
 
   const {
     control,
@@ -89,8 +117,6 @@ export default function SendScreen() {
     },
     mode: "onChange",
   });
-
-  const amount = watch("amount");
 
   const requestCameraPermission = async () => {
     const status = await Camera.requestCameraPermission();
@@ -124,8 +150,17 @@ export default function SendScreen() {
     enabled: !!selectedAssetUuid,
   });
 
+  const amount = watch("amount");
   const balance = Number(assetDetails?.balance ?? 0);
-  const marketPrice = Number(assetDetails?.market_current_value ?? 0);
+  const marketPrice = useMemo(
+    () =>
+      parseFloat(
+        livePrice?.market_current_value ??
+          assetDetails?.market_current_value ??
+          "0",
+      ),
+    [livePrice?.market_current_value, assetDetails?.market_current_value],
+  );
   const symbol = assetDetails?.symbol ?? "";
   const balanceInUsd = balance * marketPrice;
 
@@ -177,6 +212,8 @@ export default function SendScreen() {
         ...chain,
         label: `${chain?.chain} (${chain.chain_type?.toUpperCase()})`,
         value: chain?.chain,
+        network_charges: chain?.withdraw_fee,
+        symbol: assetDetails?.symbol,
       }));
   }, [assetDetails?.available_chains]);
 
@@ -187,32 +224,19 @@ export default function SendScreen() {
   }, [networkOptions, selectedChain]);
 
   const feeBreakdown = useMemo(() => {
-    if (!selectedNetwork || !amount || amount <= 0 || marketPrice <= 0)
+    if (!selectedNetwork || !amount || amount <= 0 || marketPrice <= 0) {
       return null;
+    }
 
     const precision = selectedNetwork.min_accuracy ?? 6;
-
-    // Convert USD input to coin
     const coinAmount = amount / marketPrice;
-
-    // Bybit flat fee in coin
     const bybitFeeCoin = parseFloat(selectedNetwork.withdraw_fee ?? "0");
-
-    // Platform fee: $1 USD converted to coin
     const platformFeeCoin = 1 / marketPrice;
-
-    // Total fee in coin
     const totalFeeCoin = bybitFeeCoin + platformFeeCoin;
-
-    // What recipient actually receives
     const coinAmountAfterFee = coinAmount - totalFeeCoin;
-
-    // What is sent to Bybit (recipient amount + bybit fee so they deduct from it)
     const coinAmountToBybit = coinAmountAfterFee + bybitFeeCoin;
-
-    // USD equivalents
     const bybitFeeUsd = bybitFeeCoin * marketPrice;
-    const platformFeeUsd = 1; // always $1
+    const platformFeeUsd = 1;
     const totalFeeUsd = totalFeeCoin * marketPrice;
     const usdAmountAfterFee = coinAmountAfterFee * marketPrice;
 
@@ -237,18 +261,81 @@ export default function SendScreen() {
     };
   }, [selectedNetwork, amount, marketPrice]);
 
+  const withdrawalStatus = useMemo(() => {
+    if (!feeBreakdown || !assetDetails) {
+      return { hasIssue: false, message: "" };
+    }
+
+    const amountAfterFee = Number(feeBreakdown.usdAmountAfterFee);
+    const balanceUsd = Number(balanceInUsd);
+
+    // Minimum withdrawal in USD (convert from coin to USD)
+    const minWithdrawCoin = Number(selectedNetwork?.withdraw_min ?? 0);
+    const minWithdrawUsd = minWithdrawCoin * marketPrice;
+
+    // Case 1: amount below minimum
+    if (Number(amount) < minWithdrawUsd && balanceUsd >= Number(amount)) {
+      return {
+        hasIssue: true,
+        message: `Increase amount! Minimum withdrawal is ${formatAmount(
+          minWithdrawUsd,
+          { currency: "USD" },
+        )}, but you entered ${formatAmount(amount, { currency: "USD" })}.`,
+      };
+    }
+
+    // Case 2: after-fee amount is negative or zero
+    if (amountAfterFee <= 0) {
+      return {
+        hasIssue: true,
+        message: `Amount too small. After fees, you would receive ${formatAmount(
+          amountAfterFee,
+          { currency: "USD" },
+        )}, which is not valid.`,
+      };
+    }
+
+    // Case 3: insufficient balance
+    if (amount > balanceUsd) {
+      return {
+        hasIssue: true,
+        message: `Insufficient balance. Total amount required is ${formatAmount(
+          Number(amount ?? "0"),
+          { currency: "USD" },
+        )}, but your balance is only ${formatAmount(balanceUsd, {
+          currency: "USD",
+        })}.`,
+      };
+    }
+
+    return { hasIssue: false, message: "" };
+  }, [
+    feeBreakdown,
+    assetDetails,
+    amount,
+    balanceInUsd,
+    selectedNetwork,
+    marketPrice,
+  ]);
+
   useEffect(() => {
     if (networkOptions.length === 1) {
       setValue("chain", networkOptions[0].value, { shouldValidate: true });
     }
   }, [networkOptions, setValue]);
 
-  const hasInsufficientBalance = useMemo(() => {
-    if (!amount || !assetDetails) return false;
-    return amount > balanceInUsd;
-  }, [amount, balanceInUsd, assetDetails]);
+  // const hasInsufficientBalance = useMemo(() => {
+  //   if (!feeBreakdown?.usdAmountAfterFee || !assetDetails) return false;
 
-  const canSubmit = isValid && !hasInsufficientBalance && amount > 0;
+  //   const amountAfterFee = Number(feeBreakdown.usdAmountAfterFee);
+
+  //   // If after-fee amount is <= 0, treat as insufficient
+  //   if (amountAfterFee <= 0) return true;
+
+  //   return amountAfterFee > balanceInUsd;
+  // }, [feeBreakdown?.usdAmountAfterFee, balanceInUsd, assetDetails]);
+
+  // const canSubmit = isValid && !hasInsufficientBalance && amount > 0;
 
   const { mutate: initiateWithdrawal, isPending } = useMutation({
     mutationFn: async (values: FormValues) => {
@@ -309,7 +396,10 @@ export default function SendScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "#fff" }}
+      edges={["bottom", "right", "left"]}
+    >
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
@@ -320,6 +410,21 @@ export default function SendScreen() {
           <NoWallet selectedAssetUuid={selectedAssetUuid} onSuccess={refetch} />
         ) : (
           <View style={styles.container}>
+            <View style={styles.linkContainer}>
+              <Text style={styles.text}>
+                This screen is for
+                <Text style={styles.bold}> on-chain withdrawals</Text> to
+                external wallets.{" "}
+                <Text
+                  onPress={() => navigation.navigate("Transfer")}
+                  style={styles.link}
+                >
+                  Click here for internal transfers
+                </Text>{" "}
+                to other users on the app.
+              </Text>
+            </View>
+
             <View style={{ gap: 10, flex: 1 }}>
               <View>
                 <Text style={styles.label}>
@@ -354,11 +459,13 @@ export default function SendScreen() {
                   <Text style={styles.error}>{errors.amount.message}</Text>
                 )}
 
-                {/* FIX: removed stray `{}` */}
                 <Text style={styles.walletBalance}>
                   Wallet Balance: {balance} {symbol}
                   {" ≈ "}
-                  {formatAmount(balanceInUsd, { currency: "USD" })}
+                  {formatAmount(balanceInUsd, {
+                    currency: "USD",
+                    decimalPlace: 5,
+                  })}
                 </Text>
               </View>
               <View style={styles.walletAddressRow}>
@@ -404,12 +511,21 @@ export default function SendScreen() {
                       {amount?.toFixed(2)})
                     </Text>
                   </View>
-
+                  <View style={styles.feeRow}>
+                    <Text style={[styles.feeLabel]}>Market Price:</Text>
+                    <Text style={styles.feeValue}>
+                      {formatAmount(marketPrice || 0, {
+                        currency: "USD",
+                        decimalPlace: 4,
+                      })}
+                      /{assetDetails?.symbol}
+                    </Text>
+                  </View>
                   <View style={styles.feeDivider} />
 
                   <View style={styles.feeRow}>
                     <Text style={styles.feeLabel}>
-                      Network Fee ({selectedNetwork?.chain})
+                      Network and On-chain Fee ({selectedNetwork?.chain})
                     </Text>
                     <Text style={styles.feeValue}>
                       {feeBreakdown.bybitFeeCoin} {symbol} (≈ $
@@ -446,32 +562,10 @@ export default function SendScreen() {
                 </View>
               )}
 
-              {/* {feeBreakdown && feeBreakdown.isTooSmall && (
+              {withdrawalStatus.hasIssue && (
                 <View style={styles.warningContainer}>
                   <Text style={styles.warningText}>
-                    Amount is too small to cover withdrawal fees.
-                  </Text>
-                </View>
-              )} */}
-
-              {/* {feeBreakdown &&
-                !feeBreakdown.isTooSmall &&
-                feeBreakdown.isBelowMinimum && (
-                  <View style={styles.warningContainer}>
-                    <Text style={styles.warningText}>
-                      Minimum withdrawal is {feeBreakdown.withdrawMin} {symbol}.
-                      Please increase your amount.
-                    </Text>
-                  </View>
-                )} */}
-
-              {hasInsufficientBalance && (
-                <View style={styles.warningContainer}>
-                  <Text style={styles.warningText}>
-                    Insufficient balance! You need{" "}
-                    {formatAmount(amount, { currency: "USD" })} but your balance
-                    is only {formatAmount(balanceInUsd, { currency: "USD" })} (
-                    {balance} {symbol})
+                    {withdrawalStatus.message}
                   </Text>
                 </View>
               )}
@@ -488,12 +582,12 @@ export default function SendScreen() {
             </View>
 
             <TouchableOpacity
-              disabled={!canSubmit || isPending}
+              disabled={withdrawalStatus.hasIssue || isPending}
               style={[
                 styles.button,
                 {
                   backgroundColor:
-                    !canSubmit || isPending
+                    withdrawalStatus.hasIssue || isPending
                       ? COLORS.fadePrimary
                       : COLORS.secondary,
                 },
@@ -521,6 +615,30 @@ const styles = StyleSheet.create({
     padding: normalize(20),
     backgroundColor: "#fff",
     justifyContent: "space-between",
+  },
+  linkContainer: {
+    marginBottom: 20,
+    padding: 12,
+    backgroundColor: "#eef4fc",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#DBEAFE",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  text: {
+    fontSize: 14,
+    color: "#374151",
+    fontFamily: getFontFamily("700"),
+  },
+  bold: {
+    fontFamily: getFontFamily("900"),
+  },
+  link: {
+    color: COLORS.primary,
+    fontFamily: getFontFamily("700"),
+    alignContent: "center",
+    justifyContent: "center",
   },
   label: {
     fontSize: normalize(18),
@@ -586,7 +704,7 @@ const styles = StyleSheet.create({
   feeWarningText: {
     color: "#ff6b6b",
     fontFamily: getFontFamily("400"),
-    fontSize: 15,
+    fontSize: 18,
   },
   dollarSign: {
     fontSize: normalize(26),
@@ -636,7 +754,7 @@ const styles = StyleSheet.create({
   },
   warningText: {
     color: "#db0b0b",
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("800"),
     textAlign: "center",
   },

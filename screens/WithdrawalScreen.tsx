@@ -19,7 +19,7 @@ import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import { COLORS } from "../constants/colors";
 import { normalize, getFontFamily } from "../constants/settings";
 import BalanceLimitCard from "../components/BalanceLimitCard";
-import WithdrawalForm from "../components/WithdrawalForm";
+// import WithdrawalForm from "../components/WithdrawalForm";
 import BankAccountSelector from "./BankAccountSelector";
 import BankAccountModal from "./BankAccountModal";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -28,13 +28,14 @@ import useAxios from "../hooks/useAxios";
 import { useSummaryDetail } from "../hooks/useSummaryDetail";
 import { formatWithCommas } from "./SwapCryptoScreen";
 import { formatAmount } from "../libs/formatNumber";
+import InfoCard from "../components/InfoCard";
 
 const schema = yup.object({
   amount: yup
     .number()
     .typeError("Enter a valid amount")
     .min(1000, "Minimum is ₦1,000")
-    .max(300000, "Maximum is ₦300,000")
+    .max(3000000, "Maximum is ₦3,000,000")
     .required("Enter withdrawal amount"),
   bank_code: yup.string().required("Select a bank"),
   account_number: yup
@@ -74,17 +75,7 @@ export default function WithdrawScreen() {
   const bankCode = watch("bank_code");
   const amount = watch("amount");
 
-  const currentWalletBalance: number = useMemo(() => {
-    return walletSummary?.withdrawable_balance ?? 0;
-  }, [walletSummary?.withdrawable_balance]);
-
-  const isBalanceSufficient = useMemo(() => {
-    return currentWalletBalance < amount;
-  }, [currentWalletBalance, amount]);
-
-  // const isDisabled =
-  //   !amount || isSubmitting || loading || !bankCode || isBalanceSufficient;
-
+  const currentWalletBalance = walletSummary?.withdrawable_balance ?? 0;
   const dailyLimit = walletSummary?.daily_limit ?? 0;
   const todayVolume = walletSummary?.total_today ?? 0;
 
@@ -93,17 +84,6 @@ export default function WithdrawScreen() {
 
     return amount + todayVolume > dailyLimit;
   }, [amount, dailyLimit]);
-
-  const isDisabled = useMemo(
-    () =>
-      loading ||
-      isSubmitting ||
-      isBalanceSufficient ||
-      exceedsDailyLimit ||
-      !bankCode ||
-      amount <= 0,
-    [loading, isSubmitting, isBalanceSufficient, exceedsDailyLimit, amount],
-  );
 
   const { data: banksData, refetch: refetchBanks } = useQuery({
     queryKey: ["banks"],
@@ -115,6 +95,7 @@ export default function WithdrawScreen() {
         });
     },
     refetchOnWindowFocus: true,
+    staleTime: 800000,
   });
 
   const bankOptions: any = useMemo(() => {
@@ -122,6 +103,9 @@ export default function WithdrawScreen() {
       return banksData.map((bank: any) => ({
         label: bank.name?.toUpperCase(),
         value: bank.code,
+        logo_url: !!bank?.logo
+          ? bank?.logo
+          : "https://placehold.co/600x400/png",
       }));
     }
     return [];
@@ -135,6 +119,8 @@ export default function WithdrawScreen() {
       type: "WITHDRAWAL",
       url: "/transactions/withdrawal",
       save_as_beneficiary: saveBeneficiary,
+      meta: {},
+      bank_name: selectedBank ?? "",
     };
 
     if (parseInt(values.amount) > 50000) {
@@ -156,6 +142,45 @@ export default function WithdrawScreen() {
     });
   };
 
+  const selectedBank: string =
+    bankOptions.find((bank: any) => bank.value === bankCode)?.label || null;
+
+  const feeBreakdown = useMemo(() => {
+    if (!amount || isNaN(amount)) {
+      return {
+        stampDuty: 0,
+        withdrawalFee: 0,
+        totalFees: 0,
+        totalDebit: 0,
+      };
+    }
+
+    const stampDuty = amount >= 10000 ? 50 : 0;
+    const withdrawalFee = 100;
+
+    const totalFees = stampDuty + withdrawalFee;
+    const totalDebit = amount + totalFees;
+
+    return {
+      stampDuty,
+      withdrawalFee,
+      totalFees,
+      totalDebit,
+    };
+  }, [amount]);
+
+  const isBalanceSufficient = useMemo(() => {
+    if (!amount) return true;
+    return feeBreakdown.totalDebit <= (currentWalletBalance ?? 0);
+  }, [amount, feeBreakdown.totalDebit, currentWalletBalance]);
+
+  const isDisabled =
+    !amount ||
+    amount < 1000 ||
+    !isBalanceSufficient ||
+    exceedsDailyLimit ||
+    isSubmitting;
+
   useFocusEffect(
     useCallback(() => {
       refetchWallet();
@@ -169,6 +194,7 @@ export default function WithdrawScreen() {
       style={{ flex: 1, backgroundColor: "#fff", paddingHorizontal: 16 }}
     >
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -211,11 +237,49 @@ export default function WithdrawScreen() {
               />
             </View>
           </View>
-
+          {errors.amount?.message ? (
+            <Text style={styles.warningText}>{errors.amount?.message}</Text>
+          ) : undefined}
           <Text style={styles.amountNote}>Minimum of ₦1,000</Text>
         </View>
 
-        {exceedsDailyLimit && (
+        {amount ? (
+          <View style={styles.feeBreakdownContainer}>
+            <Text style={styles.feeBreakdownTitle}>Transaction Summary</Text>
+
+            <View style={styles.feeRow}>
+              <Text style={styles.feeLabel}>Amount</Text>
+              <Text style={styles.feeValue}>{formatAmount(amount || 0)}</Text>
+            </View>
+
+            <View style={styles.feeRow}>
+              <Text style={styles.feeLabel}>Withdrawal Fee</Text>
+              <Text style={styles.feeValue}>
+                {formatAmount(feeBreakdown.withdrawalFee)}
+              </Text>
+            </View>
+
+            {feeBreakdown.stampDuty > 0 && (
+              <View style={styles.feeRow}>
+                <Text style={styles.feeLabel}>Stamp Duty</Text>
+                <Text style={styles.feeValue}>
+                  {formatAmount(feeBreakdown.stampDuty)}
+                </Text>
+              </View>
+            )}
+
+            <View style={styles.feeDivider} />
+
+            <View style={styles.feeRow}>
+              <Text style={styles.feeLabel}>Total Debit</Text>
+              <Text style={styles.feeValue}>
+                {formatAmount(feeBreakdown.totalDebit)}
+              </Text>
+            </View>
+          </View>
+        ) : undefined}
+
+        {isBalanceSufficient && exceedsDailyLimit && (
           <View style={styles.warningContainer}>
             <Text style={styles.warningText}>
               This amount exceeds your daily transfer limit of{" "}
@@ -225,25 +289,43 @@ export default function WithdrawScreen() {
           </View>
         )}
 
-        {isBalanceSufficient && !!amount && (
+        {!isBalanceSufficient && !!amount && (
           <View style={styles.warningContainer}>
             <Text style={styles.warningText}>
-              You do not have enough funds in your wallet to complete this
-              withdrawal. Note: you can only withdraw from your crypto sales
-              balance, not deposit balance.
+              Insufficient balance. You need{" "}
+              {formatAmount(feeBreakdown.totalDebit)} to complete this
+              withdrawal (including fees).
             </Text>
           </View>
         )}
 
+        <InfoCard
+          title="Important Notice!"
+          description={[
+            "Withdrawal of ₦10,000 and above will attract a ₦50 stamp duty charge in line with government regulations.",
+            "A fee of ₦100 will be charge on every withdrawal",
+          ]}
+        />
+
         <BankAccountSelector
-          bankName={
-            bankOptions.find((bank: any) => bank.value === bankCode)?.label ||
-            null
-          }
+          bankName={selectedBank}
           accountName={accountDetails?.accountName || null}
           accountNumber={accountDetails?.accountNumber || null}
           setShowBankModal={setShowBankModal}
         />
+
+        {(errors.account_number?.message || errors?.bank_code?.message) && (
+          <Text
+            style={{
+              paddingVertical: 10,
+              color: "red",
+              fontFamily: getFontFamily("800"),
+              fontSize: 12,
+            }}
+          >
+            You need to add a bank account
+          </Text>
+        )}
 
         <SaveAsBeneficiarySwitch
           value={saveBeneficiary}
@@ -257,7 +339,7 @@ export default function WithdrawScreen() {
           style={{
             backgroundColor: !isDisabled ? COLORS.secondary : "#ccc",
             borderRadius: 100,
-            paddingVertical: 16,
+            paddingVertical: 14,
             marginTop: 30,
           }}
           disabled={isDisabled}
@@ -270,7 +352,7 @@ export default function WithdrawScreen() {
               fontFamily: getFontFamily("700"),
             }}
           >
-            Withdraw
+            Continue
           </Text>
         </TouchableOpacity>
 
@@ -304,6 +386,52 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255, 0, 0, 0.3)",
   },
+  feeBreakdownContainer: {
+    backgroundColor: "#5AB2431A",
+    borderRadius: 12,
+    padding: 16,
+    gap: 10,
+    marginTop: 10,
+  },
+  feeBreakdownTitle: {
+    color: "#000",
+    fontFamily: getFontFamily("800"),
+    fontSize: 13,
+    marginBottom: 4,
+  },
+  feeRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  feeLabel: {
+    color: "#000",
+    fontFamily: getFontFamily("700"),
+    fontSize: 12,
+    flex: 1,
+  },
+  feeValue: {
+    color: "#000",
+    fontFamily: getFontFamily("900"),
+    fontSize: 12,
+    textAlign: "right",
+    flex: 1,
+  },
+  feeDivider: {
+    height: 1,
+    backgroundColor: "#b1b1b1",
+  },
+  feeWarning: {
+    backgroundColor: "#3a1a1a",
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 4,
+  },
+  feeWarningText: {
+    color: "#ff6b6b",
+    fontFamily: getFontFamily("400"),
+    fontSize: 18,
+  },
   warningText: {
     color: "#db0b0bff",
     fontSize: normalize(17),
@@ -312,8 +440,8 @@ const styles = StyleSheet.create({
   },
   amountBox: { marginTop: 24 },
   amountNote: {
-    color: "#535353ff",
-    fontSize: normalize(15),
+    color: "#000",
+    fontSize: normalize(16),
     fontFamily: getFontFamily("700"),
     marginBottom: 9,
     marginTop: 3,
@@ -321,7 +449,7 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 6,
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#000000ff",
   },
   inputContainer: {

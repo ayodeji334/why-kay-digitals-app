@@ -76,8 +76,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     color: "#1A1A1A",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(20),
+    fontFamily: getFontFamily("800"),
+    fontSize: normalize(18),
     backgroundColor: "#FFFFFF",
   },
   errorBorder: {

@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Image,
   StyleSheet,
   StatusBar,
 } from "react-native";
@@ -21,7 +20,20 @@ import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
 import useAxios from "../hooks/useAxios";
 import { formatAmount } from "../libs/formatNumber";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
+import MTNLogo from "../assets/mtn-new.svg";
+import GloLogo from "../assets/glo-logo.svg";
+import AirtelLogo from "../assets/airtel.svg";
+import NineMobile from "../assets/nine-mobile.svg";
+import { Check } from "iconsax-react-nativejs";
+
+const networks = [
+  { id: "mtn", label: "MTN", Logo: MTNLogo },
+  { id: "glo", label: "GLO", Logo: GloLogo },
+  { id: "airtel", label: "Airtel", Logo: AirtelLogo },
+  { id: "9mobile", label: "9mobile", Logo: NineMobile },
+];
 
 const schema = yup.object({
   phone: yup
@@ -47,14 +59,17 @@ const formatPhoneNumber = (phone: string) => {
 export default function BuyDataScreen() {
   const [saveBeneficiary, setSaveBeneficiary] = useState(true);
   const [loading, setLoading] = useState(false);
-  const { apiGet } = useAxios();
+  const { apiGet, apiDelete } = useAxios();
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState<string | null>(
+    null,
+  );
   const navigation: any = useNavigation();
   const {
     control,
     handleSubmit,
     setValue,
     watch,
-    formState: { errors, isDirty, isValid },
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -85,6 +100,7 @@ export default function BuyDataScreen() {
         customer: formatPhoneNumber(values.phone),
         amount: selectedPlan.amount,
         type: "DATA",
+        network: selectedNetwork,
         biller_name: selectedPlan.biller_code || values.network,
         url: "/bills/buy-data",
         save_as_beneficiary: saveBeneficiary,
@@ -108,24 +124,54 @@ export default function BuyDataScreen() {
       return res.data?.data || [];
     },
     enabled: !!selectedNetwork,
-    refetchOnWindowFocus: false,
     staleTime: 864000000,
   });
 
-  const networks = [
-    { id: "mtn", label: "MTN", logo: require("../assets/mtn-logo.jpg") },
-    { id: "glo", label: "GLO", logo: require("../assets/glo-logo.png") },
-    {
-      id: "airtel",
-      label: "Airtel",
-      logo: require("../assets/airtel-logo.png"),
+  // Fetch beneficiaries
+  const {
+    data,
+    isLoading: isLoadingSavedData,
+    isError,
+    refetch,
+    isRefetching,
+  } = useQuery({
+    queryKey: ["saved-beneficiaries-data"],
+    queryFn: async () => {
+      const res = await apiGet("/beneficiaries/type", {
+        params: { type: "data" },
+      });
+      return res?.data?.data || [];
     },
-    {
-      id: "9mobile",
-      label: "9mobile",
-      logo: require("../assets/nine-mobile.png"),
+  });
+
+  // const networks = [
+  //   { id: "mtn", label: "MTN", logo: require("../assets/mtn-new.svg") },
+  //   { id: "glo", label: "GLO", logo: require("../assets/glo-logo.svg") },
+  //   {
+  //     id: "airtel",
+  //     label: "Airtel",
+  //     logo: require("../assets/airtel.svg"),
+  //   },
+  //   {
+  //     id: "9mobile",
+  //     label: "9mobile",
+  //     logo: require("../assets/nine-mobile.svg"),
+  //   },
+  // ];
+
+  const { mutate: deleteAll, isPending: deleting } = useMutation({
+    mutationFn: async () => {
+      return apiDelete("/beneficiaries/type", {
+        params: { type: "data" },
+      });
     },
-  ];
+    onSuccess: () => {
+      refetch();
+      setSelectedBeneficiary(null);
+    },
+  });
+
+  console.log(data);
 
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
@@ -140,10 +186,28 @@ export default function BuyDataScreen() {
           name="phone"
           control={control}
         />
-        <View style={{ marginBottom: 20 }}>
+
+        <View style={{ marginBottom: 10 }}>
+          <SavedBeneficiaries
+            onRefetch={refetch}
+            data={data ?? []}
+            isRefetching={isRefetching}
+            isLoading={isLoadingSavedData || isRefetching}
+            isError={isError}
+            refetch={refetch}
+            onSelect={data => {
+              setValue("phone", data?.identifier);
+              setValue("network", data?.meta?.network);
+            }}
+            selectedBeneficiary={selectedBeneficiary}
+            onDeleteAll={deleteAll}
+            deleting={deleting}
+          />
+        </View>
+        <View style={{ marginBottom: 10 }}>
           <Text style={styles.subHeader}>Select Network Provider</Text>
           <View style={styles.networkRow}>
-            {networks.map((item, index) => (
+            {/* {networks.map((item, index) => (
               <TouchableOpacity
                 key={index}
                 style={[
@@ -160,6 +224,28 @@ export default function BuyDataScreen() {
                   </View>
                 )}
                 <Image source={item.logo} style={styles.networkLogo} />
+              </TouchableOpacity>
+            ))} */}
+            {networks.map(item => (
+              <TouchableOpacity
+                key={item.id}
+                style={[
+                  styles.networkButton,
+                  selectedNetwork === item.id && styles.networkButtonActive,
+                ]}
+                onPress={() => setValue("network", item.id)}
+              >
+                {selectedNetwork === item.id && (
+                  <View style={styles.checkIconContainer}>
+                    <Text style={styles.checkIcon}>✓</Text>
+                  </View>
+                )}
+                <item.Logo
+                  width={"100%"}
+                  height={"100%"}
+                  preserveAspectRatio="xMidYMid meet"
+                  style={{ borderRadius: 10, borderColor: "red" }}
+                />
               </TouchableOpacity>
             ))}
           </View>
@@ -206,8 +292,6 @@ export default function BuyDataScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-
-        {/* <CustomLoading loading={isLoading} /> */}
       </ScrollView>
     </SafeAreaView>
   );
@@ -234,8 +318,8 @@ const styles = StyleSheet.create({
   },
   subHeader: {
     marginTop: 20,
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
     marginBottom: 8,
     color: "#1A1A1A",
   },
@@ -245,7 +329,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   networkButton: {
-    padding: 8,
+    // padding: 8,
     borderWidth: 1,
     borderColor: "#E5E7EB",
     borderRadius: 10,

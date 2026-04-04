@@ -44,7 +44,7 @@ const cryptoSchema = yup.object({
   amount: yup
     .number()
     .typeError("Enter a valid amount")
-    .min(0.00000001, "Invalid amount")
+    .min(2, "The amount is too small. The minimum is 6 USD")
     .required(),
   asset_id: yup.string().required("Select a cryptocurrency"),
 });
@@ -109,8 +109,8 @@ export default function TransferScreen() {
     handleSubmit,
     watch,
     reset,
-    formState: { isValid, isSubmitting },
-  } = form;
+    formState: { isValid, isSubmitting, errors },
+  }: any = form;
 
   const amount = watch("amount") || 0;
   const assetId = watch("asset_id");
@@ -343,6 +343,10 @@ export default function TransferScreen() {
                 </View>
               )}
             />
+
+            {errors.amount && (
+              <Text style={styles.error}>{errors?.amount?.message}</Text>
+            )}
           </View>
 
           {activeTab === "fiat" && (
@@ -441,6 +445,12 @@ const styles = StyleSheet.create({
     fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     textAlign: "center",
+  },
+  error: {
+    color: "red",
+    fontSize: normalize(19),
+    fontFamily: getFontFamily("800"),
+    marginBottom: normalize(10),
   },
   form: { marginVertical: 10 },
   label: {

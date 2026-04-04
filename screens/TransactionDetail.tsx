@@ -119,7 +119,7 @@ const TransactionDetailScreen = () => {
             {transaction?.medium?.toUpperCase() === "CRYPTO"
               ? transaction?.meta?.amount +
                 (transaction?.meta?.asset_symbol ?? "")
-              : formatAmount(transaction?.net_amount, {
+              : formatAmount(transaction?.amount, {
                   currency: transaction?.currency || "NGN",
                   decimalPlace: 2,
                 })}
@@ -211,7 +211,8 @@ const TransactionDetailScreen = () => {
                   transaction?.medium?.toUpperCase() === "CRYPTO"
                     ? "USD"
                     : "NGN",
-                decimalPlace: 4,
+                decimalPlace:
+                  transaction?.medium?.toUpperCase() === "CRYPTO" ? 4 : 2,
               })}
             />
           )}

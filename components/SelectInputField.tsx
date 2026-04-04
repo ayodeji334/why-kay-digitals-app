@@ -11,7 +11,7 @@ import {
   Image,
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
-import { formatAmount } from "../libs/formatNumber";
+import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { ArrowDown2 } from "iconsax-react-nativejs";
 import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
@@ -39,6 +39,7 @@ interface SelectInputProps {
   title?: string;
   showSearchBox?: boolean;
   showWalletPrice?: boolean;
+  isDisabled?: boolean;
 }
 
 export function SelectInput({
@@ -54,6 +55,7 @@ export function SelectInput({
   title = "Select an option",
   showSearchBox = true,
   showWalletPrice = false,
+  isDisabled = false,
 }: SelectInputProps) {
   const [visible, setVisible] = useState(false);
   const [search, setSearch] = useState("");
@@ -84,6 +86,7 @@ export function SelectInput({
         <Pressable
           style={[styles.input, errorMessage && styles.errorBorder]}
           onPress={handlePress}
+          disabled={isDisabled}
         >
           <View style={styles.selectedCryptoContainer}>
             {selectedOption?.logo_url && (
@@ -101,6 +104,14 @@ export function SelectInput({
               >
                 {selectedOption ? selectedOption.label : placeholder}
               </Text>
+
+              {selectedOption?.network_charges ? (
+                <Text style={styles.optionPrice}>
+                  Network fee:{" "}
+                  {formatNumber(selectedOption?.network_charges ?? 0)}{" "}
+                  {selectedOption?.symbol}
+                </Text>
+              ) : undefined}
             </View>
             <ArrowDown2 size={15} color="#374151" />
           </View>
@@ -146,70 +157,79 @@ export function SelectInput({
                 )}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item, index) => `${item.value}-${index + 0.456}`}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={styles.option}
-                    onPress={() => {
-                      onSelect?.(item);
-                      if (onChange) onChange(item.value);
-                      handleSelect(item.value);
-                    }}
-                  >
-                    <View style={styles.optionContent}>
-                      <View style={styles.cryptoRow}>
-                        {item.logo_url && (
-                          <Image
-                            source={{ uri: item.logo_url }}
-                            style={styles.optionLogo}
-                          />
-                        )}
+                renderItem={({ item }) => {
+                  return (
+                    <Pressable
+                      style={styles.option}
+                      onPress={() => {
+                        onSelect?.(item);
+                        if (onChange) onChange(item.value);
+                        handleSelect(item.value);
+                      }}
+                    >
+                      <View style={styles.optionContent}>
+                        <View style={styles.cryptoRow}>
+                          {item.logo_url && (
+                            <Image
+                              source={{ uri: item.logo_url }}
+                              style={styles.optionLogo}
+                            />
+                          )}
 
-                        <View style={styles.cryptoInfo}>
-                          <Text style={styles.optionName}>
-                            {`${item.label}`}
-                          </Text>
-                          {item?.market_value ? (
-                            <Text style={styles.optionPrice}>
-                              {formatAmount(item.market_value, {
-                                currency: "USD",
-                                decimalPlace: 2,
-                              })}
+                          <View style={styles.cryptoInfo}>
+                            <Text style={styles.optionName}>
+                              {`${item.label}`}
                             </Text>
+                            {item?.market_value ? (
+                              <Text style={styles.optionPrice}>
+                                {formatAmount(item.market_value, {
+                                  currency: "USD",
+                                  decimalPlace: 2,
+                                })}
+                              </Text>
+                            ) : undefined}
+                            {item?.network_charges ? (
+                              <Text style={styles.optionPrice}>
+                                Network fee:{" "}
+                                {formatNumber(item.network_charges ?? 0)}{" "}
+                                {item?.symbol}
+                              </Text>
+                            ) : undefined}
+                          </View>
+
+                          {showWalletPrice ? (
+                            <View
+                              style={{
+                                flexDirection: "column",
+                                alignItems: "flex-end",
+                                alignContent: "flex-end",
+                              }}
+                            >
+                              {item?.balance && (
+                                <Text style={styles.optionName}>
+                                  {item?.balance}
+                                </Text>
+                              )}
+                              {item?.total_price ? (
+                                <Text style={styles.optionName}>
+                                  {`${formatAmount(item?.total_price, {
+                                    currency: "USD",
+                                  })}`}
+                                </Text>
+                              ) : (
+                                <Text style={styles.optionName}>
+                                  {`${formatAmount(item?.price, {
+                                    currency: "USD",
+                                  })}`}
+                                </Text>
+                              )}
+                            </View>
                           ) : undefined}
                         </View>
-
-                        {showWalletPrice ? (
-                          <View
-                            style={{
-                              flexDirection: "column",
-                              alignItems: "flex-end",
-                              alignContent: "flex-end",
-                            }}
-                          >
-                            {item?.balance && (
-                              <Text style={styles.optionName}>
-                                {item?.balance}
-                              </Text>
-                            )}
-                            {item?.total_price ? (
-                              <Text style={styles.optionName}>
-                                {`${formatAmount(item?.total_price, {
-                                  currency: "USD",
-                                })}`}
-                              </Text>
-                            ) : (
-                              <Text style={styles.optionName}>
-                                {`${formatAmount(item?.price, {
-                                  currency: "USD",
-                                })}`}
-                              </Text>
-                            )}
-                          </View>
-                        ) : undefined}
                       </View>
-                    </View>
-                  </Pressable>
-                )}
+                    </Pressable>
+                  );
+                }}
                 ListEmptyComponent={
                   <View style={{ paddingVertical: 20, alignItems: "center" }}>
                     <Text
@@ -249,7 +269,7 @@ export function SelectInput({
 const styles = StyleSheet.create({
   label: {
     fontFamily: getFontFamily("800"),
-    fontSize: normalize(17),
+    fontSize: normalize(18),
   },
   input: {
     borderWidth: 1,

@@ -15,14 +15,14 @@ import { showError } from "../utlis/toast";
 import { SelectInput } from "../components/SelectInputField";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
-import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
 import useAxios from "../hooks/useAxios";
 import { formatAmount } from "../libs/formatNumber";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 
 // Validation Schema
 const schema = yup.object({
@@ -37,7 +37,7 @@ const schema = yup.object({
 export default function PayCableTVSubscriptionScreen() {
   const [loading, setLoading] = useState(false);
   const [saveBeneficiary, setSaveBeneficiary] = useState(false);
-  const { apiGet } = useAxios();
+  const { apiGet, apiDelete } = useAxios();
   const navigation: any = useNavigation();
 
   const {
@@ -68,6 +68,18 @@ export default function PayCableTVSubscriptionScreen() {
     enabled: !!selectedNetwork, // only run when selectedNetwork is truthy
     refetchOnWindowFocus: false,
     staleTime: 864000000,
+  });
+
+  const { mutate: deleteAll, isPending: deleting } = useMutation({
+    mutationFn: async () => {
+      return apiDelete("/beneficiaries/type", {
+        params: { type: "cable_tv" },
+      });
+    },
+    onSuccess: () => {
+      refetch();
+      // setSelectedBeneficiary(null);
+    },
   });
 
   const onSubmit = async (values: any) => {
@@ -120,6 +132,22 @@ export default function PayCableTVSubscriptionScreen() {
     },
   ];
 
+  const {
+    data,
+    isLoading: isLoadingSavedData,
+    isError,
+    refetch,
+    isRefetching,
+  } = useQuery({
+    queryKey: ["saved-beneficiaries-cabletv"],
+    queryFn: async () => {
+      const res = await apiGet("/beneficiaries/type", {
+        params: { type: "cable_tv" },
+      });
+      return res?.data?.data || [];
+    },
+  });
+
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -133,6 +161,24 @@ export default function PayCableTVSubscriptionScreen() {
           name="smartcard_number"
           control={control}
         />
+
+        <View style={{ marginBottom: 10 }}>
+          <SavedBeneficiaries
+            onRefetch={refetch}
+            data={data ?? []}
+            isLoading={isLoadingSavedData}
+            isRefetching={isRefetching}
+            isError={isError}
+            refetch={refetch}
+            onSelect={data => {
+              setValue("smartcard_number", data?.identifier);
+              setValue("network", data?.meta?.network);
+            }}
+            selectedBeneficiary={null}
+            onDeleteAll={deleteAll}
+            deleting={deleting}
+          />
+        </View>
 
         <View style={{ marginBottom: 20 }}>
           <Text style={styles.subHeader}>Select Cable TV Provider</Text>
@@ -220,7 +266,7 @@ const styles = StyleSheet.create({
   subHeader: {
     marginTop: 20,
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     marginBottom: 8,
     color: "#1A1A1A",
   },

@@ -28,13 +28,27 @@ export default function BankAccountSelector({
           <View style={styles.selectedAccount}>
             <View>
               <Text style={styles.bankName}>{bankName}</Text>
-              <View style={styles.accountNumber}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignContent: "center",
+                }}
+              >
                 <Text style={styles.accountNumber}>{accountNumber}</Text>
-                <Text style={{ marginHorizontal: 2 }}>•</Text>
+                <Text
+                  style={{
+                    marginHorizontal: 2,
+                    textAlign: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  •
+                </Text>
                 <Text style={styles.accountNumber}>{accountName}</Text>
               </View>
             </View>
-            <CustomIcon source={CheckCircleIcon} />
+            <CustomIcon size={15} source={CheckCircleIcon} />
           </View>
         </TouchableOpacity>
       ) : (
@@ -42,7 +56,7 @@ export default function BankAccountSelector({
           style={styles.addAccountButton}
           onPress={() => setShowBankModal(true)}
         >
-          <AddCircle size={normalize(18)} color="#00863b" />
+          <AddCircle size={normalize(16)} color="#00863b" />
           <Text style={styles.addAccountText}>Add Bank Account</Text>
         </TouchableOpacity>
       )}
@@ -88,15 +102,15 @@ const styles = StyleSheet.create({
   addAccountButton: {
     borderWidth: 1,
     borderColor: "green",
-    padding: 16,
-    borderRadius: 8,
+    padding: 14,
+    borderRadius: 200,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
     gap: 5,
   },
   addAccountText: {
-    color: COLORS.secondary,
+    color: COLORS.primary,
     fontSize: normalize(16),
     fontFamily: getFontFamily("800"),
   },
