@@ -70,7 +70,7 @@ export default function SavedBeneficiaries({
             <Text style={styles.name}>
               {item?.meta?.account_name ?? item?.meta?.network}
             </Text>
-            <Text style={styles.lastUsed}>{formatDate(item?.updated_at)}</Text>
+            {/* <Text style={styles.lastUsed}>{formatDate(item?.updated_at)}</Text> */}
           </View>
           {item?.meta?.bank_name && (
             <Text style={styles.details} numberOfLines={1}>
@@ -225,7 +225,6 @@ const styles = StyleSheet.create({
     color: "#000",
     fontFamily: getFontFamily("800"),
     textTransform: "uppercase",
-    width: "10%",
   },
   details: {
     fontSize: 14,

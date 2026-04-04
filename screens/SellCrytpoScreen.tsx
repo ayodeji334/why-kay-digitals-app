@@ -133,7 +133,10 @@ export default function CryptoSellScreen() {
 
   const amount = watch("amount");
   const symbol = assetDetails?.symbol ?? "";
-  const isStablecoin = STABLECOINS.includes(symbol.toUpperCase());
+  const isStablecoin = useMemo(
+    () => STABLECOINS.includes(symbol.toUpperCase()),
+    [symbol],
+  );
 
   const balanceUsd = useMemo(() => {
     return Number(assetDetails?.balance ?? "0") * marketPrice;
@@ -199,6 +202,7 @@ export default function CryptoSellScreen() {
     if (!hasInsufficientBalance) return null;
     return `You can only sell ${formatAmount(maxSellableUsd, {
       currency: "USD",
+      decimalPlace: 4,
     })} of your balance`;
   }, [hasInsufficientBalance, maxSellableUsd, symbol]);
 
@@ -228,7 +232,7 @@ export default function CryptoSellScreen() {
   useEffect(() => {
     if (
       assetDetails?.sell_rate &&
-      amount > 0 &&
+      // amount > 0 &&
       marketPrice > 0 &&
       assetDetails
     ) {

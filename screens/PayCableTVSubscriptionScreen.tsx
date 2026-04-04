@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -103,6 +103,7 @@ export default function PayCableTVSubscriptionScreen() {
         type: "CABLE-TV",
         biller_name: selectedPlan.biller_code || values.network,
         url: "/bills/pay-cable-tv",
+        network: values?.network,
       };
 
       navigation.navigate("ConfirmTransaction" as never, {

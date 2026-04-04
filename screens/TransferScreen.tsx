@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ScrollView,
   RefreshControl,
@@ -10,7 +10,12 @@ import {
   TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Controller, useForm } from "react-hook-form";
+import {
+  Controller,
+  useForm,
+  UseFormClearErrors,
+  UseFormSetError,
+} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigation } from "@react-navigation/native";
@@ -27,14 +32,15 @@ import { SelectInput } from "../components/SelectInputField";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import { useWallets } from "../hooks/useWallet";
 import { useSummaryDetail } from "../hooks/useSummaryDetail";
+import useAxios from "../hooks/useAxios";
 
 const fiatSchema = yup.object({
   username: yup.string().required("Username is required"),
   amount: yup
     .number()
     .typeError("Enter a valid amount")
-    .min(1000, "Minimum is ₦1,000")
-    .max(300000, "Maximum is ₦300,000")
+    .min(100, "Minimum amount you can transfer is ₦100")
+    .max(300000, "Maximum amount you can transfer is ₦300,000")
     .required(),
   description: yup.string().optional(),
 });
@@ -49,19 +55,196 @@ const cryptoSchema = yup.object({
   asset_id: yup.string().required("Select a cryptocurrency"),
 });
 
+interface ValidationState {
+  isChecking: boolean;
+  isValid: boolean | null;
+}
+
+export function useUsernameValidation(
+  setError: UseFormSetError<any>,
+  clearErrors: UseFormClearErrors<any>,
+  debounceMs = 600,
+) {
+  const [state, setState] = useState<ValidationState>({
+    isChecking: false,
+    isValid: null,
+  });
+  const { post } = useAxios();
+
+  const validate = useCallback(
+    (() => {
+      let timer: ReturnType<typeof setTimeout>;
+
+      return (username: string) => {
+        clearTimeout(timer);
+
+        if (!username || username.length < 3) {
+          setState({ isChecking: false, isValid: null });
+          clearErrors("username");
+          return;
+        }
+
+        setState(prev => ({ ...prev, isChecking: true }));
+
+        timer = setTimeout(async () => {
+          try {
+            const { data } = await post("/users/user/validate-username", {
+              username,
+            });
+
+            if (data.success) {
+              setState({ isChecking: false, isValid: true });
+              clearErrors("username");
+            } else {
+              setState({ isChecking: false, isValid: false });
+              setError("username", {
+                type: "manual",
+                message: "Username cannot be verified",
+              });
+            }
+          } catch {
+            setState({ isChecking: false, isValid: false });
+            setError("username", {
+              type: "manual",
+              message: "Could not verify username",
+            });
+          }
+        }, debounceMs);
+      };
+    })(),
+    [setError, clearErrors],
+  );
+
+  const reset = useCallback(() => {
+    setState({ isChecking: false, isValid: null });
+    clearErrors("username");
+  }, [clearErrors]);
+
+  return { ...state, validate, reset };
+}
+
+export type TransferTab = "fiat" | "crypto";
+
+const base = {
+  username: yup
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .required("Username is required"),
+  amount: yup
+    .number()
+    .typeError("Enter a valid amount")
+    .moreThan(0, "Amount must be greater than 0")
+    .required("Amount is required"),
+};
+
+export const getTransferSchema = (tab: TransferTab): yup.AnyObjectSchema => {
+  if (tab === "fiat") {
+    return yup.object({
+      ...base,
+      description: yup.string().required("Narration is required"),
+      asset_id: yup.string().optional(),
+    });
+  }
+
+  return yup.object({
+    ...base,
+    asset_id: yup.string().required("Please select an asset"),
+    description: yup.string().optional(),
+  });
+};
+
+// export const getTransferSchema = (tab: TransferTab) => {
+//   const base = {
+//     username: yup
+//       .string()
+//       .min(3, "Username must be at least 3 characters")
+//       .required("Username is required"),
+//     amount: yup
+//       .number()
+//       .typeError("Enter a valid amount")
+//       .moreThan(0, "Amount must be greater than 0")
+//       .required("Amount is required"),
+//   };
+
+//   if (tab === "fiat") {
+//     return yup.object({
+//       ...base,
+//       description: yup
+//         .string()
+//         .required("Narration is required"),
+//     });
+//   }
+
+//   return yup.object({
+//     ...base,
+//     asset_id: yup
+//       .string()
+//       .required("Please select an asset"),
+//   });
+// };
+
 export default function TransferScreen() {
   const navigation = useNavigation<any>();
-  const [activeTab, setActiveTab] = useState<"fiat" | "crypto">("crypto");
-  const [saveBeneficiary, setSaveBeneficiary] = useState(true);
+  const [activeTab, setActiveTab] = useState<TransferTab>("crypto");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingPayload, setPendingPayload] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [displayAmount, setDisplayAmount] = useState("");
 
   const { data: { wallets = [], totalAssetValueBalance = 0 } = {} } =
     useWallets();
+  const { isLoading, walletSummary, refetch } = useSummaryDetail();
 
-  const [displayAmount, setDisplayAmount] = useState("");
+  // ─── single form, schema swaps when tab changes ───────────────────────────
+  const {
+    control,
+    handleSubmit,
+    watch,
+    reset,
+    setError,
+    clearErrors,
+    formState: { isValid, isSubmitting, errors },
+  } = useForm<any>({
+    resolver: yupResolver(getTransferSchema(activeTab)),
+    defaultValues: { username: "", amount: 0, description: "", asset_id: "" },
+    mode: "onChange",
+  });
 
+  // ─── username validation hook ─────────────────────────────────────────────
+  const {
+    isChecking,
+    isValid: usernameIsValid,
+    validate: validateUsername,
+    reset: resetUsernameValidation,
+  } = useUsernameValidation(setError, clearErrors);
+
+  // ─── tab switching — reset form + schema + username validation ────────────
+  const handleTabChange = (tab: string) => {
+    const nextTab = tab as any;
+    setActiveTab(nextTab);
+    setDisplayAmount("");
+    resetUsernameValidation();
+    reset(
+      { username: "", amount: 0, description: "", asset_id: "" },
+      {
+        keepErrors: false,
+        keepDirty: false,
+        keepTouched: false,
+        keepIsValid: false,
+      },
+    );
+  };
+
+  // ─── re-validate username whenever it changes ─────────────────────────────
+  const username = watch("username");
+  const amount = watch("amount") || 0;
+  const assetId = watch("asset_id");
+
+  useEffect(() => {
+    validateUsername(username);
+  }, [username]);
+
+  // ─── wallets ──────────────────────────────────────────────────────────────
   const userWallets: any[] = useMemo(() => {
     if (!wallets || wallets.length === 0) return [];
     return wallets
@@ -74,57 +257,15 @@ export default function TransferScreen() {
         price: asset?.value,
       }))
       .sort((a: any, b: any) => {
-        const aPrice = Number(a.price);
-        const bPrice = Number(b.price);
-
-        const aValue = Number(a.balance);
-        const bValue = Number(b.balance);
-
-        // wallets with no balance sorted by market price desc
-        if (aPrice !== bPrice) return bPrice - aPrice;
-
-        // wallets with balance float to top, sorted by USD value desc
-        if (bValue !== aValue) return bValue - aValue;
+        const priceDiff = Number(b.price) - Number(a.price);
+        if (priceDiff !== 0) return priceDiff;
+        return Number(b.balance) - Number(a.balance);
       });
   }, [wallets]);
 
-  const { isLoading, walletSummary, refetch } = useSummaryDetail();
-
-  const fiatForm = useForm<any>({
-    resolver: yupResolver(fiatSchema),
-    defaultValues: { username: "", amount: 0, description: "" },
-    mode: "onChange",
-  });
-
-  const cryptoForm = useForm<any>({
-    resolver: yupResolver(cryptoSchema),
-    defaultValues: { username: "", amount: 0, asset_id: "" },
-    mode: "onChange",
-  });
-
-  const form = activeTab === "fiat" ? fiatForm : cryptoForm;
-
-  const {
-    control,
-    handleSubmit,
-    watch,
-    reset,
-    formState: { isValid, isSubmitting, errors },
-  }: any = form;
-
-  const amount = watch("amount") || 0;
-  const assetId = watch("asset_id");
-
+  // ─── derived state ────────────────────────────────────────────────────────
   const dailyLimit = walletSummary?.daily_limit ?? 0;
   const todayVolume = walletSummary?.total_today ?? 0;
-
-  const exceedsDailyLimit = useMemo(() => {
-    if (activeTab !== "fiat") return false;
-    if (!amount || !dailyLimit) return false;
-
-    return amount + todayVolume > dailyLimit;
-  }, [activeTab, amount, dailyLimit]);
-
   const fiatBalance = walletSummary?.balance ?? 0;
 
   const selectedCryptoWallet = useMemo(
@@ -132,28 +273,21 @@ export default function TransferScreen() {
     [userWallets, assetId],
   );
 
+  const exceedsDailyLimit = useMemo(() => {
+    if (activeTab !== "fiat" || !amount || !dailyLimit) return false;
+    return amount + todayVolume > dailyLimit;
+  }, [activeTab, amount, dailyLimit, todayVolume]);
+
   const hasInsufficientBalance = useMemo(() => {
     if (!amount) return false;
-
-    if (activeTab === "fiat") {
-      return amount > fiatBalance;
-    }
-
+    if (activeTab === "fiat") return amount > fiatBalance;
     if (!selectedCryptoWallet) return true;
-
     return amount > selectedCryptoWallet?.price;
-  }, [
-    amount,
-    activeTab,
-    fiatBalance,
-    selectedCryptoWallet?.balance,
-    selectedCryptoWallet?.price,
-  ]);
+  }, [amount, activeTab, fiatBalance, selectedCryptoWallet?.price]);
 
-  const progress =
-    walletSummary && walletSummary.daily_limit
-      ? walletSummary.total_today / walletSummary.daily_limit
-      : 0;
+  const progress = dailyLimit
+    ? (walletSummary?.total_today ?? 0) / dailyLimit
+    : 0;
 
   const isDisabled = useMemo(
     () =>
@@ -161,31 +295,27 @@ export default function TransferScreen() {
       isSubmitting ||
       hasInsufficientBalance ||
       exceedsDailyLimit ||
-      amount <= 0,
+      amount <= 0 ||
+      isChecking ||
+      !usernameIsValid,
     [
       isValid,
       isSubmitting,
       hasInsufficientBalance,
       exceedsDailyLimit,
       amount,
-      activeTab,
+      isChecking,
+      usernameIsValid,
     ],
   );
 
-  const tabOptions: TabOption[] = [
-    { value: "crypto", label: "Crypto" },
-    { value: "fiat", label: "Fiat" },
-  ];
-
+  // ─── submit ───────────────────────────────────────────────────────────────
   const onSubmit = (values: any) => {
-    let payload: any;
-
     if (activeTab === "fiat") {
-      payload = {
+      const payload = {
         username: values.username,
         amount: Number(values.amount),
         description: values.description,
-        save_as_beneficiary: saveBeneficiary,
         type: "TRANSFER",
         url: "/wallets/user/transfer",
       };
@@ -195,17 +325,20 @@ export default function TransferScreen() {
         setShowConfirmModal(true);
         return;
       }
-    } else {
-      payload = {
+
+      navigation.navigate("ConfirmTransaction", { payload });
+      return;
+    }
+
+    navigation.navigate("ConfirmTransaction", {
+      payload: {
         username: values.username,
         amount: Number(values.amount),
         asset_id: values.asset_id,
         type: "CRYPTO_TRANSFER",
         url: "/wallets/user/transfer-crypto",
-      };
-    }
-
-    navigation.navigate("ConfirmTransaction", { payload });
+      },
+    });
   };
 
   const handleProceed = () => {
@@ -213,10 +346,11 @@ export default function TransferScreen() {
     navigation.navigate("ConfirmTransaction", { payload: pendingPayload });
   };
 
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab as "fiat" | "crypto");
-    reset();
-  };
+  // ─── render ───────────────────────────────────────────────────────────────
+  const tabOptions: TabOption[] = [
+    { value: "crypto", label: "Crypto" },
+    { value: "fiat", label: "Fiat" },
+  ];
 
   return (
     <SafeAreaView
@@ -229,10 +363,7 @@ export default function TransferScreen() {
         tabs={tabOptions}
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        containerStyle={{
-          backgroundColor: "#f3f3f3ff",
-          marginVertical: 10,
-        }}
+        containerStyle={{ backgroundColor: "#f3f3f3ff", marginVertical: 10 }}
         activeTabStyle={{ backgroundColor: COLORS.primary }}
         activeTabTextStyle={{ color: "#fff" }}
       />
@@ -261,16 +392,14 @@ export default function TransferScreen() {
           currency={activeTab === "crypto" ? "USD" : "NGN"}
         />
 
-        {activeTab === "fiat" ? (
+        {activeTab === "fiat" && (
           <View style={styles.limitContainer}>
             <View style={styles.limitHeader}>
               <Text style={styles.limitLabel}>
-                Daily Limit:
-                {formatAmount(walletSummary?.daily_limit) || "0"}
+                Daily Limit: {formatAmount(walletSummary?.daily_limit) || "0"}
               </Text>
               <Text style={styles.upgradeText}>Upgrade Limit</Text>
             </View>
-
             <View style={styles.progressBarBackground}>
               <View
                 style={[
@@ -279,7 +408,6 @@ export default function TransferScreen() {
                 ]}
               />
             </View>
-
             <View style={styles.limitRange}>
               <Text style={styles.limitValue}>
                 {formatAmount(walletSummary?.total_today) || "0"}
@@ -289,25 +417,38 @@ export default function TransferScreen() {
               </Text>
             </View>
           </View>
-        ) : undefined}
+        )}
 
+        {/* key forces the entire form to remount on tab change,
+            clearing all field state and keyboard focus cleanly  */}
         <View key={activeTab} style={styles.form}>
           <TextInputField
-            key={activeTab}
             label="Username"
             control={control}
             name="username"
-            placeholder="Enter receipient username"
+            placeholder="Enter recipient username"
           />
+
+          {isChecking && (
+            <View style={styles.usernameStatus}>
+              <Text style={styles.usernameChecking}>Validating username…</Text>
+            </View>
+          )}
+
+          {!isChecking && usernameIsValid === true && (
+            <View style={styles.usernameStatus}>
+              <Text style={styles.usernameValid}>✓ Username found</Text>
+            </View>
+          )}
 
           {activeTab === "crypto" && (
             <View style={{ marginVertical: 4 }}>
               <SelectInput
                 control={control}
                 name="asset_id"
-                label="Choose Asset(coin)"
+                label="Choose Asset (coin)"
                 options={userWallets}
-                placeholder="Select an asset(coin)"
+                placeholder="Select an asset (coin)"
                 title="Select an asset"
                 showWalletPrice={true}
               />
@@ -335,17 +476,17 @@ export default function TransferScreen() {
                     onBlur={onBlur}
                     onChangeText={text => {
                       const formatted = formatWithCommas(text);
-                      const numeric = parseToNumber(formatted);
-                      onChange(numeric);
+                      onChange(parseToNumber(formatted));
                       setDisplayAmount(formatted);
                     }}
                   />
                 </View>
               )}
             />
-
             {errors.amount && (
-              <Text style={styles.error}>{errors?.amount?.message}</Text>
+              <Text style={styles.error}>
+                {errors?.amount?.message as string}
+              </Text>
             )}
           </View>
 
@@ -379,14 +520,6 @@ export default function TransferScreen() {
           </View>
         )}
 
-        {activeTab === "fiat" && (
-          <SaveAsBeneficiarySwitch
-            value={saveBeneficiary}
-            onValueChange={setSaveBeneficiary}
-            disabled={isSubmitting}
-          />
-        )}
-
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={handleSubmit(onSubmit)}
@@ -410,6 +543,7 @@ export default function TransferScreen() {
             Continue
           </Text>
         </TouchableOpacity>
+
         <CustomLoading loading={isLoading} />
       </ScrollView>
 
@@ -425,12 +559,445 @@ export default function TransferScreen() {
   );
 }
 
+// export default function TransferScreen() {
+//   const navigation = useNavigation<any>();
+//   const [activeTab, setActiveTab] = useState<"fiat" | "crypto">("crypto");
+//   // const [saveBeneficiary, setSaveBeneficiary] = useState(true);
+//   const [showConfirmModal, setShowConfirmModal] = useState(false);
+//   const [pendingPayload, setPendingPayload] = useState<any>(null);
+//   const [isRefreshing, setIsRefreshing] = useState(false);
+
+//   const { data: { wallets = [], totalAssetValueBalance = 0 } = {} } =
+//     useWallets();
+
+//   const [displayAmount, setDisplayAmount] = useState("");
+
+//   const userWallets: any[] = useMemo(() => {
+//     if (!wallets || wallets.length === 0) return [];
+//     return wallets
+//       .map((asset: any) => ({
+//         ...asset,
+//         label: `${asset?.name} (${asset?.symbol})`,
+//         value: asset.asset_id ?? asset.uuid ?? "",
+//         symbol: asset.symbol ?? "",
+//         logo_url: asset.logo ?? "",
+//         price: asset?.value,
+//       }))
+//       .sort((a: any, b: any) => {
+//         const aPrice = Number(a.price);
+//         const bPrice = Number(b.price);
+
+//         const aValue = Number(a.balance);
+//         const bValue = Number(b.balance);
+
+//         // wallets with no balance sorted by market price desc
+//         if (aPrice !== bPrice) return bPrice - aPrice;
+
+//         // wallets with balance float to top, sorted by USD value desc
+//         if (bValue !== aValue) return bValue - aValue;
+//       });
+//   }, [wallets]);
+
+//   const { isLoading, walletSummary, refetch } = useSummaryDetail();
+
+//   const fiatForm = useForm<any>({
+//     resolver: yupResolver(fiatSchema),
+//     defaultValues: { username: "", amount: 0, description: "" },
+//     mode: "onChange",
+//   });
+
+//   const cryptoForm = useForm<any>({
+//     resolver: yupResolver(cryptoSchema),
+//     defaultValues: { username: "", amount: 0, asset_id: "" },
+//     mode: "onChange",
+//   });
+
+//   const form = activeTab === "fiat" ? fiatForm : cryptoForm;
+
+//   const {
+//     control,
+//     handleSubmit,
+//     watch,
+//     reset,
+//     formState: { isValid, isSubmitting, errors },
+//   }: any = form;
+
+//   const amount = watch("amount") || 0;
+//   const assetId = watch("asset_id");
+
+//   const dailyLimit = walletSummary?.daily_limit ?? 0;
+//   const todayVolume = walletSummary?.total_today ?? 0;
+
+//   const exceedsDailyLimit = useMemo(() => {
+//     if (activeTab !== "fiat") return false;
+//     if (!amount || !dailyLimit) return false;
+
+//     return amount + todayVolume > dailyLimit;
+//   }, [activeTab, amount, dailyLimit]);
+
+//   const fiatBalance = walletSummary?.balance ?? 0;
+
+//   const selectedCryptoWallet = useMemo(
+//     () => userWallets.find(w => w.asset_id === assetId),
+//     [userWallets, assetId],
+//   );
+
+//   const hasInsufficientBalance = useMemo(() => {
+//     if (!amount) return false;
+
+//     if (activeTab === "fiat") {
+//       return amount > fiatBalance;
+//     }
+
+//     if (!selectedCryptoWallet) return true;
+
+//     return amount > selectedCryptoWallet?.price;
+//   }, [
+//     amount,
+//     activeTab,
+//     fiatBalance,
+//     selectedCryptoWallet?.balance,
+//     selectedCryptoWallet?.price,
+//   ]);
+
+//   const {
+//     isChecking,
+//     isValid: usernameIsValid,
+//     validate: validateUsername,
+//     reset: resetUsernameValidation,
+//   } = useUsernameValidation(
+//     cryptoForm.setError ?? fiatForm.setError,
+//     cryptoForm.clearErrors ?? fiatForm.clearErrors,
+//   );
+
+//   const progress =
+//     walletSummary && walletSummary.daily_limit
+//       ? walletSummary.total_today / walletSummary.daily_limit
+//       : 0;
+
+//   const isDisabled = useMemo(
+//     () =>
+//       isSubmitting ||
+//       hasInsufficientBalance ||
+//       exceedsDailyLimit ||
+//       amount <= 0 ||
+//       isChecking ||
+//       !usernameIsValid,
+//     [
+//       isSubmitting,
+//       hasInsufficientBalance,
+//       exceedsDailyLimit,
+//       amount,
+//       isChecking,
+//       usernameIsValid,
+//     ],
+//   );
+
+//   const username = watch("username");
+
+//   const tabOptions: TabOption[] = [
+//     { value: "crypto", label: "Crypto" },
+//     { value: "fiat", label: "Fiat" },
+//   ];
+
+//   const handleTabChange = (tab: string) => {
+//     setActiveTab(tab as "fiat" | "crypto");
+//     reset();
+//     resetUsernameValidation(); // ← add this
+//   };
+
+//   const onSubmit = (values: any) => {
+//     let payload: any;
+
+//     if (activeTab === "fiat") {
+//       payload = {
+//         username: values.username,
+//         amount: Number(values.amount),
+//         description: values.description,
+//         // save_as_beneficiary: saveBeneficiary,
+//         type: "TRANSFER",
+//         url: "/wallets/user/transfer",
+//       };
+
+//       if (values.amount > 50000) {
+//         setPendingPayload(payload);
+//         setShowConfirmModal(true);
+//         return;
+//       }
+//     } else {
+//       payload = {
+//         username: values.username,
+//         amount: Number(values.amount),
+//         asset_id: values.asset_id,
+//         type: "CRYPTO_TRANSFER",
+//         url: "/wallets/user/transfer-crypto",
+//       };
+//     }
+
+//     navigation.navigate("ConfirmTransaction", { payload });
+//   };
+
+//   const handleProceed = () => {
+//     setShowConfirmModal(false);
+//     navigation.navigate("ConfirmTransaction", { payload: pendingPayload });
+//   };
+
+//   // const handleTabChange = (tab: string) => {
+//   //   setActiveTab(tab as "fiat" | "crypto");
+//   //   reset();
+//   // };
+
+//   useEffect(() => {
+//     validateUsername(username);
+//   }, [username]);
+
+//   return (
+//     <SafeAreaView
+//       edges={["right", "bottom"]}
+//       style={{ flex: 1, backgroundColor: "#fff", paddingHorizontal: 16 }}
+//     >
+//       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+
+//       <TabSwitcher
+//         tabs={tabOptions}
+//         activeTab={activeTab}
+//         onTabChange={handleTabChange}
+//         containerStyle={{
+//           backgroundColor: "#f3f3f3ff",
+//           marginVertical: 10,
+//         }}
+//         activeTabStyle={{ backgroundColor: COLORS.primary }}
+//         activeTabTextStyle={{ color: "#fff" }}
+//       />
+
+//       <ScrollView
+//         showsVerticalScrollIndicator={false}
+//         refreshControl={
+//           <RefreshControl
+//             refreshing={isRefreshing}
+//             onRefresh={async () => {
+//               setIsRefreshing(true);
+//               await refetch();
+//               setIsRefreshing(false);
+//             }}
+//             colors={[COLORS.secondary]}
+//           />
+//         }
+//       >
+//         <BalanceCard
+//           balance={
+//             activeTab === "crypto" ? totalAssetValueBalance : fiatBalance
+//           }
+//           title="Total Balance"
+//           showTransactionsButton={false}
+//           showActionButtons={false}
+//           currency={activeTab === "crypto" ? "USD" : "NGN"}
+//         />
+
+//         {activeTab === "fiat" ? (
+//           <View style={styles.limitContainer}>
+//             <View style={styles.limitHeader}>
+//               <Text style={styles.limitLabel}>
+//                 Daily Limit:
+//                 {formatAmount(walletSummary?.daily_limit) || "0"}
+//               </Text>
+//               <Text style={styles.upgradeText}>Upgrade Limit</Text>
+//             </View>
+
+//             <View style={styles.progressBarBackground}>
+//               <View
+//                 style={[
+//                   styles.progressBarFill,
+//                   { width: `${Math.min(progress * 100, 100)}%` },
+//                 ]}
+//               />
+//             </View>
+
+//             <View style={styles.limitRange}>
+//               <Text style={styles.limitValue}>
+//                 {formatAmount(walletSummary?.total_today) || "0"}
+//               </Text>
+//               <Text style={styles.limitValue}>
+//                 {formatAmount(walletSummary?.daily_limit) || "0"}
+//               </Text>
+//             </View>
+//           </View>
+//         ) : undefined}
+
+//         <View key={activeTab} style={styles.form}>
+//           <TextInputField
+//             key={activeTab}
+//             label="Username"
+//             control={control}
+//             name="username"
+//             placeholder="Enter receipient username"
+//           />
+
+//           {/* Inline status indicator below the field */}
+//           {isChecking && (
+//             <View style={styles.usernameStatus}>
+//               <Text style={styles.usernameChecking}>Validatin username…</Text>
+//             </View>
+//           )}
+
+//           {!isChecking && usernameIsValid === true && (
+//             <View style={styles.usernameStatus}>
+//               <Text style={styles.usernameValid}>✓ Username found</Text>
+//             </View>
+//           )}
+
+//           {activeTab === "crypto" && (
+//             <View style={{ marginVertical: 4 }}>
+//               <SelectInput
+//                 control={control}
+//                 name="asset_id"
+//                 label="Choose Asset(coin)"
+//                 options={userWallets}
+//                 placeholder="Select an asset(coin)"
+//                 title="Select an asset"
+//                 showWalletPrice={true}
+//               />
+//             </View>
+//           )}
+
+//           <View style={{ marginVertical: 4 }}>
+//             <Text style={styles.label}>
+//               Amount in {activeTab === "fiat" ? "Naira (₦)" : "Dollars (USD)"}
+//             </Text>
+//             <Controller
+//               control={control}
+//               name="amount"
+//               render={({ field: { onBlur, onChange } }) => (
+//                 <View style={styles.inputContainer}>
+//                   <Text style={styles.dollarSign}>
+//                     {activeTab === "fiat" ? "₦" : "$"}
+//                   </Text>
+//                   <TextInput
+//                     style={styles.input}
+//                     value={displayAmount}
+//                     placeholder="0.00"
+//                     placeholderTextColor="#999"
+//                     keyboardType="decimal-pad"
+//                     onBlur={onBlur}
+//                     onChangeText={text => {
+//                       const formatted = formatWithCommas(text);
+//                       const numeric = parseToNumber(formatted);
+//                       onChange(numeric);
+//                       setDisplayAmount(formatted);
+//                     }}
+//                   />
+//                 </View>
+//               )}
+//             />
+
+//             {errors.amount && (
+//               <Text style={styles.error}>{errors?.amount?.message}</Text>
+//             )}
+//           </View>
+
+//           {activeTab === "fiat" && (
+//             <View style={{ marginVertical: 4 }}>
+//               <TextInputField
+//                 label="Narration"
+//                 control={control}
+//                 name="description"
+//                 placeholder="Enter description"
+//               />
+//             </View>
+//           )}
+//         </View>
+
+//         {exceedsDailyLimit && (
+//           <View style={styles.warningContainer}>
+//             <Text style={styles.warningText}>
+//               This amount exceeds your daily transfer limit of{" "}
+//               {formatAmount(walletSummary?.daily_limit ?? 0)}. Please reduce the
+//               amount or upgrade your limit.
+//             </Text>
+//           </View>
+//         )}
+
+//         {!exceedsDailyLimit && hasInsufficientBalance && (
+//           <View style={styles.warningContainer}>
+//             <Text style={styles.warningText}>
+//               You do not have enough balance to complete this transfer.
+//             </Text>
+//           </View>
+//         )}
+
+//         {/* {activeTab === "fiat" && (
+//           <SaveAsBeneficiarySwitch
+//             value={saveBeneficiary}
+//             onValueChange={setSaveBeneficiary}
+//             disabled={isSubmitting}
+//           />
+//         )} */}
+
+//         <TouchableOpacity
+//           activeOpacity={0.9}
+//           onPress={handleSubmit(onSubmit)}
+//           disabled={isDisabled}
+//           style={{
+//             backgroundColor: isDisabled ? COLORS.fadePrimary : COLORS.secondary,
+//             borderRadius: 100,
+//             paddingVertical: 16,
+//             marginVertical: 30,
+//           }}
+//         >
+//           <Text
+//             style={{
+//               color: "#fff",
+//               fontSize: normalize(18),
+//               textAlign: "center",
+//               fontFamily: getFontFamily("700"),
+//               opacity: isDisabled ? 0.4 : 1,
+//             }}
+//           >
+//             Continue
+//           </Text>
+//         </TouchableOpacity>
+//         <CustomLoading loading={isLoading} />
+//       </ScrollView>
+
+//       {activeTab === "fiat" && (
+//         <ConfirmationModal
+//           data={{ amount }}
+//           showConfirmModal={showConfirmModal}
+//           setShowConfirmModal={setShowConfirmModal}
+//           handleProceed={handleProceed}
+//         />
+//       )}
+//     </SafeAreaView>
+//   );
+// }
+
 const styles = StyleSheet.create({
   limitContainer: {
     marginVertical: 10,
     backgroundColor: "#EFF7EC",
     padding: 10,
     borderRadius: 10,
+  },
+  usernameStatus: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+    gap: 6,
+  },
+  usernameChecking: {
+    fontSize: 12,
+    color: "#888",
+    fontFamily: getFontFamily("700"),
+  },
+  usernameValid: {
+    fontSize: 12,
+    color: "#077830", // green
+    fontFamily: getFontFamily("700"),
+  },
+  usernameInvalid: {
+    fontSize: 12,
+    color: "#c21414", // red
+    fontFamily: getFontFamily("700"),
   },
   warningContainer: {
     marginVertical: 12,

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  Image,
 } from "react-native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -26,7 +27,7 @@ import MTNLogo from "../assets/mtn-new.svg";
 import GloLogo from "../assets/glo-logo.svg";
 import AirtelLogo from "../assets/airtel.svg";
 import NineMobile from "../assets/nine-mobile.svg";
-import { Check } from "iconsax-react-nativejs";
+// import { Check } from "iconsax-react-nativejs";
 
 const networks = [
   { id: "mtn", label: "MTN", Logo: MTNLogo },
@@ -144,20 +145,20 @@ export default function BuyDataScreen() {
     },
   });
 
-  // const networks = [
-  //   { id: "mtn", label: "MTN", logo: require("../assets/mtn-new.svg") },
-  //   { id: "glo", label: "GLO", logo: require("../assets/glo-logo.svg") },
-  //   {
-  //     id: "airtel",
-  //     label: "Airtel",
-  //     logo: require("../assets/airtel.svg"),
-  //   },
-  //   {
-  //     id: "9mobile",
-  //     label: "9mobile",
-  //     logo: require("../assets/nine-mobile.svg"),
-  //   },
-  // ];
+  const networks = [
+    { id: "mtn", label: "MTN", logo: require("../assets/mtn-new.svg") },
+    { id: "glo", label: "GLO", logo: require("../assets/glo-logo.svg") },
+    {
+      id: "airtel",
+      label: "Airtel",
+      logo: require("../assets/airtel.svg"),
+    },
+    {
+      id: "9mobile",
+      label: "9mobile",
+      logo: require("../assets/nine-mobile.svg"),
+    },
+  ];
 
   const { mutate: deleteAll, isPending: deleting } = useMutation({
     mutationFn: async () => {
@@ -207,7 +208,7 @@ export default function BuyDataScreen() {
         <View style={{ marginBottom: 10 }}>
           <Text style={styles.subHeader}>Select Network Provider</Text>
           <View style={styles.networkRow}>
-            {/* {networks.map((item, index) => (
+            {networks.map((item, index) => (
               <TouchableOpacity
                 key={index}
                 style={[
@@ -225,8 +226,8 @@ export default function BuyDataScreen() {
                 )}
                 <Image source={item.logo} style={styles.networkLogo} />
               </TouchableOpacity>
-            ))} */}
-            {networks.map(item => (
+            ))}
+            {/* {networks.map(item => (
               <TouchableOpacity
                 key={item.id}
                 style={[
@@ -247,7 +248,7 @@ export default function BuyDataScreen() {
                   style={{ borderRadius: 10, borderColor: "red" }}
                 />
               </TouchableOpacity>
-            ))}
+            ))} */}
           </View>
           {errors.network && (
             <Text style={styles.errorText}>{errors.network.message}</Text>
