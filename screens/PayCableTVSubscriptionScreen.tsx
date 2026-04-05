@@ -45,7 +45,7 @@ export default function PayCableTVSubscriptionScreen() {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors, isDirty, isValid },
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -65,9 +65,9 @@ export default function PayCableTVSubscriptionScreen() {
       const res = await apiGet(`/bills/cable-tv-plans/${selectedNetwork}`);
       return res.data?.data || [];
     },
-    enabled: !!selectedNetwork, // only run when selectedNetwork is truthy
+    enabled: !!selectedNetwork,
     refetchOnWindowFocus: false,
-    staleTime: 864000000,
+    staleTime: 4000,
   });
 
   const { mutate: deleteAll, isPending: deleting } = useMutation({
@@ -81,6 +81,8 @@ export default function PayCableTVSubscriptionScreen() {
       // setSelectedBeneficiary(null);
     },
   });
+
+  console.log;
 
   const onSubmit = async (values: any) => {
     try {
@@ -115,8 +117,6 @@ export default function PayCableTVSubscriptionScreen() {
       setLoading(false);
     }
   };
-
-  // Fetch plans for selected cable provider
 
   const networks = [
     { id: "dstv", label: "DSTV", logo: require("../assets/dstv-icon.png") },
@@ -173,7 +173,7 @@ export default function PayCableTVSubscriptionScreen() {
             refetch={refetch}
             onSelect={data => {
               setValue("smartcard_number", data?.identifier);
-              setValue("network", data?.meta?.network);
+              setValue("network", data?.meta?.provider);
             }}
             selectedBeneficiary={null}
             onDeleteAll={deleteAll}

@@ -152,6 +152,8 @@ export default function CryptoSellScreen() {
       const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
       const latestRates = res?.data?.asset ?? null;
 
+      console.log(res);
+
       if (!latestRates) {
         showError("Unable to fetch latest rates.");
         return;

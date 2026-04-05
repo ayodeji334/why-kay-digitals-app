@@ -229,80 +229,171 @@ export default function SendScreen() {
     }
 
     const precision = selectedNetwork.min_accuracy ?? 6;
-    const coinAmount = amount / marketPrice;
+    const coinAmount = amount / marketPrice; // coin equiv of what recipient gets
     const bybitFeeCoin = parseFloat(selectedNetwork.withdraw_fee ?? "0");
-    const platformFeeCoin = 1 / marketPrice;
+    const platformFeeCoin = 1 / marketPrice; // $1 platform fee in coin
     const totalFeeCoin = bybitFeeCoin + platformFeeCoin;
-    const coinAmountAfterFee = coinAmount - totalFeeCoin;
-    const coinAmountToBybit = coinAmountAfterFee + bybitFeeCoin;
+    const totalFeesUsd = totalFeeCoin * marketPrice;
+
+    // ── key change: total deducted from wallet = amount + fees ──────────
+    const totalCoinDeducted = coinAmount + totalFeeCoin;
+    const totalUsdDeducted = amount + totalFeesUsd;
+
     const bybitFeeUsd = bybitFeeCoin * marketPrice;
     const platformFeeUsd = 1;
-    const totalFeeUsd = totalFeeCoin * marketPrice;
-    const usdAmountAfterFee = coinAmountAfterFee * marketPrice;
 
-    const isBelowMinimum =
-      coinAmountAfterFee < parseFloat(selectedNetwork.withdraw_min ?? "0");
-    const isTooSmall = coinAmountAfterFee <= 0;
+    const minWithdrawCoin = parseFloat(selectedNetwork.withdraw_min ?? "0");
+    const isBelowMinimum = coinAmount < minWithdrawCoin;
+    const isTooSmall = coinAmount <= 0;
 
     return {
-      coinAmount: coinAmount.toFixed(precision),
+      coinAmount: coinAmount.toFixed(precision), // what recipient gets (coin)
       bybitFeeCoin: bybitFeeCoin.toFixed(precision),
       platformFeeCoin: platformFeeCoin.toFixed(precision),
       totalFeeCoin: totalFeeCoin.toFixed(precision),
-      coinAmountAfterFee: coinAmountAfterFee.toFixed(precision),
-      coinAmountToBybit: coinAmountToBybit.toFixed(precision),
+      totalCoinDeducted: totalCoinDeducted.toFixed(precision), // total leaving wallet (coin)
+      totalUsdDeducted: totalUsdDeducted.toFixed(2), // total leaving wallet (USD)
       bybitFeeUsd: bybitFeeUsd.toFixed(2),
       platformFeeUsd: platformFeeUsd.toFixed(2),
-      totalFeeUsd: totalFeeUsd.toFixed(2),
-      usdAmountAfterFee: usdAmountAfterFee.toFixed(2),
+      totalFeeUsd: totalFeesUsd.toFixed(2),
+      usdAmountAfterFee: amount.toFixed(2), // recipient gets exactly `amount`
       withdrawMin: selectedNetwork.withdraw_min,
       isBelowMinimum,
       isTooSmall,
     };
   }, [selectedNetwork, amount, marketPrice]);
 
+  // const feeBreakdown = useMemo(() => {
+  //   if (!selectedNetwork || !amount || amount <= 0 || marketPrice <= 0) {
+  //     return null;
+  //   }
+
+  //   const precision = selectedNetwork.min_accuracy ?? 6;
+  //   const coinAmount = amount / marketPrice;
+  //   const bybitFeeCoin = parseFloat(selectedNetwork.withdraw_fee ?? "0");
+  //   const platformFeeCoin = 1 / marketPrice;
+  //   const totalFeeCoin = bybitFeeCoin + platformFeeCoin;
+  //   const coinAmountAfterFee = coinAmount - totalFeeCoin;
+  //   const coinAmountToBybit = coinAmountAfterFee + bybitFeeCoin;
+  //   const bybitFeeUsd = bybitFeeCoin * marketPrice;
+  //   const platformFeeUsd = 1;
+  //   const totalFeeUsd = totalFeeCoin * marketPrice;
+  //   const usdAmountAfterFee = coinAmountAfterFee * marketPrice;
+
+  //   const isBelowMinimum =
+  //     coinAmountAfterFee < parseFloat(selectedNetwork.withdraw_min ?? "0");
+  //   const isTooSmall = coinAmountAfterFee <= 0;
+
+  //   return {
+  //     coinAmount: coinAmount.toFixed(precision),
+  //     bybitFeeCoin: bybitFeeCoin.toFixed(precision),
+  //     platformFeeCoin: platformFeeCoin.toFixed(precision),
+  //     totalFeeCoin: totalFeeCoin.toFixed(precision),
+  //     coinAmountAfterFee: coinAmountAfterFee.toFixed(precision),
+  //     coinAmountToBybit: coinAmountToBybit.toFixed(precision),
+  //     bybitFeeUsd: bybitFeeUsd.toFixed(2),
+  //     platformFeeUsd: platformFeeUsd.toFixed(2),
+  //     totalFeeUsd: totalFeeUsd.toFixed(2),
+  //     usdAmountAfterFee: usdAmountAfterFee.toFixed(2),
+  //     withdrawMin: selectedNetwork.withdraw_min,
+  //     isBelowMinimum,
+  //     isTooSmall,
+  //   };
+  // }, [selectedNetwork, amount, marketPrice]);
+
+  // const withdrawalStatus = useMemo(() => {
+  //   if (!feeBreakdown || !assetDetails) {
+  //     return { hasIssue: false, message: "" };
+  //   }
+
+  //   const amountAfterFee = Number(feeBreakdown.usdAmountAfterFee);
+  //   const balanceUsd = Number(balanceInUsd);
+
+  //   // Minimum withdrawal in USD (convert from coin to USD)
+  //   const minWithdrawCoin = Number(selectedNetwork?.withdraw_min ?? 0);
+  //   const minWithdrawUsd = minWithdrawCoin * marketPrice;
+
+  //   // Case 1: amount below minimum
+  //   if (Number(amount) < minWithdrawUsd && balanceUsd >= Number(amount)) {
+  //     return {
+  //       hasIssue: true,
+  //       message: `Increase amount! Minimum withdrawal is ${formatAmount(
+  //         minWithdrawUsd,
+  //         { currency: "USD" },
+  //       )}, but you entered ${formatAmount(amount, { currency: "USD" })}.`,
+  //     };
+  //   }
+
+  //   // Case 2: after-fee amount is negative or zero
+  //   if (amountAfterFee <= 0) {
+  //     return {
+  //       hasIssue: true,
+  //       message: `Amount too small. After fees, you would receive ${formatAmount(
+  //         amountAfterFee,
+  //         { currency: "USD" },
+  //       )}, which is not valid.`,
+  //     };
+  //   }
+
+  //   // Case 3: insufficient balance
+  //   if (amount > balanceUsd) {
+  //     return {
+  //       hasIssue: true,
+  //       message: `Insufficient balance. Total amount required is ${formatAmount(
+  //         Number(amount ?? "0"),
+  //         { currency: "USD" },
+  //       )}, but your balance is only ${formatAmount(balanceUsd, {
+  //         currency: "USD",
+  //       })}.`,
+  //     };
+  //   }
+
+  //   return { hasIssue: false, message: "" };
+  // }, [
+  //   feeBreakdown,
+  //   assetDetails,
+  //   amount,
+  //   balanceInUsd,
+  //   selectedNetwork,
+  //   marketPrice,
+  // ]);
+
   const withdrawalStatus = useMemo(() => {
     if (!feeBreakdown || !assetDetails) {
       return { hasIssue: false, message: "" };
     }
 
-    const amountAfterFee = Number(feeBreakdown.usdAmountAfterFee);
+    const totalUsdDeducted = Number(feeBreakdown.totalUsdDeducted);
     const balanceUsd = Number(balanceInUsd);
-
-    // Minimum withdrawal in USD (convert from coin to USD)
     const minWithdrawCoin = Number(selectedNetwork?.withdraw_min ?? 0);
     const minWithdrawUsd = minWithdrawCoin * marketPrice;
 
-    // Case 1: amount below minimum
-    if (Number(amount) < minWithdrawUsd && balanceUsd >= Number(amount)) {
+    // Case 1: send amount is below the network minimum
+    if (amount < minWithdrawUsd) {
       return {
         hasIssue: true,
-        message: `Increase amount! Minimum withdrawal is ${formatAmount(
-          minWithdrawUsd,
-          { currency: "USD" },
-        )}, but you entered ${formatAmount(amount, { currency: "USD" })}.`,
+        message: `Minimum withdrawal is ${formatAmount(minWithdrawUsd, {
+          currency: "USD",
+        })}. You entered ${formatAmount(amount, { currency: "USD" })}.`,
       };
     }
 
-    // Case 2: after-fee amount is negative or zero
-    if (amountAfterFee <= 0) {
+    // Case 2: coin amount is zero or negative
+    if (feeBreakdown.isTooSmall) {
       return {
         hasIssue: true,
-        message: `Amount too small. After fees, you would receive ${formatAmount(
-          amountAfterFee,
-          { currency: "USD" },
-        )}, which is not valid.`,
+        message: "Amount is too small to process after fees.",
       };
     }
 
-    // Case 3: insufficient balance
-    if (amount > balanceUsd) {
+    // Case 3: total (amount + fees) exceeds balance
+    if (totalUsdDeducted > balanceUsd) {
       return {
         hasIssue: true,
-        message: `Insufficient balance. Total amount required is ${formatAmount(
-          Number(amount ?? "0"),
+        message: `Insufficient balance. You need ${formatAmount(
+          totalUsdDeducted,
           { currency: "USD" },
-        )}, but your balance is only ${formatAmount(balanceUsd, {
+        )} (amount + fees) but your balance is ${formatAmount(balanceUsd, {
           currency: "USD",
         })}.`,
       };
@@ -543,20 +634,20 @@ export default function SendScreen() {
                   <View style={styles.feeDivider} />
 
                   <View style={styles.feeRow}>
-                    <Text style={styles.feeLabel}>Total Fees</Text>
+                    <Text style={[styles.feeLabel]}>Recipient Gets</Text>
                     <Text style={[styles.feeValue]}>
-                      {feeBreakdown.totalFeeCoin} {symbol} (≈ $
-                      {feeBreakdown.totalFeeUsd})
+                      {feeBreakdown.coinAmount} {symbol} (≈ $
+                      {feeBreakdown.usdAmountAfterFee})
                     </Text>
                   </View>
 
                   <View style={styles.feeDivider} />
 
                   <View style={styles.feeRow}>
-                    <Text style={[styles.feeLabel]}>Recipient Gets</Text>
+                    <Text style={styles.feeLabel}>Total Deducted</Text>
                     <Text style={[styles.feeValue]}>
-                      {feeBreakdown.coinAmountAfterFee} {symbol} (≈ $
-                      {feeBreakdown.usdAmountAfterFee})
+                      {feeBreakdown.totalCoinDeducted} {symbol} (≈ $
+                      {feeBreakdown.totalUsdDeducted})
                     </Text>
                   </View>
                 </View>

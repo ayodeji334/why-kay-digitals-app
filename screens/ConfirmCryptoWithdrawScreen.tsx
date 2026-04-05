@@ -19,6 +19,7 @@ import OtpInputField from "../components/OtpInputField";
 import useAxios from "../hooks/useAxios";
 import { AxiosError } from "axios";
 import { showError, showSuccess } from "../utlis/toast";
+import NumberInputField from "../components/NumberInputField";
 
 const schema = yup.object().shape({
   token: yup
@@ -113,20 +114,24 @@ export default function ConfirmCryptoWithdrawScreen() {
             label="Transaction PIN"
           />
 
-          <OtpInputField
+          <NumberInputField
             control={control}
             name="token"
-            isSecuredText={false}
-            boxes={6}
+            // isSecuredText={false}
+            // boxes={6}
+            maxLength={6}
             label="Verification Token"
+            placeholder="Enter verification Token"
           />
 
-          <OtpInputField
+          <NumberInputField
             control={control}
             name="googleCode"
-            isSecuredText={false}
-            boxes={6}
+            // isSecuredText={false}
+            // boxes={6}
+            maxLength={6}
             label="Authenticator Code"
+            placeholder="Enter Authenticator Code"
           />
         </View>
 

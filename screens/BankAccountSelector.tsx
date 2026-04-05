@@ -27,7 +27,7 @@ export default function BankAccountSelector({
         >
           <View style={styles.selectedAccount}>
             <View>
-              <Text style={styles.bankName}>{bankName}</Text>
+              <Text style={styles.bankName}>{accountName}</Text>
               <View
                 style={{
                   flexDirection: "row",
@@ -35,7 +35,7 @@ export default function BankAccountSelector({
                   alignContent: "center",
                 }}
               >
-                <Text style={styles.accountNumber}>{accountNumber}</Text>
+                <Text style={styles.accountNumber}>{bankName}</Text>
                 <Text
                   style={{
                     marginHorizontal: 2,
@@ -45,7 +45,7 @@ export default function BankAccountSelector({
                 >
                   •
                 </Text>
-                <Text style={styles.accountNumber}>{accountName}</Text>
+                <Text style={styles.accountNumber}>{accountNumber}</Text>
               </View>
             </View>
             <CustomIcon size={15} source={CheckCircleIcon} />
@@ -84,15 +84,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bankName: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
   },
   accountNumber: {
-    fontSize: normalize(15),
+    fontSize: normalize(18),
     gap: 1,
-    color: "#353348",
+    color: "#000",
     flexDirection: "row",
-    fontFamily: getFontFamily("400"),
+    fontFamily: getFontFamily("700"),
   },
   changeText: {
     marginTop: 8,

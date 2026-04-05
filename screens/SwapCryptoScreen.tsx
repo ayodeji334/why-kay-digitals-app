@@ -23,6 +23,7 @@ import { useAssets } from "../hooks/useAssets";
 import useAxios from "../hooks/useAxios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { showError } from "../utlis/toast";
+import { formatAmount } from "../libs/formatNumber";
 
 export const formatWithCommas = (value: string) => {
   if (!value) return "";
@@ -300,6 +301,14 @@ export default function CryptoSwapScreen() {
                 title="Select from your wallet"
                 showWalletPrice={true}
               />
+              <Text style={styles.walletBalance}>
+                Wallet Balance: {balance} {symbol}
+                {" ≈ "}
+                {formatAmount(price * balance, {
+                  currency: "USD",
+                  decimalPlace: 5,
+                })}
+              </Text>
             </View>
 
             <View style={{ marginVertical: 4 }}>
@@ -411,6 +420,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     justifyContent: "space-between",
     paddingBottom: 10,
+  },
+  walletBalance: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    color: "#000",
+    marginBottom: normalize(4),
   },
   label: {
     fontSize: normalize(18),

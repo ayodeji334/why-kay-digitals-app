@@ -34,7 +34,7 @@ const schema = yup.object({
   amount: yup
     .number()
     .typeError("Enter a valid amount")
-    .min(1000, "Minimum is ₦1,000")
+    .min(100, "Minimum amount you can withdraw is ₦100")
     .max(3000000, "Maximum is ₦3,000,000")
     .required("Enter withdrawal amount"),
   bank_code: yup.string().required("Select a bank"),
@@ -176,7 +176,7 @@ export default function WithdrawScreen() {
 
   const isDisabled =
     !amount ||
-    amount < 1000 ||
+    amount < 100 ||
     !isBalanceSufficient ||
     exceedsDailyLimit ||
     isSubmitting;
@@ -187,6 +187,10 @@ export default function WithdrawScreen() {
       refetchBanks();
     }, [refetchWallet]),
   );
+
+  console.log(amount, isBalanceSufficient, exceedsDailyLimit, isSubmitting);
+  console.log(!amount, amount < 1000);
+  console.log(errors);
 
   return (
     <SafeAreaView
@@ -216,9 +220,19 @@ export default function WithdrawScreen() {
         <BalanceLimitCard walletSummary={walletSummary} />
 
         <View style={styles.amountBox}>
-          <View style={{ marginBottom: 2, marginTop: 10 }}>
+          <View
+            style={{
+              marginBottom: 2,
+              marginTop: 10,
+            }}
+          >
             <Text style={styles.label}>Amount</Text>
-            <View style={styles.inputContainer}>
+            <View
+              style={[
+                styles.inputContainer,
+                errors?.amount ? { borderColor: "red", borderWidth: 1 } : {},
+              ]}
+            >
               <Text style={styles.dollarSign}>₦</Text>
               <TextInput
                 style={styles.input}
@@ -231,7 +245,7 @@ export default function WithdrawScreen() {
                   const parsed = parseFloat(numericText);
 
                   const formatted = formatWithCommas(numericText);
-                  setValue("amount", parsed);
+                  setValue("amount", parsed, { shouldValidate: true });
                   setAmount(formatted);
                 }}
               />
@@ -240,7 +254,7 @@ export default function WithdrawScreen() {
           {errors.amount?.message ? (
             <Text style={styles.warningText}>{errors.amount?.message}</Text>
           ) : undefined}
-          <Text style={styles.amountNote}>Minimum of ₦1,000</Text>
+          {/* <Text style={styles.amountNote}>Minimum of ₦1,000</Text> */}
         </View>
 
         {amount ? (
@@ -340,7 +354,7 @@ export default function WithdrawScreen() {
             backgroundColor: !isDisabled ? COLORS.secondary : "#ccc",
             borderRadius: 100,
             paddingVertical: 14,
-            marginTop: 30,
+            marginVertical: 30,
           }}
           disabled={isDisabled}
         >
@@ -385,6 +399,10 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
     borderColor: "rgba(255, 0, 0, 0.3)",
+  },
+  errorBorder: {
+    borderColor: "red",
+    borderWidth: 1,
   },
   feeBreakdownContainer: {
     backgroundColor: "#5AB2431A",
@@ -436,7 +454,7 @@ const styles = StyleSheet.create({
     color: "#db0b0bff",
     fontSize: normalize(17),
     fontFamily: getFontFamily("800"),
-    textAlign: "center",
+    textAlign: "left",
   },
   amountBox: { marginTop: 24 },
   amountNote: {

@@ -27,14 +27,13 @@ import MTNLogo from "../assets/mtn-new.svg";
 import GloLogo from "../assets/glo-logo.svg";
 import AirtelLogo from "../assets/airtel.svg";
 import NineMobile from "../assets/nine-mobile.svg";
-// import { Check } from "iconsax-react-nativejs";
 
-const networks = [
-  { id: "mtn", label: "MTN", Logo: MTNLogo },
-  { id: "glo", label: "GLO", Logo: GloLogo },
-  { id: "airtel", label: "Airtel", Logo: AirtelLogo },
-  { id: "9mobile", label: "9mobile", Logo: NineMobile },
-];
+// const networks = [
+//   { id: "mtn", label: "MTN", Logo: MTNLogo },
+//   { id: "glo", label: "GLO", Logo: GloLogo },
+//   { id: "airtel", label: "Airtel", Logo: AirtelLogo },
+//   { id: "9mobile", label: "9mobile", Logo: NineMobile },
+// ];
 
 const schema = yup.object({
   phone: yup
@@ -125,7 +124,7 @@ export default function BuyDataScreen() {
       return res.data?.data || [];
     },
     enabled: !!selectedNetwork,
-    staleTime: 864000000,
+    staleTime: 4000,
   });
 
   // Fetch beneficiaries
@@ -146,17 +145,17 @@ export default function BuyDataScreen() {
   });
 
   const networks = [
-    { id: "mtn", label: "MTN", logo: require("../assets/mtn-new.svg") },
-    { id: "glo", label: "GLO", logo: require("../assets/glo-logo.svg") },
+    { id: "mtn", label: "MTN", logo: require("../assets/mtn-logo.jpg") },
+    { id: "glo", label: "GLO", logo: require("../assets/glo-logo.png") },
     {
       id: "airtel",
       label: "Airtel",
-      logo: require("../assets/airtel.svg"),
+      logo: require("../assets/airtel-logo.png"),
     },
     {
       id: "9mobile",
       label: "9mobile",
-      logo: require("../assets/nine-mobile.svg"),
+      logo: require("../assets/nine-mobile.png"),
     },
   ];
 

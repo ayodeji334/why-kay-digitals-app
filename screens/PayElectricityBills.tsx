@@ -31,34 +31,34 @@ import { formatWithCommas } from "./SwapCryptoScreen";
 import { useQuery } from "@tanstack/react-query";
 
 // Validation schema
-// const schema = yup.object({
-//   provider: yup.string().required("Please select an electricity provider"),
-//   meter_number: yup
-//     .string()
-//     .required("Meter number is required")
-//     .matches(/^[0-9]{6,13}$/, "Invalid meter number"),
-//   amount: yup
-//     .number()
-//     .typeError("Amount must be a number")
-//     .positive("Amount is required")
-//     .required("Amount is required"),
-// });
+const schema = yup.object({
+  provider: yup.string().required("Please select an electricity provider"),
+  meter_number: yup
+    .string()
+    .required("Meter number is required")
+    .matches(/^[0-9]{6,13}$/, "Invalid meter number"),
+  amount: yup
+    .number()
+    .typeError("Amount must be a number")
+    .positive("Amount is required")
+    .required("Amount is required"),
+});
 
-// // Types
-// interface ElectricityProvider {
-//   biller_code: string;
-//   name: string;
-//   logo: string;
-//   code: string;
-//   status: boolean;
-//   short_name: string;
+// Types
+interface ElectricityProvider {
+  biller_code: string;
+  name: string;
+  logo: string;
+  code: string;
+  status: boolean;
+  short_name: string;
+}
+
+// interface ElectricityFormData {
+//   provider: string;
+//   meter_number: string;
+//   amount: string;
 // }
-
-// // interface ElectricityFormData {
-// //   provider: string;
-// //   meter_number: string;
-// //   amount: string;
-// // }
 
 // export default function PayElectricityBillsScreen() {
 //   const [loading, setLoading] = useState(false);
@@ -90,7 +90,7 @@ import { useQuery } from "@tanstack/react-query";
 //       const res = await apiGet(`/bills/electricity-bills-providers`);
 //       return res.data?.data || [];
 //     },
-//     staleTime: 864000000,
+//     refetchOnWindowFocus: false,
 //   });
 
 //   const [selectedProviderItems, setSelectedProviderItems] = useState<any[]>([]);
@@ -349,18 +349,18 @@ import { useQuery } from "@tanstack/react-query";
 //   );
 // }
 
-const schema = yup.object({
-  provider: yup.string().required("Please select an electricity provider"),
-  meter_number: yup
-    .string()
-    .required("Meter number is required")
-    .matches(/^[0-9]{6,13}$/, "Invalid meter number"),
-  amount: yup
-    .number()
-    .typeError("Amount must be a number")
-    .positive("Amount is required")
-    .required("Amount is required"),
-});
+// const schema = yup.object({
+//   provider: yup.string().required("Please select an electricity provider"),
+//   meter_number: yup
+//     .string()
+//     .required("Meter number is required")
+//     .matches(/^[0-9]{6,13}$/, "Invalid meter number"),
+//   amount: yup
+//     .number()
+//     .typeError("Amount must be a number")
+//     .positive("Amount is required")
+//     .required("Amount is required"),
+// });
 
 interface ElectricityProvider {
   biller_code: string;
@@ -378,8 +378,18 @@ interface MeterValidationStatusProps {
   userDetail: any;
 }
 
+interface MeterValidationStatusProps {
+  validating: boolean;
+  userDetail: any;
+  hasInput: boolean; // ← add this
+}
+
 const MeterValidationStatus = memo(
-  ({ validating, userDetail }: MeterValidationStatusProps) => {
+  ({ validating, userDetail, hasInput }: MeterValidationStatusProps) => {
+    // idle — user hasn't typed a valid meter number yet
+    if (!hasInput) return null;
+
+    // in-flight
     if (validating) {
       return (
         <View style={styles.detailsContainer}>
@@ -389,8 +399,19 @@ const MeterValidationStatus = memo(
       );
     }
 
-    if (!userDetail) return null;
+    // validated but not found
+    if (!userDetail) {
+      return (
+        <View style={styles.warningContainer}>
+          <Text style={styles.warningText}>
+            User detail not found. Please check the provider and meter number
+            and try again.
+          </Text>
+        </View>
+      );
+    }
 
+    // found
     return (
       <View style={styles.detailsContainer}>
         <View style={{ paddingVertical: 5 }}>
@@ -476,6 +497,7 @@ export default function PayElectricityBillsScreen() {
   const [meterValid, setMeterValid] = useState(false);
   const [userDetail, setUserDetail] = useState<any>(null);
   const [selectedProviderItems, setSelectedProviderItems] = useState<any[]>([]);
+  const [hasFiredValidation, setHasFiredValidation] = useState(false);
 
   // debounce timer ref — survives re-renders without causing them
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -603,8 +625,17 @@ export default function PayElectricityBillsScreen() {
 
     // debounce — wait 700ms after the user stops typing
     debounceRef.current = setTimeout(() => {
+      setHasFiredValidation(true); // ← add this
       validateMeter(meterNumber, selectedItem.item_code, providerCode);
     }, 700);
+
+    // reset it when inputs are cleared
+    if (!meterNumber || !providerCode || selectedProviderItems.length === 0) {
+      setMeterValid(false);
+      setUserDetail(null);
+      setHasFiredValidation(false); // ← reset too
+      return;
+    }
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -660,6 +691,7 @@ export default function PayElectricityBillsScreen() {
 
   const isDisabled = !isValid || !meterValid || validatingMeter || isSubmitting;
 
+  // ─── render ────────────────────────────────────────────────────────────
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -691,17 +723,18 @@ export default function PayElectricityBillsScreen() {
           />
         </View>
 
+        <MeterValidationStatus
+          validating={validatingMeter}
+          userDetail={userDetail}
+          hasInput={hasFiredValidation}
+        />
+
         <PaymentTypeSelector
           isPrepaid={isPrepaid}
           hasPrepaid={hasPrepaid}
           hasPostpaid={hasPostpaid}
           disabled={isSubmitting}
           onSelect={setIsPrepaid}
-        />
-
-        <MeterValidationStatus
-          validating={validatingMeter}
-          userDetail={userDetail}
         />
 
         <View style={{ marginBottom: 2, marginTop: 10 }}>
@@ -838,6 +871,25 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#ddd",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    gap: 5,
+  },
+  warningContainer: {
+    marginVertical: 12,
+    padding: 10,
+    backgroundColor: "rgba(255, 0, 0, 0.03)",
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(255, 0, 0, 0.3)",
+  },
+  warningText: {
+    color: "#db0b0b",
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("800"),
+    textAlign: "center",
   },
   detailsLabel: {
     fontSize: 12,

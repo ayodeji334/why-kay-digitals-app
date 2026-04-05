@@ -1,29 +1,145 @@
-import React from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  Modal,
+  Pressable,
+  TextInput,
 } from "react-native";
-import { getFontFamily } from "../../constants/settings";
-import CustomLoading from "../CustomLoading";
+import { getFontFamily, normalize } from "../../constants/settings";
 import ErrorState from "../ErrorState";
-import { formatDate } from "../../libs/formatDate";
 import { COLORS } from "../../constants/colors";
 import { Refresh2, Trash } from "iconsax-react-nativejs";
+import { CloseIcon } from "../../assets";
+import CustomIcon from "../CustomIcon";
 
-// type Beneficiary = {
-//   uuid: string;
-//   identifier: string;
-//   meta: any;
-//   updated_at: string;
-// };
+// export default function SavedBeneficiaries({
+//   data,
+//   isRefetching,
+//   isError,
+//   refetch,
+//   onSelect,
+//   onRefetch,
+//   onDeleteAll,
+//   deleting,
+//   selectedBeneficiary,
+// }: {
+//   data: any[];
+//   isLoading: boolean;
+//   isRefetching?: boolean;
+//   isError: boolean;
+//   refetch: () => void;
+//   onRefetch?: () => void;
+//   onSelect: (beneficiary: any) => void;
+//   onDeleteAll: () => void;
+//   deleting: boolean;
+//   selectedBeneficiary: string | null;
+// }) {
+//   if (isError)
+//     return (
+//       <ErrorState
+//         error="Cannot load saved beneficiaries"
+//         handleOnPress={refetch}
+//       />
+//     );
 
-// interface Props {
-//   setAccountDetails: (details: any) => void;
-//   setValue: (field: string, value: any) => void;
+//   const renderItem = ({ item }: { item: any }) => (
+//     <TouchableOpacity
+//       activeOpacity={0.9}
+//       style={[
+//         styles.item,
+//         selectedBeneficiary === item.uuid && styles.itemSelected,
+//       ]}
+//       onPress={() => onSelect(item)}
+//     >
+//       <View style={styles.row}>
+//         <View style={styles.info}>
+//           <View style={styles.rowBetween}>
+//             <Text style={styles.name}>
+//               {item?.meta?.account_name ??
+//                 item?.meta?.network ??
+//                 item?.meta?.provider}
+//             </Text>
+//             {/* <Text style={styles.lastUsed}>{formatDate(item?.updated_at)}</Text> */}
+//           </View>
+//           {item?.meta?.bank_name && (
+//             <Text style={styles.details} numberOfLines={1}>
+//               {item?.meta?.bank_name} • {item?.meta?.account_number}
+//             </Text>
+//           )}
+//           {item?.meta?.phone_number && (
+//             <Text style={styles.details} numberOfLines={1}>
+//               {item?.meta?.phone_number}
+//             </Text>
+//           )}
+//           {item?.meta?.cable_tv_number && (
+//             <Text style={styles.details} numberOfLines={1}>
+//               {item?.meta?.cable_tv_number}
+//             </Text>
+//           )}
+//           {item?.meta?.meter_number && (
+//             <Text style={styles.details} numberOfLines={1}>
+//               {item?.meta?.meter_number}
+//             </Text>
+//           )}
+//         </View>
+//       </View>
+//     </TouchableOpacity>
+//   );
+
+//   return (
+//     <View>
+//       <View style={styles.header}>
+//         <Text style={styles.headerTitle}>Saved Beneficiaries</Text>
+//         <View style={{ flexDirection: "row", gap: 4 }}>
+//           {Array.isArray(data) && data?.length > 0 && (
+//             <TouchableOpacity
+//               activeOpacity={0.7}
+//               onPress={onDeleteAll}
+//               disabled={deleting}
+//               style={styles.deleteButton}
+//             >
+//               <Trash size={12} color="red" />
+//               <Text style={styles.deleteText}>
+//                 {deleting ? "Deleting..." : "Delete All"}
+//               </Text>
+//             </TouchableOpacity>
+//           )}
+//           <TouchableOpacity
+//             activeOpacity={0.7}
+//             onPress={onRefetch}
+//             disabled={isRefetching}
+//             style={[styles.deleteButton, { borderColor: "gray" }]}
+//           >
+//             <Refresh2 size={12} color="black" />
+//             <Text style={[styles.deleteText, { color: "black" }]}>
+//               {deleting ? "Refreshing..." : "Refresh"}
+//             </Text>
+//           </TouchableOpacity>
+//         </View>
+//       </View>
+
+//       {!data || data.length === 0 ? (
+//         <View style={styles.emptyContainer}>
+//           <Text style={styles.emptyText}>No saved beneficiaries yet.</Text>
+//         </View>
+//       ) : (
+//         <FlatList
+//           data={data}
+//           scrollEnabled={false}
+//           keyExtractor={item => item.uuid}
+//           renderItem={renderItem}
+//           contentContainerStyle={styles.list}
+//         />
+//       )}
+//     </View>
+//   );
 // }
+
+const PREVIEW_COUNT = 2;
 
 export default function SavedBeneficiaries({
   data,
@@ -47,31 +163,80 @@ export default function SavedBeneficiaries({
   deleting: boolean;
   selectedBeneficiary: string | null;
 }) {
-  if (isError)
+  const [modalVisible, setModalVisible] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const previewData = useMemo(
+    () => data?.slice(0, PREVIEW_COUNT) ?? [],
+    [data],
+  );
+  const hasMore = data?.length > PREVIEW_COUNT;
+
+  const filteredData = useMemo(
+    () =>
+      data?.filter(item => {
+        const haystack = [
+          item?.meta?.account_name,
+          item?.meta?.network,
+          item?.meta?.provider,
+          item?.meta?.phone_number,
+          item?.meta?.meter_number,
+          item?.meta?.cable_tv_number,
+          item?.meta?.bank_name,
+          item?.meta?.account_number,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(search.toLowerCase());
+      }),
+    [data, search],
+  );
+
+  const handleSelect = useCallback(
+    (item: any) => {
+      onSelect(item);
+      setModalVisible(false);
+    },
+    [onSelect],
+  );
+
+  const handleDeleteAll = useCallback(() => {
+    onDeleteAll();
+    setModalVisible(false);
+  }, [onDeleteAll]);
+
+  if (isError) {
     return (
       <ErrorState
         error="Cannot load saved beneficiaries"
         handleOnPress={refetch}
       />
     );
+  }
 
-  const renderItem = ({ item }: { item: any }) => (
+  const renderItem = ({
+    item,
+    onPress,
+  }: {
+    item: any;
+    onPress: (item: any) => void;
+  }) => (
     <TouchableOpacity
       activeOpacity={0.9}
       style={[
         styles.item,
         selectedBeneficiary === item.uuid && styles.itemSelected,
       ]}
-      onPress={() => onSelect(item)}
+      onPress={() => onPress(item)}
     >
       <View style={styles.row}>
         <View style={styles.info}>
-          <View style={styles.rowBetween}>
-            <Text style={styles.name}>
-              {item?.meta?.account_name ?? item?.meta?.network}
-            </Text>
-            {/* <Text style={styles.lastUsed}>{formatDate(item?.updated_at)}</Text> */}
-          </View>
+          <Text style={styles.name}>
+            {item?.meta?.account_name ??
+              item?.meta?.network ??
+              item?.meta?.provider}
+          </Text>
           {item?.meta?.bank_name && (
             <Text style={styles.details} numberOfLines={1}>
               {item?.meta?.bank_name} • {item?.meta?.account_number}
@@ -82,6 +247,16 @@ export default function SavedBeneficiaries({
               {item?.meta?.phone_number}
             </Text>
           )}
+          {item?.meta?.cable_tv_number && (
+            <Text style={styles.details} numberOfLines={1}>
+              {item?.meta?.cable_tv_number}
+            </Text>
+          )}
+          {item?.meta?.meter_number && (
+            <Text style={styles.details} numberOfLines={1}>
+              {item?.meta?.meter_number}
+            </Text>
+          )}
         </View>
       </View>
     </TouchableOpacity>
@@ -89,54 +264,164 @@ export default function SavedBeneficiaries({
 
   return (
     <View>
+      {/* ── header ──────────────────────────────────────────────────── */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Saved Beneficiaries</Text>
-        <View style={{ flexDirection: "row", gap: 4 }}>
-          {Array.isArray(data) && data?.length > 0 && (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={onDeleteAll}
-              disabled={deleting}
-              style={styles.deleteButton}
-            >
-              <Trash size={12} color="red" />
-              <Text style={styles.deleteText}>
-                {deleting ? "Deleting..." : "Delete All"}
-              </Text>
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={onRefetch}
-            disabled={isRefetching}
-            style={[styles.deleteButton, { borderColor: "gray" }]}
-          >
-            <Refresh2 size={12} color="black" />
-            <Text style={[styles.deleteText, { color: "black" }]}>
-              {deleting ? "Refreshing..." : "Refresh"}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {/* {hasMore && ( */}
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.viewAllText}>View all</Text>
+        </TouchableOpacity>
+        {/* )} */}
       </View>
 
+      {/* ── preview list ─────────────────────────────────────────────── */}
       {!data || data.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No saved beneficiaries yet.</Text>
         </View>
       ) : (
         <FlatList
-          data={data}
+          data={previewData}
           scrollEnabled={false}
           keyExtractor={item => item.uuid}
-          renderItem={renderItem}
+          renderItem={({ item }) => renderItem({ item, onPress: onSelect })}
           contentContainerStyle={styles.list}
         />
       )}
+
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Saved Beneficiaries</Text>
+              <Pressable onPress={() => setModalVisible(false)}>
+                <CustomIcon
+                  source={CloseIcon}
+                  color={COLORS.primary}
+                  fill={COLORS.primary}
+                  overrideColor
+                  size={18}
+                />
+              </Pressable>
+            </View>
+
+            <TextInput
+              placeholder="Search beneficiaries..."
+              value={search}
+              onChangeText={setSearch}
+              placeholderTextColor="#9CA3AF"
+              style={styles.searchInput}
+            />
+
+            {/* full list */}
+            <FlatList
+              data={filteredData}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={item => item.uuid}
+              renderItem={({ item }) =>
+                renderItem({ item, onPress: handleSelect })
+              }
+              contentContainerStyle={styles.list}
+              ListEmptyComponent={
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>No beneficiaries found.</Text>
+                </View>
+              }
+            />
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={onRefetch}
+                disabled={isRefetching}
+                style={[styles.actionButton, { borderColor: "gray" }]}
+              >
+                <Refresh2 size={10} color="black" />
+                <Text style={[styles.actionText, { color: "black" }]}>
+                  {isRefetching ? "Refreshing..." : "Refresh"}
+                </Text>
+              </TouchableOpacity>
+
+              {data?.length > 0 && (
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={handleDeleteAll}
+                  disabled={deleting}
+                  style={styles.actionButton}
+                >
+                  <Trash size={12} color="red" />
+                  <Text style={styles.actionText}>
+                    {deleting ? "Deleting..." : "Delete All"}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    width: "100%",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    padding: 20,
+    maxHeight: "80%",
+    paddingBottom: 40,
+  },
+  modalTitle: {
+    fontFamily: getFontFamily("900"),
+    fontSize: normalize(20),
+    color: "#374151",
+  },
+  search: {
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    color: "#374151",
+    backgroundColor: "#F9FAFB",
+  },
+  option: { borderBottomWidth: 2, borderBottomColor: "#ecececff" },
+  optionContent: { padding: 10, width: "100%" },
+  cryptoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+    flex: 1,
+  },
+  cryptoInfo: { flex: 1 },
+  optionName: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    color: "#000",
+  },
+  optionPrice: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
+    color: "#343435",
+  },
   list: {
     paddingVertical: 8,
     marginVertical: 10,
@@ -196,6 +481,67 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: getFontFamily("900"),
     color: "red",
+  },
+  viewAllText: {
+    fontSize: 14,
+    color: COLORS.primary,
+    fontFamily: getFontFamily("800"),
+  },
+  // modalOverlay: {
+  //   flex: 1,
+  //   backgroundColor: "rgba(0,0,0,0.45)",
+  //   justifyContent: "flex-end",
+  // },
+  // modalContent: {
+  //   backgroundColor: "#fff",
+  //   borderTopLeftRadius: 20,
+  //   borderTopRightRadius: 20,
+  //   paddingHorizontal: 16,
+  //   paddingTop: 20,
+  //   paddingBottom: 34,
+  //   maxHeight: "80%",
+  // },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  // modalTitle: {
+  //   fontSize: 16,
+  //   fontFamily: getFontFamily("700"),
+  //   color: COLORS.primary,
+  // },
+  modalActions: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 12,
+  },
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    borderWidth: 1,
+    borderColor: "red",
+    borderRadius: 600,
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+  },
+  actionText: {
+    fontSize: 12,
+    color: "red",
+    fontFamily: getFontFamily("800"),
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    fontSize: 14,
+    color: "#111",
+    fontFamily: getFontFamily("700"),
   },
   avatar: {
     width: 40,

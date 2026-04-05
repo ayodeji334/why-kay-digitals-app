@@ -7,6 +7,8 @@ import {
   TextInput,
   ScrollView,
   StyleSheet,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { ArrowLeft2 } from "iconsax-react-nativejs";
 import { SelectInput } from "../components/SelectInputField";
@@ -15,6 +17,9 @@ import { normalize, getFontFamily } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { SafeAreaView } from "react-native-safe-area-context";
+const STATUS_BAR_PADDING =
+  Platform.OS === "android" ? StatusBar.currentHeight ?? 0 : 0;
 
 export default function BankAccountModal({
   visible,
@@ -74,6 +79,8 @@ export default function BankAccountModal({
   const validateAccount = async () => {
     if (!selectedBank || accountNumber.length !== 10) return;
     setValidating(true);
+    setError("");
+    setSuccess("");
     try {
       const response = await post("/banks/validate-account", {
         bank_code: selectedBank.value,
@@ -119,92 +126,91 @@ export default function BankAccountModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent={false}
-      style={{ backgroundColor: "white" }}
-    >
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onClose}>
-            <ArrowLeft2 size={22} color="#000" />
-          </TouchableOpacity>
-          <Text style={styles.title}>Add Bank Account</Text>
-        </View>
-
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
-          <SelectInput
-            label="Select Bank"
-            value={selectedBank?.value}
-            options={bankOptions}
-            onSelect={option => setSelectedBank(option)}
-            placeholder="Select Beneficiary Bank"
-          />
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Account Number</Text>
-            <TextInput
-              style={[error && styles.errorBorder, styles.input]}
-              value={accountNumber}
-              onChangeText={setAccountNumber}
-              placeholder="Enter 10-digit account number"
-              keyboardType="numeric"
-              maxLength={10}
-            />
+    <Modal visible={visible} animationType="slide" transparent={true}>
+      <SafeAreaView style={styles.safeArea}>
+        <View
+          style={[styles.container, { paddingTop: STATUS_BAR_PADDING + 10 }]}
+        >
+          <View style={styles.header}>
+            <TouchableOpacity onPress={onClose}>
+              <ArrowLeft2 size={20} color="#000" />
+            </TouchableOpacity>
+            <Text style={styles.title}>Add Bank Account</Text>
           </View>
 
-          {!validating && error ? (
-            <Text style={[styles.text, { color: "red" }]}>{error}</Text>
-          ) : null}
-          {!validating && success ? (
-            <Text style={[styles.text, { color: "green" }]}>{success}</Text>
-          ) : null}
+          <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
+            <SelectInput
+              label="Select Bank"
+              value={selectedBank?.value}
+              options={bankOptions}
+              onSelect={option => setSelectedBank(option)}
+              placeholder="Select Beneficiary Bank"
+            />
 
-          {validating ? (
-            <Text style={[styles.text, { color: "green" }]}>
-              Kindly wait while the system validate your the details
-            </Text>
-          ) : null}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Account Number</Text>
+              <TextInput
+                style={[error && styles.errorBorder, styles.input]}
+                value={accountNumber}
+                onChangeText={setAccountNumber}
+                placeholder="Enter 10-digit account number"
+                keyboardType="numeric"
+                maxLength={10}
+              />
+            </View>
 
-          <TouchableOpacity
-            style={[
-              styles.button,
-              (!selectedBank ||
+            {!validating && error ? (
+              <Text style={[styles.text, { color: "red" }]}>{error}</Text>
+            ) : null}
+            {!validating && success ? (
+              <Text style={[styles.text, { color: "green" }]}>{success}</Text>
+            ) : null}
+
+            {validating ? (
+              <Text style={[styles.text, { color: "green" }]}>
+                Kindly wait while the system validate your the details
+              </Text>
+            ) : null}
+
+            <TouchableOpacity
+              style={[
+                styles.button,
+                (!selectedBank ||
+                  accountNumber.length !== 10 ||
+                  validating ||
+                  !!error) && {
+                  backgroundColor: "#ccc",
+                },
+              ]}
+              onPress={handleSave}
+              disabled={
+                !selectedBank ||
                 accountNumber.length !== 10 ||
                 validating ||
-                !!error) && {
-                backgroundColor: "#ccc",
-              },
-            ]}
-            onPress={handleSave}
-            disabled={
-              !selectedBank ||
-              accountNumber.length !== 10 ||
-              validating ||
-              !!error
-            }
-          >
-            <Text style={styles.buttonText}>Save Recipient</Text>
-          </TouchableOpacity>
-          <View style={{ marginVertical: 10 }}>
-            <SavedBeneficiaries
-              data={data ?? []}
-              isLoading={isLoading || isRefetching}
-              isError={isError}
-              refetch={refetch}
-              onSelect={data => {
-                setAccountDetails(data);
-                handleSelect(data);
-                onClose();
-              }}
-              selectedBeneficiary={selectedBeneficiary}
-              onDeleteAll={deleteAll}
-              deleting={deleting}
-            />
-          </View>
-        </ScrollView>
-      </View>
+                !!error
+              }
+            >
+              <Text style={styles.buttonText}>Save Recipient</Text>
+            </TouchableOpacity>
+            <View style={{ marginVertical: 10 }}>
+              <SavedBeneficiaries
+                data={data ?? []}
+                isLoading={isLoading || isRefetching}
+                isError={isError}
+                refetch={refetch}
+                onSelect={data => {
+                  setAccountDetails(data);
+                  handleSelect(data);
+                  onClose();
+                }}
+                selectedBeneficiary={selectedBeneficiary}
+                onDeleteAll={deleteAll}
+                deleting={deleting}
+              />
+            </View>
+          </ScrollView>
+        </View>
+      </SafeAreaView>
     </Modal>
   );
 }
@@ -213,19 +219,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 80,
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   title: {
     flex: 1,
     textAlign: "center",
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#000",
     marginRight: 24,
   },
@@ -233,9 +242,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   label: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("900"),
-    marginBottom: 8,
+    marginBottom: 3,
   },
   // input: {
   //   borderWidth: 1,
@@ -247,14 +256,14 @@ const styles = StyleSheet.create({
   // },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#e0e0e0",
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 15,
     color: "#1A1A1A",
     fontFamily: getFontFamily("800"),
     fontSize: normalize(18),
-    backgroundColor: "#FFFFFF",
+    // backgroundColor: "#FFFFFF",
   },
   errorBorder: {
     borderColor: "#FF3B30",
