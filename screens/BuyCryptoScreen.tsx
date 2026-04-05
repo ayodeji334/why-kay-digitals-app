@@ -29,6 +29,17 @@ type CryptoBuyScreenParams = {
   };
 };
 
+function relativeChangeExceeded(
+  current: number,
+  used: number,
+  tolerancePercent = 1.23,
+): boolean {
+  if (!isFinite(current) || !isFinite(used) || used <= 0) return false;
+  const diff = Math.abs(current - used);
+  const relativePercent = (diff / used) * 100;
+  return relativePercent > tolerancePercent;
+}
+
 const schema = Yup.object().shape({
   asset_id: Yup.string().required("Select the crypto you want to convert from"),
   amount: Yup.number()
@@ -36,6 +47,28 @@ const schema = Yup.object().shape({
     .min(1, "The amount is too small. The minimum is 6 USD")
     .required("Amount is required"),
 });
+
+function calculateBuyFeeBreakdown(
+  amount: number,
+  marketPrice: number,
+  sellRate: number,
+) {
+  const coinAmount = amount / marketPrice;
+  const ngnValue = sellRate > 0 ? amount * sellRate : 0;
+
+  return {
+    assetValueEquivalent: coinAmount.toFixed(8),
+    ngnAmount: sellRate > 0 ? formatAmount(ngnValue) : "0.00",
+    feeBreakdown: {
+      coinAmount: coinAmount.toFixed(8),
+      grossUsd: amount,
+      netAmountUsd: amount.toFixed(2),
+      netNgn: sellRate > 0 ? formatAmount(ngnValue) : "0.00",
+      currentSellRate: sellRate,
+      currentMarketPrice: marketPrice,
+    },
+  };
+}
 
 function calculateFeeBreakdown(
   amount: number,
@@ -110,6 +143,8 @@ export default function CryptoBuyScreen() {
     feeBreakdown?.currentMarketPrice ?? assetDetails?.market_current_value ?? 0;
   const amount = watch("amount");
 
+  const TOLERANCE_PERCENT = 1.23;
+
   const onSubmit = async (values: any) => {
     try {
       const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
@@ -120,35 +155,105 @@ export default function CryptoBuyScreen() {
         return;
       }
 
-      const currentBuyRate = parseFloat(latestRates.buy_rate ?? "0");
-      const usedBuyRate = parseFloat(
-        feeBreakdown?.currentBuyRate ?? assetDetails?.buy_rate ?? "0",
+      // parse latest values
+      const currentSellRate = parseFloat(latestRates.buy_rate ?? "0");
+      const currentMarketPrice = parseFloat(
+        latestRates.market_current_value ?? "0",
       );
 
-      if (currentBuyRate > 0 && currentBuyRate !== usedBuyRate) {
-        const recalculated = calculateFeeBreakdown(
+      // parse previously used values (fallback to 0)
+      const usedSellRate = parseFloat(feeBreakdown?.currentBuyRate ?? "0");
+      const usedMarketPrice = parseFloat(marketPrice ?? "0");
+
+      const sellRateChanged =
+        currentSellRate > 0 && currentSellRate !== usedSellRate;
+      const marketPriceExceeded = relativeChangeExceeded(
+        currentMarketPrice,
+        usedMarketPrice,
+        TOLERANCE_PERCENT,
+      );
+
+      // If either exceeded tolerance, recalc, update UI and block navigation
+      if (sellRateChanged || marketPriceExceeded) {
+        const recalculated = calculateBuyFeeBreakdown(
           values.amount,
-          marketPrice,
-          currentBuyRate,
-          assetDetails?.symbol ?? "",
+          currentMarketPrice,
+          currentSellRate,
         );
 
         setFeeBreakdown(recalculated.feeBreakdown);
         setNgnAmount(recalculated.ngnAmount);
 
+        const reasons: string[] = [];
+        if (sellRateChanged) reasons.push("Buy rate");
+        if (marketPriceExceeded) reasons.push("Market price");
+
         showError(
-          "Buy rate has changed. Prices recalculated — please review before continuing.",
+          `${reasons.join(
+            " and ",
+          )} changed. Prices have been recalculated — please review before continuing.`,
         );
-        return;
+
+        return; // block navigation
       }
 
-      navigation.navigate("ConfirmTransaction" as never, {
-        payload: { ...values, url: "/wallets/user/buy-crypto" },
-      });
+      // If changes are within tolerance, optionally update fee state silently
+      // (uncomment if you want the UI to reflect tiny changes without blocking)
+      // const recalculated = calculateSellFeeBreakdown(values.amount, currentMarketPrice, currentSellRate);
+      // setLatestFeeBreakdown(recalculated.feeBreakdown);
+      // setLatestNgnAmount(recalculated.ngnAmount);
+
+      const payload = {
+        ...values,
+        url: "/wallets/user/sell-crypto",
+      };
+
+      navigation.navigate("ConfirmTransaction" as never, { payload });
     } catch (error) {
+      console.error("onSubmit rate check error:", error);
       showError("Error checking rates. Try again.");
     }
   };
+
+  // const onSubmit = async (values: any) => {
+  //   try {
+  //     const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
+  //     const latestRates = res?.data?.asset ?? null;
+
+  //     if (!latestRates) {
+  //       showError("Unable to fetch latest rates.");
+  //       return;
+  //     }
+
+  //     const currentBuyRate = parseFloat(latestRates.buy_rate ?? "0");
+  //     const usedBuyRate = parseFloat(
+  //       feeBreakdown?.currentBuyRate ?? assetDetails?.buy_rate ?? "0",
+  //     );
+
+  //     if (currentBuyRate > 0 && currentBuyRate !== usedBuyRate) {
+  //       const recalculated = calculateFeeBreakdown(
+  //         values.amount,
+  //         marketPrice,
+  //         currentBuyRate,
+  //         assetDetails?.symbol ?? "",
+  //       );
+
+  //       setFeeBreakdown(recalculated.feeBreakdown);
+  //       setNgnAmount(recalculated.ngnAmount);
+
+  //       showError(
+  //         "Buy rate has changed. Prices recalculated — please review before continuing.",
+  //       );
+  //       return;
+  //     }
+
+  //     navigation.navigate("ConfirmTransaction" as never, {
+  //       payload: { ...values, url: "/wallets/user/buy-crypto" },
+  //     });
+  //   } catch (error) {
+  //     showError("Error checking rates. Try again.");
+  //   }
+  // };
 
   const hasInsufficientBalance = useMemo(() => {
     if (!feeBreakdown?.totalCostNgn) return false;
