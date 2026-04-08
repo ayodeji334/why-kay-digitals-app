@@ -21,7 +21,7 @@ import {
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { formatAmount } from "../libs/formatNumber";
+import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
@@ -299,12 +299,41 @@ export default function CryptoSellScreen() {
   }, [amount, maxSellableUsd]);
 
   const insufficientBalanceMessage = useMemo(() => {
-    if (!hasInsufficientBalance) return null;
+    if (!amount || !assetDetails) return null;
+
+    const platformFeeUsd = amount * FEE_RATE;
+    const totalUsd = amount + platformFeeUsd;
+
+    console.log("Calculating insufficient balance message:");
+    console.log("Amount:", amount);
+    console.log("Platform Fee (USD):", platformFeeUsd);
+    console.log("Total Cost (USD):", totalUsd);
+    console.log("Balance in USD:", balanceUsd);
+    console.log("Max Sellable USD:", maxSellableUsd);
+
+    // if (amount > balanceUsd) {
+    //   return `Insufficient balance. Your total balance is worth ${formatAmount(
+    //     balanceUsd,
+    //     {
+    //       currency: "USD",
+    //     },
+    //   )}`;
+    // }
+
+    if (amount > balanceUsd) {
+      return `Insufficient balance. Your total balance is worth ${formatAmount(
+        balanceUsd,
+        {
+          currency: "USD",
+        },
+      )}`;
+    }
+
     return `You can only sell ${formatAmount(maxSellableUsd, {
       currency: "USD",
       decimalPlace: 4,
     })} of your balance`;
-  }, [hasInsufficientBalance, maxSellableUsd, symbol]);
+  }, [maxSellableUsd, symbol, amount, assetDetails?.balance, balanceUsd]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -353,6 +382,10 @@ export default function CryptoSellScreen() {
     marketPrice,
     assetDetails,
   ]);
+
+  if (isLoading) {
+    return <CustomLoading loading={true} />;
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
@@ -480,7 +513,7 @@ export default function CryptoSellScreen() {
                     <Text style={styles.balance}>
                       {formatAmount(
                         Number(assetDetails?.balance) * marketPrice || 0,
-                        { currency: "USD" },
+                        { currency: "USD", decimalPlace: 8 },
                       )}
                     </Text>
                   </View>
@@ -602,13 +635,13 @@ export default function CryptoSellScreen() {
                 </View>
               </View>
 
-              {hasInsufficientBalance && (
+              {/* {hasInsufficientBalance && (
                 <View style={styles.warningContainer}>
                   <Text style={styles.warningText}>
                     {insufficientBalanceMessage}
                   </Text>
                 </View>
-              )}
+              )} */}
             </View>
 
             <TouchableOpacity
@@ -624,8 +657,6 @@ export default function CryptoSellScreen() {
           </View>
         )}
       </ScrollView>
-
-      <CustomLoading loading={isLoading} />
     </SafeAreaView>
   );
 }

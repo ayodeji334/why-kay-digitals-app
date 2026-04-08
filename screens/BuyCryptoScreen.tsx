@@ -76,7 +76,7 @@ function calculateFeeBreakdown(
   buyRate: number,
   symbol: string,
 ) {
-  const STABLECOINS = ["USDT", "USDC"];
+  const STABLECOINS = ["USDT"];
   const isStablecoin = STABLECOINS.includes(symbol.toUpperCase());
 
   const coinAmount = amount / marketPrice;
@@ -85,15 +85,25 @@ function calculateFeeBreakdown(
   const totalCostUsd = amount + platformFeeUsd;
   const totalCostNgn = buyRate > 0 ? totalCostUsd * buyRate : 0;
 
+  console.log(
+    amount,
+    marketPrice,
+    buyRate,
+    platformFeeUsd,
+    platformFeeCoin,
+    totalCostUsd,
+    totalCostNgn,
+  );
+
   return {
     assetValueEquivalent: coinAmount.toFixed(8),
     ngnAmount: buyRate > 0 ? formatAmount(totalCostNgn) : "0.00",
     feeBreakdown: {
       grossUsd: amount,
       coinAmount: coinAmount.toFixed(8),
-      platformFeeUsd: platformFeeUsd.toFixed(2),
+      platformFeeUsd: platformFeeUsd.toFixed(3),
       platformFeeCoin: platformFeeCoin.toFixed(8),
-      totalCostUsd: totalCostUsd.toFixed(2),
+      totalCostUsd: totalCostUsd.toFixed(3),
       totalCostNgn,
       isStablecoin,
       currentBuyRate: buyRate,
@@ -205,7 +215,7 @@ export default function CryptoBuyScreen() {
 
       const payload = {
         ...values,
-        url: "/wallets/user/sell-crypto",
+        url: "/wallets/user/buy-crypto",
       };
 
       navigation.navigate("ConfirmTransaction" as never, { payload });
@@ -262,7 +272,16 @@ export default function CryptoBuyScreen() {
 
   // message to show
   const insufficientBalanceMessage = useMemo(() => {
-    if (!hasInsufficientBalance) return null;
+    if (!hasInsufficientBalance || !amount || !fiatBalance) return null;
+
+    if (amount > fiatBalance) {
+      return `Insufficient balance. Your total balance is ${formatAmount(
+        fiatBalance,
+        {
+          currency: "NGN",
+        },
+      )}`;
+    }
 
     // maximum fiat the user can spend including charges
     const maxBuyable =
@@ -362,12 +381,16 @@ export default function CryptoBuyScreen() {
                 <Text style={styles.error}>{errors.amount.message}</Text>
               )}
 
-              {hasInsufficientBalance && (
+              {/* {hasInsufficientBalance && (
                 <View style={styles.warningContainer}>
                   <Text style={styles.warningText}>
                     {insufficientBalanceMessage}
                   </Text>
                 </View>
+              )} */}
+
+              {hasInsufficientBalance && insufficientBalanceMessage && (
+                <Text style={styles.error}>{insufficientBalanceMessage}</Text>
               )}
               {/* <Text style={styles.approx}>
                 Approximately {assetValueEquivalent} {assetDetails?.symbol}
@@ -498,6 +521,7 @@ export default function CryptoBuyScreen() {
                       <Text style={[styles.balance]}>
                         {formatAmount(Number(feeBreakdown.totalCostUsd), {
                           currency: "USD",
+                          decimalPlace: 3,
                         })}
                       </Text>
                     </View>
@@ -588,8 +612,8 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "red",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(19),
+    fontFamily: getFontFamily("800"),
     marginBottom: normalize(10),
   },
   approx: {

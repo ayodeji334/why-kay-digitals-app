@@ -29,6 +29,7 @@ import { useAssets } from "../../hooks/useAssets";
 import { useWallets } from "../../hooks/useWallet";
 import LoadingBalance from "../LoadingState";
 import { TradeIntent } from "../../libs/types";
+import { SvgUri } from "react-native-svg";
 
 const CryptoWalletSection = () => {
   const [showAddAssetWalletModal, setShowAddAssetWalletModal] = useState(false);
@@ -227,10 +228,15 @@ const CryptoWalletSection = () => {
               >
                 <View style={styles.cryptoRow}>
                   {item.logo_url && (
-                    <Image
-                      source={{ uri: item.logo_url }}
-                      resizeMode="contain"
-                      style={styles.assetIcon}
+                    // <Image
+                    //   source={{ uri: item.logo_url }}
+                    //   resizeMode="contain"
+                    //   style={styles.assetIcon}
+                    // />
+                    <SvgUri
+                      width="100%"
+                      height="100%"
+                      uri="http://thenewcode.com/assets/images/thumbnails/homer-simpson.svg"
                     />
                   )}
                   <View style={styles.cryptoInfo}>

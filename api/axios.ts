@@ -2,8 +2,8 @@ import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { getItem } from "../utlis/storage";
 import { useAuthStore } from "../stores/authSlice";
 
-export const BASE_URL = "https://www.ayodejijava.com.ng/v1";
-// export const BASE_URL = "http://localhost:8000/v1";
+// export const BASE_URL = "https://www.ayodejijava.com.ng/v1";
+export const BASE_URL = "http://localhost:8000/v1";
 
 // const badRequestStatusCodes = [400, 403, 404, 422, 500];
 

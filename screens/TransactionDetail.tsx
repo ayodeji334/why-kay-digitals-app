@@ -72,6 +72,8 @@ const TransactionDetailScreen = () => {
     [transaction?.status],
   );
 
+  console.log(transaction);
+
   const StatusIcon = () =>
     isSuccess ? (
       <Image
@@ -120,13 +122,14 @@ const TransactionDetailScreen = () => {
               ? ["failed", "pending"].includes(
                   transaction.status?.toLowerCase(),
                 )
-                ? formatAmount(transaction?.meta?.amount_in_usd, {
+                ? formatAmount(transaction?.meta?.amount_in_usd ?? 0, {
                     currency: transaction?.currency || "USD",
                     decimalPlace: 2,
                   })
-                : transaction?.meta?.amount +
-                  (transaction?.meta?.asset_symbol ?? "")
-              : formatAmount(transaction?.amount, {
+                : `${transaction?.meta?.amount || 0} ${
+                    transaction?.meta?.asset_symbol ?? ""
+                  }`
+              : formatAmount(transaction?.amount ?? 0, {
                   currency: transaction?.currency || "NGN",
                   decimalPlace: 2,
                 })}

@@ -23,6 +23,7 @@ import NumberInputField from "../components/NumberInputField";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
+import { SvgUri } from "react-native-svg";
 
 const schema = yup.object({
   phone: yup
@@ -101,7 +102,7 @@ export default function BuyAirtimeScreen() {
   };
 
   const networks = [
-    { id: "mtn", label: "MTN", logo: require("../assets/mtn-logo.jpg") },
+    { id: "mtn", label: "MTN", logo: require("../assets/mtn-new.svg") },
     { id: "glo", label: "GLO", logo: require("../assets/glo-logo.png") },
     {
       id: "airtel",
@@ -203,7 +204,8 @@ export default function BuyAirtimeScreen() {
                     <Text style={styles.checkIcon}>✓</Text>
                   </View>
                 )}
-                <Image source={item.logo} style={styles.networkLogo} />
+                {/* <Image source={item.logo} style={styles.networkLogo} /> */}
+                <SvgUri width="32px" height="32px" uri={item.logo} />
               </TouchableOpacity>
             ))}
           </View>

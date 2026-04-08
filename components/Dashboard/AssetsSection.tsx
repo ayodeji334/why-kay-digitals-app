@@ -54,7 +54,7 @@ const AssetsSection = () => {
         throw error;
       }
     },
-    refetchInterval: 3000,
+    refetchInterval: 9000,
   });
 
   const filteredAssets = useMemo(() => {
@@ -70,10 +70,10 @@ const AssetsSection = () => {
   }, [assets]);
 
   if (isLoading) {
-    return <LoadingState message="Laoding assets market rates..." />;
+    return <LoadingState message="Loading assets market rates..." />;
   }
 
-  if (isError && error) {
+  if (!assets && isError && error) {
     return (
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
