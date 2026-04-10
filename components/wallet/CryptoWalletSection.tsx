@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -120,6 +120,10 @@ const CryptoWalletSection = () => {
     swap: <CustomIcon source={RefreshIcon} size={20} color={COLORS.primary} />,
   };
 
+  useEffect(() => {
+    refetch();
+  }, []);
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -228,16 +232,16 @@ const CryptoWalletSection = () => {
               >
                 <View style={styles.cryptoRow}>
                   {item.logo_url && (
-                    // <Image
-                    //   source={{ uri: item.logo_url }}
-                    //   resizeMode="contain"
-                    //   style={styles.assetIcon}
-                    // />
-                    <SvgUri
-                      width="100%"
-                      height="100%"
-                      uri="http://thenewcode.com/assets/images/thumbnails/homer-simpson.svg"
+                    <Image
+                      source={{ uri: item.logo_url }}
+                      resizeMode="contain"
+                      style={styles.assetIcon}
                     />
+                    // <SvgUri
+                    //   width="100%"
+                    //   height="100%"
+                    //   uri="http://thenewcode.com/assets/images/thumbnails/homer-simpson.svg"
+                    // />
                   )}
                   <View style={styles.cryptoInfo}>
                     <Text style={styles.optionName}>

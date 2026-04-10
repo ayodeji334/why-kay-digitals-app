@@ -32,7 +32,7 @@ const LoginForm: React.FC = () => {
   const setToken = useAuthStore(state => state.setToken);
   const setUser = useAuthStore(state => state.setUser);
   const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
 
   const { control, handleSubmit } = useForm<LoginFormInputs>({
@@ -50,6 +50,25 @@ const LoginForm: React.FC = () => {
         password,
         device_id: userOneSignalID,
       });
+
+      console.log("Login response:", res.data);
+
+      if (!res?.data?.data?.is_email_verified) {
+        showError(
+          "Please verify your email before logging in. Code has been sent to your email.",
+        );
+
+        console.log(
+          "Navigating to VerifyCode with email:",
+          res.data?.data?.email,
+        );
+
+        navigation.navigate(
+          "VerifyCode" as never,
+          { email: res?.data?.data?.email ?? "" } as never,
+        );
+        return;
+      }
 
       const { auth, user } = res.data?.data ?? {};
 
