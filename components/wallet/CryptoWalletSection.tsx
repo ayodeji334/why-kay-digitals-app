@@ -20,7 +20,7 @@ import CustomIcon from "../CustomIcon";
 import { formatAmount } from "../../libs/formatNumber";
 import { useNavigation } from "@react-navigation/native";
 import { normalize, getFontFamily } from "../../constants/settings";
-import { Add } from "iconsax-react-nativejs";
+import { Add, Refresh2 } from "iconsax-react-nativejs";
 import useAxios from "../../hooks/useAxios";
 import CustomModal from "../CustomModal";
 import { showError, showSuccess } from "../../utlis/toast";
@@ -182,14 +182,26 @@ const CryptoWalletSection = () => {
             {/* Assets header */}
             <View style={styles.assetsHeader}>
               <Text style={styles.sectionTitle}>Assets</Text>
-              <TouchableOpacity
-                onPress={() => setShowAddAssetWalletModal(true)}
-                activeOpacity={0.68}
-                style={styles.generateButton}
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
               >
-                <Add color="black" size={15} />
-                <Text style={styles.generateButtonText}>Add</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => refetch()}
+                  activeOpacity={0.68}
+                  style={styles.generateButton}
+                >
+                  <Refresh2 color="black" size={12} />
+                  <Text style={styles.generateButtonText}>Refresh</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setShowAddAssetWalletModal(true)}
+                  activeOpacity={0.68}
+                  style={styles.generateButton}
+                >
+                  <Add color="black" size={15} />
+                  <Text style={styles.generateButtonText}>Add</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </>
         }

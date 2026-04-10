@@ -123,6 +123,7 @@ export default function CryptoBuyScreen() {
   const { fiatBalance } = useFiatBalance();
   const [feeBreakdown, setFeeBreakdown] = useState<any>(null);
   const [ngnAmount, setNgnAmount] = useState("0.00");
+  const [assetValueEquivalent, setAssetValueEquivalent] = useState<any>(0);
 
   const {
     control,
@@ -316,6 +317,7 @@ export default function CryptoBuyScreen() {
         feeBreakdown?.currentBuyRate ?? parseFloat(assetDetails.buy_rate),
         assetDetails.symbol ?? "",
       );
+      setAssetValueEquivalent(recalculated.assetValueEquivalent);
       setFeeBreakdown(recalculated.feeBreakdown);
       setNgnAmount(recalculated.ngnAmount);
     }
@@ -392,9 +394,10 @@ export default function CryptoBuyScreen() {
               {hasInsufficientBalance && insufficientBalanceMessage && (
                 <Text style={styles.error}>{insufficientBalanceMessage}</Text>
               )}
-              {/* <Text style={styles.approx}>
+
+              <Text style={styles.approx}>
                 Approximately {assetValueEquivalent} {assetDetails?.symbol}
-              </Text> */}
+              </Text>
 
               <View
                 style={{

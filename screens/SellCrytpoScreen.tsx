@@ -9,7 +9,7 @@ import {
   Image,
   RefreshControl,
 } from "react-native";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, set } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import {
@@ -100,6 +100,7 @@ export default function CryptoSellScreen() {
   const [displayAmount, setDisplayAmount] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [latestFeeBreakdown, setLatestFeeBreakdown] = useState<any>(null);
+  const [assetValueEquivalent, setAssetValueEquivalent] = useState<any>(0);
   const [latestNgnAmount, setLatestNgnAmount] = useState("0.00");
   const selectedAssetUuid = intent.assetId ?? "";
 
@@ -211,6 +212,7 @@ export default function CryptoSellScreen() {
           currentSellRate,
         );
 
+        setAssetValueEquivalent(recalculated.assetValueEquivalent);
         setLatestFeeBreakdown(recalculated.feeBreakdown);
         setLatestNgnAmount(recalculated.ngnAmount);
 
@@ -372,6 +374,7 @@ export default function CryptoSellScreen() {
           parseFloat(assetDetails.sell_rate),
       );
 
+      setAssetValueEquivalent(recalculated.assetValueEquivalent);
       setLatestFeeBreakdown(recalculated.feeBreakdown);
       setLatestNgnAmount(recalculated.ngnAmount);
     }
@@ -459,9 +462,9 @@ export default function CryptoSellScreen() {
                   <Text style={styles.error}>{insufficientBalanceMessage}</Text>
                 )}
 
-                {/* <Text style={styles.approx}>
+                <Text style={styles.approx}>
                   Approximately {assetValueEquivalent} {symbol}
-                </Text> */}
+                </Text>
 
                 <View
                   style={{

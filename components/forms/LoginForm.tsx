@@ -53,7 +53,7 @@ const LoginForm: React.FC = () => {
 
       console.log("Login response:", res.data);
 
-      if (!res?.data?.data?.is_email_verified) {
+      if (res?.data?.data?.is_email_verified) {
         showError(
           "Please verify your email before logging in. Code has been sent to your email.",
         );
@@ -71,6 +71,23 @@ const LoginForm: React.FC = () => {
       }
 
       const { auth, user } = res.data?.data ?? {};
+
+      if (!auth && !res?.data?.data?.is_email_verified) {
+        showError(
+          "Please verify your email before logging in. Code has been sent to your email.",
+        );
+
+        console.log(
+          "Navigating to VerifyCode with email:",
+          res.data?.data?.email,
+        );
+
+        navigation.navigate(
+          "VerifyCode" as never,
+          { email: res?.data?.data?.email ?? "" } as never,
+        );
+        return;
+      }
 
       if (!auth?.accessToken || !auth?.refreshToken || !user) {
         throw new Error("Invalid login response");
