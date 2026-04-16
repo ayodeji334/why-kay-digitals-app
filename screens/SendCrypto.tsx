@@ -107,7 +107,7 @@ export default function SendScreen() {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
