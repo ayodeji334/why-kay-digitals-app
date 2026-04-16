@@ -60,13 +60,13 @@ type FeeBreakdown = {
   currentMarketPrice: number;
 };
 
-const STABLECOINS = ["USDT", "USDC"];
+const STABLECOINS = ["USDT"];
 
 const schema = Yup.object().shape({
   asset_id: Yup.string().required("Select the crypto you want to sell"),
   amount: Yup.number()
+    .min(1, "The amount should not be less than $1")
     .typeError("Enter a valid amount")
-    .min(1, "The amount is too small. The minimum is 1 USD")
     .required("Amount is required"),
 });
 
@@ -160,8 +160,10 @@ export default function CryptoSellScreen() {
 
   const maxSellableUsd = useMemo(() => {
     if (isStablecoin) return balanceUsd;
-    return balanceUsd / (1 + FEE_RATE);
-  }, [balanceUsd, isStablecoin]);
+
+    const feeUsd = FEE_RATE * marketPrice;
+    return balanceUsd - feeUsd;
+  }, [balanceUsd, FEE_RATE, marketPrice, isStablecoin]);
 
   const TOLERANCE_PERCENT = 1.23;
 
@@ -174,8 +176,6 @@ export default function CryptoSellScreen() {
         showError("Unable to fetch latest rates.");
         return;
       }
-
-      console.log(latestRates);
 
       // parse latest values
       const currentSellRate = parseFloat(latestRates.sell_rate ?? "0");
@@ -198,6 +198,7 @@ export default function CryptoSellScreen() {
 
       const sellRateChanged =
         currentSellRate > 0 && currentSellRate !== usedSellRate;
+
       const marketPriceExceeded = relativeChangeExceeded(
         currentMarketPrice,
         usedMarketPrice,
@@ -462,9 +463,11 @@ export default function CryptoSellScreen() {
                   <Text style={styles.error}>{insufficientBalanceMessage}</Text>
                 )}
 
-                <Text style={styles.approx}>
-                  Approximately {assetValueEquivalent} {symbol}
-                </Text>
+                {!hasInsufficientBalance && (
+                  <Text style={styles.approx}>
+                    Approximately {assetValueEquivalent} {symbol}
+                  </Text>
+                )}
 
                 <View
                   style={{
@@ -637,14 +640,6 @@ export default function CryptoSellScreen() {
                   </View>
                 </View>
               </View>
-
-              {/* {hasInsufficientBalance && (
-                <View style={styles.warningContainer}>
-                  <Text style={styles.warningText}>
-                    {insufficientBalanceMessage}
-                  </Text>
-                </View>
-              )} */}
             </View>
 
             <TouchableOpacity
@@ -725,7 +720,7 @@ const styles = StyleSheet.create({
   },
   approx: {
     fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     marginBottom: normalize(9),
     color: COLORS.primary,
   },

@@ -29,6 +29,7 @@ export default function ConversionQuote() {
   const [isExpired, setIsExpired] = useState(false);
   const isCancellingRef = useRef(false);
   const isConfirmedRef = useRef(false);
+  const [isCountdownStopped, setIsCountdownStopped] = useState(false);
 
   const cancelQuote = useCallback(
     async (quoteUuid: string) => {
@@ -107,6 +108,7 @@ export default function ConversionQuote() {
       const transaction = response?.data?.data ?? {};
       setTimeRemaining(0);
       setIsExpired(false);
+      setIsCountdownStopped(false);
 
       if (
         transaction?.category === "CRYPTO_SWAP" &&
@@ -125,11 +127,33 @@ export default function ConversionQuote() {
     },
   });
 
+  // useEffect(() => {
+  //   if (timeRemaining <= 0) {
+  //     setIsExpired(true);
+  //     return;
+  //   }
+
+  //   const timer = setInterval(() => {
+  //     setTimeRemaining(prev => {
+  //       if (prev <= 1) {
+  //         setIsExpired(true);
+  //         return 0;
+  //       }
+  //       return prev - 1;
+  //     });
+  //   }, 1000);
+
+  //   return () => clearInterval(timer);
+  // }, [timeRemaining]);
+
   useEffect(() => {
     if (timeRemaining <= 0) {
       setIsExpired(true);
       return;
     }
+
+    // Stop ticking if user already confirmed
+    if (isCountdownStopped) return;
 
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
@@ -142,7 +166,7 @@ export default function ConversionQuote() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeRemaining]);
+  }, [timeRemaining, isCountdownStopped]);
 
   const handleRequestNewQuote = () => {
     swapMutation.mutate({
@@ -154,6 +178,7 @@ export default function ConversionQuote() {
 
   const handleConfirm = () => {
     if (!isExpired) {
+      setIsCountdownStopped(true);
       confirmMutation.mutate();
     }
   };
@@ -261,6 +286,23 @@ export default function ConversionQuote() {
 
         <View style={styles.buttonBox}>
           {!isExpired && (
+            // <TouchableOpacity
+            //   onPress={handleConfirm}
+            //   disabled={isExpired || confirmMutation.isPending}
+            //   style={[
+            //     styles.confirmButton,
+            //     (isExpired || confirmMutation.isPending) &&
+            //       styles.disabledButton,
+            //   ]}
+            // >
+            //   {/* {confirmMutation.isPending ? (
+            //     <ActivityIndicator color="#fff" size="small" />
+            //   ) : ( */}
+            //   <Text style={styles.confirmText}>
+            //     {`Confirm Quote (${timeRemaining}s)`}
+            //   </Text>
+            //   {/* )} */}
+            // </TouchableOpacity>
             <TouchableOpacity
               onPress={handleConfirm}
               disabled={isExpired || confirmMutation.isPending}
@@ -270,13 +312,11 @@ export default function ConversionQuote() {
                   styles.disabledButton,
               ]}
             >
-              {/* {confirmMutation.isPending ? (
-                <ActivityIndicator color="#fff" size="small" />
-              ) : ( */}
               <Text style={styles.confirmText}>
-                {`Confirm Quote (${timeRemaining}s)`}
+                {confirmMutation.isPending
+                  ? "Confirming..."
+                  : `Confirm Quote (${timeRemaining}s)`}
               </Text>
-              {/* )} */}
             </TouchableOpacity>
           )}
 

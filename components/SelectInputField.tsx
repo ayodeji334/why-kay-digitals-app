@@ -108,7 +108,9 @@ export function SelectInput({
               {selectedOption?.network_charges ? (
                 <Text style={styles.optionPrice}>
                   Network fee:{" "}
-                  {formatNumber(selectedOption?.network_charges ?? 0)}{" "}
+                  {formatNumber(selectedOption?.network_charges ?? 0, {
+                    decimalPlace: 6,
+                  })}{" "}
                   {selectedOption?.symbol}
                 </Text>
               ) : undefined}

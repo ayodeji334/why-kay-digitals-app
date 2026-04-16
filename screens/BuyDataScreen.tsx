@@ -210,9 +210,22 @@ export default function BuyDataScreen() {
             {networks.map((item, index) => (
               <TouchableOpacity
                 key={index}
+                // style={[
+                //   styles.networkButton,
+                //   selectedNetwork === item.id && styles.networkButtonActive,
+                // ]}
                 style={[
                   styles.networkButton,
                   selectedNetwork === item.id && styles.networkButtonActive,
+                  item.id === "mtn" && {
+                    backgroundColor: "#FFCC08",
+                  },
+                  item.id === "airtel" && {
+                    backgroundColor: "#FFC4C433",
+                  },
+                  item.id === "9mobile" && {
+                    backgroundColor: "#EFF7EC",
+                  },
                 ]}
                 onPress={() => {
                   setValue("network", item.id);

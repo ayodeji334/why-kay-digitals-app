@@ -15,129 +15,7 @@ import { COLORS } from "../../constants/colors";
 import { Refresh2, Trash } from "iconsax-react-nativejs";
 import { CloseIcon } from "../../assets";
 import CustomIcon from "../CustomIcon";
-
-// export default function SavedBeneficiaries({
-//   data,
-//   isRefetching,
-//   isError,
-//   refetch,
-//   onSelect,
-//   onRefetch,
-//   onDeleteAll,
-//   deleting,
-//   selectedBeneficiary,
-// }: {
-//   data: any[];
-//   isLoading: boolean;
-//   isRefetching?: boolean;
-//   isError: boolean;
-//   refetch: () => void;
-//   onRefetch?: () => void;
-//   onSelect: (beneficiary: any) => void;
-//   onDeleteAll: () => void;
-//   deleting: boolean;
-//   selectedBeneficiary: string | null;
-// }) {
-//   if (isError)
-//     return (
-//       <ErrorState
-//         error="Cannot load saved beneficiaries"
-//         handleOnPress={refetch}
-//       />
-//     );
-
-//   const renderItem = ({ item }: { item: any }) => (
-//     <TouchableOpacity
-//       activeOpacity={0.9}
-//       style={[
-//         styles.item,
-//         selectedBeneficiary === item.uuid && styles.itemSelected,
-//       ]}
-//       onPress={() => onSelect(item)}
-//     >
-//       <View style={styles.row}>
-//         <View style={styles.info}>
-//           <View style={styles.rowBetween}>
-//             <Text style={styles.name}>
-//               {item?.meta?.account_name ??
-//                 item?.meta?.network ??
-//                 item?.meta?.provider}
-//             </Text>
-//             {/* <Text style={styles.lastUsed}>{formatDate(item?.updated_at)}</Text> */}
-//           </View>
-//           {item?.meta?.bank_name && (
-//             <Text style={styles.details} numberOfLines={1}>
-//               {item?.meta?.bank_name} • {item?.meta?.account_number}
-//             </Text>
-//           )}
-//           {item?.meta?.phone_number && (
-//             <Text style={styles.details} numberOfLines={1}>
-//               {item?.meta?.phone_number}
-//             </Text>
-//           )}
-//           {item?.meta?.cable_tv_number && (
-//             <Text style={styles.details} numberOfLines={1}>
-//               {item?.meta?.cable_tv_number}
-//             </Text>
-//           )}
-//           {item?.meta?.meter_number && (
-//             <Text style={styles.details} numberOfLines={1}>
-//               {item?.meta?.meter_number}
-//             </Text>
-//           )}
-//         </View>
-//       </View>
-//     </TouchableOpacity>
-//   );
-
-//   return (
-//     <View>
-//       <View style={styles.header}>
-//         <Text style={styles.headerTitle}>Saved Beneficiaries</Text>
-//         <View style={{ flexDirection: "row", gap: 4 }}>
-//           {Array.isArray(data) && data?.length > 0 && (
-//             <TouchableOpacity
-//               activeOpacity={0.7}
-//               onPress={onDeleteAll}
-//               disabled={deleting}
-//               style={styles.deleteButton}
-//             >
-//               <Trash size={12} color="red" />
-//               <Text style={styles.deleteText}>
-//                 {deleting ? "Deleting..." : "Delete All"}
-//               </Text>
-//             </TouchableOpacity>
-//           )}
-//           <TouchableOpacity
-//             activeOpacity={0.7}
-//             onPress={onRefetch}
-//             disabled={isRefetching}
-//             style={[styles.deleteButton, { borderColor: "gray" }]}
-//           >
-//             <Refresh2 size={12} color="black" />
-//             <Text style={[styles.deleteText, { color: "black" }]}>
-//               {deleting ? "Refreshing..." : "Refresh"}
-//             </Text>
-//           </TouchableOpacity>
-//         </View>
-//       </View>
-
-//       {!data || data.length === 0 ? (
-//         <View style={styles.emptyContainer}>
-//           <Text style={styles.emptyText}>No saved beneficiaries yet.</Text>
-//         </View>
-//       ) : (
-//         <FlatList
-//           data={data}
-//           scrollEnabled={false}
-//           keyExtractor={item => item.uuid}
-//           renderItem={renderItem}
-//           contentContainerStyle={styles.list}
-//         />
-//       )}
-//     </View>
-//   );
-// }
+import { ref } from "yup";
 
 const PREVIEW_COUNT = 2;
 
@@ -147,7 +25,6 @@ export default function SavedBeneficiaries({
   isError,
   refetch,
   onSelect,
-  onRefetch,
   onDeleteAll,
   deleting,
   selectedBeneficiary,
@@ -264,7 +141,6 @@ export default function SavedBeneficiaries({
 
   return (
     <View>
-      {/* ── header ──────────────────────────────────────────────────── */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Saved Beneficiaries</Text>
         {/* {hasMore && ( */}
@@ -340,7 +216,7 @@ export default function SavedBeneficiaries({
             <View style={styles.modalActions}>
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={onRefetch}
+                onPress={() => refetch()}
                 disabled={isRefetching}
                 style={[styles.actionButton, { borderColor: "gray" }]}
               >

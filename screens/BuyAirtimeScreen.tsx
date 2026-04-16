@@ -204,8 +204,7 @@ export default function BuyAirtimeScreen() {
                     <Text style={styles.checkIcon}>✓</Text>
                   </View>
                 )}
-                {/* <Image source={item.logo} style={styles.networkLogo} /> */}
-                <SvgUri width="32px" height="32px" uri={item.logo} />
+                <Image source={item.logo} style={styles.networkLogo} />
               </TouchableOpacity>
             ))}
           </View>

@@ -70,7 +70,7 @@ interface TransactionSectionListProps {
 
 const TransactionItem = ({ item }: any) => {
   const navigation: any = useNavigation();
-  const isCredit = item?.direction === "CREDIT";
+  const isCredit = item?.direction?.toUpperCase() === "CREDIT";
 
   return (
     <TouchableOpacity

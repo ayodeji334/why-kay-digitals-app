@@ -73,7 +73,7 @@ export default function ConfirmCryptoWithdrawScreen() {
         ...rest,
       });
 
-      showSuccess("Withdrawal verified successfully!");
+      // showSuccess("Withdrawal verified successfully!");
 
       navigation.navigate("TransactionDetail", {
         transaction: response?.data?.data,

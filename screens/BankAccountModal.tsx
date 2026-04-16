@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   Modal,
   View,
@@ -49,7 +49,6 @@ export default function BankAccountModal({
       return res?.data?.data || [];
     },
     refetchOnWindowFocus: true,
-    staleTime: 800000,
   });
 
   // Delete all beneficiaries
@@ -125,6 +124,12 @@ export default function BankAccountModal({
     onClose();
   };
 
+  useEffect(() => {
+    if (!visible) {
+      refetch();
+    }
+  }, [visible]);
+
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <SafeAreaView style={styles.safeArea}>
@@ -195,7 +200,8 @@ export default function BankAccountModal({
             <View style={{ marginVertical: 10 }}>
               <SavedBeneficiaries
                 data={data ?? []}
-                isLoading={isLoading || isRefetching}
+                isLoading={isLoading}
+                isRefetching={isRefetching}
                 isError={isError}
                 refetch={refetch}
                 onSelect={data => {

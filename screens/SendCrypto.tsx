@@ -35,6 +35,7 @@ import { formatAmount } from "../libs/formatNumber";
 import { SelectInput } from "../components/SelectInputField";
 import { TradeIntent } from "../libs/types";
 import { useMarketPrice } from "../components/useMarketPrice";
+import { showError } from "../utlis/toast";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -217,51 +218,51 @@ export default function SendScreen() {
       }));
   }, [assetDetails?.available_chains]);
 
-  const selectedChain = watch("chain");
+  // const selectedChain = watch("chain");
 
-  const selectedNetwork = useMemo(() => {
-    return networkOptions.find((n: any) => n.value === selectedChain) ?? null;
-  }, [networkOptions, selectedChain]);
+  // const selectedNetwork = useMemo(() => {
+  //   return networkOptions.find((n: any) => n.value === selectedChain) ?? null;
+  // }, [networkOptions, selectedChain]);
 
-  const feeBreakdown = useMemo(() => {
-    if (!selectedNetwork || !amount || amount <= 0 || marketPrice <= 0) {
-      return null;
-    }
+  // const feeBreakdown = useMemo(() => {
+  //   if (!selectedNetwork || !amount || amount <= 0 || marketPrice <= 0) {
+  //     return null;
+  //   }
 
-    const precision = selectedNetwork.min_accuracy ?? 6;
-    const coinAmount = amount / marketPrice; // coin equiv of what recipient gets
-    const bybitFeeCoin = parseFloat(selectedNetwork.withdraw_fee ?? "0");
-    const platformFeeCoin = 1 / marketPrice; // $1 platform fee in coin
-    const totalFeeCoin = bybitFeeCoin + platformFeeCoin;
-    const totalFeesUsd = totalFeeCoin * marketPrice;
+  //   const precision = selectedNetwork.min_accuracy ?? 6;
+  //   const coinAmount = amount / marketPrice; // coin equiv of what recipient gets
+  //   const bybitFeeCoin = parseFloat(selectedNetwork.withdraw_fee ?? "0");
+  //   const platformFeeCoin = 1 / marketPrice; // $1 platform fee in coin
+  //   const totalFeeCoin = bybitFeeCoin + platformFeeCoin;
+  //   const totalFeesUsd = totalFeeCoin * marketPrice;
 
-    // ── key change: total deducted from wallet = amount + fees ──────────
-    const totalCoinDeducted = coinAmount + totalFeeCoin;
-    const totalUsdDeducted = amount + totalFeesUsd;
+  //   // ── key change: total deducted from wallet = amount + fees ──────────
+  //   const totalCoinDeducted = coinAmount + totalFeeCoin;
+  //   const totalUsdDeducted = amount + totalFeesUsd;
 
-    const bybitFeeUsd = bybitFeeCoin * marketPrice;
-    const platformFeeUsd = 1;
+  //   const bybitFeeUsd = bybitFeeCoin * marketPrice;
+  //   const platformFeeUsd = 1;
 
-    const minWithdrawCoin = parseFloat(selectedNetwork.withdraw_min ?? "0");
-    const isBelowMinimum = coinAmount < minWithdrawCoin;
-    const isTooSmall = coinAmount <= 0;
+  //   const minWithdrawCoin = parseFloat(selectedNetwork.withdraw_min ?? "0");
+  //   const isBelowMinimum = coinAmount < minWithdrawCoin;
+  //   const isTooSmall = coinAmount <= 0;
 
-    return {
-      coinAmount: coinAmount.toFixed(precision), // what recipient gets (coin)
-      bybitFeeCoin: bybitFeeCoin.toFixed(precision),
-      platformFeeCoin: platformFeeCoin.toFixed(precision),
-      totalFeeCoin: totalFeeCoin.toFixed(precision),
-      totalCoinDeducted: totalCoinDeducted.toFixed(precision), // total leaving wallet (coin)
-      totalUsdDeducted: totalUsdDeducted.toFixed(2), // total leaving wallet (USD)
-      bybitFeeUsd: bybitFeeUsd.toFixed(2),
-      platformFeeUsd: platformFeeUsd.toFixed(2),
-      totalFeeUsd: totalFeesUsd.toFixed(2),
-      usdAmountAfterFee: amount.toFixed(2), // recipient gets exactly `amount`
-      withdrawMin: selectedNetwork.withdraw_min,
-      isBelowMinimum,
-      isTooSmall,
-    };
-  }, [selectedNetwork, amount, marketPrice]);
+  //   return {
+  //     coinAmount: coinAmount.toFixed(precision), // what recipient gets (coin)
+  //     bybitFeeCoin: bybitFeeCoin.toFixed(precision),
+  //     platformFeeCoin: platformFeeCoin.toFixed(precision),
+  //     totalFeeCoin: totalFeeCoin.toFixed(precision),
+  //     totalCoinDeducted: totalCoinDeducted.toFixed(precision), // total leaving wallet (coin)
+  //     totalUsdDeducted: totalUsdDeducted.toFixed(2), // total leaving wallet (USD)
+  //     bybitFeeUsd: bybitFeeUsd.toFixed(2),
+  //     platformFeeUsd: platformFeeUsd.toFixed(2),
+  //     totalFeeUsd: totalFeesUsd.toFixed(2),
+  //     usdAmountAfterFee: amount.toFixed(2), // recipient gets exactly `amount`
+  //     withdrawMin: selectedNetwork.withdraw_min,
+  //     isBelowMinimum,
+  //     isTooSmall,
+  //   };
+  // }, [selectedNetwork, amount, marketPrice]);
 
   // const feeBreakdown = useMemo(() => {
   //   if (!selectedNetwork || !amount || amount <= 0 || marketPrice <= 0) {
@@ -358,6 +359,93 @@ export default function SendScreen() {
   //   marketPrice,
   // ]);
 
+  // const networkOptions = useMemo(() => {
+  //   if (!assetDetails?.coin_info || !Array.isArray(assetDetails?.coin_info)) {
+  //     return [];
+  //   }
+
+  //   const chains = assetDetails.coin_info ?? [];
+
+  //   return chains
+  //     .filter((chain: any) => chain.withdraw_enabled) // only active withdraw chains
+  //     .map((chain: any) => ({
+  //       ...chain,
+  //       label: `${chain.chain} (${chain.chain_type?.toUpperCase()})`,
+  //       value: chain.chain,
+  //       network_charges: chain.withdraw_fee, // withdraw fee from coin_info
+  //       symbol: assetDetails.symbol,
+  //     }));
+  // }, [assetDetails?.coin_info]);
+
+  const selectedChain = watch("chain");
+
+  const selectedNetwork = useMemo(() => {
+    return networkOptions.find((n: any) => n.value === selectedChain) ?? null;
+  }, [networkOptions, selectedChain]);
+
+  const feeBreakdown = useMemo(() => {
+    if (!selectedNetwork || !amount || amount <= 0 || marketPrice <= 0) {
+      return null;
+    }
+
+    const precision = Number(selectedNetwork.min_accuracy ?? 6);
+    const coinAmount = amount / marketPrice;
+    const withdrawFee = parseFloat(selectedNetwork.withdraw_fee ?? "0");
+    const withdrawPercentageFee = parseFloat(
+      selectedNetwork.withdraw_percentage_fee ?? "0",
+    );
+    const feeType = Number(selectedNetwork.fee_type ?? 1);
+
+    let bybitFeeCoin = 0;
+    if (feeType === 0) {
+      if (withdrawPercentageFee !== 0) {
+        bybitFeeCoin =
+          (coinAmount / (1 - withdrawPercentageFee)) * withdrawPercentageFee +
+          withdrawFee;
+      } else {
+        bybitFeeCoin = withdrawFee;
+      }
+    } else {
+      if (withdrawPercentageFee !== 0) {
+        bybitFeeCoin =
+          withdrawFee + (coinAmount - withdrawFee) * withdrawPercentageFee;
+      } else {
+        bybitFeeCoin = withdrawFee;
+      }
+    }
+
+    const platformFeeCoin = 1 / marketPrice; // $1 platform fee in coin
+    const totalFeeCoin = bybitFeeCoin + platformFeeCoin;
+    const totalFeesUsd = totalFeeCoin * marketPrice;
+
+    // total deducted from wallet = amount + fees
+    const totalCoinDeducted = coinAmount + totalFeeCoin;
+    const totalUsdDeducted = amount + totalFeesUsd;
+
+    const bybitFeeUsd = bybitFeeCoin * marketPrice;
+    const platformFeeUsd = 1;
+
+    const minWithdrawCoin = parseFloat(selectedNetwork.withdraw_min ?? "0");
+    const isBelowMinimum = coinAmount < minWithdrawCoin;
+    const isTooSmall = coinAmount <= 0;
+
+    return {
+      coinAmount: coinAmount.toFixed(precision), // recipient gets (coin)
+      bybitFeeCoin: bybitFeeCoin.toFixed(precision),
+      platformFeeCoin: platformFeeCoin.toFixed(precision),
+      totalFeeCoin: totalFeeCoin.toFixed(precision),
+      totalCoinDeducted: totalCoinDeducted.toFixed(precision),
+      totalUsdDeducted: totalUsdDeducted.toFixed(2),
+      bybitFeeUsd: bybitFeeUsd.toFixed(6),
+      platformFeeUsd: platformFeeUsd.toFixed(6),
+      totalFeeUsd: totalFeesUsd.toFixed(6),
+      usdAmountAfterFee: amount.toFixed(6),
+      withdrawMin: selectedNetwork.withdraw_min,
+      isBelowMinimum,
+      isTooSmall,
+    };
+  }, [selectedNetwork, amount, marketPrice]);
+
   const withdrawalStatus = useMemo(() => {
     if (!feeBreakdown || !assetDetails) {
       return { hasIssue: false, message: "" };
@@ -368,7 +456,6 @@ export default function SendScreen() {
     const minWithdrawCoin = Number(selectedNetwork?.withdraw_min ?? 0);
     const minWithdrawUsd = minWithdrawCoin * marketPrice;
 
-    // Case 1: send amount is below the network minimum
     if (amount < minWithdrawUsd) {
       return {
         hasIssue: true,
@@ -378,7 +465,6 @@ export default function SendScreen() {
       };
     }
 
-    // Case 2: coin amount is zero or negative
     if (feeBreakdown.isTooSmall) {
       return {
         hasIssue: true,
@@ -386,13 +472,14 @@ export default function SendScreen() {
       };
     }
 
-    // Case 3: total (amount + fees) exceeds balance
     if (totalUsdDeducted > balanceUsd) {
       return {
         hasIssue: true,
         message: `Insufficient balance. You need ${formatAmount(
           totalUsdDeducted,
-          { currency: "USD" },
+          {
+            currency: "USD",
+          },
         )} (amount + fees) but your balance is ${formatAmount(balanceUsd, {
           currency: "USD",
         })}.`,
@@ -408,6 +495,63 @@ export default function SendScreen() {
     selectedNetwork,
     marketPrice,
   ]);
+
+  useEffect(() => {
+    if (networkOptions.length === 1) {
+      setValue("chain", networkOptions[0].value, { shouldValidate: true });
+    }
+  }, [networkOptions, setValue]);
+
+  // const withdrawalStatus = useMemo(() => {
+  //   if (!feeBreakdown || !assetDetails) {
+  //     return { hasIssue: false, message: "" };
+  //   }
+
+  //   const totalUsdDeducted = Number(feeBreakdown.totalUsdDeducted);
+  //   const balanceUsd = Number(balanceInUsd);
+  //   const minWithdrawCoin = Number(selectedNetwork?.withdraw_min ?? 0);
+  //   const minWithdrawUsd = minWithdrawCoin * marketPrice;
+
+  //   // Case 1: send amount is below the network minimum
+  //   if (amount < minWithdrawUsd) {
+  //     return {
+  //       hasIssue: true,
+  //       message: `Minimum withdrawal is ${formatAmount(minWithdrawUsd, {
+  //         currency: "USD",
+  //       })}. You entered ${formatAmount(amount, { currency: "USD" })}.`,
+  //     };
+  //   }
+
+  //   // Case 2: coin amount is zero or negative
+  //   if (feeBreakdown.isTooSmall) {
+  //     return {
+  //       hasIssue: true,
+  //       message: "Amount is too small to process after fees.",
+  //     };
+  //   }
+
+  //   // Case 3: total (amount + fees) exceeds balance
+  //   if (totalUsdDeducted > balanceUsd) {
+  //     return {
+  //       hasIssue: true,
+  //       message: `Insufficient balance. You need ${formatAmount(
+  //         totalUsdDeducted,
+  //         { currency: "USD" },
+  //       )} (amount + fees) but your balance is ${formatAmount(balanceUsd, {
+  //         currency: "USD",
+  //       })}.`,
+  //     };
+  //   }
+
+  //   return { hasIssue: false, message: "" };
+  // }, [
+  //   feeBreakdown,
+  //   assetDetails,
+  //   amount,
+  //   balanceInUsd,
+  //   selectedNetwork,
+  //   marketPrice,
+  // ]);
 
   useEffect(() => {
     if (networkOptions.length === 1) {
@@ -450,7 +594,7 @@ export default function SendScreen() {
       const message =
         error?.response?.data?.message ??
         "Something went wrong. Please try again.";
-      Alert.alert("Withdrawal Failed", message);
+      showError("Withdrawal Failed: " + message);
     },
   });
 
