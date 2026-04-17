@@ -111,7 +111,14 @@ export function SelectInput({
                   {formatNumber(selectedOption?.network_charges ?? 0, {
                     decimalPlace: 6,
                   })}{" "}
-                  {selectedOption?.symbol}
+                  {selectedOption?.symbol}{" "}
+                  <Text style={{ paddingLeft: 3 }}>
+                    (≈{" "}
+                    {formatAmount(selectedOption?.network_charges_in_usd ?? 0, {
+                      currency: "USD",
+                    })}
+                    )
+                  </Text>
                 </Text>
               ) : undefined}
             </View>
@@ -193,10 +200,20 @@ export function SelectInput({
                             {item?.network_charges ? (
                               <Text style={styles.optionPrice}>
                                 Network fee:{" "}
-                                {formatNumber(item.network_charges ?? 0, {
+                                {formatNumber(item?.network_charges ?? 0, {
                                   decimalPlace: 6,
                                 })}{" "}
-                                {item?.symbol}
+                                {item?.symbol}{" "}
+                                <Text style={{ paddingLeft: 3 }}>
+                                  (≈{" "}
+                                  {formatAmount(
+                                    item?.network_charges_in_usd ?? 0,
+                                    {
+                                      currency: "USD",
+                                    },
+                                  )}
+                                  )
+                                </Text>
                               </Text>
                             ) : undefined}
                           </View>

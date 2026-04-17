@@ -18,6 +18,7 @@ import CustomLoading from "../components/CustomLoading";
 import { useMutation } from "@tanstack/react-query";
 import { formatNumber } from "../libs/formatNumber";
 import { showError } from "../utlis/toast";
+import { useQuoteStore } from "../stores/quoteStore";
 
 export default function ConversionQuote() {
   const route = useRoute();
@@ -27,6 +28,7 @@ export default function ConversionQuote() {
   const [quote, setQuote] = useState(initialQuote);
   const [timeRemaining, setTimeRemaining] = useState(8);
   const [isExpired, setIsExpired] = useState(false);
+  const [isExpiredVisible, setIsExpiredVisible] = useState(false); // ← new
   const isCancellingRef = useRef(false);
   const isConfirmedRef = useRef(false);
   const [isCountdownStopped, setIsCountdownStopped] = useState(false);
@@ -35,8 +37,6 @@ export default function ConversionQuote() {
     async (quoteUuid: string) => {
       if (isCancellingRef.current || isConfirmedRef.current) return;
       isCancellingRef.current = true;
-
-      console.log("cancelling quote....");
 
       try {
         await post("crypto/cancel-quote", { quote_uuid: quoteUuid });
@@ -50,9 +50,25 @@ export default function ConversionQuote() {
   );
 
   // Cancel quote when user navigates back
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener("beforeRemove", (e: any) => {
+  //     if (
+  //       isConfirmedRef.current ||
+  //       e.data.action.type === "NAVIGATE" ||
+  //       isExpired
+  //     ) {
+  //       return;
+  //     }
+  //     cancelQuote(quote?.uuid);
+  //   });
+
+  //   return unsubscribe;
+  // }, [navigation, quote?.uuid, cancelQuote, isExpired]);
+
+  const setLastCancelledAt = useQuoteStore(s => s.setLastCancelledAt);
+
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e: any) => {
-      // Don't cancel if user confirmed, is navigating forward, or quote already expired
       if (
         isConfirmedRef.current ||
         e.data.action.type === "NAVIGATE" ||
@@ -60,18 +76,24 @@ export default function ConversionQuote() {
       ) {
         return;
       }
+
       cancelQuote(quote?.uuid);
+      setLastCancelledAt(Date.now());
     });
 
     return unsubscribe;
   }, [navigation, quote?.uuid, cancelQuote, isExpired]);
-
-  console.log("loop");
-  // Cancel when quote expires naturally
+  // Cancel when quote expires naturally + delay revealing expired UI by 2s
   useEffect(() => {
-    if (isExpired && quote?.uuid) {
-      cancelQuote(quote.uuid);
-    }
+    if (!isExpired || !quote?.uuid) return;
+
+    cancelQuote(quote.uuid).finally(() => {
+      const timeout = setTimeout(() => {
+        setIsExpiredVisible(true);
+      }, 2000);
+
+      return () => clearTimeout(timeout); // cleanup if effect re-runs
+    });
   }, [isExpired, quote?.uuid, cancelQuote]);
 
   const swapMutation = useMutation({
@@ -82,11 +104,11 @@ export default function ConversionQuote() {
       });
     },
     onSuccess: response => {
-      // Reset cancelling ref for the new quote
       isCancellingRef.current = false;
       setQuote(response?.data?.data ?? {});
       setTimeRemaining(8);
       setIsExpired(false);
+      setIsExpiredVisible(false); // ← reset
     },
     onError: (error: any) => {
       showError(
@@ -104,10 +126,11 @@ export default function ConversionQuote() {
       return response;
     },
     onSuccess: response => {
-      isConfirmedRef.current = true; // prevent cancel firing on navigate
+      isConfirmedRef.current = true;
       const transaction = response?.data?.data ?? {};
       setTimeRemaining(0);
       setIsExpired(false);
+      setIsExpiredVisible(false); // ← reset
       setIsCountdownStopped(false);
 
       if (
@@ -127,32 +150,12 @@ export default function ConversionQuote() {
     },
   });
 
-  // useEffect(() => {
-  //   if (timeRemaining <= 0) {
-  //     setIsExpired(true);
-  //     return;
-  //   }
-
-  //   const timer = setInterval(() => {
-  //     setTimeRemaining(prev => {
-  //       if (prev <= 1) {
-  //         setIsExpired(true);
-  //         return 0;
-  //       }
-  //       return prev - 1;
-  //     });
-  //   }, 1000);
-
-  //   return () => clearInterval(timer);
-  // }, [timeRemaining]);
-
   useEffect(() => {
     if (timeRemaining <= 0) {
       setIsExpired(true);
       return;
     }
 
-    // Stop ticking if user already confirmed
     if (isCountdownStopped) return;
 
     const timer = setInterval(() => {
@@ -273,7 +276,8 @@ export default function ConversionQuote() {
               </View>
             </View>
 
-            {isExpired && (
+            {/* Use isExpiredVisible so the message only appears after the 2s delay */}
+            {isExpiredVisible && (
               <View style={styles.expiredBox}>
                 <Text style={styles.expiredText}>
                   This quote has expired. Market rates may have changed. Please
@@ -285,24 +289,7 @@ export default function ConversionQuote() {
         </View>
 
         <View style={styles.buttonBox}>
-          {!isExpired && (
-            // <TouchableOpacity
-            //   onPress={handleConfirm}
-            //   disabled={isExpired || confirmMutation.isPending}
-            //   style={[
-            //     styles.confirmButton,
-            //     (isExpired || confirmMutation.isPending) &&
-            //       styles.disabledButton,
-            //   ]}
-            // >
-            //   {/* {confirmMutation.isPending ? (
-            //     <ActivityIndicator color="#fff" size="small" />
-            //   ) : ( */}
-            //   <Text style={styles.confirmText}>
-            //     {`Confirm Quote (${timeRemaining}s)`}
-            //   </Text>
-            //   {/* )} */}
-            // </TouchableOpacity>
+          {!isExpiredVisible && (
             <TouchableOpacity
               onPress={handleConfirm}
               disabled={isExpired || confirmMutation.isPending}
@@ -315,12 +302,14 @@ export default function ConversionQuote() {
               <Text style={styles.confirmText}>
                 {confirmMutation.isPending
                   ? "Confirming..."
+                  : isExpired
+                  ? "Quote Expired" // shows briefly during the 2s window
                   : `Confirm Quote (${timeRemaining}s)`}
               </Text>
             </TouchableOpacity>
           )}
 
-          {isExpired && (
+          {isExpiredVisible && (
             <TouchableOpacity
               onPress={handleRequestNewQuote}
               disabled={swapMutation.isPending}
@@ -341,6 +330,341 @@ export default function ConversionQuote() {
     </SafeAreaView>
   );
 }
+
+// export default function ConversionQuote() {
+//   const route = useRoute();
+//   const { post } = useAxios();
+//   const navigation: any = useNavigation();
+//   const { quote: initialQuote }: any = route.params;
+//   const [quote, setQuote] = useState(initialQuote);
+//   const [timeRemaining, setTimeRemaining] = useState(8);
+//   const [isExpired, setIsExpired] = useState(false);
+//   const [isExpiredVisible, setIsExpiredVisible] = useState(false);
+//   const isCancellingRef = useRef(false);
+//   const isConfirmedRef = useRef(false);
+//   const [isCountdownStopped, setIsCountdownStopped] = useState(false);
+
+//   const cancelQuote = useCallback(
+//     async (quoteUuid: string) => {
+//       if (isCancellingRef.current || isConfirmedRef.current) return;
+//       isCancellingRef.current = true;
+
+//       console.log("cancelling quote....");
+
+//       try {
+//         await post("crypto/cancel-quote", { quote_uuid: quoteUuid });
+//       } catch (error) {
+//         console.warn("cancelQuote failed:", error);
+//       } finally {
+//         isCancellingRef.current = false;
+//       }
+//     },
+//     [post],
+//   );
+
+//   // Cancel quote when user navigates back
+//   useEffect(() => {
+//     const unsubscribe = navigation.addListener("beforeRemove", (e: any) => {
+//       // Don't cancel if user confirmed, is navigating forward, or quote already expired
+//       if (
+//         isConfirmedRef.current ||
+//         e.data.action.type === "NAVIGATE" ||
+//         isExpired
+//       ) {
+//         return;
+//       }
+//       cancelQuote(quote?.uuid);
+//     });
+
+//     return unsubscribe;
+//   }, [navigation, quote?.uuid, cancelQuote, isExpired]);
+
+//   useEffect(() => {
+//     if (isExpired && quote?.uuid) {
+//       cancelQuote(quote.uuid).finally(() => {
+//         // Wait 2s after cancel attempt before showing the "Request New Quote" button
+//         setTimeout(() => {
+//           setIsExpiredVisible(true);
+//         }, 6000);
+//       });
+//     }
+//   }, [isExpired, quote?.uuid, cancelQuote]);
+
+//   // console.log("loop");
+//   // // Cancel when quote expires naturally
+//   // useEffect(() => {
+//   //   if (isExpired && quote?.uuid) {
+//   //     cancelQuote(quote.uuid);
+//   //   }
+//   // }, [isExpired, quote?.uuid, cancelQuote]);
+
+//   const swapMutation = useMutation({
+//     mutationFn: async (values: any) => {
+//       return await post("crypto/request-quote", {
+//         ...values,
+//         amount: Number(values.amount),
+//       });
+//     },
+//     onSuccess: response => {
+//       // Reset cancelling ref for the new quote
+//       isCancellingRef.current = false;
+//       setQuote(response?.data?.data ?? {});
+//       setTimeRemaining(8);
+//       setIsExpired(false);
+//     },
+//     onError: (error: any) => {
+//       showError(
+//         error?.response?.data?.message ??
+//           "Failed to get a new quote. Try again.",
+//       );
+//     },
+//   });
+
+//   const confirmMutation = useMutation({
+//     mutationFn: async () => {
+//       const response = await post("crypto/confirm-quote", {
+//         quote_uuid: quote?.uuid,
+//       });
+//       return response;
+//     },
+//     onSuccess: response => {
+//       isConfirmedRef.current = true; // prevent cancel firing on navigate
+//       const transaction = response?.data?.data ?? {};
+//       setTimeRemaining(0);
+//       setIsExpired(false);
+//       setIsCountdownStopped(false);
+
+//       if (
+//         transaction?.category === "CRYPTO_SWAP" &&
+//         transaction?.status === "pending"
+//       ) {
+//         navigation.replace("PendingSwap", { transaction });
+//       } else {
+//         navigation.replace("TransactionDetail", { transaction });
+//       }
+//     },
+//     onError: (error: any) => {
+//       showError(
+//         error?.response?.data?.message ??
+//           "Confirmation failed. Please try again.",
+//       );
+//     },
+//   });
+
+//   // useEffect(() => {
+//   //   if (timeRemaining <= 0) {
+//   //     setIsExpired(true);
+//   //     return;
+//   //   }
+
+//   //   const timer = setInterval(() => {
+//   //     setTimeRemaining(prev => {
+//   //       if (prev <= 1) {
+//   //         setIsExpired(true);
+//   //         return 0;
+//   //       }
+//   //       return prev - 1;
+//   //     });
+//   //   }, 1000);
+
+//   //   return () => clearInterval(timer);
+//   // }, [timeRemaining]);
+
+//   useEffect(() => {
+//     if (timeRemaining <= 0) {
+//       setIsExpired(true);
+//       return;
+//     }
+
+//     // Stop ticking if user already confirmed
+//     if (isCountdownStopped) return;
+
+//     const timer = setInterval(() => {
+//       setTimeRemaining(prev => {
+//         if (prev <= 1) {
+//           setIsExpired(true);
+//           return 0;
+//         }
+//         return prev - 1;
+//       });
+//     }, 1000);
+
+//     return () => clearInterval(timer);
+//   }, [timeRemaining, isCountdownStopped]);
+
+//   const handleRequestNewQuote = () => {
+//     swapMutation.mutate({
+//       from_asset: quote?.from_asset_id,
+//       to_asset: quote?.to_asset_id,
+//       amount: quote?.amount_in_usd || 0,
+//     });
+//   };
+
+//   const handleConfirm = () => {
+//     if (!isExpired) {
+//       setIsCountdownStopped(true);
+//       confirmMutation.mutate();
+//     }
+//   };
+
+//   return (
+//     <SafeAreaView edges={["bottom", "right"]} style={styles.container}>
+//       <StatusBar barStyle="dark-content" />
+//       <ScrollView
+//         style={{ flex: 1 }}
+//         contentContainerStyle={{
+//           backgroundColor: "white",
+//           paddingBottom: 20,
+//           paddingHorizontal: 20,
+//           justifyContent: "space-between",
+//           flex: 1,
+//         }}
+//       >
+//         <View>
+//           <View style={styles.assetBox}>
+//             <View style={styles.assetHeader}>
+//               <Text style={styles.assetLabel}>From</Text>
+//             </View>
+//             <View style={styles.assetRow}>
+//               <Image
+//                 source={{ uri: quote?.from_asset_logo }}
+//                 style={styles.assetLogo}
+//               />
+//               <View style={styles.assetInfo}>
+//                 <Text style={styles.assetSymbol}>
+//                   {quote?.from_asset_symbol}
+//                 </Text>
+//               </View>
+//               <View style={styles.assetAmount}>
+//                 <Text style={styles.assetValue}>{quote?.from_amount}</Text>
+//               </View>
+//             </View>
+//           </View>
+
+//           <View style={styles.swapIconBox}>
+//             <View
+//               style={{
+//                 backgroundColor: "#ffe6d3ff",
+//                 borderRadius: 2000,
+//                 padding: 3,
+//                 shadowColor: COLORS.whiteBackground,
+//                 shadowOpacity: 0.3,
+//                 shadowRadius: 6,
+//                 elevation: 3,
+//                 marginVertical: -20,
+//                 zIndex: 1000,
+//               }}
+//             >
+//               <View style={styles.swapIcon}>
+//                 <ArrowDown size={15} color="white" />
+//               </View>
+//             </View>
+//           </View>
+
+//           <View style={styles.assetBox}>
+//             <View style={styles.assetHeader}>
+//               <Text style={styles.assetLabel}>To (Expected)</Text>
+//             </View>
+//             <View style={styles.assetRow}>
+//               <Image
+//                 source={{ uri: quote?.to_asset_logo }}
+//                 style={styles.assetLogo}
+//               />
+//               <View style={styles.assetInfo}>
+//                 <Text style={styles.assetSymbol}>{quote?.to_asset_symbol}</Text>
+//               </View>
+//               <View style={styles.assetAmount}>
+//                 <Text style={styles.assetValue}>{quote?.to_amount}</Text>
+//               </View>
+//             </View>
+//           </View>
+
+//           <View style={{ paddingVertical: 4 }}>
+//             <View style={styles.detailsBox}>
+//               <View style={styles.detailRow}>
+//                 <Text style={styles.detailLabel}>Conversion Rate</Text>
+//                 <Text style={styles.detailValue}>
+//                   1 {quote?.from_asset_symbol} ={" "}
+//                   {formatNumber(quote?.exchange_rate || 0)}{" "}
+//                   {quote?.to_asset_symbol}
+//                 </Text>
+//               </View>
+//               <View style={styles.securityNote}>
+//                 <Text style={styles.securityText}>
+//                   This quote is guaranteed for the duration of the timer. Rates
+//                   are locked and protected from market fluctuations.
+//                 </Text>
+//               </View>
+//             </View>
+
+//             {isExpired && (
+//               <View style={styles.expiredBox}>
+//                 <Text style={styles.expiredText}>
+//                   This quote has expired. Market rates may have changed. Please
+//                   request a new quote to continue.
+//                 </Text>
+//               </View>
+//             )}
+//           </View>
+//         </View>
+
+//         <View style={styles.buttonBox}>
+//           {!isExpired && (
+//             // <TouchableOpacity
+//             //   onPress={handleConfirm}
+//             //   disabled={isExpired || confirmMutation.isPending}
+//             //   style={[
+//             //     styles.confirmButton,
+//             //     (isExpired || confirmMutation.isPending) &&
+//             //       styles.disabledButton,
+//             //   ]}
+//             // >
+//             //   {/* {confirmMutation.isPending ? (
+//             //     <ActivityIndicator color="#fff" size="small" />
+//             //   ) : ( */}
+//             //   <Text style={styles.confirmText}>
+//             //     {`Confirm Quote (${timeRemaining}s)`}
+//             //   </Text>
+//             //   {/* )} */}
+//             // </TouchableOpacity>
+//             <TouchableOpacity
+//               onPress={handleConfirm}
+//               disabled={isExpired || confirmMutation.isPending}
+//               style={[
+//                 styles.confirmButton,
+//                 (isExpired || confirmMutation.isPending) &&
+//                   styles.disabledButton,
+//               ]}
+//             >
+//               <Text style={styles.confirmText}>
+//                 {confirmMutation.isPending
+//                   ? "Confirming..."
+//                   : `Confirm Quote (${timeRemaining}s)`}
+//               </Text>
+//             </TouchableOpacity>
+//           )}
+
+//           {isExpired && (
+//             <TouchableOpacity
+//               onPress={handleRequestNewQuote}
+//               disabled={swapMutation.isPending}
+//               style={[
+//                 styles.cancelButton,
+//                 swapMutation.isPending && styles.disabledButton,
+//               ]}
+//             >
+//               <Text style={styles.cancelText}>Request New Quote</Text>
+//             </TouchableOpacity>
+//           )}
+//         </View>
+//       </ScrollView>
+
+//       <CustomLoading
+//         loading={swapMutation.isPending || confirmMutation.isPending}
+//       />
+//     </SafeAreaView>
+//   );
+// }
 
 // export default function ConversionQuote() {
 //   const route = useRoute();

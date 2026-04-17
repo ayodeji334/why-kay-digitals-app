@@ -151,6 +151,8 @@ export default function SendScreen() {
     enabled: !!selectedAssetUuid,
   });
 
+  // console.log(assetDetails);
+
   const amount = watch("amount");
   const balance = Number(assetDetails?.balance ?? 0);
   const marketPrice = useMemo(
@@ -215,8 +217,9 @@ export default function SendScreen() {
         value: chain?.chain,
         network_charges: chain?.withdraw_fee,
         symbol: assetDetails?.symbol,
+        network_charges_in_usd: chain?.withdraw_fee * marketPrice,
       }));
-  }, [assetDetails?.available_chains]);
+  }, [assetDetails?.available_chains, marketPrice]);
 
   // const selectedChain = watch("chain");
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -24,6 +24,9 @@ import useAxios from "../hooks/useAxios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { showError } from "../utlis/toast";
 import { formatAmount } from "../libs/formatNumber";
+import { useQuoteStore } from "../stores/quoteStore";
+
+const CANCEL_COOLDOWN_MS = 3000;
 
 export const formatWithCommas = (value: string) => {
   if (!value) return "";
@@ -100,6 +103,9 @@ export default function CryptoSwapScreen() {
   const { assets, isLoading, refetch } = useAssets();
   const { data, refetch: refetchUserWallets } = useWallets();
   const axios = useAxios();
+  const route = useRoute();
+
+  console.log(route);
 
   const {
     control,
@@ -272,7 +278,25 @@ export default function CryptoSwapScreen() {
     setValue("to_asset", "", { shouldValidate: false });
   }, [fromAssetId, setValue]);
 
-  const canSubmit = isValid && !insufficientBalance && amount > 0;
+  // Trigger cooldown whenever screen re-focuses after a cancel
+  const { lastCancelledAt, setLastCancelledAt } = useQuoteStore();
+  const CANCEL_COOLDOWN_MS = 3000;
+  const [isCooldown, setIsCooldown] = useState(false);
+
+  useEffect(() => {
+    if (!lastCancelledAt) return;
+
+    setIsCooldown(true);
+    const timeout = setTimeout(() => {
+      setIsCooldown(false);
+      setLastCancelledAt(null); // reset after cooldown
+    }, CANCEL_COOLDOWN_MS);
+
+    return () => clearTimeout(timeout);
+  }, [lastCancelledAt]);
+
+  const canSubmit =
+    isValid && !insufficientBalance && amount > 0 && !isCooldown;
 
   return (
     <SafeAreaView
@@ -382,13 +406,18 @@ export default function CryptoSwapScreen() {
             <TouchableOpacity
               style={[
                 styles.button,
-                (!canSubmit || swapMutation.isPending) && styles.buttonDisabled,
+                (!canSubmit || swapMutation.isPending || isCooldown) &&
+                  styles.buttonDisabled,
               ]}
               onPress={handleSubmit(onSubmit)}
-              disabled={!canSubmit || swapMutation.isPending}
+              disabled={!canSubmit || swapMutation.isPending || isCooldown}
             >
               <Text style={styles.buttonText}>
-                {swapMutation.isPending ? "Please Wait" : "Continue"}
+                {swapMutation.isPending
+                  ? "Please Wait"
+                  : isCooldown
+                  ? "Loading... Please wait"
+                  : "Continue"}
               </Text>
             </TouchableOpacity>
 
