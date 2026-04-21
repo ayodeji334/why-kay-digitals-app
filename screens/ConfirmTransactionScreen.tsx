@@ -33,7 +33,7 @@ const schema = yup.object().shape({
 });
 
 export default function ConfirmTransactionScreen() {
-  const { post } = useAxios();
+  const { post, apiGet } = useAxios();
   const navigation: any = useNavigation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const route: any = useRoute();
@@ -59,6 +59,8 @@ export default function ConfirmTransactionScreen() {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
 
       const transaction = response?.data?.data;
+
+      apiGet("walelts/crypto/refresh");
 
       if (
         transaction.category === "CRYPTO_SWAP" &&

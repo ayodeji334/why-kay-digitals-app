@@ -18,7 +18,7 @@ import CustomLoading from "../components/CustomLoading";
 import OtpInputField from "../components/OtpInputField";
 import useAxios from "../hooks/useAxios";
 import { AxiosError } from "axios";
-import { showError, showSuccess } from "../utlis/toast";
+import { showError } from "../utlis/toast";
 import NumberInputField from "../components/NumberInputField";
 
 const schema = yup.object().shape({
@@ -43,7 +43,7 @@ type FormData = {
 };
 
 export default function ConfirmCryptoWithdrawScreen() {
-  const { post } = useAxios();
+  const { post, apiGet } = useAxios();
   const navigation: any = useNavigation();
   const route: any = useRoute();
   const [isLoading, setIsLoading] = useState(false);
@@ -72,6 +72,8 @@ export default function ConfirmCryptoWithdrawScreen() {
         google_2fa_code: values.googleCode,
         ...rest,
       });
+
+      apiGet("walelts/crypto/refresh");
 
       // showSuccess("Withdrawal verified successfully!");
 
