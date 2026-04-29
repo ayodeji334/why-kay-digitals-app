@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { CloseCircle } from "iconsax-react-nativejs";
 import {
   View,
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  Share,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
@@ -19,6 +20,8 @@ import { COLORS } from "../constants/colors";
 import CustomIcon from "../components/CustomIcon";
 import { CopyIcon, ShareIcon } from "../assets";
 import Clipboard from "@react-native-clipboard/clipboard";
+import useAxios from "../hooks/useAxios";
+import { showError } from "../utlis/toast";
 
 const DetailRow: React.FC<{
   label: string;
@@ -58,7 +61,9 @@ const DetailRow: React.FC<{
 const TransactionDetailScreen = () => {
   const navigation: any = useNavigation();
   const route = useRoute();
+  const { apiGet } = useAxios();
   const { transaction }: any = route.params;
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const isSuccess = useMemo(
     () => transaction?.status?.toLowerCase() === "successful",
@@ -71,8 +76,6 @@ const TransactionDetailScreen = () => {
       transaction?.status?.toLowerCase() === "pending",
     [transaction?.status],
   );
-
-  console.log(transaction);
 
   const StatusIcon = () =>
     isSuccess ? (
@@ -90,19 +93,123 @@ const TransactionDetailScreen = () => {
 
   const handleGoBack = async () => {
     try {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Dashboard" as never }],
-      });
+      // navigation.reset({
+      //   index: 0,
+      //   routes: [{ name: "Dashboard" as never }],
+      // });
+      navigation.goBack();
     } catch (error) {}
   };
-
-  console.log(transaction);
 
   const getDirectionColor = () => {
     if (!transaction?.direction) return "#000";
     return transaction?.direction.toLowerCase() === "debit" ? "#000" : "#000";
   };
+
+  const handleShareReceipt = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+
+    try {
+      // 1. Fetch the PDF as base64 directly
+      const response = await apiGet(
+        `/transactions/${transaction.uuid}/download-receipt`,
+        { responseType: "blob" },
+      );
+
+      // 2. Convert Blob → base64 via FileReader
+      const base64: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(",")[1]);
+        reader.onerror = () => reject(new Error("FileReader failed"));
+        reader.readAsDataURL(response.data);
+      });
+
+      // 3. Share directly as a base64 data URI — no file system dependency needed
+      await Share.share({
+        url: `data:application/pdf;base64,${base64}`, // iOS renders PDFs from data URIs
+        title: "Transaction Receipt",
+        message: "Transaction Receipt", // shown on Android
+      });
+    } catch (error) {
+      console.error("Failed to share receipt:", error);
+      showError("Could not generate the receipt. Please try again.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  // const handleShareReceipt = async () => {
+  //   if (isDownloading) return;
+  //   setIsDownloading(true);
+
+  //   try {
+  //     const response = await apiGet(
+  //       `/transactions/${transaction.uuid}/download-receipt`,
+  //       { responseType: "arraybuffer" },
+  //     );
+
+  //     const bytes = new Uint8Array(response.data as ArrayBuffer);
+  //     let binary = "";
+  //     bytes.forEach(b => (binary += String.fromCharCode(b)));
+  //     const base64 = btoa(binary);
+
+  //     const filename = `receipt-${transaction.uuid.replace(/-/g, "")}.pdf`;
+  //     const filePath = `${Dirs.CacheDir}/${filename}`;
+
+  //     await FileSystem.writeFile(filePath, base64, "base64");
+
+  //     await Share.share({
+  //       url: `file://${filePath}`,
+  //       title: "Transaction Receipt",
+  //       message: "Transaction Receipt",
+  //     });
+  //   } catch (error) {
+  //     console.error("Failed to share receipt:", error);
+  //     showError("Could not generate the receipt. Please try again.");
+  //   } finally {
+  //     setIsDownloading(false);
+  //   }
+  // };
+
+  // const handleShareReceipt = async () => {
+  //   if (isDownloading) return;
+  //   setIsDownloading(true);
+
+  //   try {
+  //     // 1. Fetch the PDF as an arraybuffer from the backend
+  //     const response = await apiGet(
+  //       `/transactions/${transaction.uuid}/receipt`,
+  //       { responseType: "arraybuffer" },
+  //     );
+
+  //     // 2. Convert ArrayBuffer → base64 string
+  //     const bytes = new Uint8Array(response.data as ArrayBuffer);
+  //     let binary = "";
+  //     bytes.forEach(b => (binary += String.fromCharCode(b)));
+  //     const base64 = btoa(binary);
+
+  //     // 3. Write the base64 PDF to the device's cache directory
+  //     const filename = `receipt-${transaction.uuid.replace(/-/g, "")}.pdf`;
+  //     const filePath = `${Dirs.CacheDir}/${filename}`;
+
+  //     await FileSystem.writeFile(filePath, base64, "base64");
+
+  //     // 4. Open the native share sheet with the local file URI
+  //     await Share.open({
+  //       url: `file://${filePath}`,
+  //       type: "application/pdf",
+  //       title: "Transaction Receipt",
+  //       filename,
+  //       failOnCancel: false, // prevents throwing when user dismisses share sheet
+  //     });
+  //   } catch (error) {
+  //     console.error("Failed to share receipt:", error);
+  //     Alert.alert("Error", "Could not generate the receipt. Please try again.");
+  //   } finally {
+  //     setIsDownloading(false);
+  //   }
+  // };
 
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
@@ -259,7 +366,6 @@ const TransactionDetailScreen = () => {
             value={isSuccess ? "Successful" : transaction?.status}
             color={isSuccess ? "#059669" : isProcessing ? "#CA8A04" : "#DC2626"}
           />
-
           {transaction?.status.toUpperCase() !== "FAILED" && (
             <DetailRow label="Description" value={transaction?.description} />
           )}
@@ -278,12 +384,7 @@ const TransactionDetailScreen = () => {
 
         <View style={styles.header}>
           <TouchableOpacity
-            onPress={() =>
-              Alert.alert(
-                "Coming soon",
-                "The feature is not available. Kindly check back later ",
-              )
-            }
+            onPress={handleShareReceipt}
             style={styles.headerButton}
           >
             <CustomIcon source={ShareIcon} size={18} color={COLORS.primary} />

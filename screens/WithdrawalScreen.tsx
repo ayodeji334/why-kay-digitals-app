@@ -35,7 +35,7 @@ const schema = yup.object({
     .number()
     .typeError("Enter a valid amount")
     .min(100, "Minimum amount you can withdraw is ₦100")
-    .max(3000000, "Maximum is ₦3,000,000")
+    .max(1000000, "Maximum is ₦1,000,000")
     .required("Enter withdrawal amount"),
   bank_code: yup.string().required("Select a bank"),
   account_number: yup

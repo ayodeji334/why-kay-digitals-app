@@ -11,7 +11,12 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -130,6 +135,7 @@ export default function CryptoBuyScreen() {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
@@ -329,11 +335,15 @@ export default function CryptoBuyScreen() {
     assetDetails,
   ]);
 
+  useEffect(() => {
+    reset();
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
       <ScrollView
         contentContainerStyle={{
-          flex: 1,
+          flexGrow: 1,
         }}
       >
         <View style={styles.container}>
@@ -541,6 +551,7 @@ export default function CryptoBuyScreen() {
                   </>
                 )}
               </View>
+
               <View style={styles.paymentContainer}>
                 <View
                   style={{

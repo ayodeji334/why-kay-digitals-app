@@ -17,7 +17,10 @@ import { normalize, getFontFamily } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 const STATUS_BAR_PADDING =
   Platform.OS === "android" ? StatusBar.currentHeight ?? 0 : 0;
 
@@ -116,9 +119,10 @@ export default function BankAccountModal({
     }
   }, [accountNumber, selectedBank]);
 
+  const insets = useSafeAreaInsets();
+
   const handleSave = () => {
     if (!selectedBank || accountNumber.length !== 10) return;
-    console.log(selectedBank, accountNumber);
     setValue("bank_code", selectedBank.value);
     setValue("account_number", accountNumber);
     onClose();
@@ -131,92 +135,183 @@ export default function BankAccountModal({
   }, [visible]);
 
   return (
+    // <Modal visible={visible} animationType="slide" transparent={true}>
+    //   <SafeAreaView style={styles.safeArea}>
+    //     <View
+    //       style={[styles.container, { paddingTop: STATUS_BAR_PADDING + 10 }]}
+    //     >
+    //       <View style={styles.header}>
+    //         <TouchableOpacity onPress={onClose}>
+    //           <ArrowLeft2 size={20} color="#000" />
+    //         </TouchableOpacity>
+    //         <Text style={styles.title}>Add Bank Account</Text>
+    //       </View>
+
+    //       <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
+    //         <SelectInput
+    //           label="Select Bank"
+    //           value={selectedBank?.value}
+    //           options={bankOptions}
+    //           onSelect={option => setSelectedBank(option)}
+    //           placeholder="Select Beneficiary Bank"
+    //         />
+
+    //         <View style={styles.inputContainer}>
+    //           <Text style={styles.label}>Account Number</Text>
+    //           <TextInput
+    //             style={[error && styles.errorBorder, styles.input]}
+    //             value={accountNumber}
+    //             onChangeText={setAccountNumber}
+    //             placeholder="Enter 10-digit account number"
+    //             keyboardType="numeric"
+    //             maxLength={10}
+    //           />
+    //         </View>
+
+    //         {!validating && error ? (
+    //           <Text style={[styles.text, { color: "red" }]}>{error}</Text>
+    //         ) : null}
+    //         {!validating && success ? (
+    //           <Text style={[styles.text, { color: "green" }]}>{success}</Text>
+    //         ) : null}
+
+    //         {validating ? (
+    //           <Text style={[styles.text, { color: "green" }]}>
+    //             Kindly wait while the system validate your the details
+    //           </Text>
+    //         ) : null}
+
+    //         <TouchableOpacity
+    //           style={[
+    //             styles.button,
+    //             (!selectedBank ||
+    //               accountNumber.length !== 10 ||
+    //               validating ||
+    //               !!error) && {
+    //               backgroundColor: "#ccc",
+    //             },
+    //           ]}
+    //           onPress={handleSave}
+    //           disabled={
+    //             !selectedBank ||
+    //             accountNumber.length !== 10 ||
+    //             validating ||
+    //             !!error
+    //           }
+    //         >
+    //           <Text style={styles.buttonText}>Save Recipient</Text>
+    //         </TouchableOpacity>
+    //         <View style={{ marginVertical: 10 }}>
+    //           <SavedBeneficiaries
+    //             data={data ?? []}
+    //             isLoading={isLoading}
+    //             isRefetching={isRefetching}
+    //             isError={isError}
+    //             refetch={refetch}
+    //             onSelect={data => {
+    //               setAccountDetails(data);
+    //               handleSelect(data);
+    //               onClose();
+    //             }}
+    //             selectedBeneficiary={selectedBeneficiary}
+    //             onDeleteAll={deleteAll}
+    //             deleting={deleting}
+    //           />
+    //         </View>
+    //       </ScrollView>
+    //     </View>
+    //   </SafeAreaView>
+    // </Modal>
     <Modal visible={visible} animationType="slide" transparent={true}>
-      <SafeAreaView style={styles.safeArea}>
-        <View
-          style={[styles.container, { paddingTop: STATUS_BAR_PADDING + 10 }]}
-        >
-          <View style={styles.header}>
-            <TouchableOpacity onPress={onClose}>
-              <ArrowLeft2 size={20} color="#000" />
-            </TouchableOpacity>
-            <Text style={styles.title}>Add Bank Account</Text>
+      <View
+        style={[
+          styles.container,
+          {
+            paddingTop: insets.top + 10,
+            paddingBottom: insets.bottom,
+          },
+        ]}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onClose}>
+            <ArrowLeft2 size={20} color="#000" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Add Bank Account</Text>
+        </View>
+
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
+          <SelectInput
+            label="Select Bank"
+            value={selectedBank?.value}
+            options={bankOptions}
+            onSelect={option => setSelectedBank(option)}
+            placeholder="Select Beneficiary Bank"
+          />
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Account Number</Text>
+            <TextInput
+              style={[error && styles.errorBorder, styles.input]}
+              value={accountNumber}
+              onChangeText={setAccountNumber}
+              placeholder="Enter 10-digit account number"
+              keyboardType="numeric"
+              maxLength={10}
+            />
           </View>
 
-          <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
-            <SelectInput
-              label="Select Bank"
-              value={selectedBank?.value}
-              options={bankOptions}
-              onSelect={option => setSelectedBank(option)}
-              placeholder="Select Beneficiary Bank"
-            />
+          {!validating && error ? (
+            <Text style={[styles.text, { color: "red" }]}>{error}</Text>
+          ) : null}
+          {!validating && success ? (
+            <Text style={[styles.text, { color: "green" }]}>{success}</Text>
+          ) : null}
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Account Number</Text>
-              <TextInput
-                style={[error && styles.errorBorder, styles.input]}
-                value={accountNumber}
-                onChangeText={setAccountNumber}
-                placeholder="Enter 10-digit account number"
-                keyboardType="numeric"
-                maxLength={10}
-              />
-            </View>
+          {validating ? (
+            <Text style={[styles.text, { color: "green" }]}>
+              Kindly wait while the system validate your the details
+            </Text>
+          ) : null}
 
-            {!validating && error ? (
-              <Text style={[styles.text, { color: "red" }]}>{error}</Text>
-            ) : null}
-            {!validating && success ? (
-              <Text style={[styles.text, { color: "green" }]}>{success}</Text>
-            ) : null}
-
-            {validating ? (
-              <Text style={[styles.text, { color: "green" }]}>
-                Kindly wait while the system validate your the details
-              </Text>
-            ) : null}
-
-            <TouchableOpacity
-              style={[
-                styles.button,
-                (!selectedBank ||
-                  accountNumber.length !== 10 ||
-                  validating ||
-                  !!error) && {
-                  backgroundColor: "#ccc",
-                },
-              ]}
-              onPress={handleSave}
-              disabled={
-                !selectedBank ||
+          <TouchableOpacity
+            style={[
+              styles.button,
+              (!selectedBank ||
                 accountNumber.length !== 10 ||
                 validating ||
-                !!error
-              }
-            >
-              <Text style={styles.buttonText}>Save Recipient</Text>
-            </TouchableOpacity>
-            <View style={{ marginVertical: 10 }}>
-              <SavedBeneficiaries
-                data={data ?? []}
-                isLoading={isLoading}
-                isRefetching={isRefetching}
-                isError={isError}
-                refetch={refetch}
-                onSelect={data => {
-                  setAccountDetails(data);
-                  handleSelect(data);
-                  onClose();
-                }}
-                selectedBeneficiary={selectedBeneficiary}
-                onDeleteAll={deleteAll}
-                deleting={deleting}
-              />
-            </View>
-          </ScrollView>
-        </View>
-      </SafeAreaView>
+                !!error) && {
+                backgroundColor: "#ccc",
+              },
+            ]}
+            onPress={handleSave}
+            disabled={
+              !selectedBank ||
+              accountNumber.length !== 10 ||
+              validating ||
+              !!error
+            }
+          >
+            <Text style={styles.buttonText}>Save Recipient</Text>
+          </TouchableOpacity>
+          <View style={{ marginVertical: 10 }}>
+            <SavedBeneficiaries
+              data={data ?? []}
+              isLoading={isLoading}
+              isRefetching={isRefetching}
+              isError={isError}
+              refetch={refetch}
+              onSelect={data => {
+                setAccountDetails(data);
+                handleSelect(data);
+                onClose();
+              }}
+              selectedBeneficiary={selectedBeneficiary}
+              onDeleteAll={deleteAll}
+              deleting={deleting}
+            />
+          </View>
+        </ScrollView>
+      </View>
     </Modal>
   );
 }

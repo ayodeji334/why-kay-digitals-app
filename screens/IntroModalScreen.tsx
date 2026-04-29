@@ -21,10 +21,10 @@ const slides = [
   {
     id: "1",
     title: "Welcome to",
-    title2: "WhyKay Crypto",
+    title2: "WhyKay Digitals",
     highlight: "Your Gateway to Digital Wealth",
     subtitle:
-      "Buy, sell, and manage cryptocurrencies with confidence. Join thousands of users taking control of their financial future through smart, secure crypto investing.",
+      "Buy, sell, and manage cryptocurrencies with confidence. Pay utility bills, buy airtime, data and gift cards, and join thousands of users taking control of their financial future through smart, secure crypto investing.",
     image: require("../assets/slide-1.png"),
   },
   {

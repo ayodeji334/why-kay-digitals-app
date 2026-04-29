@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 import React, { useMemo, useState } from "react";
-import { ArrowRight2 } from "iconsax-react-nativejs";
+import { ArrowRight2, Notification } from "iconsax-react-nativejs";
 import DeviceInfo from "react-native-device-info";
 import { useNavigation } from "@react-navigation/native";
 import HalfScreenModal from "../components/HalfScreenModal";
@@ -257,6 +257,13 @@ export default function SettingsScreen() {
             title="Account Security"
             onPress={() => navigation.navigate("AccountSecurity" as never)}
             IconComponent={<CustomIcon source={ShieldIcon} size={17} />}
+          />
+          <MenuItem
+            title="Notification Setting"
+            onPress={() => navigation.navigate("NotificationSettings" as never)}
+            IconComponent={
+              <Notification color={COLORS.primary} variant="Linear" size={17} />
+            }
           />
           <MenuItem
             title="Account Limits"

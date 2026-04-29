@@ -6,7 +6,7 @@ import NumberInputField from "../NumberInputField";
 import CustomLoading from "../CustomLoading";
 import { COLORS } from "../../constants/colors";
 import { getFontFamily, normalize } from "../../constants/settings";
-import { showSuccess } from "../../utlis/toast";
+import { showError, showSuccess } from "../../utlis/toast";
 import InfoCard from "../InfoCard";
 import { InfoCircle } from "iconsax-react-nativejs";
 import { useAuthStore } from "../../stores/authSlice";
@@ -48,6 +48,7 @@ const BVNForm = () => {
 
       showSuccess("BVN Verified successful");
     } catch (error: any) {
+      showError("Cannot verify your BVN at the moment");
       // console.log(error?.response);
     }
   };

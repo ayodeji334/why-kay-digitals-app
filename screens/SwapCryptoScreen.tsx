@@ -307,7 +307,7 @@ export default function CryptoSwapScreen() {
       <ScrollView
         contentContainerStyle={{
           backgroundColor: "white",
-          flex: 1,
+          flexGrow: 1,
         }}
         refreshControl={
           <RefreshControl onRefresh={onRefresh} refreshing={isLoading} />

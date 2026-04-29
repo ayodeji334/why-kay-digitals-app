@@ -394,7 +394,9 @@ export default function CryptoSellScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
       <ScrollView
-        contentContainerStyle={{ flex: 1 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+        }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }

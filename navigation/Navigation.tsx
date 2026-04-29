@@ -54,6 +54,7 @@ import ConfirmCryptoWithdrawalScreen from "../screens/ConfirmCryptoWithdrawScree
 import NotificationsScreen from "../screens/Notifications";
 import PendingSwapScreen from "../screens/PendingSwapTransactionScreen";
 import ConversionQuote from "../screens/ConversionQuote";
+import NotificationSettingsScreen from "../screens/NotificationSettingsScreen";
 
 export default function NavigationRoot() {
   const isAuthenticated = useIsAuthenticated();
@@ -276,6 +277,15 @@ export default function NavigationRoot() {
               headerShown: true,
               header: () => (
                 <CustomHeader showTitle={true} title="Account Security" />
+              ),
+            },
+          },
+          NotificationSettings: {
+            screen: NotificationSettingsScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Notification Settings" />
               ),
             },
           },

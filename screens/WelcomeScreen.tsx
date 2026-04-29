@@ -36,7 +36,7 @@ const WelcomeScreen = () => {
         </View>
 
         <View style={styles.contentWrapper}>
-          <View style={styles.header}>
+          {/* <View style={styles.header}>
             <Text style={styles.title}>
               Lorem ipsum dolor sit amet,{" "}
               <Text style={styles.highlight}>consectetur</Text>
@@ -44,6 +44,17 @@ const WelcomeScreen = () => {
             <Text style={styles.subtitle}>
               Experience seamless transactions, smart insights, and instant
               access to your funds.
+            </Text>
+          </View> */}
+          <View style={styles.header}>
+            <Text style={styles.title}>
+              Smarter way to{" "}
+              <Text style={styles.highlight}>pay, trade, and grow</Text>
+            </Text>
+
+            <Text style={styles.subtitle}>
+              From crypto to daily payments, manage everything seamlessly in one
+              powerful platform.
             </Text>
           </View>
 

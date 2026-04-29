@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   menuItemTitle: {
     fontSize: normalize(18),
     color: COLORS.darkBackground,
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
   },
   menuItemSubtitle: {
     fontSize: normalize(16),

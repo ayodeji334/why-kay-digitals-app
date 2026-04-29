@@ -26,12 +26,14 @@ import KYCStatusScreen from "../components/KYCStatusScreen";
 import useAxios from "../hooks/useAxios";
 import { useQuery } from "@tanstack/react-query";
 import CustomLoading from "../components/CustomLoading";
+import { useNavigation } from "@react-navigation/native";
 
 const BankTransferScreen = () => {
   const { apiGet } = useAxios();
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const user = useAuthStore(state => state.user);
+  const navigation: any = useNavigation();
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["userBankAccounts"],
@@ -147,7 +149,8 @@ const BankTransferScreen = () => {
               <Text style={styles.detailLabel}>Bank Name</Text>
               <View style={styles.copyableField}>
                 <Text style={styles.detailValue}>
-                  BLOOMS (MFB) MICROFINANCE BANK
+                  {/* BLOOMS (MFB) MICROFINANCE BANK */}
+                  Blooms Micro finance bank ( Blooms MFB )
                 </Text>
               </View>
             </View>
@@ -196,6 +199,15 @@ const BankTransferScreen = () => {
               "Deposits into your account attract a processing fee of 1% of the transaction amount, capped at a maximum of ₦2,000 for transaction of ₦200,000 and above",
             ]}
           />
+
+          <View style={styles.buttonWrapper}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.buttonText}>I have transfer the money</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       )}
     </SafeAreaView>
@@ -206,6 +218,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+  },
+  buttonWrapper: {
+    marginTop: 10,
+  },
+  button: {
+    backgroundColor: COLORS.secondary,
+    paddingVertical: 14,
+    borderRadius: 100,
+    marginTop: 30,
+    justifyContent: "center",
+    alignContent: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(20),
+    textAlign: "center",
   },
   scrollView: {
     flex: 1,

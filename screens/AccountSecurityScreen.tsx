@@ -36,7 +36,7 @@ interface MenuItemProps {
   disable?: boolean;
 }
 
-const MenuItem = ({
+export const MenuItem = ({
   title,
   subtitle,
   onPress,
@@ -59,8 +59,8 @@ const MenuItem = ({
       <View
         style={{
           marginRight: 2,
-          height: 40,
-          width: 40,
+          height: 20,
+          width: 20,
           borderRadius: 100,
           justifyContent: "center",
           alignItems: "center",
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   },
   menuItemTitle: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
   },
   menuItemSubtitle: {
     fontSize: normalize(16),

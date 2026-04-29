@@ -68,7 +68,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
     }
   };
 
-  const selectedAddress = useMemo(() => {
+  const walletDetail = useMemo(() => {
     if (!selectedNetwork) return null;
 
     const networkAddresses = wallet.addresses.filter(
@@ -108,23 +108,26 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
     navigation.navigate("Dashboard", { screen: "Rates" });
   };
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (
+    text: string,
+    message: string = "Address copied",
+  ) => {
     try {
       Clipboard.setString(text);
-      showSuccess("Address copied");
+      showSuccess(message);
     } catch {
       showError("Failed to copy");
     }
   };
 
   const handleShare = async () => {
-    if (!selectedAddress?.address) return;
+    if (!walletDetail?.address) return;
 
     try {
       await RNShare.share({
         message: `Crypto Deposit Address
               Address:
-              ${selectedAddress?.address || ""}
+              ${walletDetail?.address || ""}
   
               Important:
               • Send only the supported cryptocurrency to this address
@@ -144,9 +147,9 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         <View style={{ paddingTop: 10 }}>
-          {selectedAddress?.address ? (
+          {walletDetail?.address ? (
             <View style={styles.qrContainer}>
-              <QRCode value={selectedAddress.address} size={180} />
+              <QRCode value={walletDetail.address} size={180} />
             </View>
           ) : (
             <View style={styles.header}>
@@ -163,7 +166,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
 
           {/* Notes */}
           <View style={styles.notesSection}>
-            {selectedAddress?.address ? (
+            {walletDetail?.address ? (
               <Text style={styles.notesText}>
                 Use a crypto wallet to scan the QR code or copy the address
                 above. Always confirm that the address matches the one shown
@@ -214,16 +217,35 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
           </View>
 
           {/* Receiving Address */}
-          {selectedAddress?.address && (
+          {walletDetail?.address && (
             <View style={styles.sectionBox}>
               <Text style={styles.label}>Receiving Address</Text>
               <View style={styles.addressRow}>
                 <Text numberOfLines={1} style={styles.addressText}>
-                  {selectedAddress?.address}
+                  {walletDetail?.address}
                 </Text>
                 <TouchableOpacity
                   style={styles.copyButton}
-                  onPress={() => copyToClipboard(selectedAddress.address)}
+                  onPress={() => copyToClipboard(walletDetail.address)}
+                >
+                  <Copy size={15} color={COLORS.primary} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
+          {walletDetail?.tag && (
+            <View style={styles.sectionBox}>
+              <Text style={styles.label}>Memo/Tag</Text>
+              <View style={styles.addressRow}>
+                <Text numberOfLines={1} style={styles.addressText}>
+                  {walletDetail?.tag}
+                </Text>
+                <TouchableOpacity
+                  style={styles.copyButton}
+                  onPress={() =>
+                    copyToClipboard(walletDetail.tag, "Tage/Memo Code copied")
+                  }
                 >
                   <Copy size={15} color={COLORS.primary} />
                 </TouchableOpacity>
@@ -239,11 +261,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Wallet Balance</Text>
-              <Text style={styles.infoValue}>
-                {formatAmount(parseFloat(wallet.balance) || 0, {
-                  currency: "USD",
-                })}
-              </Text>
+              <Text style={styles.infoValue}>{wallet.balance}</Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Market Value</Text>
@@ -256,7 +274,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
           </View>
         </View>
 
-        {selectedAddress?.address && (
+        {walletDetail?.address && (
           <View style={styles.actionsContainer}>
             <TouchableOpacity
               activeOpacity={0.9}
@@ -280,7 +298,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
         )}
       </ScrollView>
 
-      {!selectedAddress?.address && (
+      {!walletDetail?.address && (
         <View style={styles.bottomActions}>
           <TouchableOpacity
             disabled={isGenerating}
@@ -472,7 +490,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   scrollContent: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 20,
   },
   bottomActions: {
