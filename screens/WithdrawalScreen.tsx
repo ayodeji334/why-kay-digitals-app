@@ -19,7 +19,6 @@ import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import { COLORS } from "../constants/colors";
 import { normalize, getFontFamily } from "../constants/settings";
 import BalanceLimitCard from "../components/BalanceLimitCard";
-// import WithdrawalForm from "../components/WithdrawalForm";
 import BankAccountSelector from "./BankAccountSelector";
 import BankAccountModal from "./BankAccountModal";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -29,20 +28,7 @@ import { useSummaryDetail } from "../hooks/useSummaryDetail";
 import { formatWithCommas } from "./SwapCryptoScreen";
 import { formatAmount } from "../libs/formatNumber";
 import InfoCard from "../components/InfoCard";
-
-const schema = yup.object({
-  amount: yup
-    .number()
-    .typeError("Enter a valid amount")
-    .min(100, "Minimum amount you can withdraw is ₦100")
-    .max(1000000, "Maximum is ₦1,000,000")
-    .required("Enter withdrawal amount"),
-  bank_code: yup.string().required("Select a bank"),
-  account_number: yup
-    .string()
-    .length(10, "Account number must be 10 digits")
-    .required("Enter account number"),
-});
+import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 
 export default function WithdrawScreen() {
   const { apiGet } = useAxios();
@@ -62,10 +48,30 @@ export default function WithdrawScreen() {
     refetch: refetchWallet,
   } = useSummaryDetail();
 
+  const currentWalletBalance = walletSummary?.withdrawable_balance ?? 0;
+  const dailyLimit = walletSummary?.daily_limit ?? 1000000; // fallback to 1M
+  const singleLimit = walletSummary?.single_limit ?? 1000000; // fallback to 1M
+  const todayVolume = walletSummary?.total_today ?? 0;
+
+  const schema = yup.object({
+    amount: yup
+      .number()
+      .typeError("Enter a valid amount")
+      .min(100, "Minimum amount you can withdraw is ₦100")
+      .max(singleLimit, `Maximum is ₦${singleLimit.toLocaleString()}`)
+      .required("Enter withdrawal amount"),
+    bank_code: yup.string().required("Select a bank"),
+    account_number: yup
+      .string()
+      .length(10, "Account number must be 10 digits")
+      .required("Enter account number"),
+  });
+
   const {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { isSubmitting, errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -74,10 +80,6 @@ export default function WithdrawScreen() {
 
   const bankCode = watch("bank_code");
   const amount = watch("amount");
-
-  const currentWalletBalance = walletSummary?.withdrawable_balance ?? 0;
-  const dailyLimit = walletSummary?.daily_limit ?? 0;
-  const todayVolume = walletSummary?.total_today ?? 0;
 
   const exceedsDailyLimit = useMemo(() => {
     if (!amount || !dailyLimit) return false;
@@ -188,9 +190,11 @@ export default function WithdrawScreen() {
     }, [refetchWallet]),
   );
 
-  console.log(amount, isBalanceSufficient, exceedsDailyLimit, isSubmitting);
-  console.log(!amount, amount < 1000);
-  console.log(errors);
+  useResetFormOnMount(reset, { amount: 0 }, () => {
+    setAccountDetails(null);
+    setPendingPayload(null);
+    setAmount("");
+  });
 
   return (
     <SafeAreaView

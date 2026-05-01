@@ -23,17 +23,7 @@ import useAxios from "../hooks/useAxios";
 import { formatAmount } from "../libs/formatNumber";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
-import MTNLogo from "../assets/mtn-new.svg";
-import GloLogo from "../assets/glo-logo.svg";
-import AirtelLogo from "../assets/airtel.svg";
-import NineMobile from "../assets/nine-mobile.svg";
-
-// const networks = [
-//   { id: "mtn", label: "MTN", Logo: MTNLogo },
-//   { id: "glo", label: "GLO", Logo: GloLogo },
-//   { id: "airtel", label: "Airtel", Logo: AirtelLogo },
-//   { id: "9mobile", label: "9mobile", Logo: NineMobile },
-// ];
+import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 
 const schema = yup.object({
   phone: yup
@@ -69,6 +59,7 @@ export default function BuyDataScreen() {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -171,7 +162,7 @@ export default function BuyDataScreen() {
     },
   });
 
-  console.log(data);
+  useResetFormOnMount(reset, { network: "", phone: "", plan: "" });
 
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>

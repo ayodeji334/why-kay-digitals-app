@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,9 @@ import { COLORS } from "../constants/colors";
 import InfoCard from "../components/InfoCard";
 import { ArrowDown2, ArrowUp2, InfoCircle } from "iconsax-react-nativejs";
 import { useAuthStore } from "../stores/authSlice";
+import { AccountTier, useAccountTiers } from "../hooks/useAccountTiers";
+import CustomLoading from "../components/CustomLoading";
+import ErrorState from "../components/ErrorState";
 
 if (
   Platform.OS === "android" &&
@@ -26,101 +29,92 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
+export const mapTierToDisplay = (
+  tier: AccountTier,
+  currentTierLevel: string,
+) => ({
+  id: tier.tier,
+  name: tier.tier_name,
+  description: tier.description,
+  status: currentTierLevel === tier.tier_name,
+  limits: [
+    {
+      category: "Withdrawals & Transfers",
+      items: [
+        {
+          name: "Single Withdrawal Limit",
+          value: tier.limits.fiat.single_withdrawal.formatted,
+        },
+        {
+          name: "Daily Withdrawal Limit",
+          value: tier.limits.fiat.daily_withdrawal.formatted,
+        },
+      ],
+    },
+    {
+      category: "Fiat Deposit",
+      items: [
+        { name: "Deposit Limit", value: tier.limits.fiat.deposit.formatted },
+      ],
+    },
+    {
+      category: "Crypto",
+      items: [
+        {
+          name: "Transfer Limit",
+          value: tier.limits.crypto.transfer.formatted,
+        },
+        { name: "Buy Limit", value: tier.limits.crypto.buy.formatted },
+        { name: "Sell", value: tier.limits.crypto.sell.formatted },
+      ],
+    },
+    {
+      category: "Bill Payment",
+      items: [
+        {
+          name: "Utility Bills Limit",
+          value: tier.limits.utility_bills.formatted,
+        },
+      ],
+    },
+  ],
+});
+
 const AccountLimitsScreen = () => {
   const user = useAuthStore(state => state.user);
   const navigation = useNavigation();
-  const [expandedTiers, setExpandedTiers] = useState([1]);
-  const accountTiers = [
-    {
-      id: 11,
-      name: "Level 1 Account",
-      status: user.tier_level === "TIER_0",
-      limits: [
-        {
-          category: "Withdrawals & Transfers",
-          items: [
-            { name: "Single Transaction Limit", value: "₦0.00" },
-            { name: "Daily Transfer Limit", value: "₦0.00" },
-          ],
-        },
-        {
-          category: "Bill Payment",
-          items: [{ name: "Bill Payment Limit", value: "₦0.00" }],
-        },
-      ],
-    },
-    {
-      id: 1,
-      name: "Level 2 Account",
-      status: user.tier_level === "TIER_1",
-      limits: [
-        {
-          category: "Withdrawals & Transfers",
-          items: [
-            { name: "Single Transaction Limit", value: "₦9,000.00" },
-            { name: "Daily Transfer Limit", value: "₦100,000.00" },
-          ],
-        },
-        {
-          category: "Bill Payment",
-          items: [{ name: "Bill Payment Limit", value: "To be defined" }],
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Level 3 Account",
-      status: user.tier_level === "TIER_2",
-      limits: [
-        {
-          category: "Withdrawals & Transfers",
-          items: [
-            {
-              name: "Single Transaction Limit",
-              value: "₦1,000,000.00 (Varies)",
-            },
-            { name: "Daily Transfer Limit", value: "Unlimited" },
-          ],
-        },
-        {
-          category: "Bill Payment",
-          items: [{ name: "Bill Payment Limit", value: "To be defined" }],
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Level 4 Account",
-      status: user.tier_level === "TIER_3",
-      limits: [
-        {
-          category: "Withdrawals & Transfers",
-          items: [
-            { name: "Single Transaction Limit", value: "₦1,000,000.00" },
-            { name: "Daily Transfer Limit", value: "₦10,000,000.00" },
-          ],
-        },
-        {
-          category: "Bill Payment",
-          items: [{ name: "Bill Payment Limit", value: "₦1,000,000.00" }],
-        },
-      ],
-    },
-  ];
+  const [expandedTiers, setExpandedTiers] = useState<string[]>([]);
 
-  const toggleTier = (tierId: number | string) => {
+  const { data: rawTiers, isLoading, isError, refetch } = useAccountTiers();
+
+  console.log(rawTiers);
+
+  const accountTiers = useMemo(
+    () =>
+      (rawTiers ?? []).map(tier => {
+        console.log("Mapping tier:", tier, user?.tier_level);
+        return mapTierToDisplay(tier, user.tier_level);
+      }),
+    [rawTiers, user.tier_level],
+  );
+
+  useEffect(() => {
+    if (accountTiers.length > 0) {
+      const current = accountTiers.find(t => t.status);
+      if (current) setExpandedTiers([current.id]);
+    }
+  }, [accountTiers]);
+
+  const toggleTier = (tierId: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-
-    setExpandedTiers((prev: any) => {
-      if (prev.includes(tierId)) {
-        return prev.filter((id: any) => id !== tierId);
-      } else {
-        return [...prev, tierId];
-      }
-    });
+    setExpandedTiers(prev =>
+      prev.includes(tierId)
+        ? prev.filter(id => id !== tierId)
+        : [...prev, tierId],
+    );
   };
 
-  const isTierExpanded = (tierId: any) => expandedTiers.includes(tierId);
+  const isTierExpanded = (tierId: string) => expandedTiers.includes(tierId);
 
   const renderLimitItem = (item: any, index: number) => (
     <View key={index} style={styles.limitItem}>
@@ -136,13 +130,26 @@ const AccountLimitsScreen = () => {
     </View>
   );
 
+  if (isLoading) {
+    return <CustomLoading loading={isLoading} />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        error="Cannot load account tier data"
+        handleOnPress={refetch}
+      />
+    );
+  }
+
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={"white"} />
 
       <ScrollView style={styles.content}>
         <View style={styles.accordionContainer}>
-          {accountTiers.map(tier => (
+          {accountTiers.map((tier, id) => (
             <View key={tier.id} style={styles.accordionItem}>
               <TouchableOpacity
                 style={[
@@ -159,7 +166,7 @@ const AccountLimitsScreen = () => {
                       isTierExpanded(tier.id) && styles.accordionTitleExpanded,
                     ]}
                   >
-                    {tier.name}
+                    Level {id + 1}
                   </Text>
 
                   {/* Accordion Icon */}
@@ -264,7 +271,7 @@ const styles = StyleSheet.create({
   },
   accordionTitle: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#333",
     marginRight: 12,
   },
@@ -295,11 +302,12 @@ const styles = StyleSheet.create({
   },
   currentBadge: {
     fontSize: normalize(15),
-    fontFamily: getFontFamily("800"),
+    fontFamily: getFontFamily("900"),
     color: COLORS.primary,
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
+    backgroundColor: COLORS.primary + "10",
   },
   upgradeButton: {
     backgroundColor: COLORS.secondary,

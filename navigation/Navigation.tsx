@@ -55,13 +55,12 @@ import NotificationsScreen from "../screens/Notifications";
 import PendingSwapScreen from "../screens/PendingSwapTransactionScreen";
 import ConversionQuote from "../screens/ConversionQuote";
 import NotificationSettingsScreen from "../screens/NotificationSettingsScreen";
+import SuggestionScreen from "../screens/Suggestions";
 
 export default function NavigationRoot() {
   const isAuthenticated = useIsAuthenticated();
   const username = useAuthStore(state => state.user?.username);
   const uuid = useAuthStore(state => state.user?.uuid);
-
-  console.log(isAuthenticated, username, uuid);
 
   const RootStack = createNativeStackNavigator({
     initialRouteName: isAuthenticated
@@ -277,6 +276,15 @@ export default function NavigationRoot() {
               headerShown: true,
               header: () => (
                 <CustomHeader showTitle={true} title="Account Security" />
+              ),
+            },
+          },
+          Suggestion: {
+            screen: SuggestionScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Suggestion Box" />
               ),
             },
           },

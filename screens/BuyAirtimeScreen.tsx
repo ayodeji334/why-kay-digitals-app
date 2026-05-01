@@ -24,6 +24,7 @@ import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
 import { SvgUri } from "react-native-svg";
+import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 
 const schema = yup.object({
   phone: yup
@@ -62,6 +63,7 @@ export default function BuyAirtimeScreen() {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors, isDirty, isValid },
   } = useForm({
     resolver: yupResolver(schema),
@@ -143,6 +145,8 @@ export default function BuyAirtimeScreen() {
       setSelectedBeneficiary(null);
     },
   });
+
+  useResetFormOnMount(reset, { network: "", phone: "" });
 
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>

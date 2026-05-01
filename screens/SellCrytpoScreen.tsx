@@ -29,6 +29,7 @@ import NoWallet from "../components/NoWallet";
 import CustomLoading from "../components/CustomLoading";
 import { TradeIntent } from "../libs/types";
 import { showError } from "../utlis/toast";
+import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -109,6 +110,7 @@ export default function CryptoSellScreen() {
     watch,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -358,6 +360,7 @@ export default function CryptoSellScreen() {
   useFocusEffect(
     useCallback(() => {
       refetch();
+      console.log("Focusing...");
     }, [refetch]),
   );
 
@@ -386,6 +389,17 @@ export default function CryptoSellScreen() {
     marketPrice,
     assetDetails,
   ]);
+
+  useResetFormOnMount(
+    reset,
+    { amount: 0, asset_id: intent.assetId ?? "" },
+    () => {
+      setDisplayAmount("");
+      setLatestFeeBreakdown(null);
+      setAssetValueEquivalent(0);
+      setLatestNgnAmount("0.00");
+    },
+  );
 
   if (isLoading) {
     return <CustomLoading loading={true} />;

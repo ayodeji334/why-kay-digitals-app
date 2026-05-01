@@ -2529,6 +2529,35 @@ PODS:
     - React-perflogger (= 0.81.0)
     - React-utils (= 0.81.0)
     - SocketRocket
+  - ReactNativeFileAccess (4.0.3):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+    - ZIPFoundation
   - RNBootSplash (6.3.10):
     - boost
     - DoubleConversion
@@ -2646,6 +2675,34 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - RNShare (12.2.6):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - RNSVG (15.14.0):
     - boost
     - DoubleConversion
@@ -2717,6 +2774,7 @@ PODS:
     - React-Core
     - VisionCamera/FrameProcessors
   - Yoga (0.0.0)
+  - ZIPFoundation (0.9.20)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -2799,10 +2857,12 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - ReactNativeFileAccess (from `../node_modules/react-native-file-access`)
   - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - SocketRocket (~> 0.7.1)
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
@@ -2812,6 +2872,7 @@ SPEC REPOS:
   trunk:
     - OneSignalXCFramework
     - SocketRocket
+    - ZIPFoundation
 
 EXTERNAL SOURCES:
   boost:
@@ -2973,6 +3034,8 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  ReactNativeFileAccess:
+    :path: "../node_modules/react-native-file-access"
   RNBootSplash:
     :path: "../node_modules/react-native-bootsplash"
   RNCClipboard:
@@ -2981,6 +3044,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-device-info"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   VisionCamera:
@@ -3069,15 +3134,18 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 562d731311d0524a577cf8a01faa97874bacbdfe
   ReactCodegen: a5d5626f71299d374b87e9a7dc92f968a963b4ef
   ReactCommon: c235ebd26d63fde9a2dfa72cee9f8294b910fee1
+  ReactNativeFileAccess: 05a4f168283cc94a9265922369b4ee15549c7870
   RNBootSplash: fb818d0053315b81fccd5437da42ca460eda6017
   RNCClipboard: 962296f7af77f6c039b683e21c2e2255af9c05df
   RNDeviceInfo: 8b6fa8379062949dd79a009cf3d6b02a9c03ca59
   RNScreens: 74985ca8e102294a60cec7513fa84c936fa0b20b
+  RNShare: 11923289a9964c6bd5f507eaa7fe61ec51b0adce
   RNSVG: 4a4f7d4897abbfdc6dfe30be5d6cc5ffee23ea43
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   VisionCamera: 47f10351a1b6a8d251b90986ae72ca5f52331954
-  Yoga: 00013dd9cde63a2d98e8002fcc4f5ddb66c10782
+  Yoga: b01392348aeea02064c21a2762a42893d82b60a7
+  ZIPFoundation: dfd3d681c4053ff7e2f7350bc4e53b5dba3f5351
 
 PODFILE CHECKSUM: 9b7bfbeccefe4a823141190ead326286b3fedf4e
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2

@@ -54,7 +54,8 @@ const AssetsSection = () => {
         throw error;
       }
     },
-    refetchInterval: 9000,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
   });
 
   const filteredAssets = useMemo(() => {
@@ -132,18 +133,20 @@ const AssetsSection = () => {
                           { currency: "USD", decimalPlace: 2 },
                         )}
                       </Text>
-                      {asset.change === "up" ? (
-                        <ArrowUp size={12} color={COLORS.primary} />
-                      ) : (
-                        <ArrowDown size={12} color={COLORS.error} />
-                      )}
+                      {asset?.price_status ? (
+                        asset?.price_status === "up" ? (
+                          <ArrowUp size={12} color={COLORS.primary} />
+                        ) : (
+                          <ArrowDown size={12} color={COLORS.error} />
+                        )
+                      ) : null}
                     </View>
                   </View>
                   <View style={styles.assetStats}>
                     <Text style={styles.assetLabel}>Rate:</Text>
                     <Text style={styles.assetValue}>
                       {formatAmount(asset.sell_rate?.toString(), {
-                        currency: "USD",
+                        currency: "NGN",
                         decimalPlace: 2,
                       })}{" "}
                       /$

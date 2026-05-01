@@ -116,6 +116,7 @@ const CryptoWalletDepositScreen = () => {
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.screen}>
       <ScrollView
+        style={{ flex: 1 }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -124,7 +125,8 @@ const CryptoWalletDepositScreen = () => {
             tintColor={COLORS.primary}
           />
         }
-        contentContainerStyle={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         <WalletDetails
           wallet={selectedWallet}

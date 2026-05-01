@@ -27,6 +27,7 @@ import { useFiatBalance } from "../hooks/useFiatBalance";
 import { TradeIntent } from "../libs/types";
 import { showError } from "../utlis/toast";
 import useAxios from "../hooks/useAxios";
+import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 
 type CryptoBuyScreenParams = {
   CryptoBuy: {
@@ -311,12 +312,7 @@ export default function CryptoBuyScreen() {
   }, [intent?.amount]);
 
   useEffect(() => {
-    if (
-      assetDetails?.buy_rate &&
-      amount > 0 &&
-      marketPrice > 0 &&
-      assetDetails
-    ) {
+    if (assetDetails?.buy_rate && marketPrice > 0 && assetDetails) {
       const recalculated = calculateFeeBreakdown(
         amount,
         marketPrice,
@@ -335,9 +331,16 @@ export default function CryptoBuyScreen() {
     assetDetails,
   ]);
 
-  useEffect(() => {
-    reset();
-  }, []);
+  useResetFormOnMount(
+    reset,
+    { amount: 0, asset_id: intent.assetId ?? "" },
+    () => {
+      setDisplayAmount("");
+      setFeeBreakdown(null);
+      setAssetValueEquivalent(0);
+      setNgnAmount("0.00");
+    },
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>

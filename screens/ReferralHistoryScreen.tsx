@@ -25,7 +25,8 @@ import { showError } from "../utlis/toast";
 // Types
 interface ReferralItem {
   uuid: string;
-  name: string;
+  name?: string;
+  username?: string;
   email: string;
   created_at: string;
   amount: string;
@@ -59,7 +60,7 @@ const EmptyState: React.FC<{ type: "signedUp" | "pending" }> = ({ type }) => {
   const handleShareCode = async () => {
     try {
       const result = await ShareElement.share({
-        message: `Hey! Use my referral code *${user?.referral_code}* to sign up and enjoy rewards! 🎉`,
+        message: `Hey! Use my referral code *${user?.referral_code}* to sign up and enjoy rewards on WhyKayDigitals App!`,
       });
 
       if (result.action === ShareElement.sharedAction) {
@@ -103,8 +104,8 @@ const ReferralCard: React.FC<{ item: ReferralItem }> = ({ item }) => (
   <View style={styles.referralCard}>
     <View style={styles.referralHeader}>
       <View style={styles.userInfo}>
-        <Text style={styles.userName}>{capitalizeWords(item.name)}</Text>
-        <Text style={styles.userEmail}>{item.email}</Text>
+        <Text style={styles.userName}>{item?.username || item?.name}</Text>
+        <Text style={styles.userEmail}>{item?.email && `${item.email}`}</Text>
       </View>
       <Text style={styles.amount}>{formatAmount(parseFloat(item.amount))}</Text>
     </View>
@@ -211,7 +212,6 @@ const ReferralHistoryScreen: React.FC = () => {
     try {
       await refetch();
     } catch (err) {
-      console.error("Failed to refresh referrals:", err);
       if (err instanceof AxiosError) {
         showError(
           err.response?.data?.message || "Something went wrong. Try again.",
@@ -222,22 +222,26 @@ const ReferralHistoryScreen: React.FC = () => {
     }
   };
 
-  const referrals = data?.data.referrals ?? [];
-  const totalBonus = data?.data.total_bonus ?? 0;
+  const referrals: Referral[] = data?.data?.referrals ?? [];
+  const totalBonus: number = data?.data?.total_bonus ?? 0;
 
   const completedReferrals = useMemo(
     () => referrals.filter((r: any) => r.status === "completed"),
     [referrals],
   );
   const pendingReferrals = useMemo(
-    () => referrals.filter((r: any) => r.status === "pending"),
+    () => referrals.filter(r => r.status === "pending"),
     [referrals],
+  );
+
+  // Pending earnings = sum of amounts on pending referrals
+  const pendingEarnings = useMemo(
+    () => pendingReferrals.reduce((sum: any, r) => sum + (r.amount ?? 0), 0),
+    [pendingReferrals],
   );
 
   const currentReferrals =
     activeTab === "signedUp" ? completedReferrals : pendingReferrals;
-  const signedUpCount = completedReferrals.length;
-  const pendingCount = pendingReferrals.length;
   const hasReferrals = currentReferrals.length > 0;
 
   return (
@@ -255,7 +259,7 @@ const ReferralHistoryScreen: React.FC = () => {
           <StatCard
             direction="left"
             title="Pending Referrals Earnings"
-            value="₦0.00"
+            value={formatAmount(pendingEarnings)}
           />
           <StatCard
             direction="right"
@@ -267,14 +271,14 @@ const ReferralHistoryScreen: React.FC = () => {
         <View style={styles.tabsContainer}>
           <Tab
             active={activeTab === "signedUp"}
-            title="Signed Up"
-            count={signedUpCount}
+            title="Completed"
+            count={completedReferrals.length}
             onPress={() => setActiveTab("signedUp")}
           />
           <Tab
             active={activeTab === "pending"}
             title="Pending"
-            count={pendingCount}
+            count={pendingReferrals.length}
             onPress={() => setActiveTab("pending")}
           />
         </View>
@@ -295,6 +299,119 @@ const ReferralHistoryScreen: React.FC = () => {
   );
 };
 
+// const ReferralHistoryScreen: React.FC = () => {
+//   const { apiGet } = useAxios();
+//   const [activeTab, setActiveTab] = useState<"signedUp" | "pending">(
+//     "signedUp",
+//   );
+//   const [isRefreshing, setIsRefreshing] = useState(false);
+
+//   const { data, isLoading, refetch } = useQuery<ReferralResponse>({
+//     queryKey: ["referralHistory"],
+//     queryFn: async () => {
+//       const response = await apiGet<ReferralResponse>(
+//         "/users/user/referral-history",
+//       );
+//       return response.data;
+//     },
+//     refetchOnWindowFocus: true,
+//   });
+
+//   console.log("Referral history data:", data);
+
+//   const onRefresh = async () => {
+//     setIsRefreshing(true);
+//     try {
+//       await refetch();
+//     } catch (err) {
+//       console.error("Failed to refresh referrals:", err);
+//       if (err instanceof AxiosError) {
+//         showError(
+//           err.response?.data?.message || "Something went wrong. Try again.",
+//         );
+//       }
+//     } finally {
+//       setIsRefreshing(false);
+//     }
+//   };
+
+//   const referrals = data?.data?.referrals ?? [];
+//   const totalBonus = data?.data?.total_bonus ?? 0;
+
+//   console.log(referrals);
+
+//   const completedReferrals = useMemo(
+//     () => referrals.filter((r: any) => r.status === "completed"),
+//     [referrals],
+//   );
+//   const pendingReferrals = useMemo(
+//     () => referrals.filter((r: any) => r.status === "pending"),
+//     [referrals],
+//   );
+
+//   const currentReferrals =
+//     activeTab === "signedUp" ? completedReferrals : pendingReferrals;
+
+//   const signedUpCount = completedReferrals.length;
+//   const pendingCount = pendingReferrals.length;
+//   const hasReferrals = currentReferrals.length > 0;
+
+//   return (
+//     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
+//       <StatusBar barStyle="dark-content" />
+
+//       <ScrollView
+//         style={styles.content}
+//         showsVerticalScrollIndicator={false}
+//         refreshControl={
+//           <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+//         }
+//       >
+//         <View style={styles.statsSection}>
+//           <StatCard
+//             direction="left"
+//             title="Pending Referrals Earnings"
+//             value="₦0.00"
+//           />
+
+//           <StatCard
+//             direction="right"
+//             title="Total Earned"
+//             value={formatAmount(totalBonus)}
+//           />
+//         </View>
+
+//         <View style={styles.tabsContainer}>
+//           <Tab
+//             active={activeTab === "signedUp"}
+//             title="Signed Up"
+//             count={signedUpCount}
+//             onPress={() => setActiveTab("signedUp")}
+//           />
+//           <Tab
+//             active={activeTab === "pending"}
+//             title="Pending"
+//             count={pendingCount}
+//             onPress={() => setActiveTab("pending")}
+//           />
+//         </View>
+
+//         <View style={styles.referralsList}>
+//           {hasReferrals ? (
+//             currentReferrals.map(item => (
+//               <ReferralCard key={item.uuid} item={item} />
+//             ))
+//           ) : (
+//             <EmptyState type={activeTab} />
+//           )}
+//         </View>
+//       </ScrollView>
+
+//       <CustomLoading loading={isLoading} />
+//     </SafeAreaView>
+//   );
+// };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -312,7 +429,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   emptyStateTitle: {
-    fontSize: normalize(22),
+    fontSize: normalize(20),
     fontFamily: getFontFamily("800"),
     color: "#374151",
     textAlign: "center",
@@ -407,7 +524,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   tabTitle: {
-    fontSize: normalize(19),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
   },
   activeTabTitle: {
@@ -432,7 +549,7 @@ const styles = StyleSheet.create({
   },
   referralCard: {
     backgroundColor: "#fff",
-    padding: 16,
+    padding: 10,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "#E8E8E8",
@@ -449,9 +566,10 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: normalize(17),
-    fontFamily: getFontFamily(800),
+    fontFamily: getFontFamily(900),
     color: "#000",
     marginBottom: 4,
+    textTransform: "uppercase",
   },
   userEmail: {
     fontSize: normalize(17),
@@ -459,7 +577,7 @@ const styles = StyleSheet.create({
   },
   amount: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily(800),
+    fontFamily: getFontFamily(900),
   },
   referralFooter: {
     flexDirection: "row",
@@ -469,7 +587,7 @@ const styles = StyleSheet.create({
   date: {
     fontSize: normalize(15),
     fontFamily: getFontFamily(700),
-    color: "#989da6ff",
+    color: "rgb(63, 63, 63)",
   },
   statusBadge: {
     paddingHorizontal: 12,
@@ -477,14 +595,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   statusText: {
-    fontSize: normalize(14),
-    fontFamily: getFontFamily(700),
+    fontSize: normalize(16),
+    fontFamily: getFontFamily(800),
   },
   completedText: {
-    color: "#5AB243",
+    color: "#176105",
   },
   pendingText: {
-    color: "#D97706",
+    color: "#c46b06",
   },
 });
 

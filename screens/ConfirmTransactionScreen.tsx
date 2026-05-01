@@ -9,7 +9,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  CommonActions,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -57,10 +61,19 @@ export default function ConfirmTransactionScreen() {
 
       queryClient.invalidateQueries({ queryKey: ["fiat-balance"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({
+        queryKey: ["saved-beneficiaries-banks"],
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["saved-beneficiaries-data"] });
+      queryClient.invalidateQueries({
+        queryKey: ["saved-beneficiaries-airtime"],
+      });
+      queryClient.invalidateQueries({ queryKey: ["saved-beneficiaries-data"] });
 
       const transaction = response?.data?.data;
 
-      apiGet("walelts/crypto/refresh");
+      apiGet("wallets/crypto/refresh");
 
       if (
         transaction.category === "CRYPTO_SWAP" &&
@@ -68,7 +81,25 @@ export default function ConfirmTransactionScreen() {
       ) {
         navigation.replace("PendingSwap", { transaction });
       } else {
-        navigation.replace("TransactionDetail", { transaction });
+        // navigation.replace("TransactionDetail", { transaction });
+        navigation.dispatch((state: any) => {
+          // Remove ConfirmTransaction (current screen) from the stack
+          const routesWithoutConfirm = state.routes.filter(
+            (r: any) => r.name !== "ConfirmTransaction",
+          );
+
+          // Append TransactionDetail
+          const newRoutes = [
+            ...routesWithoutConfirm,
+            { name: "TransactionDetail", params: { transaction } },
+          ];
+
+          return CommonActions.reset({
+            ...state,
+            routes: newRoutes,
+            index: newRoutes.length - 1,
+          });
+        });
       }
     } catch (err) {
       if (err instanceof AxiosError) {

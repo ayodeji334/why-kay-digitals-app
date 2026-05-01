@@ -63,7 +63,7 @@ const ReferralAndEarnScreen: React.FC = () => {
   const handleShareCode = async () => {
     try {
       const result = await ShareElement.share({
-        message: `Hey! Use my referral code *${user?.referral_code}* to sign up and enjoy rewards! 🎉`,
+        message: `Hey! Use my referral code *${user?.referral_code}* to sign up and enjoy rewards on WhyKayDigitals App!`,
       });
 
       if (result.action === ShareElement.sharedAction) {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Image,
   StyleSheet,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -23,6 +24,7 @@ import useAxios from "../hooks/useAxios";
 import { formatAmount } from "../libs/formatNumber";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
+import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 
 // Validation Schema
 const schema = yup.object({
@@ -34,18 +36,80 @@ const schema = yup.object({
   plan: yup.string().required("Select a plan"),
 });
 
+interface cardValidationStatusProps {
+  validating: boolean;
+  cardDetail: any;
+}
+
+interface cardValidationStatusProps {
+  validating: boolean;
+  cardDetail: any;
+  hasInput: boolean;
+}
+
+const SmartCardValidationStatus = memo(
+  ({ validating, cardDetail, hasInput }: cardValidationStatusProps) => {
+    if (!hasInput) return null;
+
+    console.log(hasInput, validating);
+
+    // in-flight
+    if (validating) {
+      return (
+        <View style={styles.validationRow}>
+          <ActivityIndicator size="small" color={COLORS.primary} />
+          <Text style={styles.detailsLabel}>Validating meter number…</Text>
+        </View>
+      );
+    }
+
+    // validated but not found
+    if (!cardDetail) {
+      return (
+        <View style={styles.warningContainer}>
+          <Text style={styles.warningText}>
+            Smart card number detail not found. Please check the provider and
+            meter number and try again.
+          </Text>
+        </View>
+      );
+    }
+
+    // found
+    return (
+      <View style={styles.validationRow}>
+        <View style={{ paddingVertical: 5 }}>
+          <Text style={styles.detailsLabel}>Name</Text>
+          <Text style={styles.validatingText}>{cardDetail.name}</Text>
+        </View>
+        <View style={{ paddingVertical: 5 }}>
+          <Text style={styles.detailsLabel}>Address</Text>
+          <Text style={styles.validatingText}>{cardDetail.address}</Text>
+        </View>
+      </View>
+    );
+  },
+);
+
 export default function PayCableTVSubscriptionScreen() {
   const [loading, setLoading] = useState(false);
   const [saveBeneficiary, setSaveBeneficiary] = useState(false);
-  const { apiGet, apiDelete } = useAxios();
+  const [validatingCard, setValidatingCard] = useState(false);
+  const [cardDetails, setCardDetails] = useState<any>(null);
+  const [hasFiredValidation, setHasFiredValidation] = useState(false);
+  const [cardError, setCardError] = useState<string | null>(null);
+  const { apiGet, apiDelete, post } = useAxios();
   const navigation: any = useNavigation();
+  const [cardValid, setCardValid] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     control,
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    reset,
+    formState: { errors, isValid, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -57,6 +121,63 @@ export default function PayCableTVSubscriptionScreen() {
   });
 
   const selectedNetwork = watch("network");
+  const smartcardNumber = watch("smartcard_number");
+  const plan = watch("plan");
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (
+      !selectedNetwork ||
+      !plan ||
+      !smartcardNumber ||
+      smartcardNumber.length < 5
+    ) {
+      setCardValid(false);
+      setCardDetails(null);
+
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      setValidatingCard(true);
+
+      try {
+        const res = await post("/bills/validate", {
+          item_code: plan,
+          code: selectedNetwork,
+          customer: smartcardNumber,
+        });
+
+        const isSuccess = res?.data?.sucess;
+        const customer = res?.data?.data;
+
+        if (isSuccess && customer) {
+          setCardDetails(customer);
+          setCardError(null);
+        } else {
+          setCardDetails(null);
+          setCardValid(false);
+        }
+      } catch (error: any) {
+        setCardDetails(null);
+        setCardValid(false);
+      } finally {
+        setValidatingCard(false);
+      }
+    }, 800);
+
+    if (!selectedNetwork || !plan || smartcardNumber.length === 0) {
+      setCardValid(false);
+      setCardDetails(null);
+      setHasFiredValidation(false);
+      return;
+    }
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [smartcardNumber, selectedNetwork, plan]);
 
   const { data: tvPlans = [], isLoading } = useQuery({
     queryKey: ["tvPlans", selectedNetwork],
@@ -78,13 +199,21 @@ export default function PayCableTVSubscriptionScreen() {
     },
     onSuccess: () => {
       refetch();
-      // setSelectedBeneficiary(null);
     },
   });
 
-  console.log;
-
   const onSubmit = async (values: any) => {
+    // Block submission if validation is still in progress or failed
+    if (validatingCard) {
+      showError("Please wait while we validate your smartcard number.");
+      return;
+    }
+
+    if (cardError || !cardDetails) {
+      showError("Please enter a valid smartcard number before proceeding.");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -108,9 +237,7 @@ export default function PayCableTVSubscriptionScreen() {
         network: values?.network,
       };
 
-      navigation.navigate("ConfirmTransaction" as never, {
-        payload,
-      });
+      navigation.navigate("ConfirmTransaction" as never, { payload });
     } catch (error: any) {
       showError(error.response?.data?.message || "Subscription failed");
     } finally {
@@ -149,6 +276,21 @@ export default function PayCableTVSubscriptionScreen() {
     },
   });
 
+  const handleProviderChange = useCallback(
+    (id: string) => {
+      console.log(id);
+      setValue("network", id);
+
+      setCardValid(false);
+      setCardDetails(null);
+    },
+    [networks],
+  );
+
+  const isDisabled = !isValid || !cardValid || validatingCard || isSubmitting;
+
+  useResetFormOnMount(reset, { network: "", smartcard_number: "", plan: "" });
+
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -162,6 +304,12 @@ export default function PayCableTVSubscriptionScreen() {
           name="smartcard_number"
           control={control}
         />
+        {/* Validation feedback */}
+        <SmartCardValidationStatus
+          validating={validatingCard}
+          cardDetail={cardDetails}
+          hasInput={hasFiredValidation}
+        />
 
         <View style={{ marginBottom: 10 }}>
           <SavedBeneficiaries
@@ -171,16 +319,15 @@ export default function PayCableTVSubscriptionScreen() {
             isRefetching={isRefetching}
             isError={isError}
             refetch={refetch}
-            onSelect={data => {
-              setValue("smartcard_number", data?.identifier);
-              setValue("network", data?.meta?.provider);
+            onSelect={item => {
+              setValue("smartcard_number", item?.identifier);
+              setValue("network", item?.meta?.provider);
             }}
             selectedBeneficiary={null}
             onDeleteAll={deleteAll}
             deleting={deleting}
           />
         </View>
-
         <View style={{ marginBottom: 20 }}>
           <Text style={styles.subHeader}>Select Cable TV Provider</Text>
           <View style={styles.networkRow}>
@@ -191,7 +338,7 @@ export default function PayCableTVSubscriptionScreen() {
                   styles.networkButton,
                   selectedNetwork === item.id && styles.networkButtonActive,
                 ]}
-                onPress={() => setValue("network", item.id)}
+                onPress={() => handleProviderChange(item?.id)}
               >
                 {selectedNetwork === item.id && (
                   <View style={styles.checkIconContainer}>
@@ -206,7 +353,6 @@ export default function PayCableTVSubscriptionScreen() {
             <Text style={styles.errorText}>{errors.network.message}</Text>
           )}
         </View>
-
         <SelectInput
           control={control}
           name="plan"
@@ -227,21 +373,28 @@ export default function PayCableTVSubscriptionScreen() {
               : "Select Subscription Plan"
           }
         />
-
         <SaveAsBeneficiarySwitch
           value={saveBeneficiary}
           onValueChange={setSaveBeneficiary}
           disabled={loading}
         />
-
         <View style={styles.buttonWrapper}>
           <TouchableOpacity
-            style={[styles.button]}
+            style={[
+              styles.button,
+              (validatingCard || !!cardError || !cardDetails) && {
+                opacity: 0.5,
+              },
+            ]}
             onPress={handleSubmit(onSubmit)}
-            disabled={loading}
+            disabled={loading || validatingCard || !!cardError || !cardDetails}
           >
             <Text style={styles.buttonText}>
-              {loading ? "Processing..." : "Proceed"}
+              {loading
+                ? "Processing..."
+                : validatingCard
+                ? "Validating..."
+                : "Proceed"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -254,6 +407,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+  },
+  validationRow: {
+    marginVertical: 10,
+    paddingHorizontal: 17,
+    paddingVertical: 10,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    gap: 10,
+  },
+  validatingText: {
+    color: "black",
+    fontFamily: getFontFamily("800"),
+  },
+  cardSuccessRow: {
+    marginVertical: 10,
+    paddingHorizontal: 17,
+    paddingVertical: 10,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    gap: 5,
+  },
+  cardSuccessText: {
+    fontSize: 13,
+    fontFamily: getFontFamily("700"),
+    color: "#000",
   },
   scrollView: {
     flex: 1,
@@ -363,5 +553,43 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
     textAlign: "center",
+  },
+  detailsContainer: {
+    marginVertical: 10,
+    paddingHorizontal: 17,
+    paddingVertical: 10,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    gap: 5,
+  },
+  warningContainer: {
+    marginVertical: 12,
+    padding: 10,
+    backgroundColor: "rgba(255, 0, 0, 0.03)",
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(255, 0, 0, 0.3)",
+  },
+  warningText: {
+    color: "#db0b0b",
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("800"),
+    textAlign: "center",
+  },
+  detailsLabel: {
+    fontSize: 12,
+    fontFamily: getFontFamily("900"),
+    color: "#000",
+  },
+  detailsValue: {
+    fontSize: 13,
+    fontFamily: getFontFamily("700"),
+    color: "#000",
   },
 });

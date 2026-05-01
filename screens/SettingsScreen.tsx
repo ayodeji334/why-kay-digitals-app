@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 import React, { useMemo, useState } from "react";
-import { ArrowRight2, Notification } from "iconsax-react-nativejs";
+import { ArrowRight2, Message, Notification } from "iconsax-react-nativejs";
 import DeviceInfo from "react-native-device-info";
 import { useNavigation } from "@react-navigation/native";
 import HalfScreenModal from "../components/HalfScreenModal";
@@ -270,7 +270,11 @@ export default function SettingsScreen() {
             onPress={() => navigation.navigate("AccountLimit" as never)}
             IconComponent={<CustomIcon source={AlarmIcon} size={20} />}
           />
-
+          <MenuItem
+            title="Suggestion Box"
+            onPress={() => navigation.navigate("Suggestion" as never)}
+            IconComponent={<Message color={COLORS.primary} size={20} />}
+          />
           <MenuItem
             title="Theme (Dark Mode)"
             showSwitch={true}

@@ -6563,6 +6563,11 @@ react-native-device-info@^14.1.1:
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-14.1.1.tgz#f50c03902f87e4a99b1c51ed85163b795f02b3ea"
   integrity sha512-lXFpe6DJmzbQXNLWxlMHP2xuTU5gwrKAvI8dCAZuERhW9eOXSubOQIesk9lIBnsi9pI19GMrcpJEvs4ARPRYmw==
 
+react-native-file-access@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-file-access/-/react-native-file-access-4.0.3.tgz#9ca6834e107a3ffa6917fbb2c64ef442fbd47c57"
+  integrity sha512-7xiUcjMhicMM+WmWbO2U2iutXcoYxi3IxScB08kHle6XfBomAV9e2MtszCR7aoSfYNSblpKKqSefra6zFKXxTw==
+
 react-native-image-picker@^8.2.1:
   version "8.2.1"
   resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-8.2.1.tgz#1ac7826563cbaa5d5298d9f2acc53c69805e5393"
@@ -6619,6 +6624,11 @@ react-native-screens@^4.16.0:
     react-freeze "^1.0.0"
     react-native-is-edge-to-edge "^1.2.1"
     warn-once "^0.1.0"
+
+react-native-share@^12.2.6:
+  version "12.2.6"
+  resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-12.2.6.tgz#05975fabe7d766726fcc80e561f7a41a5ef64b87"
+  integrity sha512-K9jZCQaTIqSNG37kMVygU1rflVMJm2g0ikslnbbmQ7EgsckYpw7ipePyp01E64hG+HrWNl+z9ZnFWLCC6H+Tiw==
 
 react-native-svg-transformer@^1.5.1:
   version "1.5.1"

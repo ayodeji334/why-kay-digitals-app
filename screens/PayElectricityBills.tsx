@@ -29,8 +29,8 @@ import NumberInputField from "../components/NumberInputField";
 import useAxios from "../hooks/useAxios";
 import { formatWithCommas } from "./SwapCryptoScreen";
 import { useQuery } from "@tanstack/react-query";
+import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 
-// Validation schema
 const schema = yup.object({
   provider: yup.string().required("Please select an electricity provider"),
   meter_number: yup
@@ -54,314 +54,6 @@ interface ElectricityProvider {
   short_name: string;
 }
 
-// interface ElectricityFormData {
-//   provider: string;
-//   meter_number: string;
-//   amount: string;
-// }
-
-// export default function PayElectricityBillsScreen() {
-//   const [loading, setLoading] = useState(false);
-//   const { post, apiGet } = useAxios();
-//   const [isPrepaid, setIsPrepaid] = useState(true);
-//   const [saveBeneficiary, setSaveBeneficiary] = useState(true);
-//   const navigation: any = useNavigation();
-//   const [amount, setAmount] = useState("");
-//   const [meterValid, setMeterValid] = useState(false);
-//   const [validatingMeter, setValidatingMeter] = useState(false);
-//   const [userDetail, setUserDetail] = useState<any>(null);
-
-//   const {
-//     control,
-//     handleSubmit,
-//     setValue,
-//     formState: { errors },
-//   } = useForm({
-//     resolver: yupResolver(schema),
-//     mode: "onChange",
-//     defaultValues: {
-//       amount: 0,
-//     },
-//   });
-
-//   const { data: providers = [], isLoading } = useQuery({
-//     queryKey: ["electricityProviders"],
-//     queryFn: async () => {
-//       const res = await apiGet(`/bills/electricity-bills-providers`);
-//       return res.data?.data || [];
-//     },
-//     refetchOnWindowFocus: false,
-//   });
-
-//   const [selectedProviderItems, setSelectedProviderItems] = useState<any[]>([]);
-
-//   const handleProviderChange = (providerValue: string) => {
-//     const provider = providers.find(
-//       (p: any) => p.biller_code === providerValue || p.code === providerValue,
-//     );
-//     if (provider) {
-//       setSelectedProviderItems(provider.items || []);
-//     } else {
-//       setSelectedProviderItems([]);
-//     }
-//   };
-
-//   const hasPrepaid = selectedProviderItems.some((item: any) =>
-//     item.biller_name?.toLowerCase().includes("prepaid"),
-//   );
-
-//   const hasPostpaid = selectedProviderItems.some((item: any) =>
-//     item.biller_name?.toLowerCase().includes("postpaid"),
-//   );
-
-//   const handleFormSubmit = async (data: any) => {
-//     try {
-//       setLoading(true);
-
-//       // Find the selected provider option
-//       const selectedOption = providerOptions.find(
-//         (p: any) => p.value === data.provider || p.label === data.provider,
-//       );
-
-//       // Pick the first item_code based on prepaid/postpaid selection
-//       let selectedItemCode = "";
-//       if (isPrepaid) {
-//         const prepaidItem = selectedProviderItems.find((item: any) =>
-//           item.biller_name?.toLowerCase().includes("prepaid"),
-//         );
-//         selectedItemCode = prepaidItem?.item_code || "";
-//       } else {
-//         const postpaidItem = selectedProviderItems.find((item: any) =>
-//           item.biller_name?.toLowerCase().includes("postpaid"),
-//         );
-//         selectedItemCode = postpaidItem?.item_code || "";
-//       }
-
-//       const payload = {
-//         customer: data.meter_number,
-//         amount: parseFloat(data.amount),
-//         biller_name: selectedOption?.value,
-//         item_code: selectedItemCode,
-//         provider_short_name: selectedOption?.name,
-//         save_as_beneficiary: saveBeneficiary,
-//         type: isPrepaid ? "Prepaid" : "Postpaid",
-//         url: "/bills/buy-electricity",
-//       };
-
-//       navigation.navigate("ConfirmTransaction" as never, { payload });
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const validateMeterNumber = async (
-//     meterNumber: string,
-//     itemCode: string,
-//     providerCode: string,
-//   ) => {
-//     try {
-//       setValidatingMeter(true);
-//       const res = await post(`/bills/validate`, {
-//         item_code: itemCode,
-//         code: providerCode,
-//         customer: meterNumber,
-//       });
-
-//       if (res.data?.success) {
-//         setMeterValid(true);
-//         setUserDetail(res?.data?.data);
-//       } else {
-//         setMeterValid(false);
-//         setUserDetail(null);
-//       }
-//     } catch (error) {
-//       console.error("Meter validation failed", error);
-//       setMeterValid(false);
-//       setUserDetail(null);
-//     } finally {
-//       setValidatingMeter(false);
-//     }
-//   };
-
-//   const meterNumber = useWatch({ control, name: "meter_number" });
-//   const providerCode = useWatch({ control, name: "provider" });
-
-//   useEffect(() => {
-//     if (!meterNumber || !providerCode) return;
-
-//     let selectedItem: any;
-//     if (isPrepaid) {
-//       selectedItem = selectedProviderItems.find((item: any) =>
-//         item.biller_name?.toLowerCase().includes("prepaid"),
-//       );
-//     } else {
-//       selectedItem = selectedProviderItems.find((item: any) =>
-//         item.biller_name?.toLowerCase().includes("postpaid"),
-//       );
-//     }
-
-//     if (selectedItem?.item_code) {
-//       validateMeterNumber(meterNumber, selectedItem.item_code, providerCode);
-//     }
-//   }, [meterNumber, providerCode, isPrepaid, selectedProviderItems]);
-
-//   const providerOptions = providers
-//     .filter((p: any) => p.name.toLowerCase().includes("bills"))
-//     .map((provider: ElectricityProvider) => ({
-//       label: provider.name,
-//       value: provider.code || provider.biller_code,
-//       icon: provider.logo,
-//       name: provider?.short_name,
-//     }));
-
-//   return (
-//     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
-//       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-//       <ScrollView
-//         style={styles.scrollView}
-//         contentContainerStyle={styles.content}
-//         showsVerticalScrollIndicator={false}
-//       >
-//         <SelectInput
-//           control={control}
-//           name="provider"
-//           label="Select Provider"
-//           placeholder={
-//             isLoading ? "Loading providers..." : "Select electricity provider"
-//           }
-//           options={providerOptions}
-//           onChange={(value: string) => handleProviderChange(value)}
-//         />
-
-//         <View style={{ marginTop: 10 }}>
-//           <NumberInputField
-//             placeholder="Enter Meter Number"
-//             label="Meter Number"
-//             name="meter_number"
-//             control={control}
-//           />
-//         </View>
-
-//         <View style={styles.paymentTypeContainer}>
-//           <TouchableOpacity
-//             style={[
-//               styles.paymentTypeButton,
-//               isPrepaid && styles.paymentTypeButtonActive,
-//               (!hasPrepaid || loading) && { opacity: 0.5 },
-//             ]}
-//             onPress={() => setIsPrepaid(true)}
-//             disabled={!hasPrepaid || loading}
-//           >
-//             <Text
-//               style={[
-//                 styles.paymentTypeText,
-//                 isPrepaid && styles.paymentTypeTextActive,
-//               ]}
-//             >
-//               Pre Paid
-//             </Text>
-//           </TouchableOpacity>
-
-//           <TouchableOpacity
-//             style={[
-//               styles.paymentTypeButton,
-//               !isPrepaid && styles.paymentTypeButtonActive,
-//               (!hasPostpaid || loading) && { opacity: 0.5 },
-//             ]}
-//             onPress={() => setIsPrepaid(false)}
-//             disabled={!hasPostpaid || loading}
-//           >
-//             <Text
-//               style={[
-//                 styles.paymentTypeText,
-//                 !isPrepaid && styles.paymentTypeTextActive,
-//               ]}
-//             >
-//               Post Paid
-//             </Text>
-//           </TouchableOpacity>
-//         </View>
-
-//         {!validatingMeter && userDetail && (
-//           <View style={styles.detailsContainer}>
-//             <View style={{ paddingVertical: 5 }}>
-//               <Text style={styles.detailsLabel}>Name</Text>
-//               <Text style={styles.detailsValue}>{userDetail?.name}</Text>
-//             </View>
-//             <View style={{ paddingVertical: 5 }}>
-//               <Text style={styles.detailsLabel}>Address</Text>
-//               <Text style={styles.detailsValue}>{userDetail?.address}</Text>
-//             </View>
-//           </View>
-//         )}
-
-//         <View style={{ marginBottom: 2, marginTop: 10 }}>
-//           <Text style={styles.label}>Amount</Text>
-//           <View style={styles.inputContainer}>
-//             <Text style={styles.dollarSign}>₦</Text>
-//             <TextInput
-//               style={styles.input}
-//               keyboardType="numeric"
-//               placeholderTextColor={"#aeaeaeff"}
-//               placeholder="0.00"
-//               value={amount}
-//               onChangeText={text => {
-//                 const numericText = text.replace(/,/g, "");
-//                 const parsed = parseFloat(numericText);
-
-//                 const formatted = formatWithCommas(numericText);
-//                 setValue("amount", parsed, { shouldValidate: true });
-//                 setAmount(formatted);
-//               }}
-//             />
-//           </View>
-
-//           {/* Show validation error */}
-//           {errors.amount && (
-//             <Text style={styles.errorText}>{errors.amount.message}</Text>
-//           )}
-//         </View>
-
-//         <SaveAsBeneficiarySwitch
-//           value={saveBeneficiary}
-//           onValueChange={setSaveBeneficiary}
-//           disabled={loading}
-//         />
-
-//         <TouchableOpacity
-//           style={[
-//             styles.button,
-//             (!meterValid || validatingMeter) && { opacity: 0.5 },
-//           ]}
-//           onPress={handleSubmit(handleFormSubmit)}
-//           disabled={loading || !meterValid || validatingMeter}
-//         >
-//           <Text style={styles.buttonText}>
-//             {loading
-//               ? "Processing..."
-//               : validatingMeter
-//               ? "Validating..."
-//               : "Continue"}
-//           </Text>
-//         </TouchableOpacity>
-//       </ScrollView>
-//     </SafeAreaView>
-//   );
-// }
-
-// const schema = yup.object({
-//   provider: yup.string().required("Please select an electricity provider"),
-//   meter_number: yup
-//     .string()
-//     .required("Meter number is required")
-//     .matches(/^[0-9]{6,13}$/, "Invalid meter number"),
-//   amount: yup
-//     .number()
-//     .typeError("Amount must be a number")
-//     .positive("Amount is required")
-//     .required("Amount is required"),
-// });
-
 interface ElectricityProvider {
   biller_code: string;
   name: string;
@@ -372,7 +64,6 @@ interface ElectricityProvider {
   items?: any[];
 }
 
-// ─── MeterValidationStatus — extracted to prevent parent re-renders ────────
 interface MeterValidationStatusProps {
   validating: boolean;
   userDetail: any;
@@ -381,12 +72,11 @@ interface MeterValidationStatusProps {
 interface MeterValidationStatusProps {
   validating: boolean;
   userDetail: any;
-  hasInput: boolean; // ← add this
+  hasInput: boolean;
 }
 
 const MeterValidationStatus = memo(
   ({ validating, userDetail, hasInput }: MeterValidationStatusProps) => {
-    // idle — user hasn't typed a valid meter number yet
     if (!hasInput) return null;
 
     // in-flight
@@ -427,7 +117,6 @@ const MeterValidationStatus = memo(
   },
 );
 
-// ─── PaymentTypeSelector — extracted to prevent parent re-renders ──────────
 interface PaymentTypeSelectorProps {
   isPrepaid: boolean;
   hasPrepaid: boolean;
@@ -486,7 +175,6 @@ const PaymentTypeSelector = memo(
   ),
 );
 
-// ─── main screen ──────────────────────────────────────────────────────────
 export default function PayElectricityBillsScreen() {
   const { post, apiGet } = useAxios();
   const navigation: any = useNavigation();
@@ -499,14 +187,13 @@ export default function PayElectricityBillsScreen() {
   const [selectedProviderItems, setSelectedProviderItems] = useState<any[]>([]);
   const [hasFiredValidation, setHasFiredValidation] = useState(false);
 
-  // debounce timer ref — survives re-renders without causing them
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ─── form ──────────────────────────────────────────────────────────────
   const {
     control,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors, isValid, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
@@ -517,7 +204,6 @@ export default function PayElectricityBillsScreen() {
   const meterNumber = useWatch({ control, name: "meter_number" });
   const providerCode = useWatch({ control, name: "provider" });
 
-  // ─── providers query ───────────────────────────────────────────────────
   const { data: providers = [], isLoading: isLoadingProviders } = useQuery({
     queryKey: ["electricityProviders"],
     queryFn: async () => {
@@ -528,7 +214,6 @@ export default function PayElectricityBillsScreen() {
     refetchOnWindowFocus: false,
   });
 
-  // ─── stable derived data — only recompute when providers change ────────
   const providerOptions = useMemo(
     () =>
       providers
@@ -542,7 +227,6 @@ export default function PayElectricityBillsScreen() {
     [providers],
   );
 
-  // ─── derived prepaid/postpaid flags ────────────────────────────────────
   const { hasPrepaid, hasPostpaid } = useMemo(
     () => ({
       hasPrepaid: selectedProviderItems.some(i =>
@@ -555,24 +239,21 @@ export default function PayElectricityBillsScreen() {
     [selectedProviderItems],
   );
 
-  // ─── stable callback — provider change ────────────────────────────────
   const handleProviderChange = useCallback(
     (value: string) => {
       const provider = providers.find(
         (p: any) => p.biller_code === value || p.code === value,
       );
+
       setSelectedProviderItems(provider?.items || []);
-      // reset meter state when provider changes
       setMeterValid(false);
       setUserDetail(null);
     },
     [providers],
   );
 
-  // ─── meter validation with debounce ────────────────────────────────────
   const validateMeter = useCallback(
     async (meter: string, itemCode: string, provider: string) => {
-      // schema guard — only call API if format is valid
       if (!/^[0-9]{6,13}$/.test(meter)) return;
 
       setValidatingMeter(true);
@@ -603,7 +284,6 @@ export default function PayElectricityBillsScreen() {
     [post],
   );
 
-  // ─── debounced effect — only fires when inputs settle ─────────────────
   useEffect(() => {
     // clear pending debounce on every change
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -612,6 +292,7 @@ export default function PayElectricityBillsScreen() {
     if (!meterNumber || !providerCode || selectedProviderItems.length === 0) {
       setMeterValid(false);
       setUserDetail(null);
+
       return;
     }
 
@@ -642,7 +323,6 @@ export default function PayElectricityBillsScreen() {
     };
   }, [meterNumber, providerCode, isPrepaid, selectedProviderItems]);
 
-  // ─── stable callback — amount change ──────────────────────────────────
   const handleAmountChange = useCallback(
     (text: string) => {
       const numeric = text.replace(/,/g, "");
@@ -654,7 +334,6 @@ export default function PayElectricityBillsScreen() {
     [setValue],
   );
 
-  // ─── submit ────────────────────────────────────────────────────────────
   const onSubmit = useCallback(
     async (data: any) => {
       const selectedOption = providerOptions.find(
@@ -691,7 +370,8 @@ export default function PayElectricityBillsScreen() {
 
   const isDisabled = !isValid || !meterValid || validatingMeter || isSubmitting;
 
-  // ─── render ────────────────────────────────────────────────────────────
+  useResetFormOnMount(reset, { provider: "", meter_number: "", amount: 0 });
+
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />

@@ -13,7 +13,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  CommonActions,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { formatDate } from "../libs/formatDate";
 import { formatAmount } from "../libs/formatNumber";
 import { COLORS } from "../constants/colors";
@@ -91,14 +95,49 @@ const TransactionDetailScreen = () => {
       />
     );
 
-  const handleGoBack = async () => {
+  // const handleGoBack = () => {
+  //   try {
+  //     const state = navigation.getState();
+  //     const routes = state.routes;
+  //     const previousRoute = routes[routes.length - 2];
+
+  //     if (previousRoute) {
+  //       navigation.replace(
+  //         previousRoute.name as never,
+  //         {
+  //           // Spread existing params so nothing is lost, then add resetForm
+  //           ...((previousRoute.params as object) ?? {}),
+  //           resetForm: true,
+  //         } as never,
+  //       );
+  //     } else {
+  //       // Fallback — no previous route found, just go back
+  //       navigation.goBack();
+  //     }
+  //   } catch (error) {
+  //     navigation.goBack();
+  //   }
+  // };
+
+  const handleGoBack = () => {
     try {
-      // navigation.reset({
-      //   index: 0,
-      //   routes: [{ name: "Dashboard" as never }],
-      // });
+      const state = navigation.getState();
+      const routes = state.routes;
+      const previousRoute = routes[routes.length - 2];
+
+      if (previousRoute) {
+        navigation.dispatch({
+          ...CommonActions.setParams({ resetForm: true }),
+          source: previousRoute.key,
+        });
+
+        navigation.goBack();
+      } else {
+        navigation.goBack();
+      }
+    } catch (error) {
       navigation.goBack();
-    } catch (error) {}
+    }
   };
 
   const getDirectionColor = () => {

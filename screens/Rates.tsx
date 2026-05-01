@@ -73,8 +73,7 @@ export default function CryptoRatesScreen() {
       const res = await apiGet("/crypto-assets/available/rates");
       return res?.data?.data;
     },
-    refetchInterval: 3000,
-    refetchIntervalInBackground: true,
+    refetchInterval: 9000,
   });
 
   const cryptoOptions = useMemo<CryptoOption[]>(() => {

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
-import { BASE_URL } from "../api/axios";
 import { useAuthStore } from "./authSlice";
+import { BASE_URL } from "../config";
 
 interface WalletState {
   wallets: any[];

@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import axios from "axios";
-import { BASE_URL } from "../api/axios";
 import { getItem, setItem, removeItem } from "../utlis/storage";
+import { BASE_URL } from "../config";
 
 interface AuthState {
   token: string | null;
