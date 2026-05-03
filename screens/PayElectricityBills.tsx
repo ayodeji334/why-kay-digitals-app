@@ -84,7 +84,9 @@ const MeterValidationStatus = memo(
       return (
         <View style={styles.detailsContainer}>
           <ActivityIndicator size="small" color={COLORS.primary} />
-          <Text style={styles.detailsLabel}>Validating meter number…</Text>
+          <Text style={[styles.detailsLabel, { textAlign: "center" }]}>
+            Validating meter number…
+          </Text>
         </View>
       );
     }
@@ -210,7 +212,6 @@ export default function PayElectricityBillsScreen() {
       const res = await apiGet("/bills/electricity-bills-providers");
       return res.data?.data || [];
     },
-    staleTime: 864000000,
     refetchOnWindowFocus: false,
   });
 
@@ -256,7 +257,7 @@ export default function PayElectricityBillsScreen() {
     async (meter: string, itemCode: string, provider: string) => {
       if (!/^[0-9]{6,13}$/.test(meter)) return;
 
-      setValidatingMeter(true);
+      // setValidatingMeter(true);
       setMeterValid(false);
       setUserDetail(null);
 
@@ -285,38 +286,42 @@ export default function PayElectricityBillsScreen() {
   );
 
   useEffect(() => {
-    // clear pending debounce on every change
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    // reset state immediately if inputs are incomplete
-    if (!meterNumber || !providerCode || selectedProviderItems.length === 0) {
+    // Reset immediately when inputs are incomplete or meter too short
+    if (
+      !meterNumber ||
+      !providerCode ||
+      selectedProviderItems.length === 0 ||
+      meterNumber.length <= 8
+    ) {
       setMeterValid(false);
       setUserDetail(null);
-
+      setHasFiredValidation(false);
+      setValidatingMeter(false);
       return;
     }
 
-    const selectedItem = selectedProviderItems.find((item: any) =>
-      item.biller_name
-        ?.toLowerCase()
-        .includes(isPrepaid ? "prepaid" : "postpaid"),
-    );
+    const selectedItem = selectedProviderItems.find((item: any) => {
+      const searchIn = [
+        item.biller_name?.toLowerCase(),
+        item.name?.toLowerCase(),
+        item.short_name?.toLowerCase(),
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      return searchIn.includes(isPrepaid ? "prepaid" : "postpaid");
+    });
 
     if (!selectedItem?.item_code) return;
 
-    // debounce — wait 700ms after the user stops typing
-    debounceRef.current = setTimeout(() => {
-      setHasFiredValidation(true); // ← add this
-      validateMeter(meterNumber, selectedItem.item_code, providerCode);
-    }, 700);
+    setHasFiredValidation(true);
+    setValidatingMeter(true);
 
-    // reset it when inputs are cleared
-    if (!meterNumber || !providerCode || selectedProviderItems.length === 0) {
-      setMeterValid(false);
-      setUserDetail(null);
-      setHasFiredValidation(false); // ← reset too
-      return;
-    }
+    debounceRef.current = setTimeout(() => {
+      validateMeter(meterNumber, selectedItem.item_code, providerCode);
+    }, 2000);
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -552,9 +557,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     flexDirection: "column",
-    justifyContent: "center",
-    alignContent: "center",
-    alignItems: "center",
+    justifyContent: "flex-start",
+    // alignContent: "center",
+    // alignItems: "center",
     gap: 5,
   },
   warningContainer: {

@@ -23,7 +23,7 @@ export default function ErrorState({
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: 10,
+    margin: 10,
   },
   errorContainer: {
     backgroundColor: "#fef2f2",

@@ -9,7 +9,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  CommonActions,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -77,8 +81,30 @@ export default function ConfirmCryptoWithdrawScreen() {
 
       // showSuccess("Withdrawal verified successfully!");
 
-      navigation.navigate("TransactionDetail", {
-        transaction: response?.data?.data,
+      // navigation.navigate("TransactionDetail", {
+      //   transaction: response?.data?.data,
+      // });
+
+      navigation.dispatch((state: any) => {
+        // Remove ConfirmTransaction (current screen) from the stack
+        const routesWithoutConfirm = state.routes.filter(
+          (r: any) => r.name !== "ConfirmCryptoWithdrawTransaction",
+        );
+
+        // Append TransactionDetail
+        const newRoutes = [
+          ...routesWithoutConfirm,
+          {
+            name: "TransactionDetail",
+            params: { transaction: response?.data?.data },
+          },
+        ];
+
+        return CommonActions.reset({
+          ...state,
+          routes: newRoutes,
+          index: newRoutes.length - 1,
+        });
       });
     } catch (err) {
       const errorMessage =

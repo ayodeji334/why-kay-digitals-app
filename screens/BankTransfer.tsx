@@ -221,6 +221,7 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     marginTop: 10,
+    paddingBottom: 20,
   },
   button: {
     backgroundColor: COLORS.secondary,
@@ -233,7 +234,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontFamily: getFontFamily("700"),
-    fontSize: normalize(20),
+    fontSize: normalize(18),
     textAlign: "center",
   },
   scrollView: {

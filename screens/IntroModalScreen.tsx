@@ -25,7 +25,7 @@ const slides = [
     highlight: "Your Gateway to Digital Wealth",
     subtitle:
       "Buy, sell, and manage cryptocurrencies with confidence. Pay utility bills, buy airtime, data and gift cards, and join thousands of users taking control of their financial future through smart, secure crypto investing.",
-    image: require("../assets/slide-1.png"),
+    image: require("../assets/first-slider.png"),
   },
   {
     id: "2",
@@ -34,7 +34,7 @@ const slides = [
     highlight: "With Real Insights",
     subtitle:
       "Access real-time market data, price alerts, and intelligent tools designed to help you make better trading decisions anytime, anywhere.",
-    image: require("../assets/welcome-illustration.png"),
+    image: require("../assets/welcome-pattern.png"),
   },
   {
     id: "3",
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 8,
     borderRadius: 28,
     backgroundColor: COLORS.primary,
     justifyContent: "center",

@@ -3,8 +3,10 @@ import { View, Text, StyleSheet } from "react-native";
 import BalanceCard from "./Dashboard/BalanceCard";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
+import { useNavigation } from "@react-navigation/native";
 
 export default function BalanceLimitCard({ walletSummary }: any) {
+  const navigation = useNavigation<any>();
   const progress =
     walletSummary && walletSummary.daily_limit
       ? walletSummary.total_today / walletSummary.daily_limit
@@ -41,7 +43,12 @@ export default function BalanceLimitCard({ walletSummary }: any) {
           <Text style={styles.limitLabel}>
             Daily Limit: ₦{walletSummary?.daily_limit?.toLocaleString() || "0"}
           </Text>
-          <Text style={styles.upgradeText}>Upgrade Limit</Text>
+          <Text
+            onPress={() => navigation.navigate("Verification" as any)}
+            style={styles.upgradeText}
+          >
+            Upgrade Limit
+          </Text>
         </View>
 
         <View style={styles.progressBarBackground}>

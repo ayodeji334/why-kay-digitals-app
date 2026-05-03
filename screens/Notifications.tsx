@@ -98,7 +98,12 @@ export default function NotificationsScreen() {
               style={{ flexDirection: "row", alignItems: "center", gap: 1 }}
             >
               {isUnread && <View style={styles.unreadDot} />}
-              <Text style={{ fontSize: 12, fontFamily: getFontFamily("800") }}>
+              <Text
+                style={{
+                  fontSize: normalize(16),
+                  fontFamily: getFontFamily("800"),
+                }}
+              >
                 {formatDate(item?.created_at, { dateFormat: "relative" })}
               </Text>
             </View>
@@ -238,19 +243,19 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   assetName: {
-    fontSize: 14,
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     color: "#000",
     marginBottom: 4,
   },
   assetSymbol: {
-    fontSize: 13,
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
     color: "#4b4a4aff",
     width: "85%",
   },
   assetPrice: {
-    fontSize: 12,
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
     color: "#666",
   },
@@ -259,19 +264,14 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   modalTitle: {
-    fontSize: 17,
+    fontSize: normalize(17),
     fontFamily: getFontFamily("800"),
     color: "#000",
     marginBottom: 8,
   },
-  modalTime: {
-    fontSize: 13,
-    color: "#999",
-    marginBottom: 16,
-  },
   modalMessage: {
-    fontSize: 15,
-    fontFamily: getFontFamily("400"),
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("700"),
     color: "#333",
     lineHeight: 22,
   },
@@ -285,11 +285,11 @@ const styles = StyleSheet.create({
   },
   tabButton: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 5,
     alignItems: "center",
   },
   tabText: {
-    fontSize: 14,
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     width: "auto",
     color: "#000",
@@ -367,10 +367,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
   },
-  emptyStateText: { fontSize: normalize(22), fontFamily: getFontFamily("800") },
+  emptyStateText: { fontSize: normalize(20), fontFamily: getFontFamily("800") },
   emptyStateSubtext: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
-    color: "#6B7280",
+    color: "#000000",
   },
 });

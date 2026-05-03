@@ -401,10 +401,14 @@ export default function TransferScreen() {
           <View style={styles.limitContainer}>
             <View style={styles.limitHeader}>
               <Text style={styles.limitLabel}>
-                Daily Limit:{" "}
-                {formatAmount(walletSummary?.cryptoLimit ?? 0) || "0"}
+                Daily Limit: {formatAmount(cryptoLimit ?? 0) || "0"}
               </Text>
-              <Text style={styles.upgradeText}>Upgrade Limit</Text>
+              <Text
+                onPress={() => navigation.navigate("Verification" as any)}
+                style={styles.upgradeText}
+              >
+                Upgrade Limit
+              </Text>
             </View>
             <View style={styles.progressBarBackground}>
               <View
@@ -416,11 +420,11 @@ export default function TransferScreen() {
             </View>
             <View style={styles.limitRange}>
               <Text style={styles.limitValue}>
-                {formatAmount(walletSummary?.total_crypto_transfers_today) ||
+                {formatAmount(walletSummary?.total_crypto_transfers_today) ??
                   "0"}
               </Text>
               <Text style={styles.limitValue}>
-                {formatAmount(walletSummary?.cryptoLimit ?? 0) || "0"}
+                {formatAmount(cryptoLimit ?? 0) || "0"}
               </Text>
             </View>
           </View>
@@ -430,9 +434,15 @@ export default function TransferScreen() {
           <View style={styles.limitContainer}>
             <View style={styles.limitHeader}>
               <Text style={styles.limitLabel}>
-                Daily Limit: {formatAmount(walletSummary?.daily_limit) || "0"}
+                Daily Limit:{" "}
+                {formatAmount(walletSummary?.daily_limit ?? 0) ?? "0"}
               </Text>
-              <Text style={styles.upgradeText}>Upgrade Limit</Text>
+              <Text
+                onPress={() => navigation.navigate("Verification" as any)}
+                style={styles.upgradeText}
+              >
+                Upgrade Limit
+              </Text>
             </View>
             <View style={styles.progressBarBackground}>
               <View
@@ -444,10 +454,10 @@ export default function TransferScreen() {
             </View>
             <View style={styles.limitRange}>
               <Text style={styles.limitValue}>
-                {formatAmount(walletSummary?.total_today) || "0"}
+                {formatAmount(walletSummary?.total_today ?? 0) ?? "0"}
               </Text>
               <Text style={styles.limitValue}>
-                {formatAmount(walletSummary?.daily_limit) || "0"}
+                {formatAmount(walletSummary?.daily_limit ?? 0) ?? "0"}
               </Text>
             </View>
           </View>

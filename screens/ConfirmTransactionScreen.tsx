@@ -103,6 +103,12 @@ export default function ConfirmTransactionScreen() {
       }
     } catch (err) {
       if (err instanceof AxiosError) {
+        console.log(err?.response?.status);
+        if (err.response?.status == 500) {
+          return showError("Something went wrong");
+        } else {
+          showError(err.response?.data?.message || "Something went wrong");
+        }
         showError(err.response?.data?.message || "Something went wrong");
       }
     } finally {

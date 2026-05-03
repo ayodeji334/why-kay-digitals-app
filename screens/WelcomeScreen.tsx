@@ -20,7 +20,10 @@ const WelcomeScreen = () => {
   const navigation: any = useNavigation();
 
   return (
-    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
+    <SafeAreaView
+      edges={["right", "bottom", "left", "top"]}
+      style={styles.container}
+    >
       <StatusBar barStyle="light-content" backgroundColor={"#03001A"} />
       <ScrollView
         style={styles.scrollContainer}
@@ -29,7 +32,7 @@ const WelcomeScreen = () => {
       >
         <View style={styles.imageWrapper}>
           <Image
-            source={require("../assets/welcome-illustration.png")}
+            source={require("../assets/welcome-slider.png")}
             style={styles.image}
             resizeMode="contain"
           />
@@ -145,20 +148,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 20,
     justifyContent: "flex-end",
+    alignContent: "center",
   },
   header: {
     marginBottom: screenHeight * 0.04,
     alignItems: "center",
   },
   title: {
-    fontSize: normalize(40),
+    fontSize: normalize(30),
     color: COLORS.whiteBackground,
     textAlign: "center",
     fontFamily: getFontFamily(800),
-    maxWidth: "80%",
+    maxWidth: "90%",
     marginHorizontal: "auto",
     marginBottom: 10,
-    lineHeight: 30,
+    // lineHeight: 40,
   },
   highlight: {
     color: COLORS.primary,
@@ -191,12 +195,12 @@ const styles = StyleSheet.create({
   },
   createButtonText: {
     color: COLORS.whiteBackground,
-    fontSize: normalize(20),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
   },
   signInButtonText: {
     color: COLORS.whiteBackground,
-    fontSize: normalize(20),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
   },
   termsText: {

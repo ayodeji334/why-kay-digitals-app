@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   UIManager,
   LayoutAnimation,
   Animated,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
@@ -39,7 +40,7 @@ export const mapTierToDisplay = (
   status: currentTierLevel === tier.tier_name,
   limits: [
     {
-      category: "Withdrawals & Transfers",
+      category: "Fiat Withdrawals & Transfers",
       items: [
         {
           name: "Single Withdrawal Limit",
@@ -84,15 +85,13 @@ const AccountLimitsScreen = () => {
   const user = useAuthStore(state => state.user);
   const navigation = useNavigation();
   const [expandedTiers, setExpandedTiers] = useState<string[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const { data: rawTiers, isLoading, isError, refetch } = useAccountTiers();
-
-  console.log(rawTiers);
 
   const accountTiers = useMemo(
     () =>
       (rawTiers ?? []).map(tier => {
-        console.log("Mapping tier:", tier, user?.tier_level);
         return mapTierToDisplay(tier, user.tier_level);
       }),
     [rawTiers, user.tier_level],
@@ -104,6 +103,15 @@ const AccountLimitsScreen = () => {
       if (current) setExpandedTiers([current.id]);
     }
   }, [accountTiers]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   const toggleTier = (tierId: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -147,7 +155,17 @@ const AccountLimitsScreen = () => {
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={"white"} />
 
-      <ScrollView style={styles.content}>
+      <ScrollView
+        style={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
+      >
         <View style={styles.accordionContainer}>
           {accountTiers.map((tier, id) => (
             <View key={tier.id} style={styles.accordionItem}>
