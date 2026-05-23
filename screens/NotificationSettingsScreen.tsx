@@ -2,12 +2,10 @@ import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import { useAuthStore } from "../stores/authSlice";
-import { FingerprintIcon } from "../assets";
-import CustomIcon from "../components/CustomIcon";
 import { useState } from "react";
 import useAxios from "../hooks/useAxios";
 import { MenuItem } from "./AccountSecurityScreen";
-import { showError, showSuccess, showToast } from "../utlis/toast";
+import { showError, showSuccess } from "../utlis/toast";
 import CustomLoading from "../components/CustomLoading";
 import { Notification } from "iconsax-react-nativejs";
 import { COLORS } from "../constants/colors";
@@ -26,7 +24,7 @@ interface MenuItemProps {
   disable?: boolean;
 }
 
-import { OneSignal, LogLevel } from "react-native-onesignal"; // ✅ v5 named export
+import { OneSignal } from "react-native-onesignal";
 
 export default function NotificationSettingsScreen() {
   const { patch } = useAxios();

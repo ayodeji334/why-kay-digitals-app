@@ -24,6 +24,7 @@ import {
 } from "../../assets";
 import { useQueryClient } from "@tanstack/react-query";
 import { TradeIntent } from "../../libs/types";
+import { Dribbble } from "iconsax-react-nativejs";
 
 const ServicesSection = () => {
   const queryClient = useQueryClient();
@@ -96,6 +97,18 @@ const ServicesSection = () => {
       icon: (
         <CustomIcon
           source={ElectricityBillIcon}
+          size={23}
+          color={COLORS.primary}
+        />
+      ),
+    },
+    {
+      id: 799,
+      screenName: "FundBettingAccount",
+      title: "Betting",
+      icon: (
+        <Dribbble
+          // source={ElectricityBillIcon}
           size={23}
           color={COLORS.primary}
         />

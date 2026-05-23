@@ -56,6 +56,7 @@ import PendingSwapScreen from "../screens/PendingSwapTransactionScreen";
 import ConversionQuote from "../screens/ConversionQuote";
 import NotificationSettingsScreen from "../screens/NotificationSettingsScreen";
 import SuggestionScreen from "../screens/Suggestions";
+import FundBettingAccountScreen from "../screens/FundBettingAccount";
 
 export default function NavigationRoot() {
   const isAuthenticated = useIsAuthenticated();
@@ -294,6 +295,15 @@ export default function NavigationRoot() {
               headerShown: true,
               header: () => (
                 <CustomHeader showTitle={true} title="Notification Settings" />
+              ),
+            },
+          },
+          FundBettingAccount: {
+            screen: FundBettingAccountScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Fund Betting Account" />
               ),
             },
           },
