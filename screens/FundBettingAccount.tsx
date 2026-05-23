@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, memo, useEffect } from "react";
+import React, { useState, useCallback, useMemo, memo } from "react";
 import {
   View,
   Text,
@@ -16,12 +16,13 @@ import { SelectInput } from "../components/SelectInputField";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import useAxios from "../hooks/useAxios";
 import { formatWithCommas } from "./SwapCryptoScreen";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
+import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 
 interface BettingProvider {
   biller_id: string;
@@ -37,12 +38,13 @@ interface FormValues {
   amount: number;
 }
 
+// Schema
 const schema = yup.object({
   provider: yup.string().required("Please select a betting provider"),
   customer_id: yup
     .string()
     .required("Customer ID is required")
-    .min(3, "Customer ID is too short"),
+    .min(5, "Customer ID is too short"),
   amount: yup
     .number()
     .typeError("Amount must be a number")
@@ -50,6 +52,7 @@ const schema = yup.object({
     .required("Amount is required"),
 });
 
+// Customer validation status
 interface CustomerValidationStatusProps {
   validating: boolean;
   userDetail: any;
@@ -59,7 +62,7 @@ interface CustomerValidationStatusProps {
 const CustomerValidationStatus = memo(
   ({ validating, userDetail, hasInput }: CustomerValidationStatusProps) => {
     if (!hasInput) return null;
-    console.log(userDetail);
+
     if (validating) {
       return (
         <View style={styles.detailsContainer}>
@@ -82,25 +85,24 @@ const CustomerValidationStatus = memo(
       );
     }
 
-    if (userDetail && !validating && hasInput) {
-      return (
-        <View style={styles.detailsContainer}>
-          <View style={{ paddingVertical: 5 }}>
-            <Text style={styles.detailsLabel}>Name</Text>
-            <Text style={styles.detailsValue}>{userDetail}</Text>
-          </View>
+    return (
+      <View style={styles.detailsContainer}>
+        <View style={{ paddingVertical: 5 }}>
+          <Text style={styles.detailsLabel}>Name</Text>
+          <Text style={styles.detailsValue}>{userDetail}</Text>
         </View>
-      );
-    }
-
-    return null;
+      </View>
+    );
   },
 );
 
+// Main screen
 export default function FundBettingAccountScreen() {
-  const { post, apiGet } = useAxios();
+  const { post, apiGet, apiDelete } = useAxios();
   const navigation: any = useNavigation();
-
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState<string | null>(
+    null,
+  );
   const [saveBeneficiary, setSaveBeneficiary] = useState(true);
   const [displayAmount, setDisplayAmount] = useState("");
   const [validatingCustomer, setValidatingCustomer] = useState(false);
@@ -114,6 +116,7 @@ export default function FundBettingAccountScreen() {
     setValue,
     watch,
     reset,
+    trigger,
     formState: { errors, isValid, isSubmitting },
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
@@ -124,15 +127,58 @@ export default function FundBettingAccountScreen() {
   const providerCode = watch("provider");
   const customerId = watch("customer_id");
 
-  const { data: providers = [], isLoading: isLoadingProviders } = useQuery({
+  // Queries
+  const {
+    data: providers = [],
+    isLoading: isLoadingProviders,
+    refetch: refetchProviders,
+  } = useQuery({
     queryKey: ["betting-providers"],
     queryFn: async () => {
       const res = await apiGet("/bills/betting-providers");
       return res.data?.data || [];
     },
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
   });
 
+  const {
+    data: beneficiaries,
+    isLoading: isLoadingSavedData,
+    isError,
+    refetch: refetchBeneficiaries,
+    isRefetching,
+  } = useQuery({
+    queryKey: ["betting-beneficiaries-data"],
+    queryFn: async () => {
+      const res = await apiGet("/beneficiaries/type", {
+        params: { type: "betting" },
+      });
+      return res?.data?.data || [];
+    },
+  });
+
+  // Refetch both on screen focus
+  useFocusEffect(
+    useCallback(() => {
+      refetchProviders();
+      refetchBeneficiaries();
+    }, [refetchProviders, refetchBeneficiaries]),
+  );
+
+  // Delete all beneficiaries
+  const { mutate: deleteAll, isPending: deleting } = useMutation({
+    mutationFn: async () => {
+      return apiDelete("/beneficiaries/type", {
+        params: { type: "betting" },
+      });
+    },
+    onSuccess: () => {
+      refetchBeneficiaries();
+      setSelectedBeneficiary(null);
+    },
+  });
+
+  // Provider options
   const providerOptions = useMemo(
     () =>
       providers.map((p: BettingProvider) => ({
@@ -144,6 +190,7 @@ export default function FundBettingAccountScreen() {
     [providers],
   );
 
+  // Validation
   const validateCustomer = useCallback(
     async (customer: string, provider: string) => {
       if (!customer || !provider) return;
@@ -182,12 +229,12 @@ export default function FundBettingAccountScreen() {
 
   const handleProviderChange = useCallback(
     (value: string) => {
-      console.log(value);
       setCustomerValid(false);
       setUserDetail(null);
       setHasFiredValidation(false);
-
       if (customerId && customerId.length >= 3) {
+        setHasFiredValidation(true);
+        setValidatingCustomer(true);
         validateCustomer(customerId, value);
       }
     },
@@ -206,9 +253,37 @@ export default function FundBettingAccountScreen() {
 
   const handleCustomerIdBlur = useCallback(() => {
     if (customerId && customerId.length >= 3 && providerCode) {
+      setHasFiredValidation(true);
+      setValidatingCustomer(true);
       validateCustomer(customerId, providerCode);
     }
   }, [customerId, providerCode, validateCustomer]);
+
+  // Select from saved beneficiary
+
+  const handleSelectBeneficiary = useCallback(
+    async (item: any) => {
+      const customerId = item?.identifier ?? "";
+      const provider = item?.meta?.provider ?? "";
+
+      setValue("customer_id", customerId, { shouldValidate: true });
+      setValue("provider", provider, { shouldValidate: true });
+      setSelectedBeneficiary(item?.id ?? null);
+
+      // Trigger validation so form errors clear immediately
+      await trigger(["customer_id", "provider"]);
+
+      // Auto-validate the customer with the selected beneficiary data
+      if (customerId && provider) {
+        setHasFiredValidation(true);
+        setValidatingCustomer(true);
+        validateCustomer(customerId, provider);
+      }
+    },
+    [setValue, trigger, validateCustomer],
+  );
+
+  // Amount
 
   const handleAmountChange = useCallback(
     (text: string) => {
@@ -219,6 +294,8 @@ export default function FundBettingAccountScreen() {
     },
     [setValue],
   );
+
+  // Submit
 
   const onSubmit = useCallback(
     async (data: FormValues) => {
@@ -242,20 +319,21 @@ export default function FundBettingAccountScreen() {
     [providerOptions, saveBeneficiary, navigation],
   );
 
-  const isDisabled =
-    !isValid || !customerValid || validatingCustomer || isSubmitting;
+  // Reset on mount
 
   useResetFormOnMount(
     reset,
     { provider: "", customer_id: "", amount: 0 },
     () => {
       setDisplayAmount("");
+      setHasFiredValidation(false);
+      setCustomerValid(false);
+      setUserDetail(null);
     },
   );
 
-  useEffect(() => {
-    setHasFiredValidation(false);
-  }, []);
+  const isDisabled =
+    !isValid || !customerValid || validatingCustomer || isSubmitting;
 
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
@@ -267,6 +345,7 @@ export default function FundBettingAccountScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Provider */}
         <SelectInput
           control={control}
           name="provider"
@@ -280,7 +359,22 @@ export default function FundBettingAccountScreen() {
           onChange={handleProviderChange}
         />
 
-        <View style={{ marginTop: 10 }}>
+        <View style={{ marginBottom: 10 }}>
+          <SavedBeneficiaries
+            onRefetch={refetchBeneficiaries}
+            data={beneficiaries ?? []}
+            isRefetching={isRefetching}
+            isLoading={isLoadingSavedData || isRefetching}
+            isError={isError}
+            refetch={refetchBeneficiaries}
+            onSelect={handleSelectBeneficiary}
+            selectedBeneficiary={selectedBeneficiary}
+            onDeleteAll={deleteAll}
+            deleting={deleting}
+          />
+        </View>
+
+        <View style={{ marginTop: -10 }}>
           <Text style={styles.label}>Customer ID</Text>
           <View style={styles.inputContainer}>
             <TextInput
@@ -314,10 +408,7 @@ export default function FundBettingAccountScreen() {
             <TextInput
               style={[
                 styles.input,
-                {
-                  fontSize: normalize(22),
-                  fontFamily: getFontFamily("800"),
-                },
+                { fontSize: normalize(22), fontFamily: getFontFamily("800") },
               ]}
               keyboardType="numeric"
               placeholderTextColor="#aeaeaeff"
@@ -326,7 +417,6 @@ export default function FundBettingAccountScreen() {
               onChangeText={handleAmountChange}
             />
           </View>
-
           {errors.amount && (
             <Text style={styles.errorText}>
               {errors.amount.message as string}
@@ -358,18 +448,12 @@ export default function FundBettingAccountScreen() {
   );
 }
 
+// Styles
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-  },
+  container: { flex: 1, backgroundColor: "#fff" },
+  scrollView: { flex: 1 },
+  content: { paddingHorizontal: 16, paddingVertical: 20 },
   label: {
     marginBottom: 6,
     fontSize: normalize(18),
@@ -393,7 +477,6 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    // paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: normalize(20),
     fontFamily: getFontFamily("700"),

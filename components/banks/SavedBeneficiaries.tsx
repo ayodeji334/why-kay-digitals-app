@@ -15,7 +15,6 @@ import { COLORS } from "../../constants/colors";
 import { Refresh2, Trash } from "iconsax-react-nativejs";
 import { CloseIcon } from "../../assets";
 import CustomIcon from "../CustomIcon";
-import { ref } from "yup";
 
 const PREVIEW_COUNT = 2;
 
@@ -112,7 +111,8 @@ export default function SavedBeneficiaries({
           <Text style={styles.name}>
             {item?.meta?.account_name ??
               item?.meta?.network ??
-              item?.meta?.provider}
+              item?.meta?.provider ??
+              item?.meta?.service}
           </Text>
           {item?.meta?.bank_name && (
             <Text style={styles.details} numberOfLines={1}>
@@ -129,6 +129,11 @@ export default function SavedBeneficiaries({
               {item?.meta?.cable_tv_number}
             </Text>
           )}
+          {item?.meta?.customer_id && (
+            <Text style={styles.details} numberOfLines={1}>
+              {item?.meta?.customer_id}
+            </Text>
+          )}
           {item?.meta?.meter_number && (
             <Text style={styles.details} numberOfLines={1}>
               {item?.meta?.meter_number}
@@ -143,17 +148,17 @@ export default function SavedBeneficiaries({
     <View>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Saved Beneficiaries</Text>
-        {/* {hasMore && ( */}
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.viewAllText}>View all</Text>
-        </TouchableOpacity>
-        {/* )} */}
+        {hasMore && (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.viewAllText}>View all</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
-      {/* ── preview list ─────────────────────────────────────────────── */}
+      {/* preview list  */}
       {!data || data.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No saved beneficiaries yet.</Text>
