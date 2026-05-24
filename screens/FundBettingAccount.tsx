@@ -210,6 +210,8 @@ export default function FundBettingAccountScreen() {
           customer_id: customer,
         });
 
+        console.log(res);
+
         if (res.data?.success) {
           setCustomerValid(true);
           setUserDetail(res.data.data);
