@@ -10,6 +10,7 @@ export function useAssets() {
 
       return (
         response.data?.data?.map((asset: any) => ({
+          ...asset,
           id: asset.asset_id,
           uuid: asset.asset_id,
           name: asset.asset_name,

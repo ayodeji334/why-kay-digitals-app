@@ -103,9 +103,6 @@ export default function CryptoSwapScreen() {
   const { assets, isLoading, refetch } = useAssets();
   const { data, refetch: refetchUserWallets } = useWallets();
   const axios = useAxios();
-  const route = useRoute();
-
-  console.log(route);
 
   const {
     control,
@@ -119,34 +116,41 @@ export default function CryptoSwapScreen() {
     mode: "onChange",
   });
 
-  const userWallets = useMemo(
-    () =>
-      Array.isArray(data?.wallets)
-        ? data?.wallets
-            .map((asset: any) => ({
-              ...asset,
-              label: `${asset?.name} (${asset?.symbol})`,
-              value: asset?.asset_id ?? asset?.uuid ?? "",
-              symbol: asset?.symbol ?? "",
-              logo_url: asset?.logo ?? "",
-              total_price: asset?.value,
-            }))
-            .sort((a: any, b: any) => {
-              const aPrice = Number(a.total_price);
-              const bPrice = Number(b.total_price);
+  const userWallets = useMemo(() => {
+    if (!Array.isArray(data?.wallets)) return [];
 
-              const aValue = Number(a.value);
-              const bValue = Number(b.value);
+    return data.wallets
+      .map((wallet: any) => {
+        const matchingAsset = (assets ?? []).find(
+          (a: any) => a.uuid === wallet.asset_id,
+        );
 
-              // wallets with no balance sorted by market price desc
-              if (aPrice !== bPrice) return bPrice - aPrice;
+        return {
+          ...wallet,
+          label: `${wallet?.name} (${wallet?.symbol})`,
+          value: wallet?.asset_id ?? wallet?.uuid ?? "",
+          symbol: wallet?.symbol ?? "",
+          logo_url: wallet?.logo ?? "",
+          total_price: wallet?.value,
+          is_buy_enabled: matchingAsset?.is_buy_enabled ?? false,
+          is_sell_enabled: matchingAsset?.is_sell_enabled ?? false,
+          is_swap_enabled: matchingAsset?.is_swap_enabled ?? false,
+        };
+      })
+      .sort((a: any, b: any) => {
+        const aPrice = Number(a.total_price);
+        const bPrice = Number(b.total_price);
 
-              // wallets with balance float to top, sorted by USD value desc
-              if (bValue !== aValue) return bValue - aValue;
-            })
-        : [],
-    [data?.wallets],
-  );
+        if (aPrice !== bPrice) return bPrice - aPrice;
+
+        const aValue = Number(a.value);
+        const bValue = Number(b.value);
+
+        return bValue - aValue;
+      });
+  }, [data?.wallets, assets]);
+
+  console.log(userWallets, "userWallets in swap screen");
 
   const fromAssetId = watch("from_asset");
   const toAssetId = watch("to_asset");

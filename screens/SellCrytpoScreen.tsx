@@ -9,7 +9,7 @@ import {
   Image,
   RefreshControl,
 } from "react-native";
-import { useForm, Controller, set } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import {
@@ -21,7 +21,7 @@ import {
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { formatAmount, formatNumber } from "../libs/formatNumber";
+import { formatAmount } from "../libs/formatNumber";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";

@@ -460,7 +460,7 @@ export default function NavigationRoot() {
             options: {
               headerShown: true,
               header: () => (
-                <CustomHeader showTitle={true} title="Select Coin" />
+                <CustomHeader showTitle={true} title="Select Asset" />
               ),
             },
           },

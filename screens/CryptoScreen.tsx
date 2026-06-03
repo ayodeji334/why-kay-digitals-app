@@ -1,5 +1,5 @@
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -34,15 +34,74 @@ const CryptoWalletScreen = () => {
   const { assets, isLoading, isRefetching, refetch } = useAssets();
   const { data: { wallets = [] } = {}, refetch: refetchWallets } = useWallets();
 
+  // const mergedList = useMemo(() => {
+  //   const walletAssetIds = new Set((wallets ?? []).map((w: any) => w.asset_id));
+
+  //   const walletsWithBalance = (wallets ?? []).map((w: any) => ({
+  //     ...w,
+  //     uuid: w.asset_id,
+  //     logo_url: w.logo,
+  //     hasWallet: true,
+  //   }));
+
+  //   const assetsWithoutWallet = (assets ?? [])
+  //     .filter((a: any) => !walletAssetIds.has(a.uuid))
+  //     .map((a: any) => ({
+  //       ...a,
+  //       balance: "0.00000000",
+  //       value: "0.00000000",
+  //       price: a.market_current_value ?? "0",
+  //       hasWallet: false,
+  //     }));
+
+  //   return [...walletsWithBalance, ...assetsWithoutWallet];
+  // }, [wallets, assets]);
+
+  const refetchData = () => {
+    refetch();
+    refetchWallets();
+  };
+
+  // Filter + sort
+  // const filteredAssets = useMemo(() => {
+  //   const filtered = !searchQuery
+  //     ? mergedList
+  //     : mergedList.filter(
+  //         (item: any) =>
+  //           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //           item.symbol.toLowerCase().includes(searchQuery.toLowerCase()),
+  //       );
+
+  //   return [...filtered].sort((a: any, b: any) => {
+  //     const aValue = Number(a.value ?? 0);
+  //     const bValue = Number(b.value ?? 0);
+
+  //     if (aValue !== bValue) return bValue - aValue;
+
+  //     const aBalance = Number(a.balance ?? 0);
+  //     const bBalance = Number(b.balance ?? 0);
+
+  //     return bBalance - aBalance;
+  //   });
+  // }, [mergedList, searchQuery]);
+
   const mergedList = useMemo(() => {
     const walletAssetIds = new Set((wallets ?? []).map((w: any) => w.asset_id));
 
-    const walletsWithBalance = (wallets ?? []).map((w: any) => ({
-      ...w,
-      uuid: w.asset_id,
-      logo_url: w.logo,
-      hasWallet: true,
-    }));
+    const walletsWithBalance = (wallets ?? []).map((w: any) => {
+      const matchingAsset = (assets ?? []).find(
+        (a: any) => a.uuid === w.asset_id,
+      );
+
+      return {
+        ...w,
+        uuid: w.asset_id,
+        logo_url: w.logo,
+        hasWallet: true,
+        is_buy_enabled: matchingAsset?.is_buy_enabled ?? false,
+        is_sell_enabled: matchingAsset?.is_sell_enabled ?? false,
+      };
+    });
 
     const assetsWithoutWallet = (assets ?? [])
       .filter((a: any) => !walletAssetIds.has(a.uuid))
@@ -57,20 +116,22 @@ const CryptoWalletScreen = () => {
     return [...walletsWithBalance, ...assetsWithoutWallet];
   }, [wallets, assets]);
 
-  const refetchData = () => {
-    refetch();
-    refetchWallets();
-  };
-
-  // Filter + sort
   const filteredAssets = useMemo(() => {
-    const filtered = !searchQuery
-      ? mergedList
-      : mergedList.filter(
-          (item: any) =>
-            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.symbol.toLowerCase().includes(searchQuery.toLowerCase()),
+    const filtered = mergedList.filter((item: any) => {
+      // Filter by action availability
+      if (currentAction === "buy" && !item.is_buy_enabled) return false;
+      if (currentAction === "sell" && !item.is_sell_enabled) return false;
+
+      // Filter by search query
+      if (searchQuery) {
+        return (
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.symbol.toLowerCase().includes(searchQuery.toLowerCase())
         );
+      }
+
+      return true;
+    });
 
     return [...filtered].sort((a: any, b: any) => {
       const aValue = Number(a.value ?? 0);
@@ -83,7 +144,7 @@ const CryptoWalletScreen = () => {
 
       return bBalance - aBalance;
     });
-  }, [mergedList, searchQuery]);
+  }, [mergedList, searchQuery, currentAction]);
 
   // Navigate on asset select
   const handleAssetPress = (asset: any) => {
@@ -159,6 +220,10 @@ const CryptoWalletScreen = () => {
       </TouchableOpacity>
     );
   };
+
+  useEffect(() => {
+    refetchData();
+  }, []);
 
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>

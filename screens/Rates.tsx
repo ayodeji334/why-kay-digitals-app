@@ -76,6 +76,8 @@ export default function CryptoRatesScreen() {
     refetchInterval: 9000,
   });
 
+  console.log("Fetched rates data:", data);
+
   const cryptoOptions = useMemo<CryptoOption[]>(() => {
     if (!Array.isArray(data)) return [];
     return data.map((asset: any) => ({
