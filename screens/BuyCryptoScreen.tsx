@@ -65,7 +65,7 @@ function calculateBuyFeeBreakdown(
       grossUsd: amount,
       netAmountUsd: amount.toFixed(2),
       netNgn: sellRate > 0 ? formatAmount(ngnValue) : "0.00",
-      currentSellRate: sellRate,
+      currentBuyRate: sellRate,
       currentMarketPrice: marketPrice,
     },
   };
@@ -79,22 +79,11 @@ function calculateFeeBreakdown(
 ) {
   const STABLECOINS = ["USDT"];
   const isStablecoin = STABLECOINS.includes(symbol.toUpperCase());
-
   const coinAmount = amount / marketPrice;
   const platformFeeUsd = isStablecoin ? 0 : amount * 0.001;
   const platformFeeCoin = isStablecoin ? 0 : coinAmount * 0.001;
   const totalCostUsd = amount + platformFeeUsd;
   const totalCostNgn = buyRate > 0 ? totalCostUsd * buyRate : 0;
-
-  console.log(
-    amount,
-    marketPrice,
-    buyRate,
-    platformFeeUsd,
-    platformFeeCoin,
-    totalCostUsd,
-    totalCostNgn,
-  );
 
   return {
     assetValueEquivalent: coinAmount.toFixed(8),
@@ -169,7 +158,7 @@ export default function CryptoBuyScreen() {
       }
 
       // parse latest values
-      const currentSellRate = parseFloat(latestRates.buy_rate ?? "0");
+      const currentBuyRate = parseFloat(latestRates.buy_rate ?? "0");
       const currentMarketPrice = parseFloat(
         latestRates.market_current_value ?? "0",
       );
@@ -179,7 +168,7 @@ export default function CryptoBuyScreen() {
       const usedMarketPrice = parseFloat(marketPrice ?? "0");
 
       const sellRateChanged =
-        currentSellRate > 0 && currentSellRate !== usedSellRate;
+        currentBuyRate > 0 && currentBuyRate !== usedSellRate;
       const marketPriceExceeded = relativeChangeExceeded(
         currentMarketPrice,
         usedMarketPrice,
@@ -191,10 +180,14 @@ export default function CryptoBuyScreen() {
         const recalculated = calculateBuyFeeBreakdown(
           values.amount,
           currentMarketPrice,
-          currentSellRate,
+          currentBuyRate,
         );
 
-        setFeeBreakdown(recalculated.feeBreakdown);
+        setFeeBreakdown({
+          ...recalculated.feeBreakdown,
+          currentBuyRate: recalculated.feeBreakdown?.currentBuyRate,
+        });
+
         setNgnAmount(recalculated.ngnAmount);
 
         const reasons: string[] = [];
@@ -212,7 +205,7 @@ export default function CryptoBuyScreen() {
 
       // If changes are within tolerance, optionally update fee state silently
       // (uncomment if you want the UI to reflect tiny changes without blocking)
-      // const recalculated = calculateSellFeeBreakdown(values.amount, currentMarketPrice, currentSellRate);
+      // const recalculated = calculateSellFeeBreakdown(values.amount, currentMarketPrice, currentBuyRate);
       // setLatestFeeBreakdown(recalculated.feeBreakdown);
       // setLatestNgnAmount(recalculated.ngnAmount);
 

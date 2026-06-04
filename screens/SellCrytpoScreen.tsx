@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -126,7 +132,7 @@ export default function CryptoSellScreen() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["asset-detail", selectedAssetUuid],
+    queryKey: ["asset-detail-sell", selectedAssetUuid],
     queryFn: async () => {
       if (!selectedAssetUuid) return null;
       try {
@@ -179,35 +185,23 @@ export default function CryptoSellScreen() {
         return;
       }
 
-      // parse latest values
       const currentSellRate = parseFloat(latestRates.sell_rate ?? "0");
       const currentMarketPrice = parseFloat(
         latestRates.market_current_value ?? "0",
       );
 
-      // parse previously used values (fallback to 0)
-      const usedSellRate = parseFloat(
-        latestFeeBreakdown?.currentSellRate ?? "0",
-      );
-      const usedMarketPrice = parseFloat(marketPrice ?? "0");
-
-      // check if sell rate or market price changed beyond tolerance
-      // const sellRateExceeded = relativeChangeExceeded(
-      //   currentSellRate,
-      //   usedSellRate,
-      //   TOLERANCE_PERCENT,
-      // );
+      // Compare against last acknowledged values — not the original mount values
+      const usedSellRate = acknowledgedSellRateRef.current;
+      const usedMarketPrice = acknowledgedMarketPriceRef.current;
 
       const sellRateChanged =
         currentSellRate > 0 && currentSellRate !== usedSellRate;
-
       const marketPriceExceeded = relativeChangeExceeded(
         currentMarketPrice,
         usedMarketPrice,
         TOLERANCE_PERCENT,
       );
 
-      // If either exceeded tolerance, recalc, update UI and block navigation
       if (sellRateChanged || marketPriceExceeded) {
         const recalculated = calculateSellFeeBreakdown(
           values.amount,
@@ -216,8 +210,12 @@ export default function CryptoSellScreen() {
         );
 
         setAssetValueEquivalent(recalculated.assetValueEquivalent);
-        setLatestFeeBreakdown(recalculated.feeBreakdown);
+        setLatestFeeBreakdown({ ...recalculated.feeBreakdown });
         setLatestNgnAmount(recalculated.ngnAmount);
+
+        // ← Update refs so the next submit uses the new values as baseline
+        acknowledgedSellRateRef.current = currentSellRate;
+        acknowledgedMarketPriceRef.current = currentMarketPrice;
 
         const reasons: string[] = [];
         if (sellRateChanged) reasons.push("Sell rate");
@@ -226,29 +224,171 @@ export default function CryptoSellScreen() {
         showError(
           `${reasons.join(
             " and ",
-          )} changed. Prices have been recalculated — please review before continuing.`,
+          )} changed. Prices recalculated — please review before continuing.`,
         );
-
         return;
       }
 
-      // If changes are within tolerance, optionally update fee state silently
-      // (uncomment if you want the UI to reflect tiny changes without blocking)
-      // const recalculated = calculateSellFeeBreakdown(values.amount, currentMarketPrice, currentSellRate);
-      // setLatestFeeBreakdown(recalculated.feeBreakdown);
-      // setLatestNgnAmount(recalculated.ngnAmount);
-
-      const payload = {
-        ...values,
-        url: "/wallets/user/sell-crypto",
-      };
-
-      navigation.navigate("ConfirmTransaction" as never, { payload });
+      navigation.navigate("ConfirmTransaction" as never, {
+        payload: { ...values, url: "/wallets/user/sell-crypto" },
+      });
     } catch (error) {
-      console.error("onSubmit rate check error:", error);
       showError("Error checking rates. Try again.");
     }
   };
+
+  // const onSubmit = async (values: any) => {
+  //   try {
+  //     const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
+  //     const latestRates = res?.data?.asset ?? null;
+
+  //     console.log(res);
+
+  //     if (!latestRates) {
+  //       showError("Unable to fetch latest rates.");
+  //       return;
+  //     }
+
+  //     const currentSellRate = parseFloat(latestRates.sell_rate ?? "0");
+  //     const currentMarketPrice = parseFloat(
+  //       latestRates.market_current_value ?? "0",
+  //     );
+
+  //     // Compare against assetDetails (what was shown on mount) not latestFeeBreakdown
+  //     const usedSellRate = parseFloat(assetDetails?.sell_rate ?? "0");
+  //     const usedMarketPrice = parseFloat(String(marketPrice ?? "0"));
+
+  //     const sellRateChanged =
+  //       currentSellRate > 0 && currentSellRate !== usedSellRate;
+
+  //     const marketPriceExceeded = relativeChangeExceeded(
+  //       currentMarketPrice,
+  //       usedMarketPrice,
+  //       TOLERANCE_PERCENT,
+  //     );
+
+  //     console.log(marketPriceExceeded);
+
+  //     console.log(sellRateChanged, usedSellRate, currentSellRate);
+
+  //     if (sellRateChanged || marketPriceExceeded) {
+  //       const recalculated = calculateSellFeeBreakdown(
+  //         values.amount,
+  //         currentMarketPrice,
+  //         currentSellRate,
+  //       );
+
+  //       console.log(recalculated.feeBreakdown?.currentSellRate);
+
+  //       setAssetValueEquivalent(recalculated.assetValueEquivalent);
+  //       setLatestFeeBreakdown({
+  //         ...recalculated.feeBreakdown,
+  //         currentSellRate: recalculated.feeBreakdown?.currentSellRate,
+  //       });
+  //       setLatestNgnAmount(recalculated.ngnAmount);
+
+  //       const reasons: string[] = [];
+  //       if (sellRateChanged) reasons.push("Sell rate");
+  //       if (marketPriceExceeded) reasons.push("Market price");
+
+  //       showError(
+  //         `${reasons.join(
+  //           " and ",
+  //         )} changed. Prices recalculated — please review before continuing.`,
+  //       );
+  //       return;
+  //     }
+
+  //     navigation.navigate("ConfirmTransaction" as never, {
+  //       payload: { ...values, url: "/wallets/user/sell-crypto" },
+  //     });
+  //   } catch (error) {
+  //     showError("Error checking rates. Try again.");
+  //   }
+  // };
+
+  // const onSubmit = async (values: any) => {
+  //   try {
+  //     const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
+  //     const latestRates = res?.data?.asset ?? null;
+
+  //     if (!latestRates) {
+  //       showError("Unable to fetch latest rates.");
+  //       return;
+  //     }
+
+  //     // parse latest values
+  //     const currentSellRate = parseFloat(latestRates.sell_rate ?? "0");
+  //     const currentMarketPrice = parseFloat(
+  //       latestRates.market_current_value ?? "0",
+  //     );
+
+  //     // parse previously used values (fallback to 0)
+  //     const usedSellRate = parseFloat(
+  //       latestFeeBreakdown?.currentSellRate ?? "0",
+  //     );
+  //     const usedMarketPrice = parseFloat(marketPrice ?? "0");
+
+  //     // check if sell rate or market price changed beyond tolerance
+  //     // const sellRateExceeded = relativeChangeExceeded(
+  //     //   currentSellRate,
+  //     //   usedSellRate,
+  //     //   TOLERANCE_PERCENT,
+  //     // );
+
+  //     const sellRateChanged =
+  //       currentSellRate > 0 && currentSellRate !== usedSellRate;
+
+  //     const marketPriceExceeded = relativeChangeExceeded(
+  //       currentMarketPrice,
+  //       usedMarketPrice,
+  //       TOLERANCE_PERCENT,
+  //     );
+
+  //     // If either exceeded tolerance, recalc, update UI and block navigation
+  //     if (sellRateChanged || marketPriceExceeded) {
+  //       const recalculated = calculateSellFeeBreakdown(
+  //         values.amount,
+  //         currentMarketPrice,
+  //         currentSellRate ?? parseFloat(assetDetails.sell_rate),
+  //       );
+
+  //       console.log(recalculated.feeBreakdown);
+
+  //       setAssetValueEquivalent(recalculated.assetValueEquivalent);
+  //       setLatestFeeBreakdown(recalculated.feeBreakdown);
+  //       setLatestNgnAmount(recalculated.ngnAmount);
+
+  //       const reasons: string[] = [];
+  //       if (sellRateChanged) reasons.push("Sell rate");
+  //       if (marketPriceExceeded) reasons.push("Market price");
+
+  //       showError(
+  //         `${reasons.join(
+  //           " and ",
+  //         )} changed. Prices have been recalculated — please review before continuing.`,
+  //       );
+
+  //       return;
+  //     }
+
+  //     // If changes are within tolerance, optionally update fee state silently
+  //     // (uncomment if you want the UI to reflect tiny changes without blocking)
+  //     // const recalculated = calculateSellFeeBreakdown(values.amount, currentMarketPrice, currentSellRate);
+  //     // setLatestFeeBreakdown(recalculated.feeBreakdown);
+  //     // setLatestNgnAmount(recalculated.ngnAmount);
+
+  //     const payload = {
+  //       ...values,
+  //       url: "/wallets/user/sell-crypto",
+  //     };
+
+  //     navigation.navigate("ConfirmTransaction" as never, { payload });
+  //   } catch (error) {
+  //     console.error("onSubmit rate check error:", error);
+  //     showError("Error checking rates. Try again.");
+  //   }
+  // };
 
   // const onSubmit = async (values: any) => {
   //   try {
@@ -360,35 +500,8 @@ export default function CryptoSellScreen() {
   useFocusEffect(
     useCallback(() => {
       refetch();
-      console.log("Focusing...");
     }, [refetch]),
   );
-
-  useEffect(() => {
-    if (
-      assetDetails?.sell_rate &&
-      // amount > 0 &&
-      marketPrice > 0 &&
-      assetDetails
-    ) {
-      const recalculated = calculateSellFeeBreakdown(
-        amount,
-        marketPrice,
-        latestFeeBreakdown?.currentSellRate ??
-          parseFloat(assetDetails.sell_rate),
-      );
-
-      setAssetValueEquivalent(recalculated.assetValueEquivalent);
-      setLatestFeeBreakdown(recalculated.feeBreakdown);
-      setLatestNgnAmount(recalculated.ngnAmount);
-    }
-  }, [
-    assetDetails?.sell_rate,
-    amount,
-    latestFeeBreakdown?.currentSellRate,
-    marketPrice,
-    assetDetails,
-  ]);
 
   useResetFormOnMount(
     reset,
@@ -400,6 +513,75 @@ export default function CryptoSellScreen() {
       setLatestNgnAmount("0.00");
     },
   );
+
+  useEffect(() => {
+    if (!assetDetails?.sell_rate || marketPrice <= 0) return;
+
+    const sellRate = parseFloat(assetDetails.sell_rate);
+
+    if (!sellRate || sellRate <= 0) return;
+
+    const recalculated = calculateSellFeeBreakdown(
+      amount,
+      marketPrice,
+      sellRate,
+    );
+
+    console.log("recalculated: ", recalculated?.feeBreakdown);
+
+    setAssetValueEquivalent(recalculated.assetValueEquivalent);
+    setLatestFeeBreakdown({ ...recalculated.feeBreakdown });
+    setLatestNgnAmount(recalculated.ngnAmount);
+  }, [assetDetails?.sell_rate, amount, marketPrice]);
+
+  const acknowledgedSellRateRef = useRef<number>(0);
+  const acknowledgedMarketPriceRef = useRef<number>(0);
+
+  // Set on mount when assetDetails loads
+  useEffect(() => {
+    if (assetDetails?.sell_rate) {
+      acknowledgedSellRateRef.current = parseFloat(assetDetails.sell_rate);
+    }
+  }, [assetDetails?.sell_rate]);
+
+  useEffect(() => {
+    if (marketPrice > 0) {
+      acknowledgedMarketPriceRef.current = marketPrice;
+    }
+  }, [marketPrice]);
+
+  // useEffect(() => {
+  //   if (
+  //     assetDetails?.sell_rate &&
+  //     // amount > 0 &&
+  //     marketPrice > 0 &&
+  //     assetDetails
+  //   ) {
+  //     const recalculated = calculateSellFeeBreakdown(
+  //       amount,
+  //       marketPrice,
+  //       latestFeeBreakdown?.currentSellRate ??
+  //         parseFloat(assetDetails.sell_rate),
+  //     );
+
+  //     console.log(
+  //       "Recalculated fee breakdown due to dependency change:",
+  //       recalculated,
+  //     );
+
+  //     setAssetValueEquivalent(recalculated.assetValueEquivalent);
+  //     setLatestFeeBreakdown(recalculated.feeBreakdown);
+  //     setLatestNgnAmount(recalculated.ngnAmount);
+  //   }
+  // }, [
+  //   assetDetails?.sell_rate,
+  //   amount,
+  //   latestFeeBreakdown?.currentSellRate,
+  //   marketPrice,
+  //   assetDetails,
+  // ]);
+
+  console.log(latestFeeBreakdown);
 
   if (isLoading) {
     return <CustomLoading loading={true} />;
