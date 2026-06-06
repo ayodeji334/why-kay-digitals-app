@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -7,22 +13,30 @@ import {
   StyleSheet,
   ScrollView,
   Image,
+  RefreshControl,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { formatAmount } from "../libs/formatNumber";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
-import { useAssets } from "../hooks/useAssets";
 import { useFiatBalance } from "../hooks/useFiatBalance";
 import { TradeIntent } from "../libs/types";
 import { showError } from "../utlis/toast";
 import useAxios from "../hooks/useAxios";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
+import { useQuery } from "@tanstack/react-query";
+import { resolveRateFromCategories } from "./SellCrytpoScreen";
+import CustomLoading from "../components/CustomLoading";
 
 type CryptoBuyScreenParams = {
   CryptoBuy: {
@@ -49,37 +63,16 @@ const schema = Yup.object().shape({
     .required("Amount is required"),
 });
 
-function calculateBuyFeeBreakdown(
-  amount: number,
-  marketPrice: number,
-  sellRate: number,
-) {
-  const coinAmount = amount / marketPrice;
-  const ngnValue = sellRate > 0 ? amount * sellRate : 0;
+const STABLECOINS = ["USDT"];
 
-  return {
-    assetValueEquivalent: coinAmount.toFixed(8),
-    ngnAmount: sellRate > 0 ? formatAmount(ngnValue) : "0.00",
-    feeBreakdown: {
-      coinAmount: coinAmount.toFixed(8),
-      grossUsd: amount,
-      netAmountUsd: amount.toFixed(2),
-      netNgn: sellRate > 0 ? formatAmount(ngnValue) : "0.00",
-      currentBuyRate: sellRate,
-      currentMarketPrice: marketPrice,
-    },
-  };
-}
-
-function calculateFeeBreakdown(
+export function calculateBuyFeeBreakdown(
   amount: number,
   marketPrice: number,
   buyRate: number,
-  symbol: string,
+  symbol?: string,
 ) {
-  const STABLECOINS = ["USDT"];
-  const isStablecoin = STABLECOINS.includes(symbol.toUpperCase());
-  const coinAmount = amount / marketPrice;
+  const isStablecoin = STABLECOINS.includes((symbol ?? "").toUpperCase());
+  const coinAmount = marketPrice > 0 ? amount / marketPrice : 0;
   const platformFeeUsd = isStablecoin ? 0 : amount * 0.001;
   const platformFeeCoin = isStablecoin ? 0 : coinAmount * 0.001;
   const totalCostUsd = amount + platformFeeUsd;
@@ -99,7 +92,6 @@ function calculateFeeBreakdown(
       currentBuyRate: buyRate,
       marketCurrentPrice: marketPrice,
     },
-    symbol,
   };
 }
 
@@ -109,12 +101,22 @@ export default function CryptoBuyScreen() {
   const { intent } = route.params;
   const navigation: any = useNavigation();
   const selectedAssetUuid = intent.assetId ?? "";
-  const [displayAmount, setDisplayAmount] = useState("");
+
   const { fiatBalance } = useFiatBalance();
+
+  // Local state
+  const [displayAmount, setDisplayAmount] = useState("");
   const [feeBreakdown, setFeeBreakdown] = useState<any>(null);
   const [ngnAmount, setNgnAmount] = useState("0.00");
   const [assetValueEquivalent, setAssetValueEquivalent] = useState<any>(0);
+  const [refreshing, setRefreshing] = useState(false);
 
+  // Refs
+  const acknowledgedBuyRateRef = useRef<number>(0);
+  const acknowledgedMarketPriceRef = useRef<number>(0);
+  const rateOverriddenRef = useRef(false);
+
+  // Form
   const {
     control,
     handleSubmit,
@@ -124,29 +126,137 @@ export default function CryptoBuyScreen() {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: {
-      amount: 0,
-      asset_id: intent?.assetId ?? "",
-    },
+    defaultValues: { amount: 0, asset_id: intent?.assetId ?? "" },
     mode: "onChange",
   });
 
-  const { assets } = useAssets();
-
-  const assetDetails = useMemo(
-    () =>
-      Array.isArray(assets)
-        ? assets.find(a => a.uuid === selectedAssetUuid)
-        : null,
-    [assets],
-  );
-
-  const marketPrice =
-    feeBreakdown?.currentMarketPrice ?? assetDetails?.market_current_value ?? 0;
   const amount = watch("amount");
 
+  // Asset details query
+  const {
+    data: assetDetails,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["asset-detail-buy", selectedAssetUuid],
+    queryFn: async () => {
+      if (!selectedAssetUuid) return null;
+      const res = await apiGet(`/wallets/${selectedAssetUuid}`);
+      return res?.data?.data ?? null;
+    },
+    enabled: !!selectedAssetUuid,
+  });
+
+  // Derived values
   const TOLERANCE_PERCENT = 1.23;
 
+  const marketPrice = useMemo(
+    () =>
+      feeBreakdown?.currentMarketPrice ??
+      assetDetails?.market_current_value ??
+      0,
+    [feeBreakdown?.currentMarketPrice, assetDetails?.market_current_value],
+  );
+
+  const hasInsufficientBalance = useMemo(() => {
+    if (!feeBreakdown?.totalCostNgn) return false;
+    return feeBreakdown?.totalCostNgn > fiatBalance;
+  }, [feeBreakdown?.totalCostNgn, fiatBalance]);
+
+  const insufficientBalanceMessage = useMemo(() => {
+    if (!hasInsufficientBalance || !amount || !fiatBalance) return null;
+
+    if (amount > fiatBalance) {
+      return `Insufficient balance. Your total balance is ${formatAmount(
+        fiatBalance,
+        { currency: "NGN" },
+      )}`;
+    }
+
+    const maxBuyable =
+      fiatBalance / (1 + (feeBreakdown?.isStablecoin ? 0 : 0.001));
+    return `You can only buy up to ${formatAmount(maxBuyable, {
+      currency: "NGN",
+    })} with your current balance (including charges).`;
+  }, [hasInsufficientBalance, fiatBalance, feeBreakdown, amount]);
+
+  // Recalculate helper
+  const recalculate = useCallback(
+    (amt: number, price: number, rate: number) => {
+      const result = calculateBuyFeeBreakdown(
+        amt,
+        price,
+        rate,
+        assetDetails?.symbol,
+      );
+      setAssetValueEquivalent(result.assetValueEquivalent);
+      setFeeBreakdown({ ...result.feeBreakdown });
+      setNgnAmount(result.ngnAmount);
+    },
+    [assetDetails?.symbol],
+  );
+
+  useEffect(() => {
+    if (!assetDetails?.rates?.buy || Number(marketPrice) <= 0) return;
+    if (rateOverriddenRef.current) return;
+
+    const effectiveRate = resolveRateFromCategories(
+      amount,
+      assetDetails.rates.buy,
+    );
+    if (!effectiveRate || effectiveRate <= 0) return;
+
+    recalculate(amount, Number(marketPrice), effectiveRate);
+  }, [assetDetails?.rates?.buy, amount, marketPrice, recalculate]);
+
+  // Effect: seed acknowledged refs
+  useEffect(() => {
+    if (assetDetails?.rates?.buy && amount >= 0) {
+      acknowledgedBuyRateRef.current = resolveRateFromCategories(
+        amount,
+        assetDetails.rates.buy,
+      );
+    } else if (assetDetails?.buy_rate) {
+      acknowledgedBuyRateRef.current = parseFloat(assetDetails.buy_rate);
+    }
+  }, [assetDetails?.rates?.buy, assetDetails?.buy_rate, amount]);
+
+  useEffect(() => {
+    if (Number(marketPrice) > 0) {
+      acknowledgedMarketPriceRef.current = Number(marketPrice);
+    }
+  }, [marketPrice]);
+
+  // Effect: pre-fill amount from intent
+  useEffect(() => {
+    if (!intent?.amount) return;
+    const numericAmount = Number(intent.amount);
+    if (isNaN(numericAmount)) return;
+    setDisplayAmount(formatWithCommas(numericAmount.toString()));
+    setValue("amount", numericAmount);
+  }, [intent?.amount]);
+
+  // Focus refetch
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
+
+  // Reset on mount
+  useResetFormOnMount(
+    reset,
+    { amount: 0, asset_id: intent.assetId ?? "" },
+    () => {
+      setDisplayAmount("");
+      setFeeBreakdown(null);
+      setAssetValueEquivalent(0);
+      setNgnAmount("0.00");
+      rateOverriddenRef.current = false;
+    },
+  );
+
+  // Submit
   const onSubmit = async (values: any) => {
     try {
       const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
@@ -157,200 +267,109 @@ export default function CryptoBuyScreen() {
         return;
       }
 
-      // parse latest values
-      const currentBuyRate = parseFloat(latestRates.buy_rate ?? "0");
       const currentMarketPrice = parseFloat(
         latestRates.market_current_value ?? "0",
       );
 
-      // parse previously used values (fallback to 0)
-      const usedSellRate = parseFloat(feeBreakdown?.currentBuyRate ?? "0");
-      const usedMarketPrice = parseFloat(marketPrice ?? "0");
+      const buyRateData = latestRates.rates?.buy ?? null;
+      const currentBuyRate = buyRateData
+        ? resolveRateFromCategories(values.amount, buyRateData)
+        : parseFloat(latestRates.buy_rate ?? "0");
 
-      const sellRateChanged =
-        currentBuyRate > 0 && currentBuyRate !== usedSellRate;
+      const usedBuyRate = acknowledgedBuyRateRef.current;
+      const usedMarketPrice = acknowledgedMarketPriceRef.current;
+
+      const previousCategory =
+        buyRateData?.categories?.find(
+          (cat: any) =>
+            values.amount >= parseFloat(cat.min_amount) &&
+            values.amount <= parseFloat(cat.max_amount),
+        ) ?? null;
+
+      const buyRateChanged =
+        currentBuyRate > 0 && currentBuyRate !== usedBuyRate;
       const marketPriceExceeded = relativeChangeExceeded(
         currentMarketPrice,
         usedMarketPrice,
         TOLERANCE_PERCENT,
       );
 
-      // If either exceeded tolerance, recalc, update UI and block navigation
-      if (sellRateChanged || marketPriceExceeded) {
-        const recalculated = calculateBuyFeeBreakdown(
-          values.amount,
-          currentMarketPrice,
-          currentBuyRate,
-        );
+      if (buyRateChanged || marketPriceExceeded) {
+        rateOverriddenRef.current = true;
+        acknowledgedBuyRateRef.current = currentBuyRate;
+        acknowledgedMarketPriceRef.current = currentMarketPrice;
 
-        setFeeBreakdown({
-          ...recalculated.feeBreakdown,
-          currentBuyRate: recalculated.feeBreakdown?.currentBuyRate,
-        });
-
-        setNgnAmount(recalculated.ngnAmount);
+        recalculate(values.amount, currentMarketPrice, currentBuyRate);
 
         const reasons: string[] = [];
-        if (sellRateChanged) reasons.push("Buy rate");
-        if (marketPriceExceeded) reasons.push("Market price");
+
+        if (buyRateChanged) {
+          const categoryLabel = previousCategory?.label ?? "default rate";
+          reasons.push(
+            `Buy rate changed from ${formatAmount(
+              usedBuyRate,
+            )}/$ to ${formatAmount(currentBuyRate)}/$ (${categoryLabel})`,
+          );
+        }
+
+        if (marketPriceExceeded) {
+          reasons.push(
+            `Market price moved from ${formatAmount(usedMarketPrice, {
+              currency: "USD",
+            })} to ${formatAmount(currentMarketPrice, {
+              currency: "USD",
+            })}`,
+          );
+        }
 
         showError(
-          `${reasons.join(
-            " and ",
-          )} changed. Prices have been recalculated — please review before continuing.`,
+          `Prices updated — please review before continuing.${reasons.join(
+            "",
+          )}`,
         );
-
-        return; // block navigation
+        return;
       }
 
-      // If changes are within tolerance, optionally update fee state silently
-      // (uncomment if you want the UI to reflect tiny changes without blocking)
-      // const recalculated = calculateSellFeeBreakdown(values.amount, currentMarketPrice, currentBuyRate);
-      // setLatestFeeBreakdown(recalculated.feeBreakdown);
-      // setLatestNgnAmount(recalculated.ngnAmount);
-
-      const payload = {
-        ...values,
-        url: "/wallets/user/buy-crypto",
-      };
-
-      navigation.navigate("ConfirmTransaction" as never, { payload });
-    } catch (error) {
-      console.error("onSubmit rate check error:", error);
+      navigation.navigate("ConfirmTransaction" as never, {
+        payload: { ...values, url: "/wallets/user/buy-crypto" },
+      });
+    } catch {
       showError("Error checking rates. Try again.");
     }
   };
 
-  // const onSubmit = async (values: any) => {
-  //   try {
-  //     const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
-  //     const latestRates = res?.data?.asset ?? null;
+  // Pull to refresh
+  const onRefresh = async () => {
+    setRefreshing(true);
+    rateOverriddenRef.current = false;
+    await refetch();
+    setRefreshing(false);
+  };
 
-  //     if (!latestRates) {
-  //       showError("Unable to fetch latest rates.");
-  //       return;
-  //     }
-
-  //     const currentBuyRate = parseFloat(latestRates.buy_rate ?? "0");
-  //     const usedBuyRate = parseFloat(
-  //       feeBreakdown?.currentBuyRate ?? assetDetails?.buy_rate ?? "0",
-  //     );
-
-  //     if (currentBuyRate > 0 && currentBuyRate !== usedBuyRate) {
-  //       const recalculated = calculateFeeBreakdown(
-  //         values.amount,
-  //         marketPrice,
-  //         currentBuyRate,
-  //         assetDetails?.symbol ?? "",
-  //       );
-
-  //       setFeeBreakdown(recalculated.feeBreakdown);
-  //       setNgnAmount(recalculated.ngnAmount);
-
-  //       showError(
-  //         "Buy rate has changed. Prices recalculated — please review before continuing.",
-  //       );
-  //       return;
-  //     }
-
-  //     navigation.navigate("ConfirmTransaction" as never, {
-  //       payload: { ...values, url: "/wallets/user/buy-crypto" },
-  //     });
-  //   } catch (error) {
-  //     showError("Error checking rates. Try again.");
-  //   }
-  // };
-
-  const hasInsufficientBalance = useMemo(() => {
-    if (!feeBreakdown?.totalCostNgn) return false;
-    return feeBreakdown?.totalCostNgn > fiatBalance;
-  }, [feeBreakdown?.totalCostNgn, fiatBalance]);
-
-  // message to show
-  const insufficientBalanceMessage = useMemo(() => {
-    if (!hasInsufficientBalance || !amount || !fiatBalance) return null;
-
-    if (amount > fiatBalance) {
-      return `Insufficient balance. Your total balance is ${formatAmount(
-        fiatBalance,
-        {
-          currency: "NGN",
-        },
-      )}`;
-    }
-
-    // maximum fiat the user can spend including charges
-    const maxBuyable =
-      fiatBalance / (1 + (feeBreakdown?.isStablecoin ? 0 : 0.001));
-
-    return `You can only buy up to ${formatAmount(maxBuyable, {
-      currency: "NGN",
-    })} with your current balance (including charges).`;
-  }, [hasInsufficientBalance, fiatBalance, feeBreakdown]);
-
-  useEffect(() => {
-    if (intent?.amount) {
-      const numericAmount = Number(intent.amount);
-      if (!isNaN(numericAmount)) {
-        setDisplayAmount(formatWithCommas(numericAmount.toString()));
-      }
-
-      setValue("amount", numericAmount);
-    }
-  }, [intent?.amount]);
-
-  useEffect(() => {
-    if (assetDetails?.buy_rate && marketPrice > 0 && assetDetails) {
-      const recalculated = calculateFeeBreakdown(
-        amount,
-        marketPrice,
-        feeBreakdown?.currentBuyRate ?? parseFloat(assetDetails.buy_rate),
-        assetDetails.symbol ?? "",
-      );
-      setAssetValueEquivalent(recalculated.assetValueEquivalent);
-      setFeeBreakdown(recalculated.feeBreakdown);
-      setNgnAmount(recalculated.ngnAmount);
-    }
-  }, [
-    assetDetails?.buy_rate,
-    amount,
-    feeBreakdown?.currentBuyRate,
-    marketPrice,
-    assetDetails,
-  ]);
-
-  useResetFormOnMount(
-    reset,
-    { amount: 0, asset_id: intent.assetId ?? "" },
-    () => {
-      setDisplayAmount("");
-      setFeeBreakdown(null);
-      setAssetValueEquivalent(0);
-      setNgnAmount("0.00");
-    },
-  );
+  if (isLoading) return <CustomLoading loading={true} />;
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
       <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-        }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         <View style={styles.container}>
           <View>
             <View style={{ marginBottom: 15 }}>
               <Text style={styles.label}>Coin</Text>
               <View style={styles.cryptoRow}>
-                {assetDetails?.logo_url && (
+                {assetDetails?.asset_logo_url && (
                   <Image
-                    source={{ uri: assetDetails?.logo_url ?? "" }}
+                    source={{ uri: assetDetails?.asset_logo_url ?? "" }}
                     style={styles.optionLogo}
                   />
                 )}
                 <View style={styles.cryptoInfo}>
                   <Text style={styles.optionName}>
-                    {assetDetails?.symbol} {`(${assetDetails?.name})`}
+                    {assetDetails?.symbol} {`(${assetDetails?.asset_name})`}
                   </Text>
                 </View>
               </View>
@@ -383,14 +402,6 @@ export default function CryptoBuyScreen() {
               {errors.amount && (
                 <Text style={styles.error}>{errors.amount.message}</Text>
               )}
-
-              {/* {hasInsufficientBalance && (
-                <View style={styles.warningContainer}>
-                  <Text style={styles.warningText}>
-                    {insufficientBalanceMessage}
-                  </Text>
-                </View>
-              )} */}
 
               {hasInsufficientBalance && insufficientBalanceMessage && (
                 <Text style={styles.error}>{insufficientBalanceMessage}</Text>
@@ -454,9 +465,7 @@ export default function CryptoBuyScreen() {
                   <Text style={styles.balance}>
                     {formatAmount(
                       Number(feeBreakdown?.marketCurrentPrice) || 0,
-                      {
-                        currency: "USD",
-                      },
+                      { currency: "USD" },
                     )}
                     /{assetDetails?.symbol}
                   </Text>
@@ -523,10 +532,10 @@ export default function CryptoBuyScreen() {
                     >
                       <Text style={[styles.balance]}>Total Cost (USD):</Text>
                       <Text style={[styles.balance]}>
-                        {formatAmount(Number(feeBreakdown.totalCostUsd), {
-                          currency: "USD",
-                          decimalPlace: 3,
-                        })}
+                        {formatAmount(
+                          Number(feeBreakdown.totalCostUsd ?? 100),
+                          { currency: "USD", decimalPlace: 3 },
+                        )}
                       </Text>
                     </View>
 
@@ -551,7 +560,7 @@ export default function CryptoBuyScreen() {
                     padding: 9,
                   }}
                 >
-                  <Text style={styles.ngn}>You’re Paying:</Text>
+                  <Text style={styles.ngn}>You're Paying:</Text>
                   <Text style={styles.ngn}>{ngnAmount}</Text>
                 </View>
               </View>
@@ -575,6 +584,684 @@ export default function CryptoBuyScreen() {
     </SafeAreaView>
   );
 }
+
+// export default function CryptoBuyScreen() {
+//   const { apiGet } = useAxios();
+//   const route = useRoute<RouteProp<CryptoBuyScreenParams, "CryptoBuy">>();
+//   const { intent } = route.params;
+//   const navigation: any = useNavigation();
+//   const selectedAssetUuid = intent.assetId ?? "";
+//   const [displayAmount, setDisplayAmount] = useState("");
+//   const { fiatBalance } = useFiatBalance();
+//   const [feeBreakdown, setFeeBreakdown] = useState<any>(null);
+//   const [ngnAmount, setNgnAmount] = useState("0.00");
+//   const [assetValueEquivalent, setAssetValueEquivalent] = useState<any>(0);
+//   const acknowledgedBuyRateRef = useRef<number>(0);
+//   const acknowledgedMarketPriceRef = useRef<number>(0);
+//   const rateOverriddenRef = useRef(false);
+//   const [refreshing, setRefreshing] = useState(false);
+
+//   const {
+//     control,
+//     handleSubmit,
+//     setValue,
+//     watch,
+//     reset,
+//     formState: { errors, isSubmitting },
+//   } = useForm({
+//     resolver: yupResolver(schema),
+//     defaultValues: {
+//       amount: 0,
+//       asset_id: intent?.assetId ?? "",
+//     },
+//     mode: "onChange",
+//   });
+
+//   // const { assets } = useAssets();
+
+//   const {
+//     data: assetDetails,
+//     isLoading,
+//     refetch,
+//   } = useQuery({
+//     queryKey: ["asset-detail-buy", selectedAssetUuid],
+//     queryFn: async () => {
+//       if (!selectedAssetUuid) return null;
+//       const res = await apiGet(`/wallets/${selectedAssetUuid}`);
+//       return res?.data?.data ?? null;
+//     },
+//     enabled: !!selectedAssetUuid,
+//   });
+
+//   // const assetDetails = useMemo(
+//   //   () =>
+//   //     Array.isArray(assets)
+//   //       ? assets.find(a => a.uuid === selectedAssetUuid)
+//   //       : null,
+//   //   [assets],
+//   // );
+
+//   const symbol = assetDetails?.symbol ?? "";
+
+//   const marketPrice = useMemo(
+//     () =>
+//       feeBreakdown?.currentMarketPrice ??
+//       assetDetails?.market_current_value ??
+//       0,
+//     [feeBreakdown?.currentMarketPrice, assetDetails?.market_current_value],
+//   );
+
+//   // const marketPrice =
+//   //   feeBreakdown?.currentMarketPrice ?? assetDetails?.market_current_value ?? 0;
+//   // const amount = watch("amount");
+
+//   const TOLERANCE_PERCENT = 1.23;
+
+//   const amount = watch("amount");
+
+//   const onSubmit = async (values: any) => {
+//     try {
+//       const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
+//       const latestRates = res?.data?.asset ?? null;
+
+//       if (!latestRates) {
+//         showError("Unable to fetch latest rates.");
+//         return;
+//       }
+
+//       const currentMarketPrice = parseFloat(
+//         latestRates.market_current_value ?? "0",
+//       );
+
+//       // Resolve effective buy rate from categories
+//       const buyRateData = latestRates.rates?.buy ?? null;
+//       const currentBuyRate = buyRateData
+//         ? resolveRateFromCategories(values.amount, buyRateData)
+//         : parseFloat(latestRates.buy_rate ?? "0");
+
+//       const usedBuyRate = acknowledgedBuyRateRef.current;
+//       const usedMarketPrice = acknowledgedMarketPriceRef.current;
+
+//       // Resolve category label for transparent messaging
+//       const previousCategory =
+//         buyRateData?.categories?.find(
+//           (cat: any) =>
+//             values.amount >= parseFloat(cat.min_amount) &&
+//             values.amount <= parseFloat(cat.max_amount),
+//         ) ?? null;
+
+//       const buyRateChanged =
+//         currentBuyRate > 0 && currentBuyRate !== usedBuyRate;
+//       const marketPriceExceeded = relativeChangeExceeded(
+//         currentMarketPrice,
+//         usedMarketPrice,
+//         TOLERANCE_PERCENT,
+//       );
+
+//       if (buyRateChanged || marketPriceExceeded) {
+//         rateOverriddenRef.current = true;
+//         acknowledgedBuyRateRef.current = currentBuyRate;
+//         acknowledgedMarketPriceRef.current = currentMarketPrice;
+
+//         recalculate(values.amount, currentMarketPrice, currentBuyRate);
+
+//         const reasons: string[] = [];
+
+//         if (buyRateChanged) {
+//           const categoryLabel = previousCategory?.label ?? "default rate";
+//           reasons.push(
+//             `Buy rate changed from ${formatAmount(
+//               usedBuyRate,
+//             )}/$ to ${formatAmount(currentBuyRate)}/$ (${categoryLabel})`,
+//           );
+//         }
+
+//         if (marketPriceExceeded) {
+//           reasons.push(
+//             `Market price moved from ${formatAmount(usedMarketPrice, {
+//               currency: "USD",
+//             })} to ${formatAmount(currentMarketPrice, {
+//               currency: "USD",
+//             })} (>${TOLERANCE_PERCENT}% change)`,
+//           );
+//         }
+
+//         showError(
+//           `Prices updated — please review before continuing.\n\n${reasons.join(
+//             "\n",
+//           )}`,
+//         );
+//         return;
+//       }
+
+//       navigation.navigate("ConfirmTransaction" as never, {
+//         payload: { ...values, url: "/wallets/user/buy-crypto" },
+//       });
+//     } catch {
+//       showError("Error checking rates. Try again.");
+//     }
+//   };
+
+//   // const onSubmit = async (values: any) => {
+//   //   try {
+//   //     const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
+//   //     const latestRates = res?.data?.asset ?? null;
+
+//   //     if (!latestRates) {
+//   //       showError("Unable to fetch latest rates.");
+//   //       return;
+//   //     }
+
+//   //     // parse latest values
+//   //     const currentBuyRate = parseFloat(latestRates.buy_rate ?? "0");
+//   //     const currentMarketPrice = parseFloat(
+//   //       latestRates.market_current_value ?? "0",
+//   //     );
+
+//   //     // parse previously used values (fallback to 0)
+//   //     const usedSellRate = parseFloat(feeBreakdown?.currentBuyRate ?? "0");
+//   //     const usedMarketPrice = parseFloat(marketPrice ?? "0");
+
+//   //     const sellRateChanged =
+//   //       currentBuyRate > 0 && currentBuyRate !== usedSellRate;
+//   //     const marketPriceExceeded = relativeChangeExceeded(
+//   //       currentMarketPrice,
+//   //       usedMarketPrice,
+//   //       TOLERANCE_PERCENT,
+//   //     );
+
+//   //     // If either exceeded tolerance, recalc, update UI and block navigation
+//   //     if (sellRateChanged || marketPriceExceeded) {
+//   //       const recalculated = calculateBuyFeeBreakdown(
+//   //         values.amount,
+//   //         currentMarketPrice,
+//   //         currentBuyRate,
+//   //       );
+
+//   //       setFeeBreakdown({
+//   //         ...recalculated.feeBreakdown,
+//   //         currentBuyRate: recalculated.feeBreakdown?.currentBuyRate,
+//   //       });
+
+//   //       setNgnAmount(recalculated.ngnAmount);
+
+//   //       const reasons: string[] = [];
+//   //       if (sellRateChanged) reasons.push("Buy rate");
+//   //       if (marketPriceExceeded) reasons.push("Market price");
+
+//   //       showError(
+//   //         `${reasons.join(
+//   //           " and ",
+//   //         )} changed. Prices have been recalculated — please review before continuing.`,
+//   //       );
+
+//   //       return; // block navigation
+//   //     }
+
+//   //     // If changes are within tolerance, optionally update fee state silently
+//   //     // (uncomment if you want the UI to reflect tiny changes without blocking)
+//   //     // const recalculated = calculateSellFeeBreakdown(values.amount, currentMarketPrice, currentBuyRate);
+//   //     // setLatestFeeBreakdown(recalculated.feeBreakdown);
+//   //     // setLatestNgnAmount(recalculated.ngnAmount);
+
+//   //     const payload = {
+//   //       ...values,
+//   //       url: "/wallets/user/buy-crypto",
+//   //     };
+
+//   //     navigation.navigate("ConfirmTransaction" as never, { payload });
+//   //   } catch (error) {
+//   //     console.error("onSubmit rate check error:", error);
+//   //     showError("Error checking rates. Try again.");
+//   //   }
+//   // };
+
+//   // const onSubmit = async (values: any) => {
+//   //   try {
+//   //     const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
+//   //     const latestRates = res?.data?.asset ?? null;
+
+//   //     if (!latestRates) {
+//   //       showError("Unable to fetch latest rates.");
+//   //       return;
+//   //     }
+
+//   //     const currentBuyRate = parseFloat(latestRates.buy_rate ?? "0");
+//   //     const usedBuyRate = parseFloat(
+//   //       feeBreakdown?.currentBuyRate ?? assetDetails?.buy_rate ?? "0",
+//   //     );
+
+//   //     if (currentBuyRate > 0 && currentBuyRate !== usedBuyRate) {
+//   //       const recalculated = calculateFeeBreakdown(
+//   //         values.amount,
+//   //         marketPrice,
+//   //         currentBuyRate,
+//   //         assetDetails?.symbol ?? "",
+//   //       );
+
+//   //       setFeeBreakdown(recalculated.feeBreakdown);
+//   //       setNgnAmount(recalculated.ngnAmount);
+
+//   //       showError(
+//   //         "Buy rate has changed. Prices recalculated — please review before continuing.",
+//   //       );
+//   //       return;
+//   //     }
+
+//   //     navigation.navigate("ConfirmTransaction" as never, {
+//   //       payload: { ...values, url: "/wallets/user/buy-crypto" },
+//   //     });
+//   //   } catch (error) {
+//   //     showError("Error checking rates. Try again.");
+//   //   }
+//   // };
+
+//   // const hasInsufficientBalance = useMemo(() => {
+//   //   if (!feeBreakdown?.totalCostNgn) return false;
+//   //   return feeBreakdown?.totalCostNgn > fiatBalance;
+//   // }, [feeBreakdown?.totalCostNgn, fiatBalance]);
+
+//   // // message to show
+//   // const insufficientBalanceMessage = useMemo(() => {
+//   //   if (!hasInsufficientBalance || !amount || !fiatBalance) return null;
+
+//   //   if (amount > fiatBalance) {
+//   //     return `Insufficient balance. Your total balance is ${formatAmount(
+//   //       fiatBalance,
+//   //       {
+//   //         currency: "NGN",
+//   //       },
+//   //     )}`;
+//   //   }
+
+//   //   // maximum fiat the user can spend including charges
+//   //   const maxBuyable =
+//   //     fiatBalance / (1 + (feeBreakdown?.isStablecoin ? 0 : 0.001));
+
+//   //   return `You can only buy up to ${formatAmount(maxBuyable, {
+//   //     currency: "NGN",
+//   //   })} with your current balance (including charges).`;
+//   // }, [hasInsufficientBalance, fiatBalance, feeBreakdown]);
+
+//   const hasInsufficientBalance = useMemo(() => {
+//     if (!feeBreakdown?.totalCostNgn) return false;
+//     return feeBreakdown?.totalCostNgn > fiatBalance;
+//   }, [feeBreakdown?.totalCostNgn, fiatBalance]);
+
+//   const insufficientBalanceMessage = useMemo(() => {
+//     if (!hasInsufficientBalance || !amount || !fiatBalance) return null;
+
+//     if (amount > fiatBalance) {
+//       return `Insufficient balance. Your total balance is ${formatAmount(
+//         fiatBalance,
+//         { currency: "NGN" },
+//       )}`;
+//     }
+
+//     const maxBuyable =
+//       fiatBalance / (1 + (feeBreakdown?.isStablecoin ? 0 : 0.001));
+//     return `You can only buy up to ${formatAmount(maxBuyable, {
+//       currency: "NGN",
+//     })} with your current balance (including charges).`;
+//   }, [hasInsufficientBalance, fiatBalance, feeBreakdown, amount]);
+
+//   const recalculate = useCallback(
+//     (amt: number, price: number, rate: number) => {
+//       const result = calculateBuyFeeBreakdown(amt, price, rate);
+//       setAssetValueEquivalent(result.assetValueEquivalent);
+//       setFeeBreakdown({ ...result.feeBreakdown });
+//       setNgnAmount(result.ngnAmount);
+//     },
+//     [],
+//   );
+
+//   useEffect(() => {
+//     if (!assetDetails?.rates?.buy || Number(marketPrice) <= 0) return;
+//     if (rateOverriddenRef.current) return; // onSubmit owns the rate — don't overwrite
+
+//     const effectiveRate = resolveRateFromCategories(
+//       amount,
+//       assetDetails.rates.buy,
+//     );
+//     if (!effectiveRate || effectiveRate <= 0) return;
+
+//     recalculate(amount, Number(marketPrice), effectiveRate);
+//   }, [assetDetails?.rates?.buy, amount, marketPrice, recalculate]);
+//   // useEffect(() => {
+//   //   if (intent?.amount) {
+//   //     const numericAmount = Number(intent.amount);
+//   //     if (!isNaN(numericAmount)) {
+//   //       setDisplayAmount(formatWithCommas(numericAmount.toString()));
+//   //     }
+
+//   //     setValue("amount", numericAmount);
+//   //   }
+//   // }, [intent?.amount]);
+
+//   // useEffect(() => {
+//   //   if (assetDetails?.buy_rate && marketPrice > 0 && assetDetails) {
+//   //     const recalculated = calculateFeeBreakdown(
+//   //       amount,
+//   //       marketPrice,
+//   //       feeBreakdown?.currentBuyRate ?? parseFloat(assetDetails.buy_rate),
+//   //       assetDetails.symbol ?? "",
+//   //     );
+//   //     setAssetValueEquivalent(recalculated.assetValueEquivalent);
+//   //     setFeeBreakdown(recalculated.feeBreakdown);
+//   //     setNgnAmount(recalculated.ngnAmount);
+//   //   }
+//   // }, [
+//   //   assetDetails?.buy_rate,
+//   //   amount,
+//   //   feeBreakdown?.currentBuyRate,
+//   //   marketPrice,
+//   //   assetDetails,
+//   // ]);
+
+//   useEffect(() => {
+//     if (assetDetails?.rates?.buy && amount >= 0) {
+//       acknowledgedBuyRateRef.current = resolveRateFromCategories(
+//         amount,
+//         assetDetails.rates.buy,
+//       );
+//     } else if (assetDetails?.buy_rate) {
+//       acknowledgedBuyRateRef.current = parseFloat(assetDetails.buy_rate);
+//     }
+//   }, [assetDetails?.rates?.buy, assetDetails?.buy_rate, amount]);
+
+//   useEffect(() => {
+//     if (Number(marketPrice) > 0) {
+//       acknowledgedMarketPriceRef.current = Number(marketPrice);
+//     }
+//   }, [marketPrice]);
+
+//   useEffect(() => {
+//     if (!intent?.amount) return;
+//     const numericAmount = Number(intent.amount);
+//     if (isNaN(numericAmount)) return;
+//     setDisplayAmount(formatWithCommas(numericAmount.toString()));
+//     setValue("amount", numericAmount);
+//   }, [intent?.amount]);
+
+//   useFocusEffect(
+//     useCallback(() => {
+//       refetch();
+//     }, [refetch]),
+//   );
+
+//   useResetFormOnMount(
+//     reset,
+//     { amount: 0, asset_id: intent.assetId ?? "" },
+//     () => {
+//       setDisplayAmount("");
+//       setFeeBreakdown(null);
+//       setAssetValueEquivalent(0);
+//       setNgnAmount("0.00");
+//     },
+//   );
+
+//   const onRefresh = async () => {
+//     setRefreshing(true);
+//     rateOverriddenRef.current = false;
+//     await refetch();
+//     setRefreshing(false);
+//   };
+
+//   console.log(assetDetails);
+
+//   if (isLoading) return <CustomLoading loading={true} />;
+
+//   return (
+//     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
+//       <ScrollView
+//         contentContainerStyle={{
+//           flexGrow: 1,
+//         }}
+//         refreshControl={
+//           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+//         }
+//       >
+//         <View style={styles.container}>
+//           <View>
+//             <View style={{ marginBottom: 15 }}>
+//               <Text style={styles.label}>Coin</Text>
+//               <View style={styles.cryptoRow}>
+//                 {assetDetails?.asset_logo_url && (
+//                   <Image
+//                     source={{ uri: assetDetails?.asset_logo_url ?? "" }}
+//                     style={styles.optionLogo}
+//                   />
+//                 )}
+//                 <View style={styles.cryptoInfo}>
+//                   <Text style={styles.optionName}>
+//                     {assetDetails?.symbol} {`(${assetDetails?.asset_name})`}
+//                   </Text>
+//                 </View>
+//               </View>
+//             </View>
+//             <View>
+//               <Text style={styles.label}>Enter the amount you want to buy</Text>
+//               <Controller
+//                 control={control}
+//                 name="amount"
+//                 render={({ field: { onChange, onBlur } }) => (
+//                   <View style={styles.inputContainer}>
+//                     <Text style={styles.dollarSign}>$</Text>
+//                     <TextInput
+//                       style={styles.input}
+//                       value={displayAmount}
+//                       placeholder="0.00"
+//                       placeholderTextColor="#999"
+//                       keyboardType="decimal-pad"
+//                       onBlur={onBlur}
+//                       onChangeText={text => {
+//                         const formatted = formatWithCommas(text);
+//                         const numeric = parseToNumber(formatted);
+//                         onChange(numeric);
+//                         setDisplayAmount(formatted);
+//                       }}
+//                     />
+//                   </View>
+//                 )}
+//               />
+//               {errors.amount && (
+//                 <Text style={styles.error}>{errors.amount.message}</Text>
+//               )}
+
+//               {/* {hasInsufficientBalance && (
+//                 <View style={styles.warningContainer}>
+//                   <Text style={styles.warningText}>
+//                     {insufficientBalanceMessage}
+//                   </Text>
+//                 </View>
+//               )} */}
+
+//               {hasInsufficientBalance && insufficientBalanceMessage && (
+//                 <Text style={styles.error}>{insufficientBalanceMessage}</Text>
+//               )}
+
+//               <Text style={styles.approx}>
+//                 Approximately {assetValueEquivalent} {assetDetails?.symbol}
+//               </Text>
+
+//               <View
+//                 style={{
+//                   marginVertical: 10,
+//                   backgroundColor: "#EFF7EC",
+//                   padding: 10,
+//                   borderRadius: 10,
+//                   gap: 8,
+//                 }}
+//               >
+//                 <Text style={[styles.note]}>
+//                   Wallet Balance, Exchange Rate & Fee Breakdown
+//                 </Text>
+
+//                 <View
+//                   style={{
+//                     flexDirection: "row",
+//                     justifyContent: "space-between",
+//                   }}
+//                 >
+//                   <Text style={[styles.balance]}>Fiat Balance:</Text>
+//                   <Text style={styles.balance}>
+//                     {formatAmount(fiatBalance, { currency: "NGN" })}
+//                   </Text>
+//                 </View>
+
+//                 <View style={{ height: 1, backgroundColor: "#d4edda" }} />
+
+//                 <View
+//                   style={{
+//                     flexDirection: "row",
+//                     justifyContent: "space-between",
+//                   }}
+//                 >
+//                   <Text style={[styles.balance]}>Buy Rate:</Text>
+//                   <Text style={styles.balance}>
+//                     {formatAmount(
+//                       feeBreakdown?.currentBuyRate ??
+//                         assetDetails?.buy_rate ??
+//                         0,
+//                     )}
+//                     /$
+//                   </Text>
+//                 </View>
+
+//                 <View
+//                   style={{
+//                     flexDirection: "row",
+//                     justifyContent: "space-between",
+//                   }}
+//                 >
+//                   <Text style={[styles.balance]}>Market Price:</Text>
+//                   <Text style={styles.balance}>
+//                     {formatAmount(
+//                       Number(feeBreakdown?.marketCurrentPrice) || 0,
+//                       {
+//                         currency: "USD",
+//                       },
+//                     )}
+//                     /{assetDetails?.symbol}
+//                   </Text>
+//                 </View>
+
+//                 {feeBreakdown && amount > 0 && (
+//                   <>
+//                     <View style={{ height: 1, backgroundColor: "#d4edda" }} />
+
+//                     <View
+//                       style={{
+//                         flexDirection: "row",
+//                         justifyContent: "space-between",
+//                       }}
+//                     >
+//                       <Text style={[styles.balance]}>You Buy:</Text>
+//                       <Text style={styles.balance}>
+//                         {feeBreakdown.coinAmount} {assetDetails?.symbol} (≈{" "}
+//                         {formatAmount(feeBreakdown.grossUsd, {
+//                           currency: "USD",
+//                         })}
+//                         )
+//                       </Text>
+//                     </View>
+
+//                     {!feeBreakdown.isStablecoin && (
+//                       <View
+//                         style={{
+//                           flexDirection: "row",
+//                           justifyContent: "space-between",
+//                         }}
+//                       >
+//                         <Text style={[styles.balance]}>
+//                           Operational Fee (0.1%):
+//                         </Text>
+//                         <Text style={[styles.balance]}>
+//                           +{feeBreakdown.platformFeeCoin} {assetDetails?.symbol}{" "}
+//                           (≈ ${feeBreakdown.platformFeeUsd})
+//                         </Text>
+//                       </View>
+//                     )}
+
+//                     {feeBreakdown.isStablecoin && (
+//                       <View
+//                         style={{
+//                           flexDirection: "row",
+//                           justifyContent: "space-between",
+//                         }}
+//                       >
+//                         <Text style={[styles.balance]}>Operational Fee:</Text>
+//                         <Text style={[styles.balance, { color: "#2e7d32" }]}>
+//                           No fee for {assetDetails?.symbol}
+//                         </Text>
+//                       </View>
+//                     )}
+
+//                     <View style={{ height: 1, backgroundColor: "#d4edda" }} />
+
+//                     <View
+//                       style={{
+//                         flexDirection: "row",
+//                         justifyContent: "space-between",
+//                       }}
+//                     >
+//                       <Text style={[styles.balance]}>Total Cost (USD):</Text>
+//                       <Text style={[styles.balance]}>
+//                         {formatAmount(
+//                           Number(feeBreakdown.totalCostUsd ?? 100),
+//                           {
+//                             currency: "USD",
+//                             decimalPlace: 3,
+//                           },
+//                         )}
+//                       </Text>
+//                     </View>
+
+//                     <View
+//                       style={{
+//                         flexDirection: "row",
+//                         justifyContent: "space-between",
+//                       }}
+//                     >
+//                       <Text style={[styles.balance]}>You'll Pay (₦):</Text>
+//                       <Text style={[styles.balance]}>{ngnAmount}</Text>
+//                     </View>
+//                   </>
+//                 )}
+//               </View>
+
+//               <View style={styles.paymentContainer}>
+//                 <View
+//                   style={{
+//                     flexDirection: "row",
+//                     justifyContent: "space-between",
+//                     padding: 9,
+//                   }}
+//                 >
+//                   <Text style={styles.ngn}>You’re Paying:</Text>
+//                   <Text style={styles.ngn}>{ngnAmount}</Text>
+//                 </View>
+//               </View>
+//             </View>
+//           </View>
+
+//           <TouchableOpacity
+//             style={[
+//               styles.button,
+//               hasInsufficientBalance && styles.buttonDisabled,
+//             ]}
+//             disabled={hasInsufficientBalance || isSubmitting}
+//             onPress={handleSubmit(onSubmit)}
+//           >
+//             <Text style={styles.buttonText}>
+//               {isSubmitting ? "Please wait..." : "Continue"}
+//             </Text>
+//           </TouchableOpacity>
+//         </View>
+//       </ScrollView>
+//     </SafeAreaView>
+//   );
+// }
 
 const styles = StyleSheet.create({
   container: {

@@ -58,14 +58,14 @@ function relativeChangeExceeded(
   return relativePercent > tolerancePercent;
 }
 
-type FeeBreakdown = {
-  coinAmount: string;
-  grossUsd: number;
-  netAmountUsd: string;
-  netNgn: string;
-  currentSellRate: number;
-  currentMarketPrice: number;
-};
+// type FeeBreakdown = {
+//   coinAmount: string;
+//   grossUsd: number;
+//   netAmountUsd: string;
+//   netNgn: string;
+//   currentSellRate: number;
+//   currentMarketPrice: number;
+// };
 
 const STABLECOINS = ["USDT"];
 
@@ -99,547 +99,32 @@ function calculateSellFeeBreakdown(
   };
 }
 
+export const resolveRateFromCategories = (
+  amountUsd: number,
+  rate: { default_value: string; categories: any[] },
+): number => {
+  const match = rate.categories?.find(
+    cat =>
+      amountUsd >= parseFloat(cat.min_amount) &&
+      amountUsd <= parseFloat(cat.max_amount),
+  );
+  return parseFloat(match?.value ?? rate.default_value);
+};
+
+// Separate helper to get the matched category label for display
+export const resolveCategoryLabel = (
+  amountUsd: number,
+  categories: any[],
+): string => {
+  const match = categories?.find(
+    cat =>
+      amountUsd >= parseFloat(cat.min_amount) &&
+      amountUsd <= parseFloat(cat.max_amount),
+  );
+  return match?.label ?? "default rate";
+};
+
 export default function CryptoSellScreen() {
-  // const navigation: any = useNavigation();
-  // const route = useRoute<RouteProp<CryptoSellScreenParams, "CryptoSell">>();
-  // const { apiGet } = useAxios();
-  // const { intent } = route.params;
-  // const [displayAmount, setDisplayAmount] = useState("");
-  // const [refreshing, setRefreshing] = useState(false);
-  // const [feeBreakdown, setfeeBreakdown] = useState<any>(null);
-  // const [assetValueEquivalent, setAssetValueEquivalent] = useState<any>(0);
-  // const [latestNgnAmount, setLatestNgnAmount] = useState("0.00");
-  // const selectedAssetUuid = intent.assetId ?? "";
-
-  // const {
-  //   control,
-  //   watch,
-  //   handleSubmit,
-  //   setValue,
-  //   reset,
-  //   formState: { errors },
-  // } = useForm({
-  //   resolver: yupResolver(schema),
-  //   defaultValues: {
-  //     amount: 0,
-  //     asset_id: intent.assetId ?? "",
-  //   },
-  //   mode: "onChange",
-  // });
-
-  // const {
-  //   data: assetDetails,
-  //   isLoading,
-  //   refetch,
-  // } = useQuery({
-  //   queryKey: ["asset-detail-sell", selectedAssetUuid],
-  //   queryFn: async () => {
-  //     if (!selectedAssetUuid) return null;
-  //     try {
-  //       const res = await apiGet(`/wallets/${selectedAssetUuid}`);
-  //       return res?.data?.data ?? null;
-  //     } catch (error) {
-  //       throw error;
-  //     }
-  //   },
-  //   enabled: !!selectedAssetUuid,
-  // });
-
-  // const FEE_RATE = useMemo(
-  //   () => 0.001 * Number(assetDetails?.balance ?? "0"),
-  //   [assetDetails?.balance],
-  // );
-
-  // const marketPrice =
-  //   feeBreakdown?.currentMarketPrice ??
-  //   assetDetails?.market_current_value ??
-  //   0;
-
-  // const amount = watch("amount");
-  // const symbol = assetDetails?.symbol ?? "";
-  // const isStablecoin = useMemo(
-  //   () => STABLECOINS.includes(symbol.toUpperCase()),
-  //   [symbol],
-  // );
-
-  // const balanceUsd = useMemo(() => {
-  //   return Number(assetDetails?.balance ?? "0") * marketPrice;
-  // }, [assetDetails?.balance, marketPrice]);
-
-  // const maxSellableUsd = useMemo(() => {
-  //   if (isStablecoin) return balanceUsd;
-
-  //   const feeUsd = FEE_RATE * marketPrice;
-  //   return balanceUsd - feeUsd;
-  // }, [balanceUsd, FEE_RATE, marketPrice, isStablecoin]);
-
-  // const TOLERANCE_PERCENT = 1.23;
-
-  //   const onSubmit = async (values: any) => {
-  //     try {
-  //       const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
-  //       const latestRates = res?.data?.asset ?? null;
-
-  //       if (!latestRates) {
-  //         showError("Unable to fetch latest rates.");
-  //         return;
-  //       }
-
-  //       const currentSellRate = parseFloat(latestRates.sell_rate ?? "0");
-  //       const currentMarketPrice = parseFloat(
-  //         latestRates.market_current_value ?? "0",
-  //       );
-
-  //       const sellRateChanged =
-  //         currentSellRate > 0 &&
-  //         currentSellRate !== acknowledgedSellRateRef.current;
-  //       const marketPriceExceeded = relativeChangeExceeded(
-  //         currentMarketPrice,
-  //         acknowledgedMarketPriceRef.current,
-  //         TOLERANCE_PERCENT,
-  //       );
-
-  //       if (sellRateChanged || marketPriceExceeded) {
-  //         rateOverriddenRef.current = true;
-  //         acknowledgedSellRateRef.current = currentSellRate;
-  //         acknowledgedMarketPriceRef.current = currentMarketPrice;
-
-  //         recalculate(values.amount, currentMarketPrice, currentSellRate);
-
-  //         const reasons: string[] = [];
-  //         if (sellRateChanged) reasons.push("Sell rate");
-  //         if (marketPriceExceeded) reasons.push("Market price");
-
-  //         showError(
-  //           `${reasons.join(
-  //             " and ",
-  //           )} changed. Prices recalculated — please review before continuing.`,
-  //         );
-  //         return;
-  //       }
-
-  //       navigation.navigate("ConfirmTransaction" as never, {
-  //         payload: { ...values, url: "/wallets/user/sell-crypto" },
-  //       });
-  //     } catch {
-  //       showError("Error checking rates. Try again.");
-  //     }
-  //   };
-
-  // const onSubmit = async (values: any) => {
-  //   try {
-  //     const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
-  //     const latestRates = res?.data?.asset ?? null;
-
-  //     if (!latestRates) {
-  //       showError("Unable to fetch latest rates.");
-  //       return;
-  //     }
-
-  //     const currentSellRate = parseFloat(latestRates.sell_rate ?? "0");
-  //     const currentMarketPrice = parseFloat(
-  //       latestRates.market_current_value ?? "0",
-  //     );
-
-  //     // Compare against last acknowledged values — not the original mount values
-  //     const usedSellRate = acknowledgedSellRateRef.current;
-  //     const usedMarketPrice = acknowledgedMarketPriceRef.current;
-
-  //     const sellRateChanged =
-  //       currentSellRate > 0 && currentSellRate !== usedSellRate;
-  //     const marketPriceExceeded = relativeChangeExceeded(
-  //       currentMarketPrice,
-  //       usedMarketPrice,
-  //       TOLERANCE_PERCENT,
-  //     );
-
-  //     if (sellRateChanged || marketPriceExceeded) {
-  //       const recalculated = calculateSellFeeBreakdown(
-  //         values.amount,
-  //         currentMarketPrice,
-  //         currentSellRate,
-  //       );
-
-  //       setAssetValueEquivalent(recalculated.assetValueEquivalent);
-  //       setfeeBreakdown({
-  //         ...recalculated.feeBreakdown,
-  //         currentSellRate: recalculated.feeBreakdown?.currentSellRate,
-  //       });
-  //       setLatestNgnAmount(recalculated.ngnAmount);
-
-  //       // ← Update refs so the next submit uses the new values as baseline
-  //       acknowledgedSellRateRef.current = currentSellRate;
-  //       acknowledgedMarketPriceRef.current = currentMarketPrice;
-
-  //       const reasons: string[] = [];
-  //       if (sellRateChanged) reasons.push("Sell rate");
-  //       if (marketPriceExceeded) reasons.push("Market price");
-
-  //       showError(
-  //         `${reasons.join(
-  //           " and ",
-  //         )} changed. Prices recalculated — please review before continuing.`,
-  //       );
-  //       return;
-  //     }
-
-  //     navigation.navigate("ConfirmTransaction" as never, {
-  //       payload: { ...values, url: "/wallets/user/sell-crypto" },
-  //     });
-  //   } catch (error) {
-  //     showError("Error checking rates. Try again.");
-  //   }
-  // };
-
-  // const onSubmit = async (values: any) => {
-  //   try {
-  //     const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
-  //     const latestRates = res?.data?.asset ?? null;
-
-  //     console.log(res);
-
-  //     if (!latestRates) {
-  //       showError("Unable to fetch latest rates.");
-  //       return;
-  //     }
-
-  //     const currentSellRate = parseFloat(latestRates.sell_rate ?? "0");
-  //     const currentMarketPrice = parseFloat(
-  //       latestRates.market_current_value ?? "0",
-  //     );
-
-  //     // Compare against assetDetails (what was shown on mount) not feeBreakdown
-  //     const usedSellRate = parseFloat(assetDetails?.sell_rate ?? "0");
-  //     const usedMarketPrice = parseFloat(String(marketPrice ?? "0"));
-
-  //     const sellRateChanged =
-  //       currentSellRate > 0 && currentSellRate !== usedSellRate;
-
-  //     const marketPriceExceeded = relativeChangeExceeded(
-  //       currentMarketPrice,
-  //       usedMarketPrice,
-  //       TOLERANCE_PERCENT,
-  //     );
-
-  //     console.log(marketPriceExceeded);
-
-  //     console.log(sellRateChanged, usedSellRate, currentSellRate);
-
-  //     if (sellRateChanged || marketPriceExceeded) {
-  //       const recalculated = calculateSellFeeBreakdown(
-  //         values.amount,
-  //         currentMarketPrice,
-  //         currentSellRate,
-  //       );
-
-  //       console.log(recalculated.feeBreakdown?.currentSellRate);
-
-  //       setAssetValueEquivalent(recalculated.assetValueEquivalent);
-  //       setfeeBreakdown({
-  //         ...recalculated.feeBreakdown,
-  //         currentSellRate: recalculated.feeBreakdown?.currentSellRate,
-  //       });
-  //       setLatestNgnAmount(recalculated.ngnAmount);
-
-  //       const reasons: string[] = [];
-  //       if (sellRateChanged) reasons.push("Sell rate");
-  //       if (marketPriceExceeded) reasons.push("Market price");
-
-  //       showError(
-  //         `${reasons.join(
-  //           " and ",
-  //         )} changed. Prices recalculated — please review before continuing.`,
-  //       );
-  //       return;
-  //     }
-
-  //     navigation.navigate("ConfirmTransaction" as never, {
-  //       payload: { ...values, url: "/wallets/user/sell-crypto" },
-  //     });
-  //   } catch (error) {
-  //     showError("Error checking rates. Try again.");
-  //   }
-  // };
-
-  // const onSubmit = async (values: any) => {
-  //   try {
-  //     const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
-  //     const latestRates = res?.data?.asset ?? null;
-
-  //     if (!latestRates) {
-  //       showError("Unable to fetch latest rates.");
-  //       return;
-  //     }
-
-  //     // parse latest values
-  //     const currentSellRate = parseFloat(latestRates.sell_rate ?? "0");
-  //     const currentMarketPrice = parseFloat(
-  //       latestRates.market_current_value ?? "0",
-  //     );
-
-  //     // parse previously used values (fallback to 0)
-  //     const usedSellRate = parseFloat(
-  //       feeBreakdown?.currentSellRate ?? "0",
-  //     );
-  //     const usedMarketPrice = parseFloat(marketPrice ?? "0");
-
-  //     // check if sell rate or market price changed beyond tolerance
-  //     // const sellRateExceeded = relativeChangeExceeded(
-  //     //   currentSellRate,
-  //     //   usedSellRate,
-  //     //   TOLERANCE_PERCENT,
-  //     // );
-
-  //     const sellRateChanged =
-  //       currentSellRate > 0 && currentSellRate !== usedSellRate;
-
-  //     const marketPriceExceeded = relativeChangeExceeded(
-  //       currentMarketPrice,
-  //       usedMarketPrice,
-  //       TOLERANCE_PERCENT,
-  //     );
-
-  //     // If either exceeded tolerance, recalc, update UI and block navigation
-  //     if (sellRateChanged || marketPriceExceeded) {
-  //       const recalculated = calculateSellFeeBreakdown(
-  //         values.amount,
-  //         currentMarketPrice,
-  //         currentSellRate ?? parseFloat(assetDetails.sell_rate),
-  //       );
-
-  //       console.log(recalculated.feeBreakdown);
-
-  //       setAssetValueEquivalent(recalculated.assetValueEquivalent);
-  //       setfeeBreakdown(recalculated.feeBreakdown);
-  //       setLatestNgnAmount(recalculated.ngnAmount);
-
-  //       const reasons: string[] = [];
-  //       if (sellRateChanged) reasons.push("Sell rate");
-  //       if (marketPriceExceeded) reasons.push("Market price");
-
-  //       showError(
-  //         `${reasons.join(
-  //           " and ",
-  //         )} changed. Prices have been recalculated — please review before continuing.`,
-  //       );
-
-  //       return;
-  //     }
-
-  //     // If changes are within tolerance, optionally update fee state silently
-  //     // (uncomment if you want the UI to reflect tiny changes without blocking)
-  //     // const recalculated = calculateSellFeeBreakdown(values.amount, currentMarketPrice, currentSellRate);
-  //     // setfeeBreakdown(recalculated.feeBreakdown);
-  //     // setLatestNgnAmount(recalculated.ngnAmount);
-
-  //     const payload = {
-  //       ...values,
-  //       url: "/wallets/user/sell-crypto",
-  //     };
-
-  //     navigation.navigate("ConfirmTransaction" as never, { payload });
-  //   } catch (error) {
-  //     console.error("onSubmit rate check error:", error);
-  //     showError("Error checking rates. Try again.");
-  //   }
-  // };
-
-  // const onSubmit = async (values: any) => {
-  //   try {
-  //     const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
-  //     const latestRates = res?.data?.asset ?? null;
-
-  //     console.log(res);
-
-  //     if (!latestRates) {
-  //       showError("Unable to fetch latest rates.");
-  //       return;
-  //     }
-
-  //     const currentSellRate = parseFloat(latestRates.sell_rate ?? "0");
-  //     const usedSellRate = parseFloat(
-  //       feeBreakdown?.currentSellRate ?? "0",
-  //     );
-
-  //     const sellRateChanged =
-  //       currentSellRate > 0 && currentSellRate !== usedSellRate;
-
-  //     if (sellRateChanged) {
-  //       const recalculated = calculateSellFeeBreakdown(
-  //         values.amount,
-  //         marketPrice,
-  //         currentSellRate,
-  //       );
-
-  //       setfeeBreakdown(recalculated.feeBreakdown);
-  //       setLatestNgnAmount(recalculated.ngnAmount);
-
-  //       showError(
-  //         "Sell rate has changed. Prices recalculated — please review before continuing.",
-  //       );
-
-  //       return;
-  //     }
-
-  //     const payload = {
-  //       ...values,
-  //       url: "/wallets/user/sell-crypto",
-  //     };
-
-  //     navigation.navigate("ConfirmTransaction" as never, { payload });
-  //   } catch (error) {
-  //     showError("Error checking rates. Try again.");
-  //   }
-  // };
-
-  // const hasInsufficientBalance = useMemo(() => {
-  //   if (!amount || !assetDetails) return false;
-  //   return amount > maxSellableUsd;
-  // }, [amount, maxSellableUsd]);
-
-  // const insufficientBalanceMessage = useMemo(() => {
-  //   if (!amount || !assetDetails) return null;
-
-  //   const platformFeeUsd = amount * FEE_RATE;
-  //   const totalUsd = amount + platformFeeUsd;
-
-  //   console.log("Calculating insufficient balance message:");
-  //   console.log("Amount:", amount);
-  //   console.log("Platform Fee (USD):", platformFeeUsd);
-  //   console.log("Total Cost (USD):", totalUsd);
-  //   console.log("Balance in USD:", balanceUsd);
-  //   console.log("Max Sellable USD:", maxSellableUsd);
-
-  //   // if (amount > balanceUsd) {
-  //   //   return `Insufficient balance. Your total balance is worth ${formatAmount(
-  //   //     balanceUsd,
-  //   //     {
-  //   //       currency: "USD",
-  //   //     },
-  //   //   )}`;
-  //   // }
-
-  //   if (amount > balanceUsd) {
-  //     return `Insufficient balance. Your total balance is worth ${formatAmount(
-  //       balanceUsd,
-  //       {
-  //         currency: "USD",
-  //       },
-  //     )}`;
-  //   }
-
-  //   return `You can only sell ${formatAmount(maxSellableUsd, {
-  //     currency: "USD",
-  //     decimalPlace: 4,
-  //   })} of your balance`;
-  // }, [maxSellableUsd, symbol, amount, assetDetails?.balance, balanceUsd]);
-
-  // const onRefresh = async () => {
-  //   setRefreshing(true);
-  //   await refetch();
-  //   setRefreshing(false);
-  // };
-
-  // useEffect(() => {
-  //   if (intent?.amount) {
-  //     const numericAmount = Number(intent.amount);
-  //     if (!isNaN(numericAmount)) {
-  //       setDisplayAmount(formatWithCommas(numericAmount.toString()));
-  //     }
-
-  //     setValue("amount", numericAmount);
-  //   }
-  // }, [intent?.amount]);
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     refetch();
-  //   }, [refetch]),
-  // );
-
-  // useResetFormOnMount(
-  //   reset,
-  //   { amount: 0, asset_id: intent.assetId ?? "" },
-  //   () => {
-  //     setDisplayAmount("");
-  //     setfeeBreakdown(null);
-  //     setAssetValueEquivalent(0);
-  //     setLatestNgnAmount("0.00");
-  //   },
-  // );
-
-  // useEffect(() => {
-  //   if (!assetDetails?.sell_rate || marketPrice <= 0) return;
-
-  //   const sellRate = parseFloat(assetDetails.sell_rate);
-
-  //   if (!sellRate || sellRate <= 0) return;
-
-  //   const recalculated = calculateSellFeeBreakdown(
-  //     amount,
-  //     marketPrice,
-  //     sellRate,
-  //   );
-
-  //   console.log("recalculated: ", recalculated?.feeBreakdown);
-
-  //   setAssetValueEquivalent(recalculated.assetValueEquivalent);
-  //   setfeeBreakdown({
-  //     ...recalculated.feeBreakdown,
-  //     currentSellRate: recalculated.feeBreakdown.currentSellRate,
-  //   });
-  //   setLatestNgnAmount(recalculated.ngnAmount);
-  // }, [assetDetails?.sell_rate, amount, marketPrice]);
-
-  // const acknowledgedSellRateRef = useRef<number>(0);
-  // const acknowledgedMarketPriceRef = useRef<number>(0);
-
-  // // Set on mount when assetDetails loads
-  // useEffect(() => {
-  //   if (assetDetails?.sell_rate) {
-  //     acknowledgedSellRateRef.current = parseFloat(assetDetails.sell_rate);
-  //   }
-  // }, [assetDetails?.sell_rate]);
-
-  // useEffect(() => {
-  //   if (marketPrice > 0) {
-  //     acknowledgedMarketPriceRef.current = marketPrice;
-  //   }
-  // }, [marketPrice]);
-
-  // useEffect(() => {
-  //   if (
-  //     assetDetails?.sell_rate &&
-  //     // amount > 0 &&
-  //     marketPrice > 0 &&
-  //     assetDetails
-  //   ) {
-  //     const recalculated = calculateSellFeeBreakdown(
-  //       amount,
-  //       marketPrice,
-  //       latestFeeBreakdown?.currentSellRate ??
-  //         parseFloat(assetDetails.sell_rate),
-  //     );
-
-  //     console.log(
-  //       "Recalculated fee breakdown due to dependency change:",
-  //       recalculated,
-  //     );
-
-  //     setAssetValueEquivalent(recalculated.assetValueEquivalent);
-  //     setLatestFeeBreakdown(recalculated.feeBreakdown);
-  //     setLatestNgnAmount(recalculated.ngnAmount);
-  //   }
-  // }, [
-  //   assetDetails?.sell_rate,
-  //   amount,
-  //   latestFeeBreakdown?.currentSellRate,
-  //   marketPrice,
-  //   assetDetails,
-  // ]);
-
-  // console.log(latestFeeBreakdown);
-
   const navigation: any = useNavigation();
   const route = useRoute<RouteProp<CryptoSellScreenParams, "CryptoSell">>();
   const { apiGet } = useAxios();
@@ -647,19 +132,16 @@ export default function CryptoSellScreen() {
 
   const selectedAssetUuid = intent.assetId ?? "";
 
-  // ─── Local state ────────────────────────────────────────────────────────────
   const [displayAmount, setDisplayAmount] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [feeBreakdown, setFeeBreakdown] = useState<any>(null);
   const [assetValueEquivalent, setAssetValueEquivalent] = useState<any>(0);
   const [ngnAmount, setNgnAmount] = useState("0.00");
 
-  // ─── Refs ────────────────────────────────────────────────────────────────────
   const acknowledgedSellRateRef = useRef<number>(0);
   const acknowledgedMarketPriceRef = useRef<number>(0);
   const rateOverriddenRef = useRef(false);
 
-  // ─── Form ────────────────────────────────────────────────────────────────────
   const {
     control,
     watch,
@@ -678,7 +160,6 @@ export default function CryptoSellScreen() {
 
   const amount = watch("amount");
 
-  // ─── Asset details query ─────────────────────────────────────────────────────
   const {
     data: assetDetails,
     isLoading,
@@ -693,7 +174,6 @@ export default function CryptoSellScreen() {
     enabled: !!selectedAssetUuid,
   });
 
-  // ─── Derived values ──────────────────────────────────────────────────────────
   const symbol = assetDetails?.symbol ?? "";
 
   const isStablecoin = useMemo(
@@ -746,7 +226,6 @@ export default function CryptoSellScreen() {
 
   const TOLERANCE_PERCENT = 1.23;
 
-  // ─── Recalculate fee breakdown ────────────────────────────────────────────────
   const recalculate = useCallback(
     (amt: number, price: number, rate: number) => {
       const result = calculateSellFeeBreakdown(amt, price, rate);
@@ -757,23 +236,46 @@ export default function CryptoSellScreen() {
     [],
   );
 
-  // ─── Effect: recalculate on amount / market price / sell rate change ──────────
+  // Effect: recalculate on amount / market price / sell rate change
+  // useEffect(() => {
+  //   if (!assetDetails?.sell_rate || Number(marketPrice) <= 0) return;
+  //   if (rateOverriddenRef.current) return; // onSubmit owns the rate — don't overwrite
+
+  //   const sellRate = parseFloat(assetDetails.sell_rate);
+  //   if (!sellRate || sellRate <= 0) return;
+
+  //   recalculate(amount, Number(marketPrice), sellRate);
+  // }, [assetDetails?.sell_rate, amount, marketPrice, recalculate]);
   useEffect(() => {
-    if (!assetDetails?.sell_rate || Number(marketPrice) <= 0) return;
-    if (rateOverriddenRef.current) return; // onSubmit owns the rate — don't overwrite
+    if (!assetDetails?.rates?.sell || Number(marketPrice) <= 0) return;
+    if (rateOverriddenRef.current) return;
 
-    const sellRate = parseFloat(assetDetails.sell_rate);
-    if (!sellRate || sellRate <= 0) return;
+    const effectiveRate = resolveRateFromCategories(
+      amount,
+      assetDetails.rates.sell,
+    );
 
-    recalculate(amount, Number(marketPrice), sellRate);
-  }, [assetDetails?.sell_rate, amount, marketPrice, recalculate]);
+    if (!effectiveRate || effectiveRate <= 0) return;
 
-  // ─── Effect: seed acknowledged refs on mount ──────────────────────────────────
+    recalculate(amount, Number(marketPrice), effectiveRate);
+  }, [assetDetails?.rates?.sell, amount, marketPrice, recalculate]);
+
+  // Effect: seed acknowledged refs on mount
+  // useEffect(() => {
+  //   if (assetDetails?.sell_rate) {
+  //     acknowledgedSellRateRef.current = parseFloat(assetDetails.sell_rate);
+  //   }
+  // }, [assetDetails?.sell_rate]);
   useEffect(() => {
-    if (assetDetails?.sell_rate) {
+    if (assetDetails?.rates?.sell && amount >= 0) {
+      acknowledgedSellRateRef.current = resolveRateFromCategories(
+        amount,
+        assetDetails.rates.sell,
+      );
+    } else if (assetDetails?.sell_rate) {
       acknowledgedSellRateRef.current = parseFloat(assetDetails.sell_rate);
     }
-  }, [assetDetails?.sell_rate]);
+  }, [assetDetails?.rates?.sell, assetDetails?.sell_rate, amount]);
 
   useEffect(() => {
     if (Number(marketPrice) > 0) {
@@ -781,7 +283,7 @@ export default function CryptoSellScreen() {
     }
   }, [marketPrice]);
 
-  // ─── Effect: pre-fill amount from intent ─────────────────────────────────────
+  // Effect: pre-fill amount from intent
   useEffect(() => {
     if (!intent?.amount) return;
     const numericAmount = Number(intent.amount);
@@ -790,14 +292,14 @@ export default function CryptoSellScreen() {
     setValue("amount", numericAmount);
   }, [intent?.amount]);
 
-  // ─── Focus refetch ────────────────────────────────────────────────────────────
+  // Focus refetch
   useFocusEffect(
     useCallback(() => {
       refetch();
     }, [refetch]),
   );
 
-  // ─── Reset on mount ───────────────────────────────────────────────────────────
+  // Reset on mount
   useResetFormOnMount(
     reset,
     { amount: 0, asset_id: intent.assetId ?? "" },
@@ -810,28 +312,45 @@ export default function CryptoSellScreen() {
     },
   );
 
-  // ─── Submit ───────────────────────────────────────────────────────────────────
+  // Submit
   const onSubmit = async (values: any) => {
     try {
       const res = await apiGet(`/crypto-assets/${selectedAssetUuid}/rates`);
       const latestRates = res?.data?.asset ?? null;
+      console.log(latestRates);
 
       if (!latestRates) {
         showError("Unable to fetch latest rates.");
         return;
       }
 
-      const currentSellRate = parseFloat(latestRates.sell_rate ?? "0");
       const currentMarketPrice = parseFloat(
         latestRates.market_current_value ?? "0",
       );
 
+      // Resolve the effective sell rate from categories based on the entered amount
+      const sellRateData = latestRates.rates?.sell ?? null;
+      const currentSellRate = sellRateData
+        ? resolveRateFromCategories(values.amount, sellRateData)
+        : parseFloat(latestRates.sell_rate ?? "0");
+
+      // Resolve what rate was used when the screen last calculated
+      const usedSellRate = acknowledgedSellRateRef.current;
+      const usedMarketPrice = acknowledgedMarketPriceRef.current;
+
+      // Resolve what category the user was shown previously vs now
+      const previousCategory =
+        sellRateData?.categories?.find(
+          (cat: any) =>
+            values.amount >= parseFloat(cat.min_amount) &&
+            values.amount <= parseFloat(cat.max_amount),
+        ) ?? null;
+
       const sellRateChanged =
-        currentSellRate > 0 &&
-        currentSellRate !== acknowledgedSellRateRef.current;
+        currentSellRate > 0 && currentSellRate !== usedSellRate;
       const marketPriceExceeded = relativeChangeExceeded(
         currentMarketPrice,
-        acknowledgedMarketPriceRef.current,
+        usedMarketPrice,
         TOLERANCE_PERCENT,
       );
 
@@ -842,14 +361,32 @@ export default function CryptoSellScreen() {
 
         recalculate(values.amount, currentMarketPrice, currentSellRate);
 
+        // Build a transparent message explaining exactly what changed
         const reasons: string[] = [];
-        if (sellRateChanged) reasons.push("Sell rate");
-        if (marketPriceExceeded) reasons.push("Market price");
+
+        if (sellRateChanged) {
+          const categoryLabel = previousCategory?.label ?? "default rate";
+          reasons.push(
+            `Sell rate changed from ${formatAmount(
+              usedSellRate,
+            )}/$ to ${formatAmount(currentSellRate)}/$ (${categoryLabel})`,
+          );
+        }
+
+        if (marketPriceExceeded) {
+          reasons.push(
+            `Market price moved from ${formatAmount(usedMarketPrice, {
+              currency: "USD",
+            })} to ${formatAmount(currentMarketPrice, {
+              currency: "USD",
+            })} (>${TOLERANCE_PERCENT}% change)`,
+          );
+        }
 
         showError(
-          `${reasons.join(
-            " and ",
-          )} changed. Prices recalculated — please review before continuing.`,
+          `Prices updated — please review before continuing. ${reasons.join(
+            "",
+          )}`,
         );
         return;
       }
@@ -862,7 +399,6 @@ export default function CryptoSellScreen() {
     }
   };
 
-  // ─── Pull to refresh ──────────────────────────────────────────────────────────
   const onRefresh = async () => {
     setRefreshing(true);
     rateOverriddenRef.current = false;
@@ -1027,7 +563,7 @@ export default function CryptoSellScreen() {
                       Sell Rate:
                     </Text>
                     <Text style={styles.balance}>
-                      {formatAmount(feeBreakdown?.currentSellRate ?? 0)}/$
+                      {formatAmount(acknowledgedSellRateRef.current ?? 0)}/$
                     </Text>
                   </View>
 
