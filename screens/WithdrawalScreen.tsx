@@ -53,7 +53,7 @@ export default function WithdrawScreen() {
   const singleLimit = walletSummary?.single_limit ?? 1000000;
   const todayVolume = walletSummary?.total_today ?? 0;
 
-  // ── Fetch withdrawal fee from backend
+  // Fetch withdrawal fee from backend
   const { data: withdrawalChargeData, refetch } = useQuery({
     queryKey: ["service-charge", "withdrawal_fee"],
     queryFn: async () => {
@@ -65,11 +65,11 @@ export default function WithdrawScreen() {
 
       return res?.data?.data?.data?.[0] ?? null;
     },
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0,
   });
 
-  console.log(withdrawalChargeData);
+  console.log("Data Config:", withdrawalChargeData);
 
   // Resolve the flat fee — fallback to 100 if not configured or inactive
   const withdrawalFeeConfig = useMemo(() => {
@@ -232,13 +232,13 @@ export default function WithdrawScreen() {
     exceedsDailyLimit ||
     isSubmitting;
 
-  useFocusEffect(
-    useCallback(() => {
-      refetchWallet();
-      refetchBanks();
-      refetch();
-    }, [refetchWallet, refetchBanks, refetch]),
-  );
+  const onRefresh = useCallback(() => {
+    refetchWallet();
+    refetchBanks();
+    refetch();
+  }, [refetchWallet, refetchBanks, refetch]);
+
+  useFocusEffect(onRefresh);
 
   useResetFormOnMount(reset, { amount: 0 }, () => {
     setAccountDetails(null);
@@ -257,15 +257,7 @@ export default function WithdrawScreen() {
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
-            onRefresh={async () => {
-              setIsRefreshing(true);
-              try {
-                await refetchWallet();
-                await refetchBanks();
-              } finally {
-                setIsRefreshing(false);
-              }
-            }}
+            onRefresh={onRefresh}
             colors={[COLORS.secondary]}
           />
         }

@@ -150,8 +150,6 @@ export default function CryptoSwapScreen() {
       });
   }, [data?.wallets, assets]);
 
-  console.log(userWallets, "userWallets in swap screen");
-
   const fromAssetId = watch("from_asset");
   const toAssetId = watch("to_asset");
   const amount = watch("amount");

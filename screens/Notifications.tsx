@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   modalMessage: {
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#333",
     lineHeight: 22,
