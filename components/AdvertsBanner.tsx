@@ -7,7 +7,6 @@ import {
   View,
   Pressable,
   Linking,
-  Text,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { getFontFamily, normalize } from "../constants/settings";
@@ -104,6 +103,7 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 10,
     paddingVertical: 16,
+    backgroundColor: "#e7e7e7",
   },
 });
 
