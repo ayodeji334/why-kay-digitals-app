@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, Control } from "react-hook-form";
 import {
   Modal,
@@ -62,6 +62,15 @@ export function SelectInput({
   const [internalValue, setInternalValue] = useState<string | null>(
     externalValue ?? null,
   );
+
+  useEffect(() => {
+    setInternalValue(externalValue ?? null);
+  }, [externalValue]);
+
+  // ← clear search when modal closes
+  useEffect(() => {
+    if (!visible) setSearch("");
+  }, [visible]);
 
   const handleSelect = (val: string) => {
     setInternalValue(val);
