@@ -283,33 +283,59 @@ export default function CryptoSellScreen() {
     }
   }, [marketPrice]);
 
-  // Effect: pre-fill amount from intent
-  useEffect(() => {
-    if (!intent?.amount) return;
-    const numericAmount = Number(intent.amount);
-    if (isNaN(numericAmount)) return;
-    setDisplayAmount(formatWithCommas(numericAmount.toString()));
-    setValue("amount", numericAmount);
-  }, [intent?.amount]);
+  console.log(assetDetails);
 
-  // Focus refetch
+  // Effect: pre-fill amount from intent
+  // useEffect(() => {
+  //   if (!intent?.amount) return;
+  //   const numericAmount = Number(intent.amount);
+  //   if (isNaN(numericAmount)) return;
+  //   setDisplayAmount(formatWithCommas(numericAmount.toString()));
+  //   setValue("amount", numericAmount);
+  // }, [intent?.amount]);
+
+  // // Focus refetch
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     refetch();
+  //   }, [refetch]),
+  // );
+
+  // // Reset on mount
+  // useResetFormOnMount(
+  //   reset,
+  //   { amount: 0, asset_id: intent.assetId ?? "" },
+  //   () => {
+  //     setDisplayAmount("");
+  //     setFeeBreakdown(null);
+  //     setAssetValueEquivalent(0);
+  //     setNgnAmount("0.00");
+  //     rateOverriddenRef.current = false;
+  //   },
+  // );
+
   useFocusEffect(
     useCallback(() => {
-      refetch();
-    }, [refetch]),
-  );
-
-  // Reset on mount
-  useResetFormOnMount(
-    reset,
-    { amount: 0, asset_id: intent.assetId ?? "" },
-    () => {
+      // Reset first
       setDisplayAmount("");
       setFeeBreakdown(null);
       setAssetValueEquivalent(0);
       setNgnAmount("0.00");
       rateOverriddenRef.current = false;
-    },
+      reset({ amount: 0, asset_id: intent.assetId ?? "" });
+
+      // Then pre-fill from intent if available
+      if (intent?.amount) {
+        const numericAmount = Number(intent.amount);
+        if (!isNaN(numericAmount) && numericAmount > 0) {
+          setDisplayAmount(formatWithCommas(numericAmount.toString()));
+          setValue("amount", numericAmount);
+        }
+      }
+
+      // Refetch asset data
+      refetch();
+    }, [intent?.amount, intent?.assetId, refetch, reset, setValue]),
   );
 
   // Submit

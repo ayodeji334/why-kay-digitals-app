@@ -14,49 +14,11 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SelectInput } from "../components/SelectInputField";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
 import { showError } from "../utlis/toast";
 import { formatWithCommas } from "./SwapCryptoScreen";
 import { CryptoOption, Rate, TradeIntent, TradeTab } from "../libs/types";
-
-const resolveRate = (
-  rate: Rate,
-  amountNum: number,
-): {
-  value: number;
-  source: "category" | "base";
-  label?: string;
-  min?: string;
-  max?: string;
-} => {
-  if (
-    amountNum > 0 &&
-    Array.isArray(rate.categories) &&
-    rate.categories.length > 0
-  ) {
-    const matched = rate.categories.find(
-      cat =>
-        amountNum >= Number(cat.min_amount) &&
-        amountNum < Number(cat.max_amount),
-    );
-
-    if (matched) {
-      return {
-        source: "category",
-        value: Number(matched.value),
-        label: matched.label,
-        min: matched.min_amount,
-        max: matched.max_amount,
-      };
-    }
-  }
-
-  return { source: "base", value: Number(rate.default_value) };
-};
-
-const getRateType = (tab: TradeTab): "buy" | "sell" =>
-  tab === "sell" ? "buy" : "sell";
 
 export default function CryptoRatesScreen() {
   const [activeTab, setActiveTab] = useState<TradeTab>("sell");
@@ -75,8 +37,6 @@ export default function CryptoRatesScreen() {
     },
     refetchInterval: 9000,
   });
-
-  console.log("Fetched rates data:", data);
 
   const cryptoOptions = useMemo<CryptoOption[]>(() => {
     if (!Array.isArray(data)) return [];
@@ -106,15 +66,36 @@ export default function CryptoRatesScreen() {
   const rateInfo = useMemo(() => {
     if (!crypto || !Array.isArray(crypto.rates)) return null;
 
-    const rateType = getRateType(activeTab);
-    const matchedRate = crypto.rates.find(r => r.type === rateType);
+    const matchedRate = crypto.rates.find(r => r.type === activeTab);
     if (!matchedRate) return null;
 
-    const resolved = resolveRate(matchedRate, amountNum);
+    const defaultValue = parseFloat(matchedRate.default_value ?? "0");
+    const categories = matchedRate.categories ?? [];
+
+    // Resolve effective rate — match category by amount range, fallback to default
+    let effectiveRate = defaultValue;
+    let categoryLabel = "Default rate";
+    let source: "category" | "default" = "default";
+
+    if (categories.length > 0 && amountNum > 0) {
+      const matched = categories.find(
+        (cat: any) =>
+          amountNum >= parseFloat(cat.min_amount ?? "0") &&
+          amountNum <= parseFloat(cat.max_amount ?? "0"),
+      );
+
+      if (matched) {
+        effectiveRate = parseFloat(matched.value ?? "0");
+        categoryLabel = matched.label ?? "Category rate";
+        source = "category";
+      }
+    }
 
     return {
-      ...resolved,
-      totalNgn: amountNum > 0 ? amountNum * resolved.value : 0,
+      value: effectiveRate,
+      label: categoryLabel,
+      source,
+      totalNgn: amountNum > 0 ? amountNum * effectiveRate : 0,
       coinAmount:
         amountNum > 0 && crypto.market_value > 0
           ? amountNum / crypto.market_value
@@ -125,6 +106,11 @@ export default function CryptoRatesScreen() {
   const onPressTrade = useCallback(() => {
     if (!selectedCrypto || !crypto) {
       showError("Please select an asset");
+      return;
+    }
+
+    if (!amountNum) {
+      showError("Please enter the amount");
       return;
     }
 
@@ -141,6 +127,15 @@ export default function CryptoRatesScreen() {
       intent,
     });
   }, [selectedCrypto, crypto, activeTab, rawAmount, rateInfo, navigation]);
+
+  const resetStates = useCallback(() => {
+    setActiveTab("sell");
+    setSelectedCrypto(() => null);
+    setRawAmount("");
+    setFormattedAmount("");
+  }, []);
+
+  useFocusEffect(resetStates);
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
@@ -172,6 +167,7 @@ export default function CryptoRatesScreen() {
             onChange={setSelectedCrypto}
             title="Select an asset coin"
             placeholder="Select an asset coin"
+            value={selectedCrypto}
           />
 
           <View style={{ marginBottom: 2, marginTop: 10 }}>
@@ -214,7 +210,7 @@ export default function CryptoRatesScreen() {
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Exchange Rate:</Text>
                 <Text style={styles.infoValue}>
-                  $1 = {formatAmount(rateInfo.value)}
+                  {formatAmount(rateInfo.value)}/$
                 </Text>
               </View>
 
