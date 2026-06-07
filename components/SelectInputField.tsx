@@ -67,7 +67,7 @@ export function SelectInput({
     setInternalValue(externalValue ?? null);
   }, [externalValue]);
 
-  // ← clear search when modal closes
+  // clear search when modal closes
   useEffect(() => {
     if (!visible) setSearch("");
   }, [visible]);
@@ -79,7 +79,9 @@ export function SelectInput({
     if (externalOnChange) externalOnChange(val);
   };
 
-  const handlePress = () => setVisible(true);
+  const handlePress = () => {
+    if (!isDisabled) setVisible(true);
+  };
 
   const renderSelectView = (
     value: string | null,
