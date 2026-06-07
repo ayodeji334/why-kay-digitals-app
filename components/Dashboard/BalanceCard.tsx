@@ -43,7 +43,9 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
 
   return (
     <ImageBackground
-      source={require("../../assets/wallet-banner.png")}
+      source={{
+        uri: "https://res.cloudinary.com/dpjpjlifw/image/upload/v1780800224/dddy9enleaf99ra1evyi.webp",
+      }}
       style={styles.balanceCard}
     >
       <View style={styles.balanceHeader}>
@@ -167,6 +169,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     overflow: "hidden",
     gap: 25,
+    backgroundColor: COLORS.primary,
   },
   balanceHeader: {
     flexDirection: "row",
