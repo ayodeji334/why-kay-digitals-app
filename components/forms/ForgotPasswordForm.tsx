@@ -57,10 +57,10 @@ const ForgotPasswordForm: React.FC = () => {
   return (
     <View style={styles.container}>
       <TextInputField
-        label="Email or Phone number"
+        label="Email"
         control={control}
         name="email"
-        placeholder="Enter your email address or phone number"
+        placeholder="Enter your email address"
         rules={{ required: "Email is required" }}
       />
 

@@ -14,7 +14,7 @@ import PasswordInputField from "../PaswordInputField";
 import { COLORS } from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import CustomLoading from "../CustomLoading";
-import { showError, useToastHelpers } from "../../utlis/toast";
+import { useToastHelpers } from "../../utlis/toast";
 import { AxiosError } from "axios";
 import { getFontFamily, normalize } from "../../constants/settings";
 import { SelectInput } from "../SelectInputField";

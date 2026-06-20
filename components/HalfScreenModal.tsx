@@ -3,7 +3,7 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 import CustomIcon from "./CustomIcon";
-import { CloseIcon, SellCryptoIcon } from "../assets";
+import { CloseIcon } from "../assets";
 
 interface HalfScreenModalProps {
   isVisible: boolean;
