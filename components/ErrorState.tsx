@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
+import { AppText } from "./AppText";
 
 export default function ErrorState({
   error,
@@ -12,9 +13,9 @@ export default function ErrorState({
   return (
     <View style={styles.section}>
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+        <AppText style={styles.errorText}>{error}</AppText>
         <TouchableOpacity style={styles.retryButton} onPress={handleOnPress}>
-          <Text style={styles.retryButtonText}>Try Again</Text>
+          <AppText style={styles.retryButtonText}>Try Again</AppText>
         </TouchableOpacity>
       </View>
     </View>

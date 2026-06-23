@@ -19,6 +19,7 @@ import { useMutation } from "@tanstack/react-query";
 import { formatNumber } from "../libs/formatNumber";
 import { showError } from "../utlis/toast";
 import { useQuoteStore } from "../stores/quoteStore";
+import { AppText } from "../components/AppText";
 
 export default function ConversionQuote() {
   const route = useRoute();
@@ -202,7 +203,7 @@ export default function ConversionQuote() {
         <View>
           <View style={styles.assetBox}>
             <View style={styles.assetHeader}>
-              <Text style={styles.assetLabel}>From</Text>
+              <AppText style={styles.assetLabel}>From</AppText>
             </View>
             <View style={styles.assetRow}>
               <Image
@@ -210,12 +211,14 @@ export default function ConversionQuote() {
                 style={styles.assetLogo}
               />
               <View style={styles.assetInfo}>
-                <Text style={styles.assetSymbol}>
+                <AppText style={styles.assetSymbol}>
                   {quote?.from_asset_symbol}
-                </Text>
+                </AppText>
               </View>
               <View style={styles.assetAmount}>
-                <Text style={styles.assetValue}>{quote?.from_amount}</Text>
+                <AppText style={styles.assetValue}>
+                  {quote?.from_amount}
+                </AppText>
               </View>
             </View>
           </View>
@@ -242,7 +245,7 @@ export default function ConversionQuote() {
 
           <View style={styles.assetBox}>
             <View style={styles.assetHeader}>
-              <Text style={styles.assetLabel}>To (Expected)</Text>
+              <AppText style={styles.assetLabel}>To (Expected)</AppText>
             </View>
             <View style={styles.assetRow}>
               <Image
@@ -250,10 +253,12 @@ export default function ConversionQuote() {
                 style={styles.assetLogo}
               />
               <View style={styles.assetInfo}>
-                <Text style={styles.assetSymbol}>{quote?.to_asset_symbol}</Text>
+                <AppText style={styles.assetSymbol}>
+                  {quote?.to_asset_symbol}
+                </AppText>
               </View>
               <View style={styles.assetAmount}>
-                <Text style={styles.assetValue}>{quote?.to_amount}</Text>
+                <AppText style={styles.assetValue}>{quote?.to_amount}</AppText>
               </View>
             </View>
           </View>
@@ -261,28 +266,28 @@ export default function ConversionQuote() {
           <View style={{ paddingVertical: 4 }}>
             <View style={styles.detailsBox}>
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Conversion Rate</Text>
-                <Text style={styles.detailValue}>
+                <AppText style={styles.detailLabel}>Conversion Rate</AppText>
+                <AppText style={styles.detailValue}>
                   1 {quote?.from_asset_symbol} ={" "}
                   {formatNumber(quote?.exchange_rate || 0)}{" "}
                   {quote?.to_asset_symbol}
-                </Text>
+                </AppText>
               </View>
               <View style={styles.securityNote}>
-                <Text style={styles.securityText}>
+                <AppText style={styles.securityText}>
                   This quote is guaranteed for the duration of the timer. Rates
                   are locked and protected from market fluctuations.
-                </Text>
+                </AppText>
               </View>
             </View>
 
             {/* Use isExpiredVisible so the message only appears after the 2s delay */}
             {isExpiredVisible && (
               <View style={styles.expiredBox}>
-                <Text style={styles.expiredText}>
+                <AppText style={styles.expiredText}>
                   This quote has expired. Market rates may have changed. Please
                   request a new quote to continue.
-                </Text>
+                </AppText>
               </View>
             )}
           </View>
@@ -299,13 +304,13 @@ export default function ConversionQuote() {
                   styles.disabledButton,
               ]}
             >
-              <Text style={styles.confirmText}>
+              <AppText style={styles.confirmText}>
                 {confirmMutation.isPending
                   ? "Confirming..."
                   : isExpired
                   ? "Quote Expired" // shows briefly during the 2s window
                   : `Confirm Quote (${timeRemaining}s)`}
-              </Text>
+              </AppText>
             </TouchableOpacity>
           )}
 
@@ -318,7 +323,7 @@ export default function ConversionQuote() {
                 swapMutation.isPending && styles.disabledButton,
               ]}
             >
-              <Text style={styles.cancelText}>Request New Quote</Text>
+              <AppText style={styles.cancelText}>Request New Quote</AppText>
             </TouchableOpacity>
           )}
         </View>
@@ -523,7 +528,7 @@ export default function ConversionQuote() {
 //         <View>
 //           <View style={styles.assetBox}>
 //             <View style={styles.assetHeader}>
-//               <Text style={styles.assetLabel}>From</Text>
+//               <AppText style={styles.assetLabel}>From</AppText>
 //             </View>
 //             <View style={styles.assetRow}>
 //               <Image
@@ -531,12 +536,12 @@ export default function ConversionQuote() {
 //                 style={styles.assetLogo}
 //               />
 //               <View style={styles.assetInfo}>
-//                 <Text style={styles.assetSymbol}>
+//                 <AppText style={styles.assetSymbol}>
 //                   {quote?.from_asset_symbol}
-//                 </Text>
+//                 </AppText>
 //               </View>
 //               <View style={styles.assetAmount}>
-//                 <Text style={styles.assetValue}>{quote?.from_amount}</Text>
+//                 <AppText style={styles.assetValue}>{quote?.from_amount}</AppText>
 //               </View>
 //             </View>
 //           </View>
@@ -563,7 +568,7 @@ export default function ConversionQuote() {
 
 //           <View style={styles.assetBox}>
 //             <View style={styles.assetHeader}>
-//               <Text style={styles.assetLabel}>To (Expected)</Text>
+//               <AppText style={styles.assetLabel}>To (Expected)</AppText>
 //             </View>
 //             <View style={styles.assetRow}>
 //               <Image
@@ -571,10 +576,10 @@ export default function ConversionQuote() {
 //                 style={styles.assetLogo}
 //               />
 //               <View style={styles.assetInfo}>
-//                 <Text style={styles.assetSymbol}>{quote?.to_asset_symbol}</Text>
+//                 <AppText style={styles.assetSymbol}>{quote?.to_asset_symbol}</AppText>
 //               </View>
 //               <View style={styles.assetAmount}>
-//                 <Text style={styles.assetValue}>{quote?.to_amount}</Text>
+//                 <AppText style={styles.assetValue}>{quote?.to_amount}</AppText>
 //               </View>
 //             </View>
 //           </View>
@@ -582,27 +587,27 @@ export default function ConversionQuote() {
 //           <View style={{ paddingVertical: 4 }}>
 //             <View style={styles.detailsBox}>
 //               <View style={styles.detailRow}>
-//                 <Text style={styles.detailLabel}>Conversion Rate</Text>
-//                 <Text style={styles.detailValue}>
+//                 <AppText style={styles.detailLabel}>Conversion Rate</AppText>
+//                 <AppText style={styles.detailValue}>
 //                   1 {quote?.from_asset_symbol} ={" "}
 //                   {formatNumber(quote?.exchange_rate || 0)}{" "}
 //                   {quote?.to_asset_symbol}
 //                 </Text>
 //               </View>
 //               <View style={styles.securityNote}>
-//                 <Text style={styles.securityText}>
+//                 <AppText style={styles.securityText}>
 //                   This quote is guaranteed for the duration of the timer. Rates
 //                   are locked and protected from market fluctuations.
-//                 </Text>
+//                 </AppText>
 //               </View>
 //             </View>
 
 //             {isExpired && (
 //               <View style={styles.expiredBox}>
-//                 <Text style={styles.expiredText}>
+//                 <AppText style={styles.expiredText}>
 //                   This quote has expired. Market rates may have changed. Please
 //                   request a new quote to continue.
-//                 </Text>
+//                 </AppText>
 //               </View>
 //             )}
 //           </View>
@@ -622,9 +627,9 @@ export default function ConversionQuote() {
 //             //   {/* {confirmMutation.isPending ? (
 //             //     <ActivityIndicator color="#fff" size="small" />
 //             //   ) : ( */}
-//             //   <Text style={styles.confirmText}>
+//             //   <AppText style={styles.confirmText}>
 //             //     {`Confirm Quote (${timeRemaining}s)`}
-//             //   </Text>
+//             //   </AppText>
 //             //   {/* )} */}
 //             // </TouchableOpacity>
 //             <TouchableOpacity
@@ -636,11 +641,11 @@ export default function ConversionQuote() {
 //                   styles.disabledButton,
 //               ]}
 //             >
-//               <Text style={styles.confirmText}>
+//               <AppText style={styles.confirmText}>
 //                 {confirmMutation.isPending
 //                   ? "Confirming..."
 //                   : `Confirm Quote (${timeRemaining}s)`}
-//               </Text>
+//               </AppText>
 //             </TouchableOpacity>
 //           )}
 
@@ -653,7 +658,7 @@ export default function ConversionQuote() {
 //                 swapMutation.isPending && styles.disabledButton,
 //               ]}
 //             >
-//               <Text style={styles.cancelText}>Request New Quote</Text>
+//               <AppText style={styles.cancelText}>Request New Quote</AppText>
 //             </TouchableOpacity>
 //           )}
 //         </View>
@@ -768,7 +773,7 @@ export default function ConversionQuote() {
 //         <View>
 //           <View style={styles.assetBox}>
 //             <View style={styles.assetHeader}>
-//               <Text style={styles.assetLabel}>From</Text>
+//               <AppText style={styles.assetLabel}>From</AppText>
 //             </View>
 //             <View style={styles.assetRow}>
 //               <Image
@@ -776,12 +781,12 @@ export default function ConversionQuote() {
 //                 style={styles.assetLogo}
 //               />
 //               <View style={styles.assetInfo}>
-//                 <Text style={styles.assetSymbol}>
+//                 <AppText style={styles.assetSymbol}>
 //                   {quote?.from_asset_symbol}
-//                 </Text>
+//                 </AppText>
 //               </View>
 //               <View style={styles.assetAmount}>
-//                 <Text style={styles.assetValue}>{quote?.from_amount}</Text>
+//                 <AppText style={styles.assetValue}>{quote?.from_amount}</AppText>
 //               </View>
 //             </View>
 //           </View>
@@ -806,7 +811,7 @@ export default function ConversionQuote() {
 //           </View>
 //           <View style={styles.assetBox}>
 //             <View style={styles.assetHeader}>
-//               <Text style={styles.assetLabel}>To (Expected)</Text>
+//               <AppText style={styles.assetLabel}>To (Expected)</AppText>
 //             </View>
 //             <View style={styles.assetRow}>
 //               <Image
@@ -814,36 +819,36 @@ export default function ConversionQuote() {
 //                 style={styles.assetLogo}
 //               />
 //               <View style={styles.assetInfo}>
-//                 <Text style={styles.assetSymbol}>{quote?.to_asset_symbol}</Text>
+//                 <AppText style={styles.assetSymbol}>{quote?.to_asset_symbol}</AppText>
 //               </View>
 //               <View style={styles.assetAmount}>
-//                 <Text style={styles.assetValue}>{quote?.to_amount}</Text>
+//                 <AppText style={styles.assetValue}>{quote?.to_amount}</AppText>
 //               </View>
 //             </View>
 //           </View>
 //           <View style={{ paddingVertical: 4 }}>
 //             <View style={styles.detailsBox}>
 //               <View style={styles.detailRow}>
-//                 <Text style={styles.detailLabel}>Conversion Rate</Text>
-//                 <Text style={styles.detailValue}>
+//                 <AppText style={styles.detailLabel}>Conversion Rate</AppText>
+//                 <AppText style={styles.detailValue}>
 //                   1 {quote?.from_asset_symbol} ={" "}
 //                   {formatNumber(quote?.exchange_rate || 0)}{" "}
 //                   {quote?.to_asset_symbol}
 //                 </Text>
 //               </View>
 //               <View style={styles.securityNote}>
-//                 <Text style={styles.securityText}>
+//                 <AppText style={styles.securityText}>
 //                   This quote is guaranteed for the duration of the timer. Rates
 //                   are locked and protected from market fluctuations.
-//                 </Text>
+//                 </AppText>
 //               </View>
 //             </View>
 //             {isExpired && (
 //               <View style={styles.expiredBox}>
-//                 <Text style={styles.expiredText}>
+//                 <AppText style={styles.expiredText}>
 //                   This quote has expired. Market rates may have changed. Please
 //                   request a new quote to continue.
-//                 </Text>
+//                 </AppText>
 //               </View>
 //             )}
 //           </View>
@@ -855,9 +860,9 @@ export default function ConversionQuote() {
 //               disabled={isExpired}
 //               style={[styles.confirmButton, isExpired && styles.disabledButton]}
 //             >
-//               <Text style={styles.confirmText}>
+//               <AppText style={styles.confirmText}>
 //                 {`Confirm Quote (${timeRemaining}s)`}
-//               </Text>
+//               </AppText>
 //             </TouchableOpacity>
 //           )}
 //           {isExpired && (
@@ -865,7 +870,7 @@ export default function ConversionQuote() {
 //               onPress={handleRequestNewQuote}
 //               style={styles.cancelButton}
 //             >
-//               <Text style={styles.cancelText}>Request New Quote</Text>
+//               <AppText style={styles.cancelText}>Request New Quote</AppText>
 //             </TouchableOpacity>
 //           )}
 //         </View>

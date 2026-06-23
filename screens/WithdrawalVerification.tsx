@@ -22,6 +22,7 @@ import * as yup from "yup";
 import OtpInputField from "../components/OtpInputField";
 import NumberInputField from "../components/NumberInputField";
 import CustomLoading from "../components/CustomLoading";
+import { AppText } from "../components/AppText";
 
 // Validation schema
 const schema = yup.object().shape({
@@ -99,12 +100,12 @@ export default function WithdrawalVerificationScreen({ route }: any) {
       <StatusBar barStyle="dark-content" backgroundColor="white" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Verify your withdrawal</Text>
-          <Text style={styles.description}>
+          <AppText style={styles.title}>Verify your withdrawal</AppText>
+          <AppText style={styles.description}>
             We sent a 6‑digit code to{" "}
-            <Text style={styles.highlight}>{maskEmail(email)}</Text>. Enter the
-            code and your transaction PIN below to proceed.
-          </Text>
+            <AppText style={styles.highlight}>{maskEmail(email)}</AppText>.
+            Enter the code and your transaction PIN below to proceed.
+          </AppText>
         </View>
 
         {/* Token input */}
@@ -115,7 +116,7 @@ export default function WithdrawalVerificationScreen({ route }: any) {
           placeholder="Enter your token"
         />
         {errors.token && (
-          <Text style={styles.errorText}>{errors.token.message}</Text>
+          <AppText style={styles.errorText}>{errors.token.message}</AppText>
         )}
 
         {/* PIN input */}
@@ -127,7 +128,7 @@ export default function WithdrawalVerificationScreen({ route }: any) {
           label="Transaction PIN"
         />
         {errors.pin && (
-          <Text style={styles.errorText}>{errors.pin.message}</Text>
+          <AppText style={styles.errorText}>{errors.pin.message}</AppText>
         )}
 
         <TouchableOpacity
@@ -135,7 +136,7 @@ export default function WithdrawalVerificationScreen({ route }: any) {
           style={styles.button}
           onPress={handleSubmit(onSubmit)}
         >
-          <Text style={styles.buttonText}>Confirm Withdrawal</Text>
+          <AppText style={styles.buttonText}>Confirm Withdrawal</AppText>
         </TouchableOpacity>
       </ScrollView>
 

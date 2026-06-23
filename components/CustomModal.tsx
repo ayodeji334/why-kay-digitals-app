@@ -11,6 +11,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
+import { AppText } from "./AppText";
 
 interface CustomModalProps {
   visible: boolean;
@@ -49,7 +50,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
             </TouchableOpacity>
           )}
 
-          {title && <Text style={styles.modalTitle}>{title}</Text>}
+          {title && <AppText style={styles.modalTitle}>{title}</AppText>}
 
           <View style={{ flex: 1 }}>{children}</View>
 
@@ -59,7 +60,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
               style={[styles.closeButton, { marginTop: 20 }]}
               onPress={onClose}
             >
-              <Text style={styles.closeButtonText}>Close</Text>
+              <AppText style={styles.closeButtonText}>Close</AppText>
             </TouchableOpacity>
           )}
         </View>

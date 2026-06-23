@@ -84,9 +84,9 @@
 //       return (
 //         <View style={styles.detailsContainer}>
 //           <ActivityIndicator size="small" color={COLORS.primary} />
-//           <Text style={[styles.detailsLabel, { textAlign: "center" }]}>
+//           <AppText style={[styles.detailsLabel, { textAlign: "center" }]}>
 //             Validating meter number…
-//           </Text>
+//           </AppText>
 //         </View>
 //       );
 //     }
@@ -95,10 +95,10 @@
 //     if (!userDetail) {
 //       return (
 //         <View style={styles.warningContainer}>
-//           <Text style={styles.warningText}>
+//           <AppText style={styles.warningText}>
 //             User detail not found. Please check the provider and meter number
 //             and try again.
-//           </Text>
+//           </AppText>
 //         </View>
 //       );
 //     }
@@ -107,12 +107,12 @@
 //     return (
 //       <View style={styles.detailsContainer}>
 //         <View style={{ paddingVertical: 5 }}>
-//           <Text style={styles.detailsLabel}>Name</Text>
-//           <Text style={styles.detailsValue}>{userDetail.name}</Text>
+//           <AppText style={styles.detailsLabel}>Name</AppText>
+//           <AppText style={styles.detailsValue}>{userDetail.name}</AppText>
 //         </View>
 //         <View style={{ paddingVertical: 5 }}>
-//           <Text style={styles.detailsLabel}>Address</Text>
-//           <Text style={styles.detailsValue}>{userDetail.address}</Text>
+//           <AppText style={styles.detailsLabel}>Address</AppText>
+//           <AppText style={styles.detailsValue}>{userDetail.address}</AppText>
 //         </View>
 //       </View>
 //     );
@@ -423,9 +423,9 @@
 //         />
 
 //         <View style={{ marginBottom: 2, marginTop: 10 }}>
-//           <Text style={styles.label}>Amount</Text>
+//           <AppText style={styles.label}>Amount</AppText>
 //           <View style={styles.inputContainer}>
-//             <Text style={styles.dollarSign}>₦</Text>
+//             <AppText style={styles.dollarSign}>₦</AppText>
 //             <TextInput
 //               style={styles.input}
 //               keyboardType="numeric"
@@ -436,9 +436,9 @@
 //             />
 //           </View>
 //           {errors.amount && (
-//             <Text style={styles.errorText}>
+//             <AppText style={styles.errorText}>
 //               {errors.amount.message as string}
-//             </Text>
+//             </AppText>
 //           )}
 //         </View>
 
@@ -453,13 +453,13 @@
 //           onPress={handleSubmit(onSubmit)}
 //           disabled={isDisabled}
 //         >
-//           <Text style={styles.buttonText}>
+//           <AppText style={styles.buttonText}>
 //             {isSubmitting
 //               ? "Processing..."
 //               : validatingMeter
 //               ? "Validating..."
 //               : "Continue"}
-//           </Text>
+//           </AppText>
 //         </TouchableOpacity>
 //       </ScrollView>
 //     </SafeAreaView>
@@ -642,6 +642,7 @@ import { formatWithCommas } from "./SwapCryptoScreen";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
+import { AppText } from "../components/AppText";
 
 interface ElectricityProvider {
   biller_code: string;
@@ -680,9 +681,9 @@ const MeterValidationStatus = memo(
       return (
         <View style={styles.detailsContainer}>
           <ActivityIndicator size="small" color={COLORS.primary} />
-          <Text style={[styles.detailsLabel, { textAlign: "center" }]}>
+          <AppText style={[styles.detailsLabel, { textAlign: "center" }]}>
             Validating meter number…
-          </Text>
+          </AppText>
         </View>
       );
     }
@@ -690,10 +691,10 @@ const MeterValidationStatus = memo(
     if (!userDetail) {
       return (
         <View style={styles.warningContainer}>
-          <Text style={styles.warningText}>
+          <AppText style={styles.warningText}>
             User detail not found. Please check the provider and meter number
             and try again.
-          </Text>
+          </AppText>
         </View>
       );
     }
@@ -701,12 +702,12 @@ const MeterValidationStatus = memo(
     return (
       <View style={styles.detailsContainer}>
         <View style={{ paddingVertical: 5 }}>
-          <Text style={styles.detailsLabel}>Name</Text>
-          <Text style={styles.detailsValue}>{userDetail.name}</Text>
+          <AppText style={styles.detailsLabel}>Name</AppText>
+          <AppText style={styles.detailsValue}>{userDetail.name}</AppText>
         </View>
         <View style={{ paddingVertical: 5 }}>
-          <Text style={styles.detailsLabel}>Address</Text>
-          <Text style={styles.detailsValue}>{userDetail.address}</Text>
+          <AppText style={styles.detailsLabel}>Address</AppText>
+          <AppText style={styles.detailsValue}>{userDetail.address}</AppText>
         </View>
       </View>
     );
@@ -739,14 +740,14 @@ const PaymentTypeSelector = memo(
         onPress={() => onSelect(true)}
         disabled={!hasPrepaid || disabled}
       >
-        <Text
+        <AppText
           style={[
             styles.paymentTypeText,
             isPrepaid && styles.paymentTypeTextActive,
           ]}
         >
           Pre Paid
-        </Text>
+        </AppText>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -758,14 +759,14 @@ const PaymentTypeSelector = memo(
         onPress={() => onSelect(false)}
         disabled={!hasPostpaid || disabled}
       >
-        <Text
+        <AppText
           style={[
             styles.paymentTypeText,
             !isPrepaid && styles.paymentTypeTextActive,
           ]}
         >
           Post Paid
-        </Text>
+        </AppText>
       </TouchableOpacity>
     </View>
   ),
@@ -1118,10 +1119,12 @@ export default function PayElectricityBillsScreen() {
 
         {/* Amount */}
         <View style={{ marginBottom: 2, marginTop: 10 }}>
-          <Text style={styles.label}>Amount</Text>
+          <AppText style={styles.label}>Amount</AppText>
           <View style={styles.inputContainer}>
-            <Text style={styles.dollarSign}>₦</Text>
+            <AppText style={styles.dollarSign}>₦</AppText>
             <TextInput
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
               style={styles.input}
               keyboardType="numeric"
               placeholderTextColor="#aeaeaeff"
@@ -1131,9 +1134,9 @@ export default function PayElectricityBillsScreen() {
             />
           </View>
           {errors.amount && (
-            <Text style={styles.errorText}>
+            <AppText style={styles.errorText}>
               {errors.amount.message as string}
-            </Text>
+            </AppText>
           )}
         </View>
 
@@ -1148,13 +1151,13 @@ export default function PayElectricityBillsScreen() {
           onPress={handleSubmit(onSubmit)}
           disabled={isDisabled}
         >
-          <Text style={styles.buttonText}>
+          <AppText style={styles.buttonText}>
             {isSubmitting
               ? "Processing..."
               : validatingMeter
               ? "Validating..."
               : "Continue"}
-          </Text>
+          </AppText>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

@@ -6,6 +6,8 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
+import { AppText } from "../AppText";
+import { getFontFamily, normalize } from "../../constants/settings";
 
 interface Beneficiary {
   id: number;
@@ -55,14 +57,14 @@ export default function SavedBeneficiariesList({
           </View> */}
           <View style={styles.info}>
             <View style={styles.rowBetween}>
-              <Text style={styles.name}>{item.meta.account_name}</Text>
-              <Text style={styles.lastUsed}>
+              <AppText style={styles.name}>{item.meta.account_name}</AppText>
+              <AppText style={styles.lastUsed}>
                 {new Date(item.updated_at).toLocaleDateString()}
-              </Text>
+              </AppText>
             </View>
-            <Text style={styles.details} numberOfLines={1}>
+            <AppText style={styles.details} numberOfLines={1}>
               {item.meta.bank_name} • {item.meta.account_number}
-            </Text>
+            </AppText>
           </View>
         </View>
       </TouchableOpacity>
@@ -72,10 +74,10 @@ export default function SavedBeneficiariesList({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Saved Beneficiaries</Text>
+        <AppText style={styles.headerText}>Saved Beneficiaries</AppText>
         {onViewAll && (
           <TouchableOpacity onPress={onViewAll}>
-            <Text style={styles.viewAll}>View All</Text>
+            <AppText style={styles.viewAll}>View All</AppText>
           </TouchableOpacity>
         )}
       </View>
@@ -100,12 +102,13 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 12,
+    fontWeight: getFontFamily(400),
     color: "#6b7280", // gray-500
   },
   viewAll: {
     fontSize: 12,
+    fontWeight: getFontFamily(700),
     color: "#2563eb", // blue-600
-    fontWeight: "500",
   },
   card: {
     width: "100%",
@@ -114,12 +117,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   cardDefault: {
-    borderColor: "#e5e7eb", // gray-200
+    borderColor: "#e5e7eb",
     backgroundColor: "#fff",
   },
   cardSelected: {
-    borderColor: "#16a34a", // green-600
-    backgroundColor: "#f0fdf4", // green-50
+    borderColor: "#16a34a",
+    backgroundColor: "#f0fdf4",
   },
   row: {
     flexDirection: "row",
@@ -134,7 +137,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#dcfce7", // green-100
+    backgroundColor: "#dcfce7",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
@@ -144,16 +147,18 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   name: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: normalize(14),
+    fontWeight: getFontFamily(400),
     color: "#111",
   },
   lastUsed: {
-    fontSize: 10,
+    fontSize: normalize(12),
+    fontWeight: getFontFamily(400),
     color: "#9ca3af", // gray-400
   },
   details: {
-    fontSize: 12,
+    fontSize: normalize(12),
+    fontWeight: getFontFamily(400),
     color: "#6b7280", // gray-500
   },
 });

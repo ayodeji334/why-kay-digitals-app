@@ -6,6 +6,7 @@ import { COLORS } from "../constants/colors";
 import { ShieldSearch, User } from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
+import { AppText } from "./AppText";
 
 export default function KYCStatusScreen() {
   const navigation = useNavigation();
@@ -30,17 +31,17 @@ export default function KYCStatusScreen() {
             <View style={styles.iconCircle}>
               <ShieldSearch size={30} color={COLORS.primary} variant="Linear" />
             </View>
-            <Text style={styles.emptyTitle}>
+            <AppText style={styles.emptyTitle}>
               Complete Your BVN Verification
-            </Text>
-            <Text style={styles.emptyDescription}>
+            </AppText>
+            <AppText style={styles.emptyDescription}>
               To access this service, we need to verify your identity. This is a
               secure one-time process.
-            </Text>
+            </AppText>
           </View>
 
           <View style={styles.requirementsCard}>
-            <Text style={styles.cardTitle}>What you'll need:</Text>
+            <AppText style={styles.cardTitle}>What you'll need:</AppText>
 
             <View style={{ rowGap: 20 }}>
               <View style={styles.requirementRow}>
@@ -48,10 +49,10 @@ export default function KYCStatusScreen() {
                   <User size={15} color={COLORS.primary} variant="Outline" />
                 </View>
                 <View>
-                  <Text style={styles.itemHeader}>BVN Information</Text>
-                  <Text style={styles.itemSub}>
+                  <AppText style={styles.itemHeader}>BVN Information</AppText>
+                  <AppText style={styles.itemSub}>
                     Provide your Bank Verification Number (BVN)
-                  </Text>
+                  </AppText>
                 </View>
               </View>
 
@@ -64,10 +65,10 @@ export default function KYCStatusScreen() {
                   />
                 </View>
                 <View>
-                  <Text style={styles.itemHeader}>Identity Information</Text>
-                  <Text style={styles.itemSub}>
+                  <AppText style={styles.itemHeader}>Identity Information</AppText>
+                  <AppText style={styles.itemSub}>
                     Provide a valid National Identification Number (NIN)
-                  </Text>
+                  </AppText>
                 </View>
               </View> */}
 
@@ -80,10 +81,10 @@ export default function KYCStatusScreen() {
                   />
                 </View>
                 <View>
-                  <Text style={styles.itemHeader}>Selfie Verification</Text>
-                  <Text style={styles.itemSub}>
+                  <AppText style={styles.itemHeader}>Selfie Verification</AppText>
+                  <AppText style={styles.itemSub}>
                     A quick photo to confirm your identity
-                  </Text>
+                  </AppText>
                 </View>
               </View> */}
             </View>
@@ -96,9 +97,9 @@ export default function KYCStatusScreen() {
             activeOpacity={0.8}
             style={[styles.emptyButton, { backgroundColor: COLORS.primary }]}
           >
-            <Text style={styles.emptyButtonText}>
+            <AppText style={styles.emptyButtonText}>
               {isAlreadyVerified ? "Continue " : "Start "} BVN Verification
-            </Text>
+            </AppText>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -106,9 +107,11 @@ export default function KYCStatusScreen() {
             activeOpacity={0.7}
             style={[styles.laterButton, { borderColor: COLORS.primary }]}
           >
-            <Text style={[styles.laterButtonText, { color: COLORS.primary }]}>
+            <AppText
+              style={[styles.laterButtonText, { color: COLORS.primary }]}
+            >
               I'll do it later
-            </Text>
+            </AppText>
           </TouchableOpacity>
         </View>
       </View>

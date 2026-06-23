@@ -9,6 +9,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
+import { AppText } from "./AppText";
 
 interface Props {
   control: any;
@@ -44,13 +45,17 @@ const NumberInputField: React.FC<Props> = ({
         fieldState: { error },
       }) => (
         <View style={styles.container}>
-          {showLabel && label && <Text style={styles.label}>{label}</Text>}
+          {showLabel && label && (
+            <AppText style={styles.label}>{label}</AppText>
+          )}
           <TextInput
             style={[style, error && styles.errorBorder, styles.input]}
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}
             keyboardType="numeric"
             onBlur={onBlur}
+            maxFontSizeMultiplier={1}
+            allowFontScaling={false}
             maxLength={maxLength}
             onChangeText={text => {
               const numericValue = text.replace(/[^0-9]/g, "");
@@ -58,7 +63,7 @@ const NumberInputField: React.FC<Props> = ({
             }}
             value={value ? String(value) : ""}
           />
-          {error && <Text style={styles.errorText}>{error.message}</Text>}
+          {error && <AppText style={styles.errorText}>{error.message}</AppText>}
         </View>
       )}
     />
@@ -74,7 +79,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 10,
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 14,
     color: "#1A1A1A",
     fontFamily: getFontFamily("800"),
     fontSize: normalize(18),

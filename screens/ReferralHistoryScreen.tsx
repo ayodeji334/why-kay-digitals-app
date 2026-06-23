@@ -21,6 +21,7 @@ import CustomLoading from "../components/CustomLoading";
 import useAxios from "../hooks/useAxios";
 import { AxiosError } from "axios";
 import { showError } from "../utlis/toast";
+import { AppText } from "../components/AppText";
 
 // Types
 interface ReferralItem {
@@ -45,12 +46,12 @@ const Tab: React.FC<TabProps> = ({ active, title, count, onPress }) => (
     style={[styles.tab, active && styles.activeTab]}
     onPress={onPress}
   >
-    <Text style={[styles.tabTitle, active && styles.activeTabTitle]}>
+    <AppText style={[styles.tabTitle, active && styles.activeTabTitle]}>
       {title}
-    </Text>
-    <Text style={[styles.countText, active && styles.activeCountText]}>
+    </AppText>
+    <AppText style={[styles.countText, active && styles.activeCountText]}>
       ({count})
-    </Text>
+    </AppText>
   </TouchableOpacity>
 );
 
@@ -76,22 +77,22 @@ const EmptyState: React.FC<{ type: "signedUp" | "pending" }> = ({ type }) => {
   };
   return (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyStateTitle}>
+      <AppText style={styles.emptyStateTitle}>
         {type === "signedUp"
           ? "No Signed Up Referrals"
           : "No Pending Referrals"}
-      </Text>
-      <Text style={styles.emptyStateDescription}>
+      </AppText>
+      <AppText style={styles.emptyStateDescription}>
         {type === "signedUp"
           ? "When people sign up using your referral code, they'll appear here."
           : "Referrals that haven't completed their first trade will appear here."}
-      </Text>
+      </AppText>
       <TouchableOpacity
         onPress={handleShareCode}
         activeOpacity={0.8}
         style={styles.inviteButton}
       >
-        <Text style={styles.inviteButtonText}>Invite Friends</Text>
+        <AppText style={styles.inviteButtonText}>Invite Friends</AppText>
       </TouchableOpacity>
     </View>
   );
@@ -104,13 +105,19 @@ const ReferralCard: React.FC<{ item: ReferralItem }> = ({ item }) => (
   <View style={styles.referralCard}>
     <View style={styles.referralHeader}>
       <View style={styles.userInfo}>
-        <Text style={styles.userName}>{item?.username || item?.name}</Text>
-        <Text style={styles.userEmail}>{item?.email && `${item.email}`}</Text>
+        <AppText style={styles.userName}>
+          {item?.username || item?.name}
+        </AppText>
+        <AppText style={styles.userEmail}>
+          {item?.email && `${item.email}`}
+        </AppText>
       </View>
-      <Text style={styles.amount}>{formatAmount(parseFloat(item.amount))}</Text>
+      <AppText style={styles.amount}>
+        {formatAmount(parseFloat(item.amount))}
+      </AppText>
     </View>
     <View style={styles.referralFooter}>
-      <Text style={styles.date}>{formatDate(item.created_at)}</Text>
+      <AppText style={styles.date}>{formatDate(item.created_at)}</AppText>
       <View
         style={[
           styles.statusBadge,
@@ -119,7 +126,7 @@ const ReferralCard: React.FC<{ item: ReferralItem }> = ({ item }) => (
             : { backgroundColor: "#FFF7E6" },
         ]}
       >
-        <Text
+        <AppText
           style={[
             styles.statusText,
             item.status === "completed"
@@ -128,7 +135,7 @@ const ReferralCard: React.FC<{ item: ReferralItem }> = ({ item }) => (
           ]}
         >
           {item.status === "completed" ? "Completed" : "Pending"}
-        </Text>
+        </AppText>
       </View>
     </View>
   </View>
@@ -145,15 +152,15 @@ const StatCard: React.FC<{
       { alignItems: direction === "right" ? "flex-end" : "flex-start" },
     ]}
   >
-    <Text
+    <AppText
       style={[
         styles.statTitle,
         { textAlign: direction, fontSize: normalize(18) },
       ]}
     >
       {title}
-    </Text>
-    <Text
+    </AppText>
+    <AppText
       style={[
         styles.statTitle,
         {
@@ -164,7 +171,7 @@ const StatCard: React.FC<{
       ]}
     >
       {value}
-    </Text>
+    </AppText>
   </View>
 );
 

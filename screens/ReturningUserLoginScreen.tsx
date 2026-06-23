@@ -5,6 +5,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
 import ReturningUserLoginForm from "../components/forms/ReturningUserLoginForm";
+import { AppText } from "../components/AppText";
 
 export default function ReturningUserLoginScreen() {
   const navigation = useNavigation();
@@ -19,8 +20,8 @@ export default function ReturningUserLoginScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Welcome Back, {user?.username}</Text>
-          <Text
+          <AppText style={styles.title}>Welcome Back, {user?.username}</AppText>
+          <AppText
             style={[
               styles.title,
               {
@@ -32,7 +33,7 @@ export default function ReturningUserLoginScreen() {
             ]}
           >
             Log in to your account to continue
-          </Text>
+          </AppText>
         </View>
 
         <ReturningUserLoginForm />
@@ -43,26 +44,26 @@ export default function ReturningUserLoginScreen() {
             justifyContent: "center",
           }}
         >
-          <Text
+          <AppText
             style={{
               fontSize: normalize(18),
-              fontFamily: getFontFamily(400),
+              fontFamily: getFontFamily(700),
             }}
           >
             Want to switch an account?
-          </Text>
-          <Text
+          </AppText>
+          <AppText
             onPress={handleNavigate}
             style={[
               {
                 fontSize: normalize(18),
-                fontFamily: getFontFamily(400),
+                fontFamily: getFontFamily(700),
               },
               { color: "blue" },
             ]}
           >
             Switch Account
-          </Text>
+          </AppText>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: normalize(23),
+    fontSize: normalize(21),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

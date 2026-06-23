@@ -21,6 +21,7 @@ import {
   ShieldCheckIcon,
 } from "../assets";
 import CustomIcon from "../components/CustomIcon";
+import { AppText } from "../components/AppText";
 
 interface MenuItemProps {
   title: string;
@@ -69,15 +70,17 @@ export const MenuItem = ({
         {IconComponent}
       </View>
       <View style={styles.menuItemContent}>
-        <Text
+        <AppText
           style={[
             styles.menuItemTitle,
             { color: isDangerous ? "#DC2626" : color },
           ]}
         >
           {title}
-        </Text>
-        {subtitle && <Text style={styles.menuItemSubtitle}>{subtitle}</Text>}
+        </AppText>
+        {subtitle && (
+          <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
+        )}
       </View>
       {showArrow && !showSwitch && <ArrowRight2 size={15} color={color} />}
       {showSwitch && (
@@ -198,7 +201,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuItemTitle: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("800"),
   },
   menuItemSubtitle: {

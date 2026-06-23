@@ -2,13 +2,7 @@ import { Dimensions } from "react-native";
 
 export const { width, height } = Dimensions.get("window");
 
-// const { width: SCREEN_WIDTH, fontScale } = Dimensions.get("window");
-
-// const scale = Math.min(Math.max(SCREEN_WIDTH / 375, 0.8), 1.8);
-
 export function normalize(size: number) {
-  // const newSize = size * scale * fontScale;
-  // return Math.round(PixelRatio.roundToNearestPixel(newSize));
   return size - 5;
 }
 

@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
+import { AppText } from "./AppText";
 
 const AssetSelectionScreen = ({
   onSelect,
@@ -81,8 +82,8 @@ const AssetSelectionScreen = ({
           />
         )}
         <View style={styles.cryptoInfo}>
-          <Text style={styles.cryptoName}>{item.name}</Text>
-          <Text style={styles.cryptoSymbol}>{item.symbol}</Text>
+          <AppText style={styles.cryptoName}>{item.name}</AppText>
+          <AppText style={styles.cryptoSymbol}>{item.symbol}</AppText>
         </View>
       </View>
     </TouchableOpacity>
@@ -98,6 +99,8 @@ const AssetSelectionScreen = ({
       >
         <View style={styles.searchContainer}>
           <TextInput
+            maxFontSizeMultiplier={1}
+            allowFontScaling={false}
             style={styles.searchInput}
             placeholder="Search Transaction"
             value={searchQuery}
@@ -108,7 +111,7 @@ const AssetSelectionScreen = ({
 
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading assets...</Text>
+            <AppText style={styles.loadingText}>Loading assets...</AppText>
           </View>
         ) : (
           <FlatList
@@ -149,7 +152,7 @@ const styles = StyleSheet.create({
   cryptoLeft: { flexDirection: "row", alignItems: "center" },
   assetIcon: { height: 30, width: 40, borderRadius: 20, marginRight: 10 },
   cryptoInfo: { flexDirection: "column" },
-  cryptoName: { fontSize: 16, fontFamily: getFontFamily(800) },
+  cryptoName: { fontSize: 10, fontFamily: getFontFamily(800) },
   cryptoSymbol: { fontSize: 14, fontFamily: getFontFamily(400), color: "#000" },
   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   loadingText: { fontSize: 16, color: "#666" },

@@ -20,6 +20,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { showError, showSuccess } from "../utlis/toast";
+import { AppText } from "../components/AppText";
 
 const schema = yup.object({
   description: yup
@@ -89,22 +90,24 @@ const SuggestionScreen = () => {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.header}>
-            <Text style={styles.title}>Send a Suggestion</Text>
-            <Text style={styles.subtitle}>
+            <AppText style={styles.title}>Send a Suggestion</AppText>
+            <AppText style={styles.subtitle}>
               We'd love to hear your ideas. Share your thoughts and help us
               improve your experience.
-            </Text>
+            </AppText>
           </View>
 
           <View style={styles.form}>
             <View style={styles.fieldWrapper}>
-              <Text style={styles.label}>Your Suggestion</Text>
+              <AppText style={styles.label}>Your Suggestion</AppText>
 
               <Controller
                 control={control}
                 name="description"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
+                    maxFontSizeMultiplier={1}
+                    allowFontScaling={false}
                     style={[
                       styles.textarea,
                       errors.description && styles.inputError,
@@ -125,20 +128,20 @@ const SuggestionScreen = () => {
 
               <View style={styles.fieldFooter}>
                 {errors.description ? (
-                  <Text style={styles.errorText}>
+                  <AppText style={styles.errorText}>
                     {errors.description.message}
-                  </Text>
+                  </AppText>
                 ) : (
                   <View />
                 )}
-                <Text
+                <AppText
                   style={[
                     styles.charCount,
                     charCount > 900 && styles.charCountWarn,
                   ]}
                 >
                   {charCount}/1000
-                </Text>
+                </AppText>
               </View>
             </View>
           </View>
@@ -151,9 +154,9 @@ const SuggestionScreen = () => {
             activeOpacity={0.8}
             disabled={isLoading}
           >
-            <Text style={styles.upgradeButtonText}>
+            <AppText style={styles.upgradeButtonText}>
               {isLoading ? "Submitting..." : "Submit"}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -193,13 +196,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontSize: normalize(21),
+    fontSize: normalize(20),
     color: "#111827",
     marginBottom: 3,
     fontFamily: getFontFamily("800"),
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: normalize(17),
     color: "#6B7280",
     fontFamily: getFontFamily("700"),
   },
@@ -222,7 +225,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 14,
     fontFamily: getFontFamily("400"),
-    fontSize: 14,
+    fontSize: normalize(18),
     color: "#111827",
     minHeight: 180,
     backgroundColor: "#FAFAFA",

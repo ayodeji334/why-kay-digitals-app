@@ -10,6 +10,7 @@ import CustomLoading from "../CustomLoading";
 import { AxiosError } from "axios";
 import { showError, showSuccess } from "../../utlis/toast";
 import useAxios from "../../hooks/useAxios";
+import { AppText } from "../AppText";
 
 const loginSchema = yup.object().shape({
   current_password: yup.string().required("Current Password is required"),
@@ -89,7 +90,7 @@ const ChangePasswordForm: React.FC<{}> = () => {
         style={styles.button}
         onPress={handleSubmit(onSubmit)}
       >
-        <Text style={styles.buttonText}>Change Password</Text>
+        <AppText style={styles.buttonText}>Change Password</AppText>
       </TouchableOpacity>
 
       <CustomLoading loading={loading} />

@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { normalize, getFontFamily } from "../constants/settings";
 import { COLORS } from "../constants/colors";
+import { AppText } from "./AppText";
 
 interface LoadingProps {
   message?: string;
@@ -17,7 +18,7 @@ const LoadingState: React.FC<LoadingProps> = ({
         color={COLORS.primary}
         style={styles.spinner}
       />
-      <Text style={styles.loadingText}>{message}</Text>
+      <AppText style={styles.loadingText}>{message}</AppText>
     </View>
   );
 };

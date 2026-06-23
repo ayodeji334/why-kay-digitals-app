@@ -4,6 +4,7 @@ import BalanceCard from "./Dashboard/BalanceCard";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { useNavigation } from "@react-navigation/native";
+import { AppText } from "./AppText";
 
 export default function BalanceLimitCard({ walletSummary }: any) {
   const navigation = useNavigation<any>();
@@ -21,7 +22,7 @@ export default function BalanceLimitCard({ walletSummary }: any) {
         showActionButtons={false}
       />
 
-      <Text
+      <AppText
         style={{
           fontFamily: getFontFamily(700),
           fontSize: 13,
@@ -30,25 +31,25 @@ export default function BalanceLimitCard({ walletSummary }: any) {
         }}
       >
         Note: The balance shown above is your{" "}
-        <Text style={{ fontFamily: getFontFamily("900") }}>
+        <AppText style={{ fontFamily: getFontFamily("900") }}>
           withdrawable balance
-        </Text>
+        </AppText>
         — the amount you can withdraw from the platform. It does not include
         your total balance, which may contain deposits that are reserved for
         trading only
-      </Text>
+      </AppText>
 
       <View style={styles.limitContainer}>
         <View style={styles.limitHeader}>
-          <Text style={styles.limitLabel}>
+          <AppText style={styles.limitLabel}>
             Daily Limit: ₦{walletSummary?.daily_limit?.toLocaleString() || "0"}
-          </Text>
-          <Text
+          </AppText>
+          <AppText
             onPress={() => navigation.navigate("Verification" as any)}
             style={styles.upgradeText}
           >
             Upgrade Limit
-          </Text>
+          </AppText>
         </View>
 
         <View style={styles.progressBarBackground}>
@@ -61,12 +62,12 @@ export default function BalanceLimitCard({ walletSummary }: any) {
         </View>
 
         <View style={styles.limitRange}>
-          <Text style={styles.limitValue}>
+          <AppText style={styles.limitValue}>
             ₦{walletSummary?.total_today?.toLocaleString() || "0"}
-          </Text>
-          <Text style={styles.limitValue}>
+          </AppText>
+          <AppText style={styles.limitValue}>
             ₦{walletSummary?.daily_limit?.toLocaleString() || "0"}
-          </Text>
+          </AppText>
         </View>
       </View>
     </>

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput } from "react-native";
 // import NumberInputField from "./NumberInputField";
 import { getFontFamily, normalize } from "../constants/settings";
 import { formatWithCommas } from "../screens/SwapCryptoScreen";
+import { AppText } from "./AppText";
 
 export default function WithdrawalForm({ setValue }: any) {
   const [amount, setAmount] = useState("");
@@ -10,9 +11,9 @@ export default function WithdrawalForm({ setValue }: any) {
   return (
     <View style={styles.amountBox}>
       <View style={{ marginBottom: 2, marginTop: 10 }}>
-        <Text style={styles.label}>Amount</Text>
+        <AppText style={styles.label}>Amount</AppText>
         <View style={styles.inputContainer}>
-          <Text style={styles.dollarSign}>₦</Text>
+          <AppText style={styles.dollarSign}>₦</AppText>
           <TextInput
             style={styles.input}
             keyboardType="numeric"
@@ -25,13 +26,15 @@ export default function WithdrawalForm({ setValue }: any) {
 
               setAmount(formatted);
             }}
+            maxFontSizeMultiplier={1}
+            allowFontScaling={false}
           />
         </View>
       </View>
 
-      <Text style={styles.amountNote}>
+      <AppText style={styles.amountNote}>
         Minimum of ₦1,000 and Maximum of ₦300,000
-      </Text>
+      </AppText>
     </View>
   );
 }

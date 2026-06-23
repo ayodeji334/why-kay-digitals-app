@@ -1,10 +1,11 @@
-import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import LoginForm from "../components/forms/LoginForm";
 import { getFontFamily, normalize } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
+import { AppText } from "../components/AppText";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -19,20 +20,18 @@ export default function LoginScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text
+          <AppText style={styles.title}>Welcome</AppText>
+          <AppText
             style={[
               styles.title,
               {
                 fontFamily: getFontFamily(400),
                 fontSize: normalize(18),
-                marginTop: 2,
-                marginLeft: 1,
               },
             ]}
           >
             Log in to your account to continue
-          </Text>
+          </AppText>
         </View>
 
         <LoginForm />
@@ -43,26 +42,26 @@ export default function LoginScreen() {
             justifyContent: "center",
           }}
         >
-          <Text
+          <AppText
             style={{
               fontSize: normalize(18),
               fontFamily: getFontFamily(400),
             }}
           >
             Don’t have an account?
-          </Text>
-          <Text
+          </AppText>
+          <AppText
             onPress={handleNavigate}
             style={[
               {
                 fontSize: normalize(18),
-                fontFamily: getFontFamily(400),
+                fontFamily: getFontFamily(800),
               },
               { color: "blue" },
             ]}
           >
             Sign up here
-          </Text>
+          </AppText>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -82,7 +81,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: normalize(23),
+    fontSize: normalize(21),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import ForgotPasswordForm from "../components/forms/ForgotPasswordForm";
 import { getFontFamily, normalize } from "../constants/settings";
+import { AppText } from "../components/AppText";
 
 export default function ForgetPasswordScreen() {
   return (
@@ -10,8 +11,8 @@ export default function ForgetPasswordScreen() {
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Forgot Password</Text>
-          <Text
+          <AppText style={styles.title}>Forgot Password</AppText>
+          <AppText
             style={[
               styles.title,
               {
@@ -24,7 +25,7 @@ export default function ForgetPasswordScreen() {
           >
             Opps. It happens to the best of us. Input your email address to fix
             the issue.
-          </Text>
+          </AppText>
         </View>
 
         <ForgotPasswordForm />
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: normalize(23),
+    fontSize: normalize(21),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

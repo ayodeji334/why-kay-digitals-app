@@ -7,6 +7,7 @@ import { WalletIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
 import { showSuccess } from "../utlis/toast";
 import { SelectInput } from "./SelectInputField";
+import { AppText } from "./AppText";
 
 interface NoWalletAddressProps {
   selectedAssetUuid: string;
@@ -43,16 +44,16 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
         <View style={styles.walletCircle}>
           <CustomIcon source={WalletIcon} size={32} color={COLORS.primary} />
         </View>
-        <Text style={styles.title}>No Wallet Address</Text>
-        <Text style={styles.subtitle}>
+        <AppText style={styles.title}>No Wallet Address</AppText>
+        <AppText style={styles.subtitle}>
           You need to generate a wallet address before you can receive assets.
           This will create unique addresses for all supported networks.
-        </Text>
+        </AppText>
       </View>
 
       {/* Network Selection */}
       <View style={styles.section}>
-        <Text style={styles.label}>Select Network</Text>
+        <AppText style={styles.label}>Select Network</AppText>
         <SelectInput
           options={networks.map(chain => ({
             label: chain.toUpperCase(),
@@ -74,14 +75,14 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
           activeOpacity={0.9}
           onPress={handleGenerateWallet}
         >
-          <Text style={styles.generateButtonText}>
+          <AppText style={styles.generateButtonText}>
             {isGenerating ? "Generating..." : "Generate Wallet Address"}
-          </Text>
+          </AppText>
         </TouchableOpacity>
-        <Text style={styles.note}>
+        <AppText style={styles.note}>
           Your wallet addresses will be generated securely and can be used to
           receive cryptocurrency.
-        </Text>
+        </AppText>
       </View>
     </View>
   );

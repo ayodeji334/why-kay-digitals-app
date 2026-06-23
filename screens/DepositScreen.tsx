@@ -16,6 +16,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { InfoCircle } from "iconsax-react-nativejs";
 import InfoCard from "../components/InfoCard";
 import { formatAmount } from "../libs/formatNumber";
+import { AppText } from "../components/AppText";
 
 const DepositScreen = () => {
   const navigation: any = useNavigation();
@@ -86,9 +87,9 @@ const DepositScreen = () => {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>
+            <AppText style={styles.sectionTitle}>
               How much would you like to deposit?
-            </Text>
+            </AppText>
 
             <TextInput
               style={[
@@ -100,15 +101,17 @@ const DepositScreen = () => {
               keyboardType="numeric"
               value={amount}
               onChangeText={handleAmountChange}
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
             />
 
             {amountError ? (
-              <Text style={styles.errorText}>{amountError}</Text>
+              <AppText style={styles.errorText}>{amountError}</AppText>
             ) : (
               amount && (
-                <Text style={styles.amountDisplay}>
+                <AppText style={styles.amountDisplay}>
                   {formatAmount(parseFloat(amount), { currency: "USD" })}
-                </Text>
+                </AppText>
               )
             )}
 
@@ -131,13 +134,13 @@ const DepositScreen = () => {
                     ]}
                   />
                 </View>
-                <Text style={styles.progressText}>
+                <AppText style={styles.progressText}>
                   {Math.min(
                     (parseFloat(amount) / maxAmount) * 100,
                     100,
                   ).toFixed(0)}
                   % of your limit
-                </Text>
+                </AppText>
               </View>
             )}
 
@@ -162,7 +165,9 @@ const DepositScreen = () => {
             onPress={handleContinue}
             disabled={!amount || !!amountError}
           >
-            <Text style={styles.continueButtonText}>Continue to Deposit</Text>
+            <AppText style={styles.continueButtonText}>
+              Continue to Deposit
+            </AppText>
           </TouchableOpacity>
         </View>
       </>

@@ -21,6 +21,7 @@ import useAxios from "../hooks/useAxios";
 import Clipboard from "@react-native-clipboard/clipboard";
 import CustomIcon from "../components/CustomIcon";
 import { CopyIcon } from "../assets";
+import { AppText } from "../components/AppText";
 
 const TwoFactorAuthenticationScreen = () => {
   const navigation = useNavigation();
@@ -142,12 +143,12 @@ const TwoFactorAuthenticationScreen = () => {
               <View style={styles.iconContainer}>
                 <FingerScan size={normalize(60)} color={COLORS.primary} />
                 <View style={styles.enabledBadge}>
-                  <Text style={styles.enabledBadgeText}>Enabled</Text>
+                  <AppText style={styles.enabledBadgeText}>Enabled</AppText>
                 </View>
               </View>
-              <Text style={styles.description}>
+              <AppText style={styles.description}>
                 2FA is currently enabled. You can disable it below.
-              </Text>
+              </AppText>
             </View>
           )}
 
@@ -157,9 +158,9 @@ const TwoFactorAuthenticationScreen = () => {
               <View style={styles.iconContainer}>
                 <FingerScan size={normalize(60)} color={COLORS.secondary} />
               </View>
-              <Text style={styles.description}>
+              <AppText style={styles.description}>
                 Secure your account with Google Authenticator.
-              </Text>
+              </AppText>
             </View>
           )}
 
@@ -168,10 +169,10 @@ const TwoFactorAuthenticationScreen = () => {
             <View style={styles.qrContainer}>
               <QRCode value={otpauthUrl!} size={200} />
 
-              <Text style={styles.qrText}>
+              <AppText style={styles.qrText}>
                 Scan this QR code with Google Authenticator or enter the details
                 manually below.
-              </Text>
+              </AppText>
 
               <View style={styles.manualSetupContainer}>
                 <SetupRow
@@ -213,9 +214,9 @@ const TwoFactorAuthenticationScreen = () => {
               disabled={isLoading}
               activeOpacity={0.85}
             >
-              <Text style={styles.primaryButtonText}>
+              <AppText style={styles.primaryButtonText}>
                 {primaryButton.label}
-              </Text>
+              </AppText>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -224,9 +225,9 @@ const TwoFactorAuthenticationScreen = () => {
               disabled={isLoading}
               activeOpacity={0.85}
             >
-              <Text style={styles.secondaryButtonText}>
+              <AppText style={styles.secondaryButtonText}>
                 {secondaryButton.label}
-              </Text>
+              </AppText>
             </TouchableOpacity>
           </View>
         </View>
@@ -249,11 +250,11 @@ const SetupRow = ({
   onCopy: () => void;
 }) => (
   <View>
-    <Text style={styles.setupLabel}>{label}:</Text>
+    <AppText style={styles.setupLabel}>{label}:</AppText>
     <View style={styles.row}>
-      <Text style={styles.setupValue} selectable>
+      <AppText style={styles.setupValue} selectable>
         {value}
-      </Text>
+      </AppText>
       <TouchableOpacity activeOpacity={0.8} onPress={onCopy}>
         <CustomIcon source={CopyIcon} size={14} />
       </TouchableOpacity>

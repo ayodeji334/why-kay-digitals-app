@@ -11,6 +11,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CryptoWalletSection from "../components/wallet/CryptoWalletSection";
 import FiatWalletSection from "../components/wallet/FiatWalletSection";
+import { AppText } from "../components/AppText";
 
 export default function WalletScreen() {
   const [activeTab, setActiveTab] = useState<"crypto" | "fiat">("crypto");
@@ -23,27 +24,27 @@ export default function WalletScreen() {
           style={[styles.tabButton, activeTab === "crypto" && styles.activeTab]}
           onPress={() => setActiveTab("crypto")}
         >
-          <Text
+          <AppText
             style={[
               styles.tabText,
               activeTab === "crypto" && styles.activeTabText,
             ]}
           >
             Crypto Wallet
-          </Text>
+          </AppText>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tabButton, activeTab === "fiat" && styles.activeTab]}
           onPress={() => setActiveTab("fiat")}
         >
-          <Text
+          <AppText
             style={[
               styles.tabText,
               activeTab === "fiat" && styles.activeTabText,
             ]}
           >
             Fiat Wallet
-          </Text>
+          </AppText>
         </TouchableOpacity>
       </View>
 
@@ -77,12 +78,12 @@ const styles = StyleSheet.create({
   },
   tabButton: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 9,
     alignItems: "center",
     borderRadius: 1200,
   },
   tabText: {
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("800"),
     color: "#000",
   },

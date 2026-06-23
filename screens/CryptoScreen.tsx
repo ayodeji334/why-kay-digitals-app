@@ -19,6 +19,7 @@ import { useAssets } from "../hooks/useAssets";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { useWallets } from "../hooks/useWallet";
 import { TradeIntent } from "../libs/types";
+import { AppText } from "../components/AppText";
 
 type CryptoWalletScreenRoute = {
   CryptoWallets: {
@@ -201,18 +202,18 @@ const CryptoWalletScreen = () => {
             />
           )}
           <View style={styles.cryptoInfo}>
-            <Text style={styles.cryptoName}>{item.symbol}</Text>
-            <Text style={styles.cryptoSymbol}>{item.name}</Text>
+            <AppText style={styles.cryptoName}>{item.symbol}</AppText>
+            <AppText style={styles.cryptoSymbol}>{item.name}</AppText>
           </View>
         </View>
         {item?.hasWallet ? (
           <View style={styles.cryptoRight}>
-            <Text style={styles.cryptoBalance}>
+            <AppText style={styles.cryptoBalance}>
               {formatNumber(balance, { decimalPlace: 8 })}
-            </Text>
-            <Text style={styles.cryptoValue}>
+            </AppText>
+            <AppText style={styles.cryptoValue}>
               {formatAmount(balanceInUsd, { currency: "USD" })}
-            </Text>
+            </AppText>
           </View>
         ) : (
           <></>
@@ -234,6 +235,8 @@ const CryptoWalletScreen = () => {
           placeholder="Search coin"
           value={searchQuery}
           onChangeText={setSearchQuery}
+          maxFontSizeMultiplier={1}
+          allowFontScaling={false}
           placeholderTextColor="#6b6b6b"
         />
       </View>

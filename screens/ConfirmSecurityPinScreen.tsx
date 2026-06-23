@@ -21,6 +21,7 @@ import { AxiosError } from "axios";
 import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
 import useAxios from "../hooks/useAxios";
+import { AppText } from "../components/AppText";
 
 type FormData = {
   pin: string;
@@ -84,8 +85,8 @@ export default function ConfirmSecurityPinScreen() {
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Confirm your Security Pin</Text>
-          <Text
+          <AppText style={styles.title}>Confirm your Security Pin</AppText>
+          <AppText
             style={[
               {
                 fontFamily: getFontFamily(400),
@@ -96,7 +97,7 @@ export default function ConfirmSecurityPinScreen() {
             ]}
           >
             Check your security pin to kept your account secure.
-          </Text>
+          </AppText>
         </View>
 
         <OtpInputField
@@ -110,7 +111,7 @@ export default function ConfirmSecurityPinScreen() {
           style={styles.button}
           onPress={handleSubmit(handleCreatePin)}
         >
-          <Text style={styles.buttonText}>Set Pin</Text>
+          <AppText style={styles.buttonText}>Set Pin</AppText>
         </TouchableOpacity>
       </ScrollView>
 

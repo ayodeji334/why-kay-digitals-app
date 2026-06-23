@@ -24,6 +24,7 @@ import { formatAmount } from "../libs/formatNumber";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
+import { AppText } from "../components/AppText";
 
 const schema = yup.object({
   phone: yup
@@ -196,7 +197,7 @@ export default function BuyDataScreen() {
           />
         </View>
         <View style={{ marginBottom: 10 }}>
-          <Text style={styles.subHeader}>Select Network Provider</Text>
+          <AppText style={styles.subHeader}>Select Network Provider</AppText>
           <View style={styles.networkRow}>
             {networks.map((item, index) => (
               <TouchableOpacity
@@ -224,7 +225,7 @@ export default function BuyDataScreen() {
               >
                 {selectedNetwork === item.id && (
                   <View style={styles.checkIconContainer}>
-                    <Text style={styles.checkIcon}>✓</Text>
+                    <AppText style={styles.checkIcon}>✓</AppText>
                   </View>
                 )}
                 <Image source={item.logo} style={styles.networkLogo} />
@@ -241,7 +242,7 @@ export default function BuyDataScreen() {
               >
                 {selectedNetwork === item.id && (
                   <View style={styles.checkIconContainer}>
-                    <Text style={styles.checkIcon}>✓</Text>
+                    <AppText style={styles.checkIcon}>✓</AppText>
                   </View>
                 )}
                 <item.Logo
@@ -254,7 +255,7 @@ export default function BuyDataScreen() {
             ))} */}
           </View>
           {errors.network && (
-            <Text style={styles.errorText}>{errors.network.message}</Text>
+            <AppText style={styles.errorText}>{errors.network.message}</AppText>
           )}
         </View>
 
@@ -291,9 +292,9 @@ export default function BuyDataScreen() {
             onPress={handleSubmit(onSubmit)}
             disabled={loading}
           >
-            <Text style={styles.buttonText}>
+            <AppText style={styles.buttonText}>
               {loading ? "Processing..." : "Proceed"}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         </View>
       </ScrollView>

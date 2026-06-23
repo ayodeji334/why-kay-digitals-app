@@ -15,6 +15,7 @@ import { COLORS } from "../../constants/colors";
 import { Refresh2, Trash } from "iconsax-react-nativejs";
 import { CloseIcon } from "../../assets";
 import CustomIcon from "../CustomIcon";
+import { AppText } from "../AppText";
 
 const PREVIEW_COUNT = 2;
 
@@ -108,36 +109,36 @@ export default function SavedBeneficiaries({
     >
       <View style={styles.row}>
         <View style={styles.info}>
-          <Text style={styles.name}>
+          <AppText style={styles.name}>
             {item?.meta?.account_name ??
               item?.meta?.network ??
               item?.meta?.provider ??
               item?.meta?.service}
-          </Text>
+          </AppText>
           {item?.meta?.bank_name && (
-            <Text style={styles.details} numberOfLines={1}>
+            <AppText style={styles.details} numberOfLines={1}>
               {item?.meta?.bank_name} • {item?.meta?.account_number}
-            </Text>
+            </AppText>
           )}
           {item?.meta?.phone_number && (
-            <Text style={styles.details} numberOfLines={1}>
+            <AppText style={styles.details} numberOfLines={1}>
               {item?.meta?.phone_number}
-            </Text>
+            </AppText>
           )}
           {item?.meta?.cable_tv_number && (
-            <Text style={styles.details} numberOfLines={1}>
+            <AppText style={styles.details} numberOfLines={1}>
               {item?.meta?.cable_tv_number}
-            </Text>
+            </AppText>
           )}
           {item?.meta?.customer_id && (
-            <Text style={styles.details} numberOfLines={1}>
+            <AppText style={styles.details} numberOfLines={1}>
               {item?.meta?.customer_id}
-            </Text>
+            </AppText>
           )}
           {item?.meta?.meter_number && (
-            <Text style={styles.details} numberOfLines={1}>
+            <AppText style={styles.details} numberOfLines={1}>
               {item?.meta?.meter_number}
-            </Text>
+            </AppText>
           )}
         </View>
       </View>
@@ -147,13 +148,13 @@ export default function SavedBeneficiaries({
   return (
     <View>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Saved Beneficiaries</Text>
+        <AppText style={styles.headerTitle}>Saved Beneficiaries</AppText>
         {hasMore && (
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setModalVisible(true)}
           >
-            <Text style={styles.viewAllText}>View all</Text>
+            <AppText style={styles.viewAllText}>View all</AppText>
           </TouchableOpacity>
         )}
       </View>
@@ -161,7 +162,9 @@ export default function SavedBeneficiaries({
       {/* preview list  */}
       {!data || data.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No saved beneficiaries yet.</Text>
+          <AppText style={styles.emptyText}>
+            No saved beneficiaries yet.
+          </AppText>
         </View>
       ) : (
         <FlatList
@@ -182,7 +185,7 @@ export default function SavedBeneficiaries({
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Saved Beneficiaries</Text>
+              <AppText style={styles.modalTitle}>Saved Beneficiaries</AppText>
               <Pressable onPress={() => setModalVisible(false)}>
                 <CustomIcon
                   source={CloseIcon}
@@ -200,6 +203,8 @@ export default function SavedBeneficiaries({
               onChangeText={setSearch}
               placeholderTextColor="#9CA3AF"
               style={styles.searchInput}
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
             />
 
             {/* full list */}
@@ -213,7 +218,9 @@ export default function SavedBeneficiaries({
               contentContainerStyle={styles.list}
               ListEmptyComponent={
                 <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>No beneficiaries found.</Text>
+                  <AppText style={styles.emptyText}>
+                    No beneficiaries found.
+                  </AppText>
                 </View>
               }
             />
@@ -226,9 +233,9 @@ export default function SavedBeneficiaries({
                 style={[styles.actionButton, { borderColor: "gray" }]}
               >
                 <Refresh2 size={10} color="black" />
-                <Text style={[styles.actionText, { color: "black" }]}>
+                <AppText style={[styles.actionText, { color: "black" }]}>
                   {isRefetching ? "Refreshing..." : "Refresh"}
-                </Text>
+                </AppText>
               </TouchableOpacity>
 
               {data?.length > 0 && (
@@ -239,9 +246,9 @@ export default function SavedBeneficiaries({
                   style={styles.actionButton}
                 >
                   <Trash size={12} color="red" />
-                  <Text style={styles.actionText}>
+                  <AppText style={styles.actionText}>
                     {deleting ? "Deleting..." : "Delete All"}
-                  </Text>
+                  </AppText>
                 </TouchableOpacity>
               )}
             </View>
@@ -448,23 +455,23 @@ const styles = StyleSheet.create({
     marginVertical: 1,
   },
   name: {
-    fontSize: 14,
+    fontSize: normalize(16),
     color: "#000",
-    fontFamily: getFontFamily("800"),
+    fontFamily: getFontFamily("900"),
     textTransform: "uppercase",
   },
   details: {
-    fontSize: 14,
+    fontSize: normalize(16),
     fontFamily: getFontFamily("700"),
-    color: "#555",
+    color: "#000",
     marginTop: 2,
   },
   emptyContainer: {
-    padding: 16,
+    padding: normalize(16),
     alignItems: "center",
   },
   emptyText: {
-    fontSize: 14,
+    fontSize: normalize(16),
     color: "#838383",
     fontFamily: getFontFamily("700"),
   },

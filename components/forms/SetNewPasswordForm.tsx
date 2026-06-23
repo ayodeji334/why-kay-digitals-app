@@ -11,6 +11,7 @@ import CustomLoading from "../CustomLoading";
 import { AxiosError } from "axios";
 import { showError } from "../../utlis/toast";
 import useAxios from "../../hooks/useAxios";
+import { AppText } from "../AppText";
 
 const loginSchema = yup.object().shape({
   token: yup.string().max(6, "Invalid code").required("Email is required"),
@@ -94,7 +95,7 @@ const SetNewPasswordForm: React.FC<{
         style={styles.button}
         onPress={handleSubmit(onSubmit)}
       >
-        <Text style={styles.buttonText}>Submit Password</Text>
+        <AppText style={styles.buttonText}>Submit Password</AppText>
       </TouchableOpacity>
 
       <CustomLoading loading={loading} />

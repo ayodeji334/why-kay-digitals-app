@@ -1,16 +1,15 @@
 import {
-  Text,
   StyleSheet,
   ScrollView,
   StatusBar,
   View,
-  TouchableOpacity,
   Image,
   RefreshControl,
+  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ServicesSection from "../components/Dashboard/ServicesSection";
-import { Scan } from "iconsax-react-nativejs";
+import { ArrowRight2, Scan } from "iconsax-react-nativejs";
 import { getFontFamily, normalize } from "../constants/settings";
 import { useUser } from "../stores/authSlice";
 import AssetsSection from "../components/Dashboard/AssetsSection";
@@ -22,6 +21,7 @@ import FiatWalletBalanceCard from "../components/wallet/FiatWalletBalanceCard";
 import { useMemo } from "react";
 import { useFiatBalance } from "../hooks/useFiatBalance";
 import { useQueryClient } from "@tanstack/react-query";
+import { AppText } from "../components/AppText";
 
 const HomeScreen = () => {
   const user = useUser();
@@ -70,14 +70,14 @@ const HomeScreen = () => {
               resizeMode="center"
             />
             <View style={styles.welcomeText}>
-              <Text style={styles.welcomeBack}>Welcome back</Text>
-              <Text style={styles.userName}>
+              <AppText style={styles.welcomeBack}>Welcome back</AppText>
+              <AppText style={styles.userName}>
                 Hi,{" "}
                 {(user?.username
                   ? user.username.charAt(0).toUpperCase() +
                     user.username.slice(1)
                   : "") || "User"}
-              </Text>
+              </AppText>
             </View>
           </View>
           <NotificationBell />
@@ -87,17 +87,20 @@ const HomeScreen = () => {
 
         <AssetsSection />
 
-        {!hasCompleteVerification && (
-          <View style={styles.verificationBanner}>
+        {hasCompleteVerification && (
+          <Pressable
+            style={styles.verificationBanner}
+            onPress={() => navigation.navigate("Verification" as never)}
+          >
             <View style={styles.verificationIcon}>
               <Scan size={normalize(20)} color={COLORS.whiteBackground} />
             </View>
             <View style={styles.verificationText}>
-              <Text style={styles.verificationTitle}>
+              <AppText style={styles.verificationTitle}>
                 Kindly complete all KYC verification to unlock all the services
-              </Text>
+              </AppText>
             </View>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               activeOpacity={0.83}
               onPress={() => navigation.navigate("Verification" as never)}
               style={{
@@ -106,18 +109,10 @@ const HomeScreen = () => {
                 paddingHorizontal: 18,
                 paddingVertical: 7,
               }}
-            >
-              <Text
-                style={{
-                  color: COLORS.secondary,
-                  fontSize: normalize(16),
-                  fontFamily: getFontFamily("800"),
-                }}
-              >
-                Verify Identity
-              </Text>
-            </TouchableOpacity>
-          </View>
+            > */}
+            <ArrowRight2 size={20} color="white" />
+            {/* </TouchableOpacity> */}
+          </Pressable>
         )}
 
         <ServicesSection />
@@ -148,11 +143,10 @@ const styles = StyleSheet.create({
   welcomeBack: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
-    marginBottom: 2,
     color: "#353535ff",
   },
   userName: {
-    fontSize: normalize(22),
+    fontSize: normalize(20),
     fontFamily: getFontFamily("800"),
     color: "#333",
   },

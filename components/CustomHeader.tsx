@@ -5,10 +5,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
+  Pressable,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ArrowLeft2 } from "iconsax-react-nativejs";
 import { getFontFamily, normalize } from "../constants/settings";
+import { AppText } from "./AppText";
 
 type Props = {
   title?: string;
@@ -18,8 +20,8 @@ type Props = {
 
 const marginTop = Platform.select({
   android: 0,
-  ios: 46,
   default: 0,
+  ios: 65,
 });
 
 const CustomHeader: React.FC<Props> = ({
@@ -30,18 +32,15 @@ const CustomHeader: React.FC<Props> = ({
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: marginTop }]}>
       {showBack ? (
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backBtn}
-        >
+        <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
           <ArrowLeft2 size={20} />
-        </TouchableOpacity>
+        </Pressable>
       ) : (
         <View style={{ width: 24 }} />
       )}
-      {showTitle ? <Text style={styles.title}>{title}</Text> : null}
+      {showTitle ? <AppText style={styles.title}>{title}</AppText> : null}
       <View style={{ width: 24 }} />
     </View>
   );
@@ -54,17 +53,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingVertical: 19,
     backgroundColor: "white",
-    marginTop: marginTop,
   },
   backBtn: {
-    paddingVertical: 5,
+    paddingVertical: 9,
   },
   title: {
     flex: 1,
     textAlign: "center",
-    fontSize: normalize(20),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("800"),
     paddingVertical: 18,
   },

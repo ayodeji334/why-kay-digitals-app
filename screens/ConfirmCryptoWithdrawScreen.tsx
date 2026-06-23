@@ -24,6 +24,7 @@ import useAxios from "../hooks/useAxios";
 import { AxiosError } from "axios";
 import { showError } from "../utlis/toast";
 import NumberInputField from "../components/NumberInputField";
+import { AppText } from "../components/AppText";
 
 const schema = yup.object().shape({
   token: yup
@@ -129,10 +130,10 @@ export default function ConfirmCryptoWithdrawScreen() {
         }}
       >
         <View style={styles.header}>
-          <Text style={styles.description}>
+          <AppText style={styles.description}>
             Enter the verification token sent to your email, your transaction
             PIN, and the 6‑digit code from the Authenticator to continue.
-          </Text>
+          </AppText>
 
           <OtpInputField
             control={control}
@@ -168,7 +169,7 @@ export default function ConfirmCryptoWithdrawScreen() {
           style={styles.button}
           onPress={handleSubmit(onSubmit)}
         >
-          <Text style={styles.buttonText}>Continue</Text>
+          <AppText style={styles.buttonText}>Continue</AppText>
         </TouchableOpacity>
       </ScrollView>
 

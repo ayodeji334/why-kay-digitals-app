@@ -6,6 +6,7 @@ import CustomIcon from "./CustomIcon";
 import { WalletIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
 import { showSuccess } from "../utlis/toast";
+import { AppText } from "./AppText";
 
 interface NoWalletProps {
   selectedAssetUuid: string;
@@ -40,12 +41,12 @@ const NoWallet: React.FC<NoWalletProps> = ({
           <CustomIcon source={WalletIcon} size={30} color={COLORS.primary} />
         </View>
 
-        <Text style={styles.noWalletTitle}>No Wallet</Text>
+        <AppText style={styles.noWalletTitle}>No Wallet</AppText>
 
-        <Text style={styles.noWalletText}>
+        <AppText style={styles.noWalletText}>
           You need to generate wallet before you can receive assets. This will
           create a unique wallet for this asset.
-        </Text>
+        </AppText>
       </View>
 
       <View style={styles.section}>
@@ -55,15 +56,15 @@ const NoWallet: React.FC<NoWalletProps> = ({
           activeOpacity={0.89}
           onPress={handleGenerateWallet}
         >
-          <Text style={styles.generateButtonText}>
+          <AppText style={styles.generateButtonText}>
             {isGenerating ? "Generating..." : `Generate Wallet`}
-          </Text>
+          </AppText>
         </TouchableOpacity>
 
-        <Text style={styles.noteText}>
+        <AppText style={styles.noteText}>
           Your wallet and addresses will be generated securely and can be used
           to receive cryptocurrency.
-        </Text>
+        </AppText>
       </View>
     </View>
   );

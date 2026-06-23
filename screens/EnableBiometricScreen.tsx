@@ -19,6 +19,7 @@ import CustomLoading from "../components/CustomLoading";
 import DeviceInfo from "react-native-device-info";
 import { useAuthStore } from "../stores/authSlice";
 import useAxios from "../hooks/useAxios";
+import { AppText } from "../components/AppText";
 
 const BiometricsScreen = () => {
   const user = useAuthStore(state => state.user);
@@ -169,11 +170,11 @@ const BiometricsScreen = () => {
       >
         <View style={styles.content}>
           <View style={styles.textContainer}>
-            <Text style={styles.description}>
+            <AppText style={styles.description}>
               {isBiometricEnabled
                 ? "Biometric authentication is currently enabled. You can disable it here."
                 : "Secure your account with biometrics for quick, easy sign-in."}
-            </Text>
+            </AppText>
           </View>
 
           <View style={styles.iconContainer}>
@@ -183,7 +184,7 @@ const BiometricsScreen = () => {
             />
             {isBiometricEnabled && (
               <View style={styles.enabledBadge}>
-                <Text style={styles.enabledBadgeText}>Enabled</Text>
+                <AppText style={styles.enabledBadgeText}>Enabled</AppText>
               </View>
             )}
           </View>
@@ -202,7 +203,7 @@ const BiometricsScreen = () => {
               ]}
               disabled={isLoading}
             >
-              <Text
+              <AppText
                 style={[
                   styles.primaryButtonText,
                   isBiometricEnabled && styles.disableButtonText,
@@ -211,7 +212,7 @@ const BiometricsScreen = () => {
                 {isBiometricEnabled
                   ? "Disable Biometrics"
                   : "Enable Biometrics"}
-              </Text>
+              </AppText>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -220,9 +221,9 @@ const BiometricsScreen = () => {
               style={styles.secondaryButton}
               disabled={isLoading}
             >
-              <Text style={styles.secondaryButtonText}>
+              <AppText style={styles.secondaryButtonText}>
                 {isBiometricEnabled ? "Back" : "Skip for now"}
-              </Text>
+              </AppText>
             </TouchableOpacity>
           </View>
         </View>

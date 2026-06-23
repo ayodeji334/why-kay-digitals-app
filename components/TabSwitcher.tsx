@@ -1,6 +1,7 @@
 import React from "react";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
-import { getFontFamily } from "../constants/settings";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { getFontFamily, normalize } from "../constants/settings";
+import { AppText } from "./AppText";
 
 export type TabOption = {
   value: string;
@@ -40,7 +41,7 @@ const TabSwitcher: React.FC<TabSwitcherProps> = ({
           ]}
           onPress={() => onTabChange(tab.value)}
         >
-          <Text
+          <AppText
             style={[
               styles.tabText,
               tabTextStyle,
@@ -51,7 +52,7 @@ const TabSwitcher: React.FC<TabSwitcherProps> = ({
             ]}
           >
             {tab.label}
-          </Text>
+          </AppText>
         </TouchableOpacity>
       ))}
     </View>
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
-    paddingVertical: 9,
+    paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 600,
     alignItems: "center",
@@ -82,8 +83,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   tabText: {
-    fontSize: 14,
-    fontFamily: getFontFamily(800),
+    fontSize: normalize(15),
+    fontFamily: getFontFamily(400),
     color: "#000",
     textTransform: "capitalize",
   },

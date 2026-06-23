@@ -11,6 +11,7 @@ import { AxiosError } from "axios";
 import { showError } from "../../utlis/toast";
 import CustomLoading from "../CustomLoading";
 import useAxios from "../../hooks/useAxios";
+import { AppText } from "../AppText";
 
 const loginSchema = yup.object().shape({
   email: yup
@@ -69,7 +70,7 @@ const ForgotPasswordForm: React.FC = () => {
         style={styles.button}
         onPress={handleSubmit(onSubmit)}
       >
-        <Text style={styles.buttonText}>Continue</Text>
+        <AppText style={styles.buttonText}>Continue</AppText>
       </TouchableOpacity>
 
       <CustomLoading loading={loading} />

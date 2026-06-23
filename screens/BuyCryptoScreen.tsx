@@ -37,6 +37,7 @@ import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { useQuery } from "@tanstack/react-query";
 import { resolveRateFromCategories } from "./SellCrytpoScreen";
 import CustomLoading from "../components/CustomLoading";
+import { AppText } from "../components/AppText";
 
 type CryptoBuyScreenParams = {
   CryptoBuy: {
@@ -383,7 +384,7 @@ export default function CryptoBuyScreen() {
         <View style={styles.container}>
           <View>
             <View style={{ marginBottom: 15 }}>
-              <Text style={styles.label}>Coin</Text>
+              <AppText style={styles.label}>Coin</AppText>
               <View style={styles.cryptoRow}>
                 {assetDetails?.asset_logo_url && (
                   <Image
@@ -392,20 +393,22 @@ export default function CryptoBuyScreen() {
                   />
                 )}
                 <View style={styles.cryptoInfo}>
-                  <Text style={styles.optionName}>
+                  <AppText style={styles.optionName}>
                     {assetDetails?.symbol} {`(${assetDetails?.asset_name})`}
-                  </Text>
+                  </AppText>
                 </View>
               </View>
             </View>
             <View>
-              <Text style={styles.label}>Enter the amount you want to buy</Text>
+              <AppText style={styles.label}>
+                Enter the amount you want to buy
+              </AppText>
               <Controller
                 control={control}
                 name="amount"
                 render={({ field: { onChange, onBlur } }) => (
                   <View style={styles.inputContainer}>
-                    <Text style={styles.dollarSign}>$</Text>
+                    <AppText style={styles.dollarSign}>$</AppText>
                     <TextInput
                       style={styles.input}
                       value={displayAmount}
@@ -413,6 +416,8 @@ export default function CryptoBuyScreen() {
                       placeholderTextColor="#999"
                       keyboardType="decimal-pad"
                       onBlur={onBlur}
+                      maxFontSizeMultiplier={1}
+                      allowFontScaling={false}
                       onChangeText={text => {
                         const formatted = formatWithCommas(text);
                         const numeric = parseToNumber(formatted);
@@ -424,16 +429,18 @@ export default function CryptoBuyScreen() {
                 )}
               />
               {errors.amount && (
-                <Text style={styles.error}>{errors.amount.message}</Text>
+                <AppText style={styles.error}>{errors.amount.message}</AppText>
               )}
 
               {hasInsufficientBalance && insufficientBalanceMessage && (
-                <Text style={styles.error}>{insufficientBalanceMessage}</Text>
+                <AppText style={styles.error}>
+                  {insufficientBalanceMessage}
+                </AppText>
               )}
 
-              <Text style={styles.approx}>
+              <AppText style={styles.approx}>
                 Approximately {assetValueEquivalent} {assetDetails?.symbol}
-              </Text>
+              </AppText>
 
               <View
                 style={{
@@ -444,9 +451,9 @@ export default function CryptoBuyScreen() {
                   gap: 8,
                 }}
               >
-                <Text style={[styles.note]}>
+                <AppText style={[styles.note]}>
                   Wallet Balance, Exchange Rate & Fee Breakdown
-                </Text>
+                </AppText>
 
                 <View
                   style={{
@@ -454,10 +461,10 @@ export default function CryptoBuyScreen() {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Text style={[styles.balance]}>Fiat Balance:</Text>
-                  <Text style={styles.balance}>
+                  <AppText style={[styles.balance]}>Fiat Balance:</AppText>
+                  <AppText style={styles.balance}>
                     {formatAmount(fiatBalance, { currency: "NGN" })}
-                  </Text>
+                  </AppText>
                 </View>
 
                 <View style={{ height: 1, backgroundColor: "#d4edda" }} />
@@ -468,15 +475,15 @@ export default function CryptoBuyScreen() {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Text style={[styles.balance]}>Buy Rate:</Text>
-                  <Text style={styles.balance}>
+                  <AppText style={[styles.balance]}>Buy Rate:</AppText>
+                  <AppText style={styles.balance}>
                     {formatAmount(
                       feeBreakdown?.currentBuyRate ??
                         assetDetails?.buy_rate ??
                         0,
                     )}
                     /$
-                  </Text>
+                  </AppText>
                 </View>
 
                 <View
@@ -485,14 +492,14 @@ export default function CryptoBuyScreen() {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Text style={[styles.balance]}>Market Price:</Text>
-                  <Text style={styles.balance}>
+                  <AppText style={[styles.balance]}>Market Price:</AppText>
+                  <AppText style={styles.balance}>
                     {formatAmount(
                       Number(feeBreakdown?.marketCurrentPrice) || 0,
                       { currency: "USD" },
                     )}
                     /{assetDetails?.symbol}
-                  </Text>
+                  </AppText>
                 </View>
 
                 {feeBreakdown && amount > 0 && (
@@ -505,14 +512,14 @@ export default function CryptoBuyScreen() {
                         justifyContent: "space-between",
                       }}
                     >
-                      <Text style={[styles.balance]}>You Buy:</Text>
-                      <Text style={styles.balance}>
+                      <AppText style={[styles.balance]}>You Buy:</AppText>
+                      <AppText style={styles.balance}>
                         {feeBreakdown.coinAmount} {assetDetails?.symbol} (≈{" "}
                         {formatAmount(feeBreakdown.grossUsd, {
                           currency: "USD",
                         })}
                         )
-                      </Text>
+                      </AppText>
                     </View>
 
                     {!feeBreakdown.isStablecoin && (
@@ -522,13 +529,13 @@ export default function CryptoBuyScreen() {
                           justifyContent: "space-between",
                         }}
                       >
-                        <Text style={[styles.balance]}>
+                        <AppText style={[styles.balance]}>
                           Operational Fee (0.1%):
-                        </Text>
-                        <Text style={[styles.balance]}>
+                        </AppText>
+                        <AppText style={[styles.balance]}>
                           +{feeBreakdown.platformFeeCoin} {assetDetails?.symbol}{" "}
                           (≈ ${feeBreakdown.platformFeeUsd})
-                        </Text>
+                        </AppText>
                       </View>
                     )}
 
@@ -539,10 +546,12 @@ export default function CryptoBuyScreen() {
                           justifyContent: "space-between",
                         }}
                       >
-                        <Text style={[styles.balance]}>Operational Fee:</Text>
-                        <Text style={[styles.balance, { color: "#2e7d32" }]}>
+                        <AppText style={[styles.balance]}>
+                          Operational Fee:
+                        </AppText>
+                        <AppText style={[styles.balance, { color: "#2e7d32" }]}>
                           No fee for {assetDetails?.symbol}
-                        </Text>
+                        </AppText>
                       </View>
                     )}
 
@@ -554,13 +563,15 @@ export default function CryptoBuyScreen() {
                         justifyContent: "space-between",
                       }}
                     >
-                      <Text style={[styles.balance]}>Total Cost (USD):</Text>
-                      <Text style={[styles.balance]}>
+                      <AppText style={[styles.balance]}>
+                        Total Cost (USD):
+                      </AppText>
+                      <AppText style={[styles.balance]}>
                         {formatAmount(
                           Number(feeBreakdown.totalCostUsd ?? 100),
                           { currency: "USD", decimalPlace: 3 },
                         )}
-                      </Text>
+                      </AppText>
                     </View>
 
                     <View
@@ -569,8 +580,10 @@ export default function CryptoBuyScreen() {
                         justifyContent: "space-between",
                       }}
                     >
-                      <Text style={[styles.balance]}>You'll Pay (₦):</Text>
-                      <Text style={[styles.balance]}>{ngnAmount}</Text>
+                      <AppText style={[styles.balance]}>
+                        You'll Pay (₦):
+                      </AppText>
+                      <AppText style={[styles.balance]}>{ngnAmount}</AppText>
                     </View>
                   </>
                 )}
@@ -584,8 +597,8 @@ export default function CryptoBuyScreen() {
                     padding: 9,
                   }}
                 >
-                  <Text style={styles.ngn}>You're Paying:</Text>
-                  <Text style={styles.ngn}>{ngnAmount}</Text>
+                  <AppText style={styles.ngn}>You're Paying:</AppText>
+                  <AppText style={styles.ngn}>{ngnAmount}</AppText>
                 </View>
               </View>
             </View>
@@ -599,9 +612,9 @@ export default function CryptoBuyScreen() {
             disabled={hasInsufficientBalance || isSubmitting}
             onPress={handleSubmit(onSubmit)}
           >
-            <Text style={styles.buttonText}>
+            <AppText style={styles.buttonText}>
               {isSubmitting ? "Please wait..." : "Continue"}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -1048,7 +1061,7 @@ export default function CryptoBuyScreen() {
 //         <View style={styles.container}>
 //           <View>
 //             <View style={{ marginBottom: 15 }}>
-//               <Text style={styles.label}>Coin</Text>
+//               <AppText style={styles.label}>Coin</AppText>
 //               <View style={styles.cryptoRow}>
 //                 {assetDetails?.asset_logo_url && (
 //                   <Image
@@ -1057,20 +1070,20 @@ export default function CryptoBuyScreen() {
 //                   />
 //                 )}
 //                 <View style={styles.cryptoInfo}>
-//                   <Text style={styles.optionName}>
+//                   <AppText style={styles.optionName}>
 //                     {assetDetails?.symbol} {`(${assetDetails?.asset_name})`}
-//                   </Text>
+//                   </AppText>
 //                 </View>
 //               </View>
 //             </View>
 //             <View>
-//               <Text style={styles.label}>Enter the amount you want to buy</Text>
+//               <AppText style={styles.label}>Enter the amount you want to buy</AppText>
 //               <Controller
 //                 control={control}
 //                 name="amount"
 //                 render={({ field: { onChange, onBlur } }) => (
 //                   <View style={styles.inputContainer}>
-//                     <Text style={styles.dollarSign}>$</Text>
+//                     <AppText style={styles.dollarSign}>$</AppText>
 //                     <TextInput
 //                       style={styles.input}
 //                       value={displayAmount}
@@ -1089,24 +1102,24 @@ export default function CryptoBuyScreen() {
 //                 )}
 //               />
 //               {errors.amount && (
-//                 <Text style={styles.error}>{errors.amount.message}</Text>
+//                 <AppText style={styles.error}>{errors.amount.message}</AppText>
 //               )}
 
 //               {/* {hasInsufficientBalance && (
 //                 <View style={styles.warningContainer}>
-//                   <Text style={styles.warningText}>
+//                   <AppText style={styles.warningText}>
 //                     {insufficientBalanceMessage}
-//                   </Text>
+//                   </AppText>
 //                 </View>
 //               )} */}
 
 //               {hasInsufficientBalance && insufficientBalanceMessage && (
-//                 <Text style={styles.error}>{insufficientBalanceMessage}</Text>
+//                 <AppText style={styles.error}>{insufficientBalanceMessage}</AppText>
 //               )}
 
-//               <Text style={styles.approx}>
+//               <AppText style={styles.approx}>
 //                 Approximately {assetValueEquivalent} {assetDetails?.symbol}
-//               </Text>
+//               </AppText>
 
 //               <View
 //                 style={{
@@ -1117,9 +1130,9 @@ export default function CryptoBuyScreen() {
 //                   gap: 8,
 //                 }}
 //               >
-//                 <Text style={[styles.note]}>
+//                 <AppText style={[styles.note]}>
 //                   Wallet Balance, Exchange Rate & Fee Breakdown
-//                 </Text>
+//                 </AppText>
 
 //                 <View
 //                   style={{
@@ -1127,10 +1140,10 @@ export default function CryptoBuyScreen() {
 //                     justifyContent: "space-between",
 //                   }}
 //                 >
-//                   <Text style={[styles.balance]}>Fiat Balance:</Text>
-//                   <Text style={styles.balance}>
+//                   <AppText style={[styles.balance]}>Fiat Balance:</AppText>
+//                   <AppText style={styles.balance}>
 //                     {formatAmount(fiatBalance, { currency: "NGN" })}
-//                   </Text>
+//                   </AppText>
 //                 </View>
 
 //                 <View style={{ height: 1, backgroundColor: "#d4edda" }} />
@@ -1141,15 +1154,15 @@ export default function CryptoBuyScreen() {
 //                     justifyContent: "space-between",
 //                   }}
 //                 >
-//                   <Text style={[styles.balance]}>Buy Rate:</Text>
-//                   <Text style={styles.balance}>
+//                   <AppText style={[styles.balance]}>Buy Rate:</AppText>
+//                   <AppText style={styles.balance}>
 //                     {formatAmount(
 //                       feeBreakdown?.currentBuyRate ??
 //                         assetDetails?.buy_rate ??
 //                         0,
 //                     )}
 //                     /$
-//                   </Text>
+//                   </AppText>
 //                 </View>
 
 //                 <View
@@ -1158,8 +1171,8 @@ export default function CryptoBuyScreen() {
 //                     justifyContent: "space-between",
 //                   }}
 //                 >
-//                   <Text style={[styles.balance]}>Market Price:</Text>
-//                   <Text style={styles.balance}>
+//                   <AppText style={[styles.balance]}>Market Price:</AppText>
+//                   <AppText style={styles.balance}>
 //                     {formatAmount(
 //                       Number(feeBreakdown?.marketCurrentPrice) || 0,
 //                       {
@@ -1167,7 +1180,7 @@ export default function CryptoBuyScreen() {
 //                       },
 //                     )}
 //                     /{assetDetails?.symbol}
-//                   </Text>
+//                   </AppText>
 //                 </View>
 
 //                 {feeBreakdown && amount > 0 && (
@@ -1180,14 +1193,14 @@ export default function CryptoBuyScreen() {
 //                         justifyContent: "space-between",
 //                       }}
 //                     >
-//                       <Text style={[styles.balance]}>You Buy:</Text>
-//                       <Text style={styles.balance}>
+//                       <AppText style={[styles.balance]}>You Buy:</AppText>
+//                       <AppText style={styles.balance}>
 //                         {feeBreakdown.coinAmount} {assetDetails?.symbol} (≈{" "}
 //                         {formatAmount(feeBreakdown.grossUsd, {
 //                           currency: "USD",
 //                         })}
 //                         )
-//                       </Text>
+//                       </AppText>
 //                     </View>
 
 //                     {!feeBreakdown.isStablecoin && (
@@ -1197,10 +1210,10 @@ export default function CryptoBuyScreen() {
 //                           justifyContent: "space-between",
 //                         }}
 //                       >
-//                         <Text style={[styles.balance]}>
+//                         <AppText style={[styles.balance]}>
 //                           Operational Fee (0.1%):
-//                         </Text>
-//                         <Text style={[styles.balance]}>
+//                         </AppText>
+//                         <AppText style={[styles.balance]}>
 //                           +{feeBreakdown.platformFeeCoin} {assetDetails?.symbol}{" "}
 //                           (≈ ${feeBreakdown.platformFeeUsd})
 //                         </Text>
@@ -1214,10 +1227,10 @@ export default function CryptoBuyScreen() {
 //                           justifyContent: "space-between",
 //                         }}
 //                       >
-//                         <Text style={[styles.balance]}>Operational Fee:</Text>
-//                         <Text style={[styles.balance, { color: "#2e7d32" }]}>
+//                         <AppText style={[styles.balance]}>Operational Fee:</AppText>
+//                         <AppText style={[styles.balance, { color: "#2e7d32" }]}>
 //                           No fee for {assetDetails?.symbol}
-//                         </Text>
+//                         </AppText>
 //                       </View>
 //                     )}
 
@@ -1229,8 +1242,8 @@ export default function CryptoBuyScreen() {
 //                         justifyContent: "space-between",
 //                       }}
 //                     >
-//                       <Text style={[styles.balance]}>Total Cost (USD):</Text>
-//                       <Text style={[styles.balance]}>
+//                       <AppText style={[styles.balance]}>Total Cost (USD):</AppText>
+//                       <AppText style={[styles.balance]}>
 //                         {formatAmount(
 //                           Number(feeBreakdown.totalCostUsd ?? 100),
 //                           {
@@ -1238,7 +1251,7 @@ export default function CryptoBuyScreen() {
 //                             decimalPlace: 3,
 //                           },
 //                         )}
-//                       </Text>
+//                       </AppText>
 //                     </View>
 
 //                     <View
@@ -1247,8 +1260,8 @@ export default function CryptoBuyScreen() {
 //                         justifyContent: "space-between",
 //                       }}
 //                     >
-//                       <Text style={[styles.balance]}>You'll Pay (₦):</Text>
-//                       <Text style={[styles.balance]}>{ngnAmount}</Text>
+//                       <AppText style={[styles.balance]}>You'll Pay (₦):</AppText>
+//                       <AppText style={[styles.balance]}>{ngnAmount}</AppText>
 //                     </View>
 //                   </>
 //                 )}
@@ -1262,8 +1275,8 @@ export default function CryptoBuyScreen() {
 //                     padding: 9,
 //                   }}
 //                 >
-//                   <Text style={styles.ngn}>You’re Paying:</Text>
-//                   <Text style={styles.ngn}>{ngnAmount}</Text>
+//                   <AppText style={styles.ngn}>You’re Paying:</AppText>
+//                   <AppText style={styles.ngn}>{ngnAmount}</AppText>
 //                 </View>
 //               </View>
 //             </View>
@@ -1277,9 +1290,9 @@ export default function CryptoBuyScreen() {
 //             disabled={hasInsufficientBalance || isSubmitting}
 //             onPress={handleSubmit(onSubmit)}
 //           >
-//             <Text style={styles.buttonText}>
+//             <AppText style={styles.buttonText}>
 //               {isSubmitting ? "Please wait..." : "Continue"}
-//             </Text>
+//             </AppText>
 //           </TouchableOpacity>
 //         </View>
 //       </ScrollView>

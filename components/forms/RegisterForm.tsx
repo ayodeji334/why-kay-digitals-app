@@ -23,6 +23,7 @@ import parsePhoneNumberFromString from "libphonenumber-js";
 import PhoneNumberInputField from "../PhoneNumberInputField";
 import EmailInputField from "../EmailInputField";
 import { OneSignal } from "react-native-onesignal";
+import { AppText } from "../AppText";
 
 const registerSchema = yup.object().shape({
   username: yup
@@ -173,17 +174,17 @@ const RegisterForm: React.FC = () => {
         placeholder="Choose a username"
       />
       {checkingUsername && (
-        <Text style={styles.checkingText}>Checking availability...</Text>
+        <AppText style={styles.checkingText}>Checking availability...</AppText>
       )}
       {!checkingUsername && usernameStatus.message && (
-        <Text
+        <AppText
           style={[
             styles.checkingText,
             usernameStatus.available ? styles.available : styles.taken,
           ]}
         >
           {usernameStatus.message}
-        </Text>
+        </AppText>
       )}
 
       <EmailInputField
@@ -238,7 +239,7 @@ const RegisterForm: React.FC = () => {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Continue</Text>
+          <AppText style={styles.buttonText}>Continue</AppText>
         )}
       </TouchableOpacity>
 
@@ -344,7 +345,7 @@ const RegisterForm: React.FC = () => {
 //         placeholder="Choose a username"
 //       />
 //       {checkingUsername && (
-//         <Text style={styles.checkingText}>Checking availability...</Text>
+//         <AppText style={styles.checkingText}>Checking availability...</Apptext>
 //       )}
 //       {!checkingUsername && usernameStatus.available && (
 //         <Text
@@ -406,7 +407,7 @@ const RegisterForm: React.FC = () => {
 //         {loading ? (
 //           <ActivityIndicator color="#fff" />
 //         ) : (
-//           <Text style={styles.buttonText}>Continue</Text>
+//           <AppText style={styles.buttonText}>Continue</Apptext>
 //         )}
 //       </TouchableOpacity>
 
@@ -443,7 +444,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     fontSize: normalize(18),
   },
 });

@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import VerificationForm from "../components/forms/VerificationForm";
 import { getFontFamily, normalize } from "../constants/settings";
+import { AppText } from "../components/AppText";
 
 // Utility function to mask email
 const maskEmail = (email: string) => {
@@ -27,8 +28,8 @@ export default function VerificationCodeScreen({ route }: any) {
       <StatusBar barStyle="dark-content" backgroundColor={"white"} />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Verify your email address</Text>
-          <Text
+          <AppText style={styles.title}>Verify your email address</AppText>
+          <AppText
             style={[
               {
                 fontFamily: getFontFamily(400),
@@ -39,7 +40,7 @@ export default function VerificationCodeScreen({ route }: any) {
             ]}
           >
             We sent you a 6 digit code to verify your email address
-            <Text
+            <AppText
               style={{
                 fontFamily: getFontFamily("800"),
                 paddingHorizontal: 10,
@@ -47,10 +48,10 @@ export default function VerificationCodeScreen({ route }: any) {
             >
               {" "}
               {maskEmail(email)}
-            </Text>
+            </AppText>
             . Enter in the field below. Enter the verification code sent to your
             email address
-          </Text>
+          </AppText>
         </View>
 
         <VerificationForm email={email} />
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
     marginBottom: 23,
   },
   title: {
-    fontSize: normalize(23),
+    fontSize: normalize(21),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

@@ -32,6 +32,7 @@ import {
   UserIcon,
   UserIdCardIcon,
 } from "../assets";
+import { AppText } from "../components/AppText";
 
 interface MenuItemProps {
   title: string;
@@ -48,7 +49,7 @@ interface MenuItemProps {
 
 const Section = ({ title, children, style }: any) => (
   <View style={[styles.section, style]}>
-    <Text style={styles.sectionTitle}>{title}</Text>
+    <AppText style={styles.sectionTitle}>{title}</AppText>
     {children}
   </View>
 );
@@ -75,10 +76,10 @@ const MenuItem = ({
     >
       <View
         style={{
-          marginRight: 12,
+          marginRight: 10,
           backgroundColor: bgColor,
-          height: 37,
-          width: 37,
+          height: 32,
+          width: 32,
           borderRadius: 100,
           justifyContent: "center",
           alignItems: "center",
@@ -87,17 +88,19 @@ const MenuItem = ({
         {IconComponent}
       </View>
       <View style={styles.menuItemContent}>
-        <Text
+        <AppText
           style={[
             styles.menuItemTitle,
             { color: isDangerous ? "#DC2626" : color },
           ]}
         >
           {title}
-        </Text>
-        {subtitle && <Text style={styles.menuItemSubtitle}>{subtitle}</Text>}
+        </AppText>
+        {subtitle && (
+          <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
+        )}
       </View>
-      {showArrow && !showSwitch && <ArrowRight2 size={17} color={color} />}
+      {showArrow && !showSwitch && <ArrowRight2 size={14} color={color} />}
       {showSwitch && (
         <Switch
           value={switchValue}
@@ -174,13 +177,13 @@ export default function SettingsScreen() {
               resizeMode="center"
             />
             <View>
-              <Text style={styles.title}>
+              <AppText style={styles.title}>
                 {user?.username
                   ? user.username.charAt(0).toUpperCase() +
                     user.username.slice(1)
                   : "User"}
-              </Text>
-              <Text style={styles.email}>{user?.email}</Text>
+              </AppText>
+              <AppText style={styles.email}>{user?.email}</AppText>
             </View>
           </View>
           <TouchableOpacity
@@ -188,7 +191,7 @@ export default function SettingsScreen() {
             style={styles.editButton}
             onPress={handleEditInfo}
           >
-            <Text style={styles.editButtonText}>Edit Info</Text>
+            <AppText style={styles.editButtonText}>Edit Info</AppText>
             <ArrowRight2 size={13} color={COLORS.primary} />
           </TouchableOpacity>
         </View>
@@ -198,22 +201,22 @@ export default function SettingsScreen() {
             <View style={styles.verificationIcon}>
               <CustomIcon
                 source={UserIdCardIcon}
-                size={20}
+                size={17}
                 color={COLORS.primary}
               />
             </View>
             <View style={styles.verificationText}>
-              <Text
+              <AppText
                 style={[
                   styles.verificationTitle,
                   { fontSize: normalize(19), fontFamily: getFontFamily("800") },
                 ]}
               >
                 KYC
-              </Text>
-              <Text style={styles.verificationTitle}>
+              </AppText>
+              <AppText style={styles.verificationTitle}>
                 Please add your BVN details
-              </Text>
+              </AppText>
             </View>
             <TouchableOpacity
               activeOpacity={0.83}
@@ -228,7 +231,7 @@ export default function SettingsScreen() {
                 gap: 3,
               }}
             >
-              <Text
+              <AppText
                 style={{
                   color: "white",
                   fontSize: normalize(16),
@@ -236,7 +239,7 @@ export default function SettingsScreen() {
                 }}
               >
                 Verify Identity
-              </Text>
+              </AppText>
               <ArrowRight2 size={13} color={COLORS.whiteBackground} />
             </TouchableOpacity>
           </View>
@@ -246,34 +249,34 @@ export default function SettingsScreen() {
           <MenuItem
             title="Profile"
             onPress={() => navigation.navigate("Profile" as never)}
-            IconComponent={<CustomIcon source={UserIcon} size={17} />}
+            IconComponent={<CustomIcon source={UserIcon} size={14} />}
           />
           <MenuItem
             title="KYC Verification"
             onPress={() => navigation.navigate("Verification" as never)}
-            IconComponent={<CustomIcon source={ShieldCheckIcon} size={17} />}
+            IconComponent={<CustomIcon source={ShieldCheckIcon} size={14} />}
           />
           <MenuItem
             title="Account Security"
             onPress={() => navigation.navigate("AccountSecurity" as never)}
-            IconComponent={<CustomIcon source={ShieldIcon} size={17} />}
+            IconComponent={<CustomIcon source={ShieldIcon} size={14} />}
           />
           <MenuItem
             title="Notification Setting"
             onPress={() => navigation.navigate("NotificationSettings" as never)}
             IconComponent={
-              <Notification color={COLORS.primary} variant="Linear" size={17} />
+              <Notification color={COLORS.primary} variant="Linear" size={14} />
             }
           />
           <MenuItem
             title="Account Limits"
             onPress={() => navigation.navigate("AccountLimit" as never)}
-            IconComponent={<CustomIcon source={AlarmIcon} size={20} />}
+            IconComponent={<CustomIcon source={AlarmIcon} size={17} />}
           />
           <MenuItem
             title="Suggestion Box"
             onPress={() => navigation.navigate("Suggestion" as never)}
-            IconComponent={<Message color={COLORS.primary} size={20} />}
+            IconComponent={<Message color={COLORS.primary} size={17} />}
           />
           <MenuItem
             title="Theme (Dark Mode)"
@@ -285,7 +288,7 @@ export default function SettingsScreen() {
                 "The feature is not available for now. Kindly check back later",
               );
             }}
-            IconComponent={<CustomIcon source={ThemeIcon} size={17} />}
+            IconComponent={<CustomIcon source={ThemeIcon} size={14} />}
           />
         </Section>
 
@@ -293,23 +296,23 @@ export default function SettingsScreen() {
           <MenuItem
             title="Contact Us"
             onPress={() => navigation.navigate("ContactUs" as never)}
-            IconComponent={<CustomIcon source={CallServiceIcon} size={17} />}
+            IconComponent={<CustomIcon source={CallServiceIcon} size={14} />}
           />
           <MenuItem
             title="Refer&Earn"
             onPress={() => navigation.navigate("ReferAndEarn" as never)}
-            IconComponent={<CustomIcon source={GiftIcon} size={20} />}
+            IconComponent={<CustomIcon source={GiftIcon} size={17} />}
           />
           <MenuItem
             title="Legal"
             onPress={() => navigation.navigate("Legal" as never)}
-            IconComponent={<CustomIcon source={FileIcon} size={17} />}
+            IconComponent={<CustomIcon source={FileIcon} size={14} />}
           />
           <MenuItem
             title="Delete Account"
             onPress={() => navigation.navigate("DeleteAccount" as never)}
             IconComponent={
-              <CustomIcon source={TrashIcon} size={20} color={COLORS.primary} />
+              <CustomIcon source={TrashIcon} size={17} color={COLORS.primary} />
             }
           />
           <MenuItem
@@ -319,16 +322,16 @@ export default function SettingsScreen() {
             IconComponent={
               <CustomIcon
                 source={LogoutIcon}
-                size={20}
+                size={17}
                 color={COLORS.primary}
               />
             }
           />
         </Section>
         <View style={{ paddingVertical: 20 }}>
-          <Text style={styles.versionText}>
+          <AppText style={styles.versionText}>
             Version {appVersion} (Build {buildNumber})
-          </Text>
+          </AppText>
         </View>
 
         <HalfScreenModal
@@ -342,7 +345,7 @@ export default function SettingsScreen() {
           secondaryAction={() => setModalVisible(false)}
           iconBackgroundColor="#FF4D4D1A"
           IconComponent={
-            <CustomIcon source={LogoutIcon} size={20} color={COLORS.primary} />
+            <CustomIcon source={LogoutIcon} size={17} color={COLORS.primary} />
           }
           iconColor={COLORS.error}
           isDangerous={true}
@@ -409,8 +412,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
     marginBottom: 12,
     color: "#565466",
   },
@@ -462,7 +465,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 15,
+    paddingVertical: 12,
     paddingHorizontal: 4,
     borderBottomWidth: 0.5,
     borderColor: "#D2D2D2",
@@ -471,7 +474,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuItemTitle: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
   },
   menuItemSubtitle: {

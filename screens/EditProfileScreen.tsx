@@ -31,6 +31,7 @@ import { useNavigation } from "@react-navigation/native";
 import PhoneNumberInputField from "../components/PhoneNumberInputField";
 import parsePhoneNumberFromString from "libphonenumber-js";
 import useAxios from "../hooks/useAxios";
+import { AppText } from "../components/AppText";
 
 const profileSchema = yup.object().shape({
   first_name: yup.string().required("First Name is required"),
@@ -272,7 +273,7 @@ export default function EditProfileScreen() {
           onPress={handleSubmit(handleUpdateProfile)}
           disabled={loading}
         >
-          <Text style={styles.updateButtonText}>Update Profile</Text>
+          <AppText style={styles.updateButtonText}>Update Profile</AppText>
         </TouchableOpacity>
       </ScrollView>
 

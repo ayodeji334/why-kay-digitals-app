@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -22,14 +22,16 @@ import DatePicker from "../components/DatePicker";
 import { showError, showSuccess } from "../utlis/toast";
 import useAxios from "../hooks/useAxios";
 import { AxiosError } from "axios";
+import { useNavigation } from "@react-navigation/native";
+import { AppText } from "../components/AppText";
 
 export const EmptyTransactionState: React.FC = () => (
   <View style={styles.emptyState}>
     <CustomIcon source={NoResultIcon} size={normalize(70)} color="#000" />
-    <Text style={styles.emptyTitle}>No Transactions Yet!</Text>
-    <Text style={styles.emptyDescription}>
+    <AppText style={styles.emptyTitle}>No Transactions Yet!</AppText>
+    <AppText style={styles.emptyDescription}>
       Any transactions you make will appear here. {"\n"}Let's trade!
-    </Text>
+    </AppText>
   </View>
 );
 
@@ -52,15 +54,23 @@ const TransactionHistoryScreen: React.FC = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [filters, setFilters] = useState<FilterType>(defaultFilter);
   const [filterQuery, setFilterQuery] = useState<FilterType>(defaultFilter);
-  const serializedFilters = useMemo(() => filters, [filters]);
 
-  const fetchTransactions = async ({ pageParam = 1 }) => {
-    const params: any = {
+  // Read filters from queryKey so the closure is always fresh
+  const fetchTransactions = async ({
+    pageParam = 1,
+    queryKey,
+  }: {
+    pageParam: number;
+    queryKey: any;
+  }) => {
+    const [, activeFilters] = queryKey as [string, FilterType]; // destructure from key
+
+    const params = {
       page: pageParam,
-      start_date: filters.startDate.iso,
-      end_date: filters.endDate.iso,
-      status: filters.status,
-      category: filters.category,
+      start_date: activeFilters.startDate.iso || undefined,
+      end_date: activeFilters.endDate.iso || undefined,
+      status: activeFilters.status || undefined,
+      category: activeFilters.category || undefined,
     };
 
     const { data }: any = await apiGet("/transactions/user/transactions", {
@@ -69,6 +79,22 @@ const TransactionHistoryScreen: React.FC = () => {
 
     return { data: data?.data.transactions, meta: data?.data?.pagination };
   };
+
+  // const fetchTransactions = async ({ pageParam = 1 }) => {
+  //   const params: any = {
+  //     page: pageParam,
+  //     start_date: filters.startDate.iso,
+  //     end_date: filters.endDate.iso,
+  //     status: filters.status,
+  //     category: filters.category,
+  //   };
+
+  //   const { data }: any = await apiGet("/transactions/user/transactions", {
+  //     params,
+  //   });
+
+  //   return { data: data?.data.transactions, meta: data?.data?.pagination };
+  // };
 
   const {
     data,
@@ -79,7 +105,7 @@ const TransactionHistoryScreen: React.FC = () => {
     refetch,
     isRefetching,
   } = useInfiniteQuery({
-    queryKey: ["transactions", serializedFilters],
+    queryKey: ["transactions", filters], // pass the object, not stringified
     queryFn: fetchTransactions,
     initialPageParam: 1,
     getNextPageParam: lastPage =>
@@ -88,6 +114,24 @@ const TransactionHistoryScreen: React.FC = () => {
         : undefined,
   });
 
+  // const {
+  //   data,
+  //   fetchNextPage,
+  //   hasNextPage,
+  //   isFetchingNextPage,
+  //   isLoading,
+  //   refetch,
+  //   isRefetching,
+  // } = useInfiniteQuery({
+  //   queryKey: ["transactions", JSON.stringify(filters)],
+  //   queryFn: fetchTransactions,
+  //   initialPageParam: 1,
+  //   getNextPageParam: lastPage =>
+  //     lastPage.meta?.current_page < lastPage.meta?.last_page
+  //       ? lastPage.meta.current_page + 1
+  //       : undefined,
+  // });
+
   const transactions = useMemo(
     () => data?.pages.flatMap(page => page.data) ?? [],
     [data?.pages],
@@ -95,7 +139,7 @@ const TransactionHistoryScreen: React.FC = () => {
 
   const toggleFilterModal = () => {
     setIsFilterVisible(prev => !prev);
-    // setFilterQuery(defaultFilter);
+    setFilterQuery(filters); // sync draft to committed filters on every open/close
   };
 
   const handleApplyFilter = (newFilters: FilterType) => {
@@ -111,7 +155,7 @@ const TransactionHistoryScreen: React.FC = () => {
   const downloadAccountStatement = async () => {
     try {
       await apiGet("/transactions/user/account-statement");
-      showSuccess("Account Statement sent to your email");
+      showSuccess("Your Account Statement will be sent to your email shortly.");
     } catch (err) {
       if (err instanceof AxiosError) {
         showError(
@@ -121,6 +165,19 @@ const TransactionHistoryScreen: React.FC = () => {
       console.error(err);
     }
   };
+
+  const navigation = useNavigation();
+
+  console.log("Loading");
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("blur", () => {
+      setFilters(defaultFilter);
+      setFilterQuery(defaultFilter);
+    });
+
+    return unsubscribe; // cleans up the listener on unmount too
+  }, [navigation]);
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
@@ -134,7 +191,7 @@ const TransactionHistoryScreen: React.FC = () => {
           onPress={toggleFilterModal}
         >
           <Filter size={13} color="#fff" variant="Linear" />
-          <Text style={[styles.closeButtonText]}>Filter</Text>
+          <AppText style={[styles.closeButtonText]}>Filter</AppText>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -143,7 +200,7 @@ const TransactionHistoryScreen: React.FC = () => {
           onPress={downloadAccountStatement}
         >
           <DocumentDownload size={13} color="#fff" variant="Linear" />
-          <Text style={[styles.closeButtonText]}>Download Statement</Text>
+          <AppText style={[styles.closeButtonText]}>Download Statement</AppText>
         </TouchableOpacity>
       </View>
 
@@ -177,29 +234,31 @@ const TransactionHistoryScreen: React.FC = () => {
         onClose={toggleFilterModal}
       >
         <View style={{ marginVertical: 4 }}>
-          <Text style={styles.modalLabel}>Category</Text>
+          <AppText style={styles.modalLabel}>Category</AppText>
           <SelectInput
             onSelect={option =>
               setFilterQuery(prev => ({ ...prev, category: option.value }))
             }
             options={[
-              { label: "WITHDRAWAL", value: "WITHDRAWAL" },
-              { label: "FIAT WALLET FUNDING", value: "BANK_TRANSFER" },
-              { label: "AIRTIME", value: "AIRTIME" },
-              { label: "CRYPTO WITHDRAW", value: "CRYPTO_WITHDRAW" },
-              { label: "CRYPTO SELL", value: "CRYPTO_SELL" },
-              { label: "CRYPTO BUY", value: "CRYPTO_BUY" },
-              { label: "CRYPTO CONVERT", value: "CRYPTO_SWAP" },
-              { label: "CABLETV", value: "CABLETV" },
-              { label: "DATA", value: "DATA" },
-              { label: "ELECTRICITY BILL", value: "ELECTRICITY_BILL" },
+              { label: "Withdrawal", value: "WITHDRAWAL" },
+              { label: "Fiat Wallet Funding", value: "BANK_TRANSFER" },
+              { label: "Airtime", value: "AIRTIME" },
+              { label: "Crypto Withdraw", value: "CRYPTO_WITHDRAW" },
+              { label: "Crypto Sell", value: "CRYPTO_SELL" },
+              { label: "Crypto Buy", value: "CRYPTO_BUY" },
+              { label: "Crypto Convert", value: "CRYPTO_SWAP" },
+              { label: "Cable TV", value: "CABLE_BILL" },
+              { label: "Data", value: "DATA" },
+              { label: "Electricity Bill", value: "ELECTRICITY_BILL" },
+              { label: "Betting", value: "BETTING" },
+              { label: "Gift Card", value: "GIFT_CARD" },
             ]}
             value={filterQuery.category}
           />
         </View>
 
         <View style={{ marginVertical: 4 }}>
-          <Text style={styles.modalLabel}>Status</Text>
+          <AppText style={styles.modalLabel}>Status</AppText>
           <SelectInput
             options={[
               { label: "SUCCESSFUL", value: "successful" },
@@ -234,16 +293,16 @@ const TransactionHistoryScreen: React.FC = () => {
           style={styles.closeButton}
           onPress={() => handleApplyFilter(filterQuery)}
         >
-          <Text style={styles.closeButtonText}>Apply Filter</Text>
+          <AppText style={styles.closeButtonText}>Apply Filter</AppText>
         </TouchableOpacity>
 
         <Pressable
           style={[styles.closeButton, { backgroundColor: "#e7e7e7" }]}
           onPress={handleClearFilter}
         >
-          <Text style={[styles.closeButtonText, { color: "#000" }]}>
+          <AppText style={[styles.closeButtonText, { color: "#000" }]}>
             Clear Filter
-          </Text>
+          </AppText>
         </Pressable>
       </CustomModal>
     </SafeAreaView>

@@ -6,6 +6,7 @@ import HalfScreenModal from "../components/HalfScreenModal";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import ChangePasswordForm from "../components/forms/ChangePasswordForm";
+import { AppText } from "../components/AppText";
 
 export default function ChangePasswordScreen() {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -17,12 +18,12 @@ export default function ChangePasswordScreen() {
       <ScrollView style={styles.scrollContainer}>
         <View style={{ gap: 5 }}>
           {/* <Text style={styles.title}>Update Your Password</Text> */}
-          <Text style={styles.subtitle}>
+          <AppText style={styles.subtitle}>
             Your password protects your account and personal information.
             Updating it regularly helps keep your account secure. Choose a
             strong password with a mix of letters, numbers, and symbols that
             others cannot easily guess.
-          </Text>
+          </AppText>
         </View>
 
         <ChangePasswordForm />
@@ -54,12 +55,8 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 23,
   },
-  title: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-  },
   subtitle: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
     color: COLORS.dark,
     lineHeight: 20,

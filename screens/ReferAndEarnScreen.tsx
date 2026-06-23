@@ -25,6 +25,7 @@ import { useAuthStore } from "../stores/authSlice";
 import { COLORS } from "../constants/colors";
 import CustomIcon from "../components/CustomIcon";
 import { ShareIcon } from "../assets";
+import { AppText } from "../components/AppText";
 
 interface StepCardProps {
   step: number;
@@ -37,12 +38,12 @@ const StepCard: React.FC<StepCardProps> = ({ title, description }) => (
   <View style={styles.stepCard}>
     {/* <View style={styles.stepHeader}>
       <View style={styles.stepNumber}>
-        <Text style={styles.stepNumberText}>{step}</Text>
+        <AppText style={styles.stepNumberText}>{step}</AppText>
       </View>
       <IconComponent variant="Outline" size={18} color="#E89E00" />
     </View> */}
-    <Text style={styles.stepTitle}>{title}</Text>
-    <Text style={styles.stepDescription}>{description}</Text>
+    <AppText style={styles.stepTitle}>{title}</AppText>
+    <AppText style={styles.stepDescription}>{description}</AppText>
   </View>
 );
 
@@ -91,10 +92,10 @@ const ReferralAndEarnScreen: React.FC = () => {
           style={styles.balanceCard}
         >
           <View style={styles.balanceAmountContainer}>
-            <Text style={[styles.sectionTitle, { color: "white" }]}>
+            <AppText style={[styles.sectionTitle, { color: "white" }]}>
               Reward balance
-            </Text>
-            <Text style={styles.balanceAmount}>₦0.00</Text>
+            </AppText>
+            <AppText style={styles.balanceAmount}>₦0.00</AppText>
           </View>
         </ImageBackground>
 
@@ -106,9 +107,11 @@ const ReferralAndEarnScreen: React.FC = () => {
               flex: 1,
             }}
           >
-            <Text style={styles.sectionTitle}>Referral Code</Text>
+            <AppText style={styles.sectionTitle}>Referral Code</AppText>
             <View style={styles.referralCodeInfo}>
-              <Text style={styles.referralCodeName}>{user?.referral_code}</Text>
+              <AppText style={styles.referralCodeName}>
+                {user?.referral_code}
+              </AppText>
             </View>
             <View style={styles.referralActions}>
               <TouchableOpacity
@@ -117,9 +120,9 @@ const ReferralAndEarnScreen: React.FC = () => {
                 onPress={handleCopyCode}
               >
                 <Copy size={13} color={COLORS.primary} />
-                <Text style={styles.referralButtonText}>
+                <AppText style={styles.referralButtonText}>
                   {isCopied ? "Copied" : "Copy"}
-                </Text>
+                </AppText>
               </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={0.8}
@@ -131,18 +134,18 @@ const ReferralAndEarnScreen: React.FC = () => {
                   size={18}
                   color={COLORS.primary}
                 />
-                <Text style={styles.referralButtonText}>Share</Text>
+                <AppText style={styles.referralButtonText}>Share</AppText>
               </TouchableOpacity>
             </View>
           </View>
         </View>
 
         <View style={[styles.section, { marginVertical: 40 }]}>
-          <Text
+          <AppText
             style={[styles.sectionTitle, { fontFamily: getFontFamily(800) }]}
           >
             How to refer
-          </Text>
+          </AppText>
           <View style={styles.stepsContainer}>
             <StepCard
               step={1}
@@ -170,7 +173,9 @@ const ReferralAndEarnScreen: React.FC = () => {
           style={styles.historyButton}
           onPress={handleViewReferralHistory}
         >
-          <Text style={styles.historyButtonText}>View Referral History</Text>
+          <AppText style={styles.historyButtonText}>
+            View Referral History
+          </AppText>
           <ArrowRight2 size={12} color="#fff" />
         </TouchableOpacity>
       </ScrollView>

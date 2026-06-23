@@ -15,6 +15,7 @@ import { formatDate } from "../libs/formatDate";
 import { COLORS } from "../constants/colors";
 import { normalize, getFontFamily } from "../constants/settings";
 import { EmptyTransactionState } from "../screens/TransactionHistory";
+import { AppText } from "./AppText";
 
 export const groupTransactionsByDate = (transactions: any[]) => {
   const grouped: Record<string, any[]> = {};
@@ -82,10 +83,10 @@ const TransactionItem = ({ item }: any) => {
     >
       <View style={styles.transactionContent}>
         <View style={styles.transactionMain}>
-          <Text style={styles.transactionTitle}>
+          <AppText style={styles.transactionTitle}>
             {item?.description || item?.reference}
-          </Text>
-          <Text style={styles.transactionAmount}>
+          </AppText>
+          <AppText style={styles.transactionAmount}>
             {isCredit
               ? `+ ${
                   item?.medium.toUpperCase() === "CRYPTO"
@@ -97,24 +98,29 @@ const TransactionItem = ({ item }: any) => {
                     ? item?.amount.toString()
                     : formatAmount(item?.amount)
                 }`}
-          </Text>
+          </AppText>
         </View>
         <View style={styles.transactionMain}>
-          <Text style={styles.transactionTime}>
+          <AppText style={styles.transactionTime}>
             {item?.occurred_at ? formatDate(item.occurred_at) : ""}
-          </Text>
-          <Text
+          </AppText>
+          <AppText
             style={{
               color:
-                item?.status.toLowerCase() !== "failed" ? "#059669" : "#DC2626",
-              fontSize: normalize(17),
+                item?.status.toLowerCase() === "successful"
+                  ? "#059669"
+                  : item?.status.toLowerCase() === "processing" ||
+                    item?.status.toLowerCase() === "pending"
+                  ? "#b46108"
+                  : "#DC2626",
+              fontSize: normalize(16),
               fontFamily: getFontFamily(700),
             }}
           >
             {item?.status?.toUpperCase() === "SUCCESSFUL"
               ? "Successful"
               : item?.status}
-          </Text>
+          </AppText>
         </View>
       </View>
     </TouchableOpacity>
@@ -156,7 +162,7 @@ const TransactionSectionList: React.FC<TransactionSectionListProps> = ({
         )
       }
       renderSectionHeader={({ section: { title } }) => (
-        <Text style={styles.sectionHeader}>{title}</Text>
+        <AppText style={styles.sectionHeader}>{title}</AppText>
       )}
       ListEmptyComponent={
         <View style={{ paddingVertical: 40 }}>
@@ -187,7 +193,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     paddingHorizontal: 0,
     paddingVertical: 4,
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#868686",
     marginTop: 10,
@@ -214,7 +220,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   transactionTitle: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#000",
     maxWidth: "70%",
@@ -224,8 +230,8 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("800"),
   },
   transactionTime: {
-    fontSize: normalize(16),
+    fontSize: normalize(15),
     fontFamily: getFontFamily("700"),
-    color: "#9CA3AF",
+    color: "#7f7f7f",
   },
 });

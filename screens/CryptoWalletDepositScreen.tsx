@@ -18,6 +18,7 @@ import CustomIcon from "../components/CustomIcon";
 import { RefreshIcon } from "../assets";
 import { AxiosError } from "axios";
 import { showError } from "../utlis/toast";
+import { AppText } from "../components/AppText";
 
 const CryptoWalletDepositScreen = () => {
   const route: any = useRoute();
@@ -143,7 +144,7 @@ const CryptoWalletDepositScreen = () => {
             disabled={!asset}
             activeOpacity={0.7}
           >
-            <Text style={styles.actionLabel}>{label}</Text>
+            <AppText style={styles.actionLabel}>{label}</AppText>
           </TouchableOpacity>
         ))}
       </View>

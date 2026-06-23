@@ -19,6 +19,7 @@ import {
   UserIdCardIcon,
   UserVerificationShieldIcon,
 } from "../assets";
+import { AppText } from "../components/AppText";
 
 interface MenuItemProps {
   title: string;
@@ -62,15 +63,17 @@ const MenuItem = ({
       </View>
 
       <View style={styles.menuItemContent}>
-        <Text
+        <AppText
           style={[
             styles.menuItemTitle,
             { color: isDangerous ? "#DC2626" : color },
           ]}
         >
           {title}
-        </Text>
-        {subtitle && <Text style={styles.menuItemSubtitle}>{subtitle}</Text>}
+        </AppText>
+        {subtitle && (
+          <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
+        )}
       </View>
 
       {isVerified ? (
@@ -82,7 +85,7 @@ const MenuItem = ({
             borderRadius: 12,
           }}
         >
-          <Text
+          <AppText
             style={{
               color: COLORS.primary,
               fontSize: normalize(15),
@@ -90,7 +93,7 @@ const MenuItem = ({
             }}
           >
             Verified
-          </Text>
+          </AppText>
         </View>
       ) : (
         showArrow && <ArrowRight2 size={16} color={color} />
@@ -114,7 +117,7 @@ export default function KYCVerificationScreen() {
           IconComponent={
             <CustomIcon
               source={UserIdCardIcon}
-              size={20}
+              size={17}
               color={COLORS.primary}
             />
           }
@@ -132,7 +135,7 @@ export default function KYCVerificationScreen() {
             IconComponent={
               <CustomIcon
                 source={UserVerificationShieldIcon}
-                size={20}
+                size={17}
                 color={COLORS.primary}
               />
             }
@@ -145,7 +148,7 @@ export default function KYCVerificationScreen() {
             IconComponent={
               <CustomIcon
                 source={ShieldCheckIcon}
-                size={20}
+                size={17}
                 fill={COLORS.primary}
               />
             }
@@ -158,7 +161,7 @@ export default function KYCVerificationScreen() {
             IconComponent={
               <CustomIcon
                 source={LocationIcon}
-                size={20}
+                size={17}
                 color={COLORS.primary}
               />
             }
@@ -170,7 +173,7 @@ export default function KYCVerificationScreen() {
             IconComponent={
               <CustomIcon
                 source={ShieldCheckIcon}
-                size={20}
+                size={17}
                 fill={COLORS.primary}
               />
             }
@@ -213,7 +216,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuItemTitle: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     color: COLORS.darkBackground,
     fontFamily: getFontFamily("800"),
   },

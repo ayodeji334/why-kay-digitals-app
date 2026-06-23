@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { COLORS } from "../constants/colors";
 import { getFontFamily } from "../constants/settings";
+import { AppText } from "./AppText";
 
 const steps = [
   "Analyzing facial features...",
@@ -50,10 +51,10 @@ export default function IdentityVerifying({ loading }: { loading: boolean }) {
         <View style={styles.card}>
           <ActivityIndicator size="large" color={COLORS.primary} />
 
-          <Text style={styles.title}>Verifying your Identity</Text>
+          <AppText style={styles.title}>Verifying your Identity</AppText>
 
           <Animated.View style={{ opacity: fadeAnim }}>
-            <Text style={styles.stepText}>{steps[stepIndex]}</Text>
+            <AppText style={styles.stepText}>{steps[stepIndex]}</AppText>
           </Animated.View>
 
           <View style={styles.progressTrack}>
@@ -65,9 +66,9 @@ export default function IdentityVerifying({ loading }: { loading: boolean }) {
             />
           </View>
 
-          <Text style={styles.disclaimer}>
+          <AppText style={styles.disclaimer}>
             Please do not close the app or go back.
-          </Text>
+          </AppText>
         </View>
       </View>
     </View>

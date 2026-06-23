@@ -11,6 +11,7 @@ import { useAuthStore } from "../stores/authSlice";
 import { CloseCircle, TickCircle } from "iconsax-react-nativejs";
 import IdentityVerifying from "../components/IdentityVerifying";
 import { AxiosError } from "axios";
+import { AppText } from "../components/AppText";
 
 export default function SelfieConfirmationScreen() {
   const route = useRoute();
@@ -83,18 +84,18 @@ export default function SelfieConfirmationScreen() {
             }}
           >
             <TickCircle size={40} color={COLORS.primary} variant="Bold" />
-            <Text style={styles.statusTitle}>Verification Complete</Text>
-            <Text style={styles.statusDescription}>
+            <AppText style={styles.statusTitle}>Verification Complete</AppText>
+            <AppText style={styles.statusDescription}>
               Your identity has been successfully verified. You now have full
               access to upgrade your account and increase your transaction
               limits.
-            </Text>
+            </AppText>
           </View>
           <TouchableOpacity
             style={[styles.confirmButton, { marginLeft: 0, width: "100%" }]}
             onPress={() => navigation.replace("Verification")}
           >
-            <Text style={styles.buttonText}>Continue</Text>
+            <AppText style={styles.buttonText}>Continue</AppText>
           </TouchableOpacity>
         </View>
       ) : status === "error" ? (
@@ -108,18 +109,18 @@ export default function SelfieConfirmationScreen() {
             }}
           >
             <CloseCircle size={40} color="#FF4D4D" variant="Bold" />
-            <Text style={styles.statusTitle}>Verification Failed</Text>
-            <Text style={styles.statusDescription}>
+            <AppText style={styles.statusTitle}>Verification Failed</AppText>
+            <AppText style={styles.statusDescription}>
               We couldn't get a clear match of your face. Please ensure you are
               in a well-lit area and your face is fully centered in the frame.
-            </Text>
+            </AppText>
           </View>
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.retakeButton}
             onPress={handleRetake}
           >
-            <Text style={styles.buttonText}>Try Again</Text>
+            <AppText style={styles.buttonText}>Try Again</AppText>
           </TouchableOpacity>
         </View>
       ) : (
@@ -130,23 +131,23 @@ export default function SelfieConfirmationScreen() {
             style={styles.previewImage}
             resizeMode="cover"
           />
-          <Text style={styles.instructions}>
+          <AppText style={styles.instructions}>
             Make sure your face is clearly visible and centered.
-          </Text>
+          </AppText>
           <View style={styles.buttonRow}>
             <TouchableOpacity
               activeOpacity={0.8}
               style={[styles.retakeButton, { flex: 1 }]}
               onPress={handleRetake}
             >
-              <Text style={styles.buttonText}>Retake</Text>
+              <AppText style={styles.buttonText}>Retake</AppText>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={0.8}
               style={[styles.confirmButton, { flex: 1 }]}
               onPress={handleConfirm}
             >
-              <Text style={styles.buttonText}>Confirm</Text>
+              <AppText style={styles.buttonText}>Confirm</AppText>
             </TouchableOpacity>
           </View>
         </View>
@@ -163,17 +164,17 @@ export default function SelfieConfirmationScreen() {
   //       <View style={styles.statusContent}>
   //         <View>
   //           <TickCircle size={80} color={COLORS.primary} variant="Bold" />
-  //           <Text style={styles.statusTitle}>Verification Complete</Text>
-  //           <Text style={styles.statusDescription}>
+  //           <AppText style={styles.statusTitle}>Verification Complete</AppText>
+  //           <AppText style={styles.statusDescription}>
   //             Your identity has been successfully verified. You now have full
   //             access to upgrade your account and increase your transaction
   //             limits.
-  //           </Text>
+  //           </AppText>
   //           <TouchableOpacity
   //             style={[styles.confirmButton, { marginLeft: 0, width: "100%" }]}
   //             onPress={() => navigation.navigate("Verification")}
   //           >
-  //             <Text style={styles.buttonText}>Continue to Dashboard</Text>
+  //             <AppText style={styles.buttonText}>Continue to Dashboard</AppText>
   //           </TouchableOpacity>
   //         </View>
   //       </View>
@@ -189,11 +190,11 @@ export default function SelfieConfirmationScreen() {
   //           }}
   //         >
   //           <CloseCircle size={40} color="#FF4D4D" variant="Bold" />
-  //           <Text style={styles.statusTitle}>Verification Failed</Text>
-  //           <Text style={styles.statusDescription}>
+  //           <AppText style={styles.statusTitle}>Verification Failed</AppText>
+  //           <AppText style={styles.statusDescription}>
   //             We couldn't get a clear match of your face. Please ensure you are
   //             in a well-lit area and your face is fully centered in the frame.
-  //           </Text>
+  //           </AppText>
   //         </View>
   //         <View>
   //           <TouchableOpacity
@@ -201,7 +202,7 @@ export default function SelfieConfirmationScreen() {
   //             style={[styles.retakeButton]}
   //             onPress={handleRetake}
   //           >
-  //             <Text style={styles.buttonText}>Try Again</Text>
+  //             <AppText style={styles.buttonText}>Try Again</AppText>
   //           </TouchableOpacity>
   //         </View>
   //       </View>
@@ -215,9 +216,9 @@ export default function SelfieConfirmationScreen() {
   //           resizeMode="cover"
   //         />
 
-  //         <Text style={styles.instructions}>
+  //         <AppText style={styles.instructions}>
   //           Make sure your face is clearly visible and centered.
-  //         </Text>
+  //         </AppText>
 
   //         <View style={styles.buttonRow}>
   //           <TouchableOpacity
@@ -225,7 +226,7 @@ export default function SelfieConfirmationScreen() {
   //             style={[styles.retakeButton, { flex: 1 }]}
   //             onPress={handleRetake}
   //           >
-  //             <Text style={styles.buttonText}>Retake</Text>
+  //             <AppText style={styles.buttonText}>Retake</AppText>
   //           </TouchableOpacity>
 
   //           <TouchableOpacity
@@ -233,7 +234,7 @@ export default function SelfieConfirmationScreen() {
   //             style={[styles.confirmButton, { flex: 1 }]}
   //             onPress={handleConfirm}
   //           >
-  //             <Text style={styles.buttonText}>Confirm</Text>
+  //             <AppText style={styles.buttonText}>Confirm</AppText>
   //           </TouchableOpacity>
   //         </View>
   //       </View>

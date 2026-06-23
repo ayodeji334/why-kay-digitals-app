@@ -12,6 +12,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ArrowRight } from "iconsax-react-nativejs";
+import { AppText } from "../components/AppText";
 
 const PendingSwapScreen = () => {
   const navigation: any = useNavigation();
@@ -51,12 +52,12 @@ const PendingSwapScreen = () => {
               style={{ width: 35, height: 35, borderRadius: 25 }}
             />
           </View>
-          <Text style={styles.title}>Transaction Processing</Text>
-          <Text style={styles.message}>
+          <AppText style={styles.title}>Transaction Processing</AppText>
+          <AppText style={styles.message}>
             Your asset conversion from {transaction?.meta?.asset_symbol} to{" "}
             {transaction?.meta?.to_asset_symbol} is currently being processed.
             We’ll notify you as soon as the process is completed.
-          </Text>
+          </AppText>
         </View>
 
         <TouchableOpacity
@@ -64,7 +65,7 @@ const PendingSwapScreen = () => {
           style={styles.button}
           onPress={handleContinue}
         >
-          <Text style={styles.buttonText}>Continue</Text>
+          <AppText style={styles.buttonText}>Continue</AppText>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

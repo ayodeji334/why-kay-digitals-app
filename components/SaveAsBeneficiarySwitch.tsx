@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, Switch, StyleSheet } from "react-native";
+import { View, Switch, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
+import { AppText } from "./AppText";
 
 interface SaveAsBeneficiarySwitchProps {
   label?: string;
@@ -18,7 +19,7 @@ const SaveAsBeneficiarySwitch: React.FC<SaveAsBeneficiarySwitchProps> = ({
 }) => {
   return (
     <View style={styles.switchContainer}>
-      <Text style={styles.switchLabel}>{label}</Text>
+      <AppText style={styles.switchLabel}>{label}</AppText>
       <Switch
         value={value}
         onValueChange={onValueChange}
@@ -36,12 +37,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 12,
+    marginTop: 15,
     marginBottom: 20,
     paddingHorizontal: 4,
+    paddingVertical: 5,
   },
   switchLabel: {
-    fontSize: normalize(19),
+    fontSize: normalize(18),
     color: "#1A1A1A",
     fontFamily: getFontFamily("800"),
     marginBottom: 6,

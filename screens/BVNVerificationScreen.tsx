@@ -11,6 +11,7 @@ import BVNForm from "../components/forms/BVNVerificationForm";
 import { getFontFamily, normalize } from "../constants/settings";
 // import { useUser } from "../stores/authSlice";
 import { COLORS } from "../constants/colors";
+import { AppText } from "../components/AppText";
 // import { useNavigation } from "@react-navigation/native";
 
 export default function BVNVerificationScreen() {
@@ -26,28 +27,28 @@ export default function BVNVerificationScreen() {
       >
         {/* {!isProfileComplete ? (
           <View style={styles.infoSection}>
-            <Text style={styles.subtitle}>
+            <App={stAppTextyles.subtitle}>
               To verify your NIN, please update your profile with the same first
               name and last name used for your NIN or BVN.
-            </Text>
-            <Text style={styles.bulletText}>
+            </App=>
+            <App={stAppTextyles.bulletText}>
               Go to the Edit Profile screen to complete your details.
-            </Text>
+            </App=>
 
             <TouchableOpacity
               activeOpacity={0.89}
               style={styles.editButton}
               onPress={() => navigation.navigate("EditProfile" as never)}
             >
-              <Text style={styles.editButtonText}>Go to Edit Profile</Text>
+              <App={stAppTextyles.editButtonText}>Go to Edit Profile</App=>
             </TouchableOpacity>
           </View>
         ) : ( */}
         <>
-          <Text style={styles.subtitle}>
+          <AppText style={styles.subtitle}>
             We'll match your BVN details with a live selfie to confirm your
             identity. This process is quick and secure.
-          </Text>
+          </AppText>
           <View style={styles.formSection}>
             <BVNForm />
           </View>

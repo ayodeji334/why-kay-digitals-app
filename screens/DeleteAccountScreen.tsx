@@ -20,6 +20,7 @@ import { useAuthStore } from "../stores/authSlice";
 import CustomIcon from "../components/CustomIcon";
 import { AccountDeleteIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
+import { AppText } from "../components/AppText";
 
 const deleteReasons = [
   "I no longer need the account",
@@ -98,7 +99,7 @@ export default function DeleteAccountScreen() {
       onPress={() => setSelectedReason(item)}
       activeOpacity={0.7}
     >
-      <Text
+      <AppText
         style={[
           styles.reasonText,
           selectedReason === item && {
@@ -108,7 +109,7 @@ export default function DeleteAccountScreen() {
         ]}
       >
         {item}
-      </Text>
+      </AppText>
     </TouchableOpacity>
   );
 
@@ -123,11 +124,11 @@ export default function DeleteAccountScreen() {
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
         ListHeaderComponent={
           <View style={{ marginBottom: 20 }}>
-            <Text style={styles.subtitle}>
+            <AppText style={styles.subtitle}>
               Deleting your account will remove all your data permanently. This
               action cannot be undone. Please let us know the reason for leaving
               before proceeding.
-            </Text>
+            </AppText>
           </View>
         }
         ListFooterComponent={
@@ -140,6 +141,8 @@ export default function DeleteAccountScreen() {
                 onChangeText={setOtherReasonText}
                 multiline
                 numberOfLines={100}
+                maxFontSizeMultiplier={1}
+                allowFontScaling={false}
               />
             )}
 
@@ -158,7 +161,9 @@ export default function DeleteAccountScreen() {
               }
               onPress={handleDeletePress}
             >
-              <Text style={styles.deleteButtonText}>Delete My Account</Text>
+              <AppText style={styles.deleteButtonText}>
+                Delete My Account
+              </AppText>
             </TouchableOpacity>
           </>
         }

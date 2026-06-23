@@ -23,6 +23,7 @@ import { formatWithCommas } from "./SwapCryptoScreen";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
+import { AppText } from "../components/AppText";
 
 interface BettingProvider {
   biller_id: string;
@@ -67,9 +68,9 @@ const CustomerValidationStatus = memo(
       return (
         <View style={styles.detailsContainer}>
           <ActivityIndicator size="small" color={COLORS.primary} />
-          <Text style={[styles.detailsLabel, { textAlign: "center" }]}>
+          <AppText style={[styles.detailsLabel, { textAlign: "center" }]}>
             Validating customer ID…
-          </Text>
+          </AppText>
         </View>
       );
     }
@@ -77,10 +78,10 @@ const CustomerValidationStatus = memo(
     if (!userDetail) {
       return (
         <View style={styles.warningContainer}>
-          <Text style={styles.warningText}>
+          <AppText style={styles.warningText}>
             Customer not found. Please check the provider and customer ID and
             try again.
-          </Text>
+          </AppText>
         </View>
       );
     }
@@ -88,8 +89,8 @@ const CustomerValidationStatus = memo(
     return (
       <View style={styles.detailsContainer}>
         <View style={{ paddingVertical: 5 }}>
-          <Text style={styles.detailsLabel}>Name</Text>
-          <Text style={styles.detailsValue}>{userDetail}</Text>
+          <AppText style={styles.detailsLabel}>Name</AppText>
+          <AppText style={styles.detailsValue}>{userDetail}</AppText>
         </View>
       </View>
     );
@@ -377,7 +378,7 @@ export default function FundBettingAccountScreen() {
         </View>
 
         <View style={{ marginTop: -10 }}>
-          <Text style={styles.label}>Customer ID</Text>
+          <AppText style={styles.label}>Customer ID</AppText>
           <View style={styles.inputContainer}>
             <TextInput
               style={[styles.input, { paddingHorizontal: 15 }]}
@@ -388,12 +389,14 @@ export default function FundBettingAccountScreen() {
               onBlur={handleCustomerIdBlur}
               autoCapitalize="none"
               keyboardType="numeric"
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
             />
           </View>
           {errors.customer_id && (
-            <Text style={styles.errorText}>
+            <AppText style={styles.errorText}>
               {errors.customer_id.message as string}
-            </Text>
+            </AppText>
           )}
         </View>
 
@@ -404,9 +407,9 @@ export default function FundBettingAccountScreen() {
         />
 
         <View style={{ marginBottom: 2, marginTop: 10 }}>
-          <Text style={styles.label}>Amount</Text>
+          <AppText style={styles.label}>Amount</AppText>
           <View style={styles.inputContainer}>
-            <Text style={styles.currencySign}>₦</Text>
+            <AppText style={styles.currencySign}>₦</AppText>
             <TextInput
               style={[
                 styles.input,
@@ -417,12 +420,14 @@ export default function FundBettingAccountScreen() {
               placeholder="0.00"
               value={displayAmount}
               onChangeText={handleAmountChange}
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
             />
           </View>
           {errors.amount && (
-            <Text style={styles.errorText}>
+            <AppText style={styles.errorText}>
               {errors.amount.message as string}
-            </Text>
+            </AppText>
           )}
         </View>
 
@@ -437,13 +442,13 @@ export default function FundBettingAccountScreen() {
           onPress={handleSubmit(onSubmit)}
           disabled={isDisabled}
         >
-          <Text style={styles.buttonText}>
+          <AppText style={styles.buttonText}>
             {isSubmitting
               ? "Processing..."
               : validatingCustomer
               ? "Validating..."
               : "Continue"}
-          </Text>
+          </AppText>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

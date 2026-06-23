@@ -19,6 +19,7 @@ import { showError } from "../utlis/toast";
 import { AxiosError } from "axios";
 import CustomLoading from "../components/CustomLoading";
 import useAxios from "../hooks/useAxios";
+import { AppText } from "../components/AppText";
 
 export default function ChangeTransactionPinScreen() {
   const [step, setStep] = useState<"password" | "newPin">("password");
@@ -59,10 +60,10 @@ export default function ChangeTransactionPinScreen() {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {step === "password" && (
           <View>
-            <Text style={styles.subtitle}>
+            <AppText style={styles.subtitle}>
               Enter your current password to proceed with changing your
               Transaction PIN.
-            </Text>
+            </AppText>
 
             <PasswordInputField
               label="Account Password"
@@ -78,18 +79,18 @@ export default function ChangeTransactionPinScreen() {
               style={styles.button}
               onPress={handleSubmit(onSubmit)}
             >
-              <Text style={styles.buttonText}>Continue</Text>
+              <AppText style={styles.buttonText}>Continue</AppText>
             </TouchableOpacity>
           </View>
         )}
 
         {step === "newPin" && (
           <View>
-            <Text style={styles.subtitle}>
+            <AppText style={styles.subtitle}>
               Your transaction PIN is a 4-digit code used to authorize payments
               and sensitive actions on your account. Changing your PIN helps
               keep your money and data safe.
-            </Text>
+            </AppText>
 
             <SetNewTransactionPinForm />
           </View>

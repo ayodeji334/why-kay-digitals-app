@@ -22,6 +22,7 @@ import { useAuthStore } from "../stores/authSlice";
 import { AccountTier, useAccountTiers } from "../hooks/useAccountTiers";
 import CustomLoading from "../components/CustomLoading";
 import ErrorState from "../components/ErrorState";
+import { AppText } from "../components/AppText";
 
 if (
   Platform.OS === "android" &&
@@ -126,14 +127,14 @@ const AccountLimitsScreen = () => {
 
   const renderLimitItem = (item: any, index: number) => (
     <View key={index} style={styles.limitItem}>
-      <Text style={styles.limitName}>{item.name}</Text>
-      <Text style={styles.limitValue}>{item.value}</Text>
+      <AppText style={styles.limitName}>{item.name}</AppText>
+      <AppText style={styles.limitValue}>{item.value}</AppText>
     </View>
   );
 
   const renderLimitGroup = (group: any, groupIndex: number) => (
     <View key={groupIndex} style={styles.limitGroup}>
-      <Text style={styles.limitCategory}>{group.category}</Text>
+      <AppText style={styles.limitCategory}>{group.category}</AppText>
       {group.items.map(renderLimitItem)}
     </View>
   );
@@ -178,27 +179,27 @@ const AccountLimitsScreen = () => {
                 activeOpacity={0.9}
               >
                 <View style={styles.accordionHeaderContent}>
-                  <Text
+                  <AppText
                     style={[
                       styles.accordionTitle,
                       isTierExpanded(tier.id) && styles.accordionTitleExpanded,
                     ]}
                   >
                     Level {id + 1}
-                  </Text>
+                  </AppText>
 
                   {/* Accordion Icon */}
                   <View style={styles.accordionIcon}>
                     {tier.status && (
-                      <Text style={styles.currentBadge}>Current</Text>
+                      <AppText style={styles.currentBadge}>Current</AppText>
                     )}
-                    <Text style={styles.accordionIconText}>
+                    <AppText style={styles.accordionIconText}>
                       {isTierExpanded(tier.id) ? (
                         <ArrowDown2 size={12} />
                       ) : (
                         <ArrowUp2 size={12} />
                       )}
-                    </Text>
+                    </AppText>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -229,7 +230,7 @@ const AccountLimitsScreen = () => {
           onPress={() => navigation.navigate("Verification" as never)}
           style={styles.upgradeButton}
         >
-          <Text style={styles.upgradeButtonText}>Upgrade Limit</Text>
+          <AppText style={styles.upgradeButtonText}>Upgrade Limit</AppText>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -350,7 +351,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   limitCategory: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#333",
     marginBottom: 16,
@@ -364,15 +365,15 @@ const styles = StyleSheet.create({
     borderBottomColor: "#f0f0f0",
   },
   limitName: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
     color: "#666",
     flex: 1,
   },
   limitValue: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
-    color: "#333",
+    color: "#000000",
   },
   infoSection: {
     backgroundColor: "#e6f2ff",
@@ -381,7 +382,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   infoText: {
-    fontSize: normalize(12),
+    fontSize: normalize(13),
     fontFamily: getFontFamily("700"),
     color: "#007AFF",
     marginBottom: 8,

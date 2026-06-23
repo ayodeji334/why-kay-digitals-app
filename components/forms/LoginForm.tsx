@@ -15,6 +15,7 @@ import useAxios from "../../hooks/useAxios";
 import { useAuthStore } from "../../stores/authSlice";
 import { OneSignal } from "react-native-onesignal";
 import { useQueryClient } from "@tanstack/react-query";
+import { AppText } from "../AppText";
 
 const loginSchema = yup.object().shape({
   login: yup.string().required("Email or Username is required"),
@@ -138,19 +139,19 @@ const LoginForm: React.FC = () => {
         rules={{ required: "Password is required" }}
       />
 
-      <Text
+      <AppText
         onPress={() => navigation.navigate("ForgetPassword" as never)}
         style={styles.link}
       >
         Forget Password
-      </Text>
+      </AppText>
 
       <TouchableOpacity
         activeOpacity={0.8}
         style={styles.button}
         onPress={handleSubmit(handleLogin)}
       >
-        <Text style={styles.buttonText}>Sign In</Text>
+        <AppText style={styles.buttonText}>Sign In</AppText>
       </TouchableOpacity>
 
       <CustomLoading loading={loading} />
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
   },
   link: {
     paddingVertical: 10,
-    fontFamily: getFontFamily("400"),
+    fontFamily: getFontFamily("800"),
     fontSize: normalize(18),
     color: "blue",
   },

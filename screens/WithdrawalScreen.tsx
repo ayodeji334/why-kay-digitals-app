@@ -29,6 +29,7 @@ import { formatWithCommas } from "./SwapCryptoScreen";
 import { formatAmount } from "../libs/formatNumber";
 import InfoCard from "../components/InfoCard";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
+import { AppText } from "../components/AppText";
 
 export default function WithdrawScreen() {
   const { apiGet } = useAxios();
@@ -267,15 +268,17 @@ export default function WithdrawScreen() {
 
         <View style={styles.amountBox}>
           <View style={{ marginBottom: 2, marginTop: 10 }}>
-            <Text style={styles.label}>Amount</Text>
+            <AppText style={styles.label}>Amount</AppText>
             <View
               style={[
                 styles.inputContainer,
                 errors?.amount ? { borderColor: "red", borderWidth: 1 } : {},
               ]}
             >
-              <Text style={styles.dollarSign}>₦</Text>
+              <AppText style={styles.dollarSign}>₦</AppText>
               <TextInput
+                maxFontSizeMultiplier={1}
+                allowFontScaling={false}
                 style={styles.input}
                 keyboardType="numeric"
                 placeholderTextColor={"#aeaeaeff"}
@@ -291,68 +294,74 @@ export default function WithdrawScreen() {
             </View>
           </View>
           {errors.amount?.message && (
-            <Text style={styles.warningText}>{errors.amount?.message}</Text>
+            <AppText style={styles.warningText}>
+              {errors.amount?.message}
+            </AppText>
           )}
         </View>
 
         {!!amount && (
           <View style={styles.feeBreakdownContainer}>
-            <Text style={styles.feeBreakdownTitle}>Transaction Summary</Text>
+            <AppText style={styles.feeBreakdownTitle}>
+              Transaction Summary
+            </AppText>
 
             <View style={styles.feeRow}>
-              <Text style={styles.feeLabel}>Amount</Text>
-              <Text style={styles.feeValue}>{formatAmount(amount || 0)}</Text>
+              <AppText style={styles.feeLabel}>Amount</AppText>
+              <AppText style={styles.feeValue}>
+                {formatAmount(amount || 0)}
+              </AppText>
             </View>
 
             <View style={styles.feeRow}>
-              <Text style={styles.feeLabel}>
+              <AppText style={styles.feeLabel}>
                 {withdrawalFeeConfig.label}
                 {withdrawalFeeConfig.type === "percentage"
                   ? ` (${withdrawalFeeConfig.fee}%)`
                   : ""}
-              </Text>
-              <Text style={styles.feeValue}>
+              </AppText>
+              <AppText style={styles.feeValue}>
                 {formatAmount(feeBreakdown.withdrawalFee)}
-              </Text>
+              </AppText>
             </View>
 
             {feeBreakdown.stampDuty > 0 && (
               <View style={styles.feeRow}>
-                <Text style={styles.feeLabel}>Stamp Duty</Text>
-                <Text style={styles.feeValue}>
+                <AppText style={styles.feeLabel}>Stamp Duty</AppText>
+                <AppText style={styles.feeValue}>
                   {formatAmount(feeBreakdown.stampDuty)}
-                </Text>
+                </AppText>
               </View>
             )}
 
             <View style={styles.feeDivider} />
 
             <View style={styles.feeRow}>
-              <Text style={styles.feeLabel}>Total Debit</Text>
-              <Text style={styles.feeValue}>
+              <AppText style={styles.feeLabel}>Total Debit</AppText>
+              <AppText style={styles.feeValue}>
                 {formatAmount(feeBreakdown.totalDebit)}
-              </Text>
+              </AppText>
             </View>
           </View>
         )}
 
         {isBalanceSufficient && exceedsDailyLimit && (
           <View style={styles.warningContainer}>
-            <Text style={styles.warningText}>
+            <AppText style={styles.warningText}>
               This amount exceeds your daily transfer limit of{" "}
               {formatAmount(walletSummary?.daily_limit ?? 0)}. Please reduce the
               amount or upgrade your limit.
-            </Text>
+            </AppText>
           </View>
         )}
 
         {!isBalanceSufficient && !!amount && (
           <View style={styles.warningContainer}>
-            <Text style={styles.warningText}>
+            <AppText style={styles.warningText}>
               Insufficient balance. You need{" "}
               {formatAmount(feeBreakdown.totalDebit)} to complete this
               withdrawal (including fees).
-            </Text>
+            </AppText>
           </View>
         )}
 
@@ -376,7 +385,7 @@ export default function WithdrawScreen() {
         />
 
         {(errors.account_number?.message || errors?.bank_code?.message) && (
-          <Text
+          <AppText
             style={{
               paddingVertical: 10,
               color: "red",
@@ -385,7 +394,7 @@ export default function WithdrawScreen() {
             }}
           >
             You need to add a bank account
-          </Text>
+          </AppText>
         )}
 
         <SaveAsBeneficiarySwitch
@@ -405,7 +414,7 @@ export default function WithdrawScreen() {
           }}
           disabled={isDisabled}
         >
-          <Text
+          <AppText
             style={{
               color: "#fff",
               fontSize: normalize(18),
@@ -414,7 +423,7 @@ export default function WithdrawScreen() {
             }}
           >
             Continue
-          </Text>
+          </AppText>
         </TouchableOpacity>
 
         <CustomLoading loading={isLoading} />
@@ -638,14 +647,14 @@ export default function WithdrawScreen() {
 //               marginTop: 10,
 //             }}
 //           >
-//             <Text style={styles.label}>Amount</Text>
+//             <AppText style={styles.label}>Amount</AppText>
 //             <View
 //               style={[
 //                 styles.inputContainer,
 //                 errors?.amount ? { borderColor: "red", borderWidth: 1 } : {},
 //               ]}
 //             >
-//               <Text style={styles.dollarSign}>₦</Text>
+//               <AppText style={styles.dollarSign}>₦</AppText>
 //               <TextInput
 //                 style={styles.input}
 //                 keyboardType="numeric"
@@ -664,64 +673,64 @@ export default function WithdrawScreen() {
 //             </View>
 //           </View>
 //           {errors.amount?.message ? (
-//             <Text style={styles.warningText}>{errors.amount?.message}</Text>
+//             <AppText style={styles.warningText}>{errors.amount?.message}</AppText>
 //           ) : undefined}
-//           {/* <Text style={styles.amountNote}>Minimum of ₦1,000</Text> */}
+//           {/* <AppText style={styles.amountNote}>Minimum of ₦1,000</AppText> */}
 //         </View>
 
 //         {amount ? (
 //           <View style={styles.feeBreakdownContainer}>
-//             <Text style={styles.feeBreakdownTitle}>Transaction Summary</Text>
+//             <AppText style={styles.feeBreakdownTitle}>Transaction Summary</AppText>
 
 //             <View style={styles.feeRow}>
-//               <Text style={styles.feeLabel}>Amount</Text>
-//               <Text style={styles.feeValue}>{formatAmount(amount || 0)}</Text>
+//               <AppText style={styles.feeLabel}>Amount</AppText>
+//               <AppText style={styles.feeValue}>{formatAmount(amount || 0)}</AppText>
 //             </View>
 
 //             <View style={styles.feeRow}>
-//               <Text style={styles.feeLabel}>Withdrawal Fee</Text>
-//               <Text style={styles.feeValue}>
+//               <AppText style={styles.feeLabel}>Withdrawal Fee</AppText>
+//               <AppText style={styles.feeValue}>
 //                 {formatAmount(feeBreakdown.withdrawalFee)}
-//               </Text>
+//               </AppText>
 //             </View>
 
 //             {feeBreakdown.stampDuty > 0 && (
 //               <View style={styles.feeRow}>
-//                 <Text style={styles.feeLabel}>Stamp Duty</Text>
-//                 <Text style={styles.feeValue}>
+//                 <AppText style={styles.feeLabel}>Stamp Duty</AppText>
+//                 <AppText style={styles.feeValue}>
 //                   {formatAmount(feeBreakdown.stampDuty)}
-//                 </Text>
+//                 </AppText>
 //               </View>
 //             )}
 
 //             <View style={styles.feeDivider} />
 
 //             <View style={styles.feeRow}>
-//               <Text style={styles.feeLabel}>Total Debit</Text>
-//               <Text style={styles.feeValue}>
+//               <AppText style={styles.feeLabel}>Total Debit</AppText>
+//               <AppText style={styles.feeValue}>
 //                 {formatAmount(feeBreakdown.totalDebit)}
-//               </Text>
+//               </AppText>
 //             </View>
 //           </View>
 //         ) : undefined}
 
 //         {isBalanceSufficient && exceedsDailyLimit && (
 //           <View style={styles.warningContainer}>
-//             <Text style={styles.warningText}>
+//             <AppText style={styles.warningText}>
 //               This amount exceeds your daily transfer limit of{" "}
 //               {formatAmount(walletSummary?.daily_limit ?? 0)}. Please reduce the
 //               amount or upgrade your limit.
-//             </Text>
+//             </AppText>
 //           </View>
 //         )}
 
 //         {!isBalanceSufficient && !!amount && (
 //           <View style={styles.warningContainer}>
-//             <Text style={styles.warningText}>
+//             <AppText style={styles.warningText}>
 //               Insufficient balance. You need{" "}
 //               {formatAmount(feeBreakdown.totalDebit)} to complete this
 //               withdrawal (including fees).
-//             </Text>
+//             </AppText>
 //           </View>
 //         )}
 
@@ -837,13 +846,13 @@ const styles = StyleSheet.create({
   feeLabel: {
     color: "#000",
     fontFamily: getFontFamily("700"),
-    fontSize: 12,
+    fontSize: normalize(16),
     flex: 1,
   },
   feeValue: {
     color: "#000",
     fontFamily: getFontFamily("900"),
-    fontSize: 12,
+    fontSize: normalize(16),
     textAlign: "right",
     flex: 1,
   },
@@ -860,7 +869,7 @@ const styles = StyleSheet.create({
   feeWarningText: {
     color: "#ff6b6b",
     fontFamily: getFontFamily("400"),
-    fontSize: 18,
+    fontSize: normalize(16),
   },
   warningText: {
     color: "#db0b0bff",

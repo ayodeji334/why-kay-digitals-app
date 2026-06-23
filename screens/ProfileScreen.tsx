@@ -1,8 +1,6 @@
-// screens/ProfileScreen.js
 import React from "react";
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
@@ -18,6 +16,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { useAuthStore } from "../stores/authSlice";
 import CustomIcon from "../components/CustomIcon";
 import { CopyIcon, DeleteIcon } from "../assets";
+import { AppText } from "../components/AppText";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
@@ -55,8 +54,8 @@ export default function ProfileScreen() {
             paddingLeft: 10,
           }}
         >
-          <Text style={styles.fieldLabel}>{label}</Text>
-          <Text style={styles.fieldValue}>{value || "Not set"}</Text>
+          <AppText style={styles.fieldLabel}>{label}</AppText>
+          <AppText style={styles.fieldValue}>{value || "Not set"}</AppText>
         </View>
         {isCopy && value && (
           <TouchableOpacity
@@ -95,13 +94,13 @@ export default function ProfileScreen() {
             resizeMode="center"
           />
           <View style={styles.profileInfo}>
-            <Text style={styles.userName}>
+            <AppText style={styles.userName}>
               {userData?.username
                 ? userData.username.charAt(0).toUpperCase() +
                   userData.username.slice(1)
                 : ""}{" "}
-            </Text>
-            <Text style={styles.userEmail}>{userData?.email}</Text>
+            </AppText>
+            <AppText style={styles.userEmail}>{userData?.email}</AppText>
           </View>
         </View>
 
@@ -132,13 +131,13 @@ export default function ProfileScreen() {
         </View>
 
         <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
-          <Text style={styles.editButtonText}>Edit Details</Text>
+          <AppText style={styles.editButtonText}>Edit Details</AppText>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.deleteButton}
           onPress={handleDeleteAccount}
         >
-          <Text style={styles.deleteButtonText}>Delete account</Text>
+          <AppText style={styles.deleteButtonText}>Delete account</AppText>
           <CustomIcon source={DeleteIcon} color={COLORS.error} size={16} />
         </TouchableOpacity>
       </ScrollView>
@@ -188,12 +187,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   userName: {
-    fontSize: normalize(23),
+    fontSize: normalize(20),
     fontFamily: getFontFamily("800"),
     color: COLORS.dark,
   },
   userEmail: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
     color: COLORS.dark,
   },

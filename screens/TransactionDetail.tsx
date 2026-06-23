@@ -26,6 +26,7 @@ import { CopyIcon, ShareIcon } from "../assets";
 import Clipboard from "@react-native-clipboard/clipboard";
 import useAxios from "../hooks/useAxios";
 import { showError } from "../utlis/toast";
+import { AppText } from "../components/AppText";
 
 const DetailRow: React.FC<{
   label: string;
@@ -41,16 +42,16 @@ const DetailRow: React.FC<{
 
   return (
     <View style={styles.row}>
-      <Text style={styles.label}>{label}</Text>
+      <AppText style={styles.label}>{label}</AppText>
 
       <View style={styles.valueContainer}>
-        <Text
+        <AppText
           style={[styles.value, { color }]}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {value ?? "-"}
-        </Text>
+        </AppText>
 
         {copyable && value ? (
           <TouchableOpacity onPress={handleCopy} style={styles.copyButton}>
@@ -259,11 +260,7 @@ const TransactionDetailScreen = () => {
         </View>
 
         <View style={{ marginBottom: 20, gap: 0 }}>
-          <Text
-            allowFontScaling={false}
-            maxFontSizeMultiplier={0}
-            style={styles.amount}
-          >
+          <AppText style={styles.amount}>
             {transaction?.medium?.toUpperCase() === "CRYPTO"
               ? ["failed", "pending"].includes(
                   transaction.status?.toLowerCase(),
@@ -279,8 +276,8 @@ const TransactionDetailScreen = () => {
                   currency: transaction?.currency || "NGN",
                   decimalPlace: 2,
                 })}
-          </Text>
-          <Text
+          </AppText>
+          <AppText
             style={{
               fontSize: normalize(18),
               fontFamily: getFontFamily("400"),
@@ -308,7 +305,7 @@ const TransactionDetailScreen = () => {
               : isProcessing
               ? "Transaction is pending the confirmation"
               : "Transaction failed"}
-          </Text>
+          </AppText>
         </View>
 
         {transaction?.meta?.data?.recharge_token && (
@@ -427,17 +424,12 @@ const TransactionDetailScreen = () => {
             style={styles.headerButton}
           >
             <CustomIcon source={ShareIcon} size={18} color={COLORS.primary} />
-            <Text maxFontSizeMultiplier={0} style={styles.headerTitle}>
-              Share Receipt
-            </Text>
+            <AppText style={styles.headerTitle}>Share Receipt</AppText>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton}>
-            <Text
-              maxFontSizeMultiplier={0}
-              style={[styles.headerTitle, { color: "white" }]}
-            >
+            <AppText style={[styles.headerTitle, { color: "white" }]}>
               Done
-            </Text>
+            </AppText>
           </TouchableOpacity>
         </View>
       </ScrollView>

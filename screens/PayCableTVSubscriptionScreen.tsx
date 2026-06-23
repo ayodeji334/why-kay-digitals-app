@@ -25,6 +25,7 @@ import { formatAmount } from "../libs/formatNumber";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
+import { AppText } from "../components/AppText";
 
 // Validation Schema
 const schema = yup.object({
@@ -56,9 +57,9 @@ const SmartCardValidationStatus = memo(
       return (
         <View style={styles.validationRow}>
           <ActivityIndicator size="small" color={COLORS.primary} />
-          <Text style={[styles.detailsLabel, { textAlign: "center" }]}>
+          <AppText style={[styles.detailsLabel, { textAlign: "center" }]}>
             Validating user detail…
-          </Text>
+          </AppText>
         </View>
       );
     }
@@ -67,10 +68,10 @@ const SmartCardValidationStatus = memo(
     if (!cardDetail) {
       return (
         <View style={styles.warningContainer}>
-          <Text style={styles.warningText}>
+          <AppText style={styles.warningText}>
             User detail not found. Please check the provider and smartcard
             number and try again.
-          </Text>
+          </AppText>
         </View>
       );
     }
@@ -79,8 +80,8 @@ const SmartCardValidationStatus = memo(
     return (
       <View style={styles.validationRow}>
         <View style={{ paddingVertical: 5 }}>
-          <Text style={styles.detailsLabel}>Name</Text>
-          <Text style={styles.validatingText}>{cardDetail.name}</Text>
+          <AppText style={styles.detailsLabel}>Name</AppText>
+          <AppText style={styles.validatingText}>{cardDetail.name}</AppText>
         </View>
       </View>
     );
@@ -374,7 +375,7 @@ export default function PayCableTVSubscriptionScreen() {
           />
         </View>
         <View style={{ marginBottom: 20 }}>
-          <Text style={styles.subHeader}>Select Cable TV Provider</Text>
+          <AppText style={styles.subHeader}>Select Cable TV Provider</AppText>
           <View style={styles.networkRow}>
             {networks.map((item, index) => (
               <TouchableOpacity
@@ -387,7 +388,7 @@ export default function PayCableTVSubscriptionScreen() {
               >
                 {selectedNetwork === item.id && (
                   <View style={styles.checkIconContainer}>
-                    <Text style={styles.checkIcon}>✓</Text>
+                    <AppText style={styles.checkIcon}>✓</AppText>
                   </View>
                 )}
                 <Image source={item.logo} style={styles.networkLogo} />
@@ -395,7 +396,7 @@ export default function PayCableTVSubscriptionScreen() {
             ))}
           </View>
           {errors.network && (
-            <Text style={styles.errorText}>{errors.network.message}</Text>
+            <AppText style={styles.errorText}>{errors.network.message}</AppText>
           )}
         </View>
         <SelectInput
@@ -434,13 +435,13 @@ export default function PayCableTVSubscriptionScreen() {
             onPress={handleSubmit(onSubmit)}
             disabled={isDisabled}
           >
-            <Text style={styles.buttonText}>
+            <AppText style={styles.buttonText}>
               {loading
                 ? "Processing..."
                 : validatingCard
                 ? "Validating..."
                 : "Proceed"}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         </View>
       </ScrollView>

@@ -12,6 +12,7 @@ import NINVerificationForm from "../components/forms/NINVerificationForm";
 // import { useUser } from "../stores/authSlice";
 // import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
+import { AppText } from "../components/AppText";
 
 export default function IdentityVerificationScreen() {
   // const user = useUser();
@@ -27,29 +28,29 @@ export default function IdentityVerificationScreen() {
       >
         {/* {!isProfileComplete ? (
           <View style={styles.infoSection}>
-            <Text style={styles.subtitle}>
+            <AppText style={styles.subtitle}>
               To verify your NIN, please update your profile with the same first
               name and last name used for your NIN or BVN.
-            </Text>
-            <Text style={styles.bulletText}>
+            </AppText>
+            <AppText style={styles.bulletText}>
               Go to the Edit Profile screen to complete your details.
-            </Text>
+            </AppText>
 
             <TouchableOpacity
               activeOpacity={0.89}
               style={styles.editButton}
               onPress={() => navigation.navigate("EditProfile" as never)}
             >
-              <Text style={styles.editButtonText}>Go to Edit Profile</Text>
+              <AppText style={styles.editButtonText}>Go to Edit Profile</AppText>
             </TouchableOpacity>
           </View>
         ) : ( */}
         <>
-          <Text style={styles.subtitle}>
+          <AppText style={styles.subtitle}>
             We'll authenticate your National Identification Number (NIN) by
             matching it with a live selfie for secure identity verification.
             This process ensures regulatory compliance and account security.
-          </Text>
+          </AppText>
 
           <View style={styles.formSection}>
             <NINVerificationForm />

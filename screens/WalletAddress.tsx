@@ -21,6 +21,7 @@ import CustomIcon from "../components/CustomIcon";
 import { WalletIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
 import { AxiosError } from "axios";
+import { AppText } from "../components/AppText";
 
 interface Wallet {
   id: string;
@@ -160,47 +161,47 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
                   color={COLORS.primary}
                 />
               </View>
-              <Text style={styles.title}>No Wallet Address</Text>
+              <AppText style={styles.title}>No Wallet Address</AppText>
             </View>
           )}
 
           {/* Notes */}
           <View style={styles.notesSection}>
             {walletDetail?.address ? (
-              <Text style={styles.notesText}>
+              <AppText style={styles.notesText}>
                 Use a crypto wallet to scan the QR code or copy the address
                 above. Always confirm that the address matches the one shown
                 here before sending funds. Sending to an incorrect address may
                 result in permanent loss of funds. Also ensure you are sending
                 through the correct network
-                <Text style={{ fontFamily: getFontFamily("900") }}>
+                <AppText style={{ fontFamily: getFontFamily("900") }}>
                   {" "}
                   ({formattedNetworkName})
-                </Text>
+                </AppText>
                 .
-              </Text>
+              </AppText>
             ) : (
-              <Text style={styles.notesText}>
+              <AppText style={styles.notesText}>
                 A receiving address has not been generated yet for{" "}
-                <Text style={{ fontFamily: getFontFamily("900") }}>
+                <AppText style={{ fontFamily: getFontFamily("900") }}>
                   {wallet?.name} ({selectedNetwork})
-                </Text>
+                </AppText>
                 . Generate a wallet address to start receiving{" "}
-                <Text style={{ fontFamily: getFontFamily("900") }}>
+                <AppText style={{ fontFamily: getFontFamily("900") }}>
                   {wallet?.name}
-                </Text>{" "}
+                </AppText>{" "}
                 via the{" "}
-                <Text style={{ fontFamily: getFontFamily("900") }}>
+                <AppText style={{ fontFamily: getFontFamily("900") }}>
                   {selectedNetwork}
-                </Text>{" "}
+                </AppText>{" "}
                 network.
-              </Text>
+              </AppText>
             )}
           </View>
 
           {/* Network Selection */}
           <View style={{ marginVertical: 10 }}>
-            <Text style={styles.modalLabel}>Asset Networks</Text>
+            <AppText style={styles.modalLabel}>Asset Networks</AppText>
             <SelectInput
               options={(Array.isArray(wallet?.chains) ? wallet.chains : [])
                 .filter((chain: any) => chain.deposit_enabled)
@@ -219,11 +220,11 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
           {/* Receiving Address */}
           {walletDetail?.address && (
             <View style={styles.sectionBox}>
-              <Text style={styles.label}>Receiving Address</Text>
+              <AppText style={styles.label}>Receiving Address</AppText>
               <View style={styles.addressRow}>
-                <Text numberOfLines={1} style={styles.addressText}>
+                <AppText numberOfLines={1} style={styles.addressText}>
                   {walletDetail?.address}
-                </Text>
+                </AppText>
                 <TouchableOpacity
                   style={styles.copyButton}
                   onPress={() => copyToClipboard(walletDetail.address)}
@@ -236,11 +237,11 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
 
           {walletDetail?.tag && (
             <View style={styles.sectionBox}>
-              <Text style={styles.label}>Memo/Tag</Text>
+              <AppText style={styles.label}>Memo/Tag</AppText>
               <View style={styles.addressRow}>
-                <Text numberOfLines={1} style={styles.addressText}>
+                <AppText numberOfLines={1} style={styles.addressText}>
                   {walletDetail?.tag}
-                </Text>
+                </AppText>
                 <TouchableOpacity
                   style={styles.copyButton}
                   onPress={() =>
@@ -256,20 +257,20 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
           {/* Wallet Info */}
           <View style={styles.infoSection}>
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Network</Text>
-              <Text style={styles.infoValue}>{formattedNetworkName}</Text>
+              <AppText style={styles.infoLabel}>Network</AppText>
+              <AppText style={styles.infoValue}>{formattedNetworkName}</AppText>
             </View>
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Wallet Balance</Text>
-              <Text style={styles.infoValue}>{wallet.balance}</Text>
+              <AppText style={styles.infoLabel}>Wallet Balance</AppText>
+              <AppText style={styles.infoValue}>{wallet.balance}</AppText>
             </View>
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Market Value</Text>
-              <Text style={styles.infoValue}>
+              <AppText style={styles.infoLabel}>Market Value</AppText>
+              <AppText style={styles.infoValue}>
                 {formatAmount(parseFloat(wallet.price) || 0, {
                   currency: "USD",
                 })}
-              </Text>
+              </AppText>
             </View>
           </View>
         </View>
@@ -281,18 +282,18 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
               style={styles.shareButton}
               onPress={handleShare}
             >
-              <Text style={styles.actionButtonText}>Share Address</Text>
+              <AppText style={styles.actionButtonText}>Share Address</AppText>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={0.9}
               style={styles.viewRatesButton}
               onPress={handleNavigation}
             >
-              <Text
+              <AppText
                 style={[styles.actionButtonText, { color: COLORS.primary }]}
               >
                 View Rates
-              </Text>
+              </AppText>
             </TouchableOpacity>
           </View>
         )}
@@ -306,11 +307,11 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
             activeOpacity={0.9}
             onPress={handleGenerateWallet}
           >
-            <Text style={styles.generateButtonText}>
+            <AppText style={styles.generateButtonText}>
               {isGenerating
                 ? "Generating..."
                 : `Generate ${selectedNetwork.toUpperCase()} Wallet Address`}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         </View>
       )}

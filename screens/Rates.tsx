@@ -19,6 +19,7 @@ import useAxios from "../hooks/useAxios";
 import { showError } from "../utlis/toast";
 import { formatWithCommas } from "./SwapCryptoScreen";
 import { CryptoOption, Rate, TradeIntent, TradeTab } from "../libs/types";
+import { AppText } from "../components/AppText";
 
 export default function CryptoRatesScreen() {
   const [activeTab, setActiveTab] = useState<TradeTab>("sell");
@@ -147,7 +148,7 @@ export default function CryptoRatesScreen() {
               style={[styles.tab, activeTab === tab && styles.activeTab]}
               onPress={() => setActiveTab(tab)}
             >
-              <Text
+              <AppText
                 style={
                   activeTab === tab
                     ? styles.activeTabText
@@ -155,7 +156,7 @@ export default function CryptoRatesScreen() {
                 }
               >
                 {tab === "sell" ? "Sell Rates" : "Buy Rates"}
-              </Text>
+              </AppText>
             </TouchableOpacity>
           ))}
         </View>
@@ -171,15 +172,17 @@ export default function CryptoRatesScreen() {
           />
 
           <View style={{ marginBottom: 2, marginTop: 10 }}>
-            <Text style={styles.label}>Amount in USD ($)</Text>
+            <AppText style={styles.label}>Amount in USD ($)</AppText>
             <View style={styles.inputContainer}>
-              <Text style={styles.dollarSign}>$</Text>
+              <AppText style={styles.dollarSign}>$</AppText>
               <TextInput
                 style={styles.input}
                 keyboardType="decimal-pad"
                 placeholderTextColor="#aeaeaeff"
                 placeholder="0.00"
                 value={formattedAmount}
+                maxFontSizeMultiplier={1}
+                allowFontScaling={false}
                 onChangeText={text => {
                   const cleaned = text.replace(/[^0-9.]/g, "");
                   const parts = cleaned.split(".");
@@ -197,38 +200,38 @@ export default function CryptoRatesScreen() {
           </View>
 
           <View style={{ marginVertical: 12 }}>
-            <Text style={styles.label}>Expected Amount (₦)</Text>
+            <AppText style={styles.label}>Expected Amount (₦)</AppText>
             <View style={styles.rateBox}>
-              <Text style={styles.rateText}>
+              <AppText style={styles.rateText}>
                 {formatAmount(rateInfo?.totalNgn ?? 0, { currency: "NGN" })}
-              </Text>
+              </AppText>
             </View>
           </View>
 
           {selectedCrypto && amountNum > 0 && rateInfo && (
             <View style={styles.infoContainer}>
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Exchange Rate:</Text>
-                <Text style={styles.infoValue}>
+                <AppText style={styles.infoLabel}>Exchange Rate:</AppText>
+                <AppText style={styles.infoValue}>
                   {formatAmount(rateInfo.value)}/$
-                </Text>
+                </AppText>
               </View>
 
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Rate Category:</Text>
-                <Text style={styles.infoValue}>
+                <AppText style={styles.infoLabel}>Rate Category:</AppText>
+                <AppText style={styles.infoValue}>
                   {rateInfo.source === "category"
                     ? rateInfo.label
                     : "Default rate"}
-                </Text>
+                </AppText>
               </View>
 
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Estimated Coin:</Text>
-                <Text style={styles.infoValue}>
+                <AppText style={styles.infoLabel}>Estimated Coin:</AppText>
+                <AppText style={styles.infoValue}>
                   {formatNumber(rateInfo.coinAmount, { decimalPlace: 8 })}{" "}
                   {crypto?.symbol}
-                </Text>
+                </AppText>
               </View>
             </View>
           )}
@@ -240,17 +243,17 @@ export default function CryptoRatesScreen() {
             activeOpacity={0.8}
             style={styles.tradeButton}
           >
-            <Text style={styles.tradeButtonText}>Trade Crypto</Text>
+            <AppText style={styles.tradeButtonText}>Trade Crypto</AppText>
           </TouchableOpacity>
 
-          <Text
+          <AppText
             style={[
               styles.label,
               { textAlign: "center", fontFamily: getFontFamily("400") },
             ]}
           >
             Note: This is an estimated rate. Actual rate may differ.
-          </Text>
+          </AppText>
         </View>
       </ScrollView>
 

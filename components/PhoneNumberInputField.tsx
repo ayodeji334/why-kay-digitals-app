@@ -24,6 +24,7 @@ import {
 import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
 import { COLORS } from "../constants/colors";
+import { AppText } from "./AppText";
 
 interface Props {
   control: Control<any>;
@@ -106,7 +107,7 @@ const PhoneNumberInputField: React.FC<Props> = ({
     error?: any,
   ) => (
     <View style={[styles.container, containerStyle]}>
-      {showLabel && label && <Text style={styles.label}>{label}</Text>}
+      {showLabel && label && <AppText style={styles.label}>{label}</AppText>}
 
       <View style={styles.row}>
         <TouchableOpacity
@@ -121,11 +122,11 @@ const PhoneNumberInputField: React.FC<Props> = ({
                 style={{ width: 25, height: 16, resizeMode: "contain" }}
               />
             )}
-            <Text style={styles.countryCode}>
+            <AppText style={styles.countryCode}>
               {selectedCountry
                 ? `+${selectedCountry.callingCode[0] ?? ""}`
                 : "+234"}
-            </Text>
+            </AppText>
           </View>
         </TouchableOpacity>
 
@@ -135,6 +136,8 @@ const PhoneNumberInputField: React.FC<Props> = ({
           placeholderTextColor={placeholderTextColor}
           keyboardType="numeric"
           maxLength={maxLength}
+          maxFontSizeMultiplier={1}
+          allowFontScaling={false}
           onBlur={() => {
             onBlur?.();
             trigger?.(name); // trigger validation on blur
@@ -159,14 +162,14 @@ const PhoneNumberInputField: React.FC<Props> = ({
         />
       </View>
 
-      {error && <Text style={styles.errorText}>{error.message}</Text>}
+      {error && <AppText style={styles.errorText}>{error.message}</AppText>}
 
       {/* Country picker modal */}
       <Modal visible={modalVisible} animationType="slide" transparent={false}>
         <View style={styles.overlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Country</Text>
+              <AppText style={styles.modalTitle}>Select Country</AppText>
               <Pressable onPress={() => setModalVisible(false)}>
                 <CustomIcon
                   source={CloseIcon}
@@ -184,6 +187,8 @@ const PhoneNumberInputField: React.FC<Props> = ({
               placeholderTextColor="#989898ff"
               value={searchText}
               onChangeText={setSearchText}
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
             />
 
             {/* <FlatList
@@ -208,11 +213,11 @@ const PhoneNumberInputField: React.FC<Props> = ({
                         }}
                       />
                     )}
-                    <Text style={styles.countryName}>
+                    <AppText style={styles.countryName}>
                       {getCountryName(item)} ({item.cca2})
-                    </Text>
+                    </AppText>
                   </View>
-                  <Text style={styles.callingCode}>+{item.callingCode[0]}</Text>
+                  <AppText style={styles.callingCode}>+{item.callingCode[0]}</AppText>
                 </TouchableOpacity>
               )}
             /> */}
@@ -248,11 +253,13 @@ const PhoneNumberInputField: React.FC<Props> = ({
                         style={{ width: 30, height: 20, resizeMode: "contain" }}
                       />
                     )}
-                    <Text style={styles.countryName}>
+                    <AppText style={styles.countryName}>
                       {getCountryName(item)} ({item.cca2})
-                    </Text>
+                    </AppText>
                   </View>
-                  <Text style={styles.callingCode}>+{item.callingCode[0]}</Text>
+                  <AppText style={styles.callingCode}>
+                    +{item.callingCode[0]}
+                  </AppText>
                 </TouchableOpacity>
               )}
             />
@@ -295,7 +302,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 10,
     paddingHorizontal: 10,
-    paddingVertical: 14,
+    paddingVertical: 12,
     backgroundColor: "#fff",
   },
   countryCode: {
@@ -309,7 +316,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 10,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 12,
     color: "#1A1A1A",
     fontFamily: getFontFamily("400"),
     fontSize: normalize(18),
@@ -324,9 +331,9 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   label: {
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     fontSize: normalize(18),
-    marginBottom: 6,
+    marginBottom: 2,
     color: "#000",
   },
   overlay: {
@@ -357,7 +364,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     fontFamily: getFontFamily("400"),
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 10,
@@ -376,11 +383,11 @@ const styles = StyleSheet.create({
   countryLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
   countryName: {
     fontFamily: getFontFamily("700"),
-    fontSize: normalize(15),
+    fontSize: normalize(17),
   },
   callingCode: {
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(15),
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(17),
     color: "#666",
   },
 });

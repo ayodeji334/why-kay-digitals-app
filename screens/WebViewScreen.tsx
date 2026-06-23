@@ -12,6 +12,7 @@ import { WebView } from "react-native-webview";
 import { COLORS } from "../constants/colors";
 import { InfoCircle } from "iconsax-react-nativejs";
 import { getFontFamily } from "../constants/settings";
+import { AppText } from "../components/AppText";
 
 interface WebPageScreenProps {
   route: {
@@ -42,17 +43,17 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
           </View>
 
           {/* Title */}
-          <Text style={styles.errorTitle}>Page Load Failed</Text>
+          <AppText style={styles.errorTitle}>Page Load Failed</AppText>
 
           {/* Description */}
-          <Text style={styles.errorText}>
+          <AppText style={styles.errorText}>
             Oops! Something went wrong while loading the page. Please check your
             internet connection or try again later.
-          </Text>
+          </AppText>
 
           {/* Retry Button */}
           <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
-            <Text style={styles.retryButtonText}>Retry</Text>
+            <AppText style={styles.retryButtonText}>Retry</AppText>
           </TouchableOpacity>
         </View>
       ) : (
@@ -60,7 +61,7 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
           {loading && (
             <View style={styles.loaderContainer}>
               <ActivityIndicator size="large" color={COLORS.primary} />
-              <Text style={styles.loadingText}>Loading...</Text>
+              <AppText style={styles.loadingText}>Loading...</AppText>
             </View>
           )}
           <WebView

@@ -5,6 +5,7 @@ import { formatAmount } from "../libs/formatNumber";
 import CustomIcon from "./CustomIcon";
 import { DangerIcon } from "../assets";
 import { COLORS } from "../constants/colors";
+import { AppText } from "./AppText";
 
 export default function ConfirmationModal({
   showConfirmModal,
@@ -46,7 +47,7 @@ export default function ConfirmationModal({
           <View style={{ paddingBottom: 10 }}>
             <CustomIcon source={DangerIcon} size={35} />
           </View>
-          <Text
+          <AppText
             style={{
               fontFamily: getFontFamily("800"),
               fontSize: normalize(23),
@@ -54,9 +55,9 @@ export default function ConfirmationModal({
             }}
           >
             Confirm Transaction
-          </Text>
+          </AppText>
 
-          <Text
+          <AppText
             style={{
               marginTop: 10,
               textAlign: "center",
@@ -69,7 +70,7 @@ export default function ConfirmationModal({
             You are about to transfer {formatAmount(data?.amount ?? 0)}. This is
             a large amount. Please confirm that you want to proceed with this
             transaction.
-          </Text>
+          </AppText>
 
           <TouchableOpacity
             onPress={handleProceed}
@@ -81,7 +82,7 @@ export default function ConfirmationModal({
               marginTop: 20,
             }}
           >
-            <Text
+            <AppText
               style={{
                 color: "#fff",
                 textAlign: "center",
@@ -90,7 +91,7 @@ export default function ConfirmationModal({
               }}
             >
               Yes, Proceed
-            </Text>
+            </AppText>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -103,7 +104,7 @@ export default function ConfirmationModal({
               marginTop: 10,
             }}
           >
-            <Text
+            <AppText
               style={{
                 color: "#1A1A1A",
                 textAlign: "center",
@@ -112,7 +113,7 @@ export default function ConfirmationModal({
               }}
             >
               No, Cancel
-            </Text>
+            </AppText>
           </TouchableOpacity>
         </View>
       </View>

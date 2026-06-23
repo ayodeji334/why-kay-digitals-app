@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { Eye, EyeSlash } from "iconsax-react-nativejs";
+import { AppText } from "./AppText";
 
 interface Props {
   control: any;
@@ -61,7 +62,9 @@ const PasswordInputField: React.FC<Props> = ({
         fieldState: { error },
       }) => (
         <View style={styles.container}>
-          {showLabel && label && <Text style={styles.label}>{label}</Text>}
+          {showLabel && label && (
+            <AppText style={styles.label}>{label}</AppText>
+          )}
 
           <View style={[styles.inputWrapper, error && styles.errorBorder]}>
             <TextInput
@@ -72,6 +75,8 @@ const PasswordInputField: React.FC<Props> = ({
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
             />
             <TouchableOpacity
               activeOpacity={0.8}
@@ -80,14 +85,14 @@ const PasswordInputField: React.FC<Props> = ({
               {showPassword ? <Eye size={20} /> : <EyeSlash size={20} />}
             </TouchableOpacity>
           </View>
-          {error && <Text style={styles.errorText}>{error.message}</Text>}
+          {error && <AppText style={styles.errorText}>{error.message}</AppText>}
 
           {showHints && value !== "" && (
             <View style={styles.hintsWrapper}>
               {passwordValidations.map((rule, idx) => {
                 const passed = rule.test(value);
                 return (
-                  <Text
+                  <AppText
                     key={idx}
                     style={[
                       styles.hint,
@@ -95,7 +100,7 @@ const PasswordInputField: React.FC<Props> = ({
                     ]}
                   >
                     {passed ? "✅" : "❌"} {rule.label}
-                  </Text>
+                  </AppText>
                 );
               })}
             </View>
@@ -111,9 +116,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   label: {
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     fontSize: normalize(18),
-    marginBottom: 6,
+    marginBottom: 2,
   },
   placeholderStyle: {
     color: "#000000ff",
@@ -130,7 +135,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingHorizontal: 5,
-    paddingVertical: 16,
+    paddingVertical: 12,
     color: "#000",
     fontFamily: getFontFamily("400"),
     fontSize: normalize(18),

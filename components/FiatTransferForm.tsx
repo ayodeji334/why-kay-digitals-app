@@ -6,6 +6,7 @@ import { SelectInput } from "./SelectInputField";
 import TextInputField from "./TextInputField";
 import { formatWithCommas, parseToNumber } from "../screens/SwapCryptoScreen";
 import { useWalletStore } from "../stores/walletSlice";
+import { AppText } from "./AppText";
 
 export default function TransferForm({
   control,
@@ -52,21 +53,23 @@ export default function TransferForm({
       )}
 
       <View style={{ marginVertical: 4 }}>
-        <Text style={styles.label}>
+        <AppText style={styles.label}>
           Amount in {type === "fiat" ? "Naira (₦)" : "Dollars (USD)"}
-        </Text>
+        </AppText>
         <Controller
           control={control}
           name="amount"
           render={({ field: { onBlur, onChange } }) => (
             <View style={styles.inputContainer}>
-              <Text style={styles.dollarSign}>
+              <AppText style={styles.dollarSign}>
                 {type === "fiat" ? "₦" : "$"}
-              </Text>
+              </AppText>
               <TextInput
                 style={styles.input}
                 value={displayAmount}
                 placeholder="0.00"
+                maxFontSizeMultiplier={1}
+                allowFontScaling={false}
                 placeholderTextColor="#999"
                 keyboardType="decimal-pad"
                 onBlur={onBlur}

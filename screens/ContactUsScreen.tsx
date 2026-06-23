@@ -19,6 +19,7 @@ import {
 } from "iconsax-react-nativejs";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
+import { AppText } from "../components/AppText";
 
 interface SectionProps {
   title: string;
@@ -41,7 +42,7 @@ interface MenuItemProps {
 
 const Section: React.FC<SectionProps> = ({ title, children, style }) => (
   <View style={[styles.section, style]}>
-    <Text style={styles.sectionTitle}>{title}</Text>
+    <AppText style={styles.sectionTitle}>{title}</AppText>
     {children}
   </View>
 );
@@ -71,22 +72,22 @@ const MenuItem: React.FC<MenuItemProps> = ({
         />
       </View>
       <View style={styles.menuItemContent}>
-        <Text
+        <AppText
           style={[
             styles.menuItemTitle,
             { color: isDangerous ? "#DC2626" : color },
           ]}
         >
           {title}
-        </Text>
+        </AppText>
         {/* Subtitle handling: string or array */}
         {typeof subtitle === "string" ? (
-          <Text style={styles.menuItemSubtitle}>{subtitle}</Text>
+          <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
         ) : Array.isArray(subtitle) ? (
           <View style={styles.listContainer}>
             {subtitle.map((item, index) => (
               <View key={index} style={styles.listItem}>
-                <Text style={styles.listText}>{item}</Text>
+                <AppText style={styles.listText}>{item}</AppText>
               </View>
             ))}
           </View>
@@ -195,7 +196,7 @@ const HelpSupportScreen: React.FC = () => {
         style={styles.contactButton}
         onPress={handleWhatsApp}
       >
-        <Text style={styles.contactButtonText}>Contact Support Now</Text>
+        <AppText style={styles.contactButtonText}>Contact Support Now</AppText>
       </TouchableOpacity>
     </ScrollView>
   );

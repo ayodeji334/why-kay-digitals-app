@@ -5,6 +5,7 @@ import { normalize, getFontFamily } from "../constants/settings";
 import CustomIcon from "../components/CustomIcon";
 import { CheckCircleIcon } from "../assets";
 import { AddCircle } from "iconsax-react-nativejs";
+import { AppText } from "../components/AppText";
 
 export default function BankAccountSelector({
   bankName,
@@ -19,7 +20,7 @@ export default function BankAccountSelector({
 }) {
   return (
     <View style={styles.bankAccountSection}>
-      <Text style={styles.sectionLabel}>Select Bank Account</Text>
+      <AppText style={styles.sectionLabel}>Select Bank Account</AppText>
       {bankName && accountName && accountNumber ? (
         <TouchableOpacity
           activeOpacity={0.9}
@@ -27,7 +28,7 @@ export default function BankAccountSelector({
         >
           <View style={styles.selectedAccount}>
             <View>
-              <Text style={styles.bankName}>{accountName}</Text>
+              <AppText style={styles.bankName}>{accountName}</AppText>
               <View
                 style={{
                   flexDirection: "row",
@@ -35,8 +36,8 @@ export default function BankAccountSelector({
                   alignContent: "center",
                 }}
               >
-                <Text style={styles.accountNumber}>{bankName}</Text>
-                <Text
+                <AppText style={styles.accountNumber}>{bankName}</AppText>
+                <AppText
                   style={{
                     marginHorizontal: 2,
                     textAlign: "center",
@@ -44,8 +45,8 @@ export default function BankAccountSelector({
                   }}
                 >
                   •
-                </Text>
-                <Text style={styles.accountNumber}>{accountNumber}</Text>
+                </AppText>
+                <AppText style={styles.accountNumber}>{accountNumber}</AppText>
               </View>
             </View>
             <CustomIcon size={15} source={CheckCircleIcon} />
@@ -53,11 +54,12 @@ export default function BankAccountSelector({
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
+          activeOpacity={0.8}
           style={styles.addAccountButton}
           onPress={() => setShowBankModal(true)}
         >
-          <AddCircle size={normalize(16)} color="#00863b" />
-          <Text style={styles.addAccountText}>Add Bank Account</Text>
+          <AddCircle size={normalize(18)} color="#00863b" />
+          <AppText style={styles.addAccountText}>Add Bank Account</AppText>
         </TouchableOpacity>
       )}
     </View>
@@ -84,11 +86,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bankName: {
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("800"),
   },
   accountNumber: {
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     gap: 1,
     color: "#000",
     flexDirection: "row",
@@ -111,7 +113,7 @@ const styles = StyleSheet.create({
   },
   addAccountText: {
     color: COLORS.primary,
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("800"),
   },
 });

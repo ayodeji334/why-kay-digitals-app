@@ -4,6 +4,7 @@ import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize, width } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 import RegisterForm from "../components/forms/RegisterForm";
+import { AppText } from "../components/AppText";
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
@@ -22,20 +23,19 @@ export default function RegisterScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Getting Started</Text>
-          <Text
+          <AppText style={styles.title}>Getting Started</AppText>
+          <AppText
             style={[
               styles.title,
               {
                 fontFamily: getFontFamily(400),
                 fontSize: normalize(18),
-                marginTop: 2,
                 marginLeft: 1,
               },
             ]}
           >
             Let’s create your account here.
-          </Text>
+          </AppText>
         </View>
 
         <RegisterForm />
@@ -47,26 +47,26 @@ export default function RegisterScreen() {
             justifyContent: "center",
           }}
         >
-          <Text
+          <AppText
             style={{
               fontSize: normalize(18),
               fontFamily: getFontFamily(400),
             }}
           >
             Already have an account?
-          </Text>
-          <Text
+          </AppText>
+          <AppText
             onPress={handleNavigate}
             style={[
               {
                 fontSize: normalize(18),
-                fontFamily: getFontFamily(400),
+                fontFamily: getFontFamily(700),
               },
               { color: "blue" },
             ]}
           >
             Sign in here
-          </Text>
+          </AppText>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: normalize(23),
+    fontSize: normalize(21),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

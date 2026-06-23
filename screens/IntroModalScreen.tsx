@@ -16,6 +16,7 @@ import { COLORS } from "../constants/colors";
 import { getFontFamily, height, normalize } from "../constants/settings";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowRight2 } from "iconsax-react-nativejs";
+import { AppText } from "../components/AppText";
 
 const slides = [
   {
@@ -105,13 +106,13 @@ export default function IntroModalScreen() {
 
             <View style={styles.textContainer}>
               <View>
-                {/* <Text style={styles.title}>{item.title}</Text> */}
-                <Text style={styles.title}>
+                {/* <AppText style={styles.title}>{item.title}</AppText> */}
+                <AppText style={styles.title}>
                   {item.title2}
-                  <Text style={styles.highlight}> {item.highlight}</Text>
-                </Text>
+                  <AppText style={styles.highlight}> {item.highlight}</AppText>
+                </AppText>
               </View>
-              <Text style={styles.subtitle}>{item.subtitle}</Text>
+              <AppText style={styles.subtitle}>{item.subtitle}</AppText>
             </View>
           </View>
         )}
@@ -132,7 +133,7 @@ export default function IntroModalScreen() {
           style={{ paddingHorizontal: 10, paddingVertical: 4 }}
           onPress={() => navigation.navigate("Welcome" as never)}
         >
-          <Text style={styles.skip}>Skip</Text>
+          <AppText style={styles.skip}>Skip</AppText>
         </Pressable>
         <Pressable style={styles.nextButton} onPress={handleNext}>
           <ArrowRight2 color="white" size={15} />
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 17,
   },
   title: {
-    fontSize: normalize(30),
+    fontSize: normalize(26),
     textAlign: "left",
     marginBottom: 2,
     lineHeight: 30,
@@ -180,9 +181,9 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily(900),
   },
   subtitle: {
-    fontSize: normalize(22),
+    fontSize: normalize(19),
     marginTop: 10,
-    lineHeight: 20,
+    lineHeight: 16,
     fontFamily: getFontFamily(400),
   },
   dotsContainer: {
@@ -212,8 +213,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 17,
   },
   skip: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily(700),
+    fontSize: normalize(20),
+    fontFamily: getFontFamily(800),
   },
   nextButton: {
     paddingHorizontal: 20,

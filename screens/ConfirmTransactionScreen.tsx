@@ -24,6 +24,7 @@ import useAxios from "../hooks/useAxios";
 import { useQueryClient } from "@tanstack/react-query";
 import { showError } from "../utlis/toast";
 import { AxiosError } from "axios";
+import { AppText } from "../components/AppText";
 
 type FormData = {
   pin: string;
@@ -121,8 +122,8 @@ export default function ConfirmTransactionScreen() {
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Enter Transaction PIN</Text>
-          <Text
+          <AppText style={styles.title}>Enter Transaction PIN</AppText>
+          <AppText
             style={[
               {
                 fontFamily: getFontFamily("400"),
@@ -133,7 +134,7 @@ export default function ConfirmTransactionScreen() {
             ]}
           >
             Kindly enter your transaction pin to continue with the transaction.
-          </Text>
+          </AppText>
         </View>
 
         <OtpInputField
@@ -148,16 +149,16 @@ export default function ConfirmTransactionScreen() {
           style={styles.button}
           onPress={handleSubmit(handleContinue)}
         >
-          <Text style={styles.buttonText}>Continue</Text>
+          <AppText style={styles.buttonText}>Continue</AppText>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={{ marginTop: 40 }}
           onPress={() => navigation.navigate("ChangeTransactionPin")}
         >
-          <Text style={[styles.buttonText, { color: COLORS.primary }]}>
+          <AppText style={[styles.buttonText, { color: COLORS.primary }]}>
             Forget Pin?
-          </Text>
+          </AppText>
         </TouchableOpacity>
       </ScrollView>
 

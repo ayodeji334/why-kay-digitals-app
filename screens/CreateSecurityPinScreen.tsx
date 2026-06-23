@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import OtpInputField from "../components/OtpInputField";
+import { AppText } from "../components/AppText";
 
 type FormData = {
   pin: string;
@@ -52,8 +53,8 @@ export default function CreateSecurityPinScreen() {
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Create your Security Pin </Text>
-          <Text
+          <AppText style={styles.title}>Create your Security Pin </AppText>
+          <AppText
             style={[
               styles.title,
               {
@@ -65,7 +66,7 @@ export default function CreateSecurityPinScreen() {
             ]}
           >
             Set a pin to process your transaction
-          </Text>
+          </AppText>
         </View>
 
         <OtpInputField
@@ -79,7 +80,7 @@ export default function CreateSecurityPinScreen() {
           style={styles.button}
           onPress={handleSubmit(onSubmit)}
         >
-          <Text style={styles.buttonText}>Continue</Text>
+          <AppText style={styles.buttonText}>Continue</AppText>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

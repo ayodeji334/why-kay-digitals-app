@@ -14,6 +14,7 @@ import { AxiosError } from "axios";
 import useAxios from "../../hooks/useAxios";
 import { useAuthStore } from "../../stores/authSlice";
 import { useQueryClient } from "@tanstack/react-query";
+import { AppText } from "../AppText";
 
 const otpSchema = yup.object().shape({
   otp: yup
@@ -100,15 +101,15 @@ const VerificationForm = ({ email }: { email: string }) => {
 
       {/* {otp.length === 0 && ( */}
       <View style={styles.resendWrapper}>
-        <Text style={styles.infoText}>Didn’t get the code? </Text>
+        <AppText style={styles.infoText}>Didn’t get the code? </AppText>
         <TouchableOpacity disabled={countdown > 0} onPress={handleResend}>
-          <Text
+          <AppText
             style={[styles.resendText, countdown > 0 && styles.disabledResend]}
           >
             {countdown > 0
               ? `Resend in 00:${countdown.toString().padStart(2, "0")}s`
               : "Resend"}
-          </Text>
+          </AppText>
         </TouchableOpacity>
       </View>
       {/* )} */}
@@ -117,7 +118,7 @@ const VerificationForm = ({ email }: { email: string }) => {
         style={styles.button}
         onPress={handleSubmit(handleVerify)}
       >
-        <Text style={styles.buttonText}>Continue</Text>
+        <AppText style={styles.buttonText}>Continue</AppText>
       </TouchableOpacity>
 
       <CustomLoading loading={isLoading} />

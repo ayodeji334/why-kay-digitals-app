@@ -20,6 +20,7 @@ import { AxiosError } from "axios";
 import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
 import useAxios from "../hooks/useAxios";
+import { AppText } from "../components/AppText";
 
 type FormData = {
   pin: string;
@@ -74,11 +75,11 @@ export default function ConfirmTwoFactorAuthenticationScreen() {
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Complete 2FA Setup</Text>
-          <Text style={styles.subtitle}>
+          <AppText style={styles.title}>Complete 2FA Setup</AppText>
+          <AppText style={styles.subtitle}>
             Finalize your account security by entering the code from your
             authenticator app
-          </Text>
+          </AppText>
         </View>
 
         <OtpInputField control={control} name="pin" boxes={6} />
@@ -87,7 +88,7 @@ export default function ConfirmTwoFactorAuthenticationScreen() {
           style={styles.button}
           onPress={handleSubmit(handleVerifyCodeAndEnable2FA)}
         >
-          <Text style={styles.buttonText}>Set Pin</Text>
+          <AppText style={styles.buttonText}>Set Pin</AppText>
         </TouchableOpacity>
       </ScrollView>
 

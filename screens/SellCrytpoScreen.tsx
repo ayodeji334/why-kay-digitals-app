@@ -36,6 +36,7 @@ import CustomLoading from "../components/CustomLoading";
 import { TradeIntent } from "../libs/types";
 import { showError } from "../utlis/toast";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
+import { AppText } from "../components/AppText";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -465,29 +466,31 @@ export default function CryptoSellScreen() {
                     />
                   )}
                   <View style={styles.cryptoInfo}>
-                    <Text style={styles.optionName}>
+                    <AppText style={styles.optionName}>
                       {assetDetails?.asset_name}{" "}
                       {assetDetails?.symbol && ` (${assetDetails?.symbol})`}
-                    </Text>
+                    </AppText>
                   </View>
                 </View>
               </View>
 
               <View>
-                <Text style={styles.label}>
+                <AppText style={styles.label}>
                   Enter the amount (in $ dollars) you want to buy
-                </Text>
+                </AppText>
 
                 <Controller
                   control={control}
                   name="amount"
                   render={({ field: { onChange, onBlur } }) => (
                     <View style={styles.inputContainer}>
-                      <Text style={styles.dollarSign}>$</Text>
+                      <AppText style={styles.dollarSign}>$</AppText>
                       <TextInput
                         style={styles.input}
                         value={displayAmount}
                         placeholder="0.00"
+                        maxFontSizeMultiplier={1}
+                        allowFontScaling={false}
                         placeholderTextColor="#999"
                         keyboardType="decimal-pad"
                         onBlur={onBlur}
@@ -502,18 +505,22 @@ export default function CryptoSellScreen() {
                   )}
                 />
                 {errors.amount && (
-                  <Text style={styles.error}>{errors.amount.message}</Text>
+                  <AppText style={styles.error}>
+                    {errors.amount.message}
+                  </AppText>
                 )}
 
                 {/* Insufficient balance message with max sellable amount */}
                 {hasInsufficientBalance && insufficientBalanceMessage && (
-                  <Text style={styles.error}>{insufficientBalanceMessage}</Text>
+                  <AppText style={styles.error}>
+                    {insufficientBalanceMessage}
+                  </AppText>
                 )}
 
                 {!hasInsufficientBalance && (
-                  <Text style={styles.approx}>
+                  <AppText style={styles.approx}>
                     Approximately {assetValueEquivalent} {symbol}
-                  </Text>
+                  </AppText>
                 )}
 
                 <View
@@ -525,9 +532,9 @@ export default function CryptoSellScreen() {
                     gap: 8,
                   }}
                 >
-                  <Text style={[styles.note, { color: "black" }]}>
+                  <AppText style={[styles.note, { color: "black" }]}>
                     Wallet Balance, Exchange Rate & Fee Breakdown
-                  </Text>
+                  </AppText>
 
                   {/* Wallet balance */}
                   <View
@@ -536,17 +543,17 @@ export default function CryptoSellScreen() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <Text
+                    <AppText
                       style={[
                         styles.balance,
                         { fontFamily: getFontFamily("800") },
                       ]}
                     >
                       Wallet Balance:
-                    </Text>
-                    <Text style={styles.balance}>
+                    </AppText>
+                    <AppText style={styles.balance}>
                       {assetDetails?.balance || 0} {assetDetails?.symbol}
-                    </Text>
+                    </AppText>
                   </View>
 
                   <View
@@ -555,20 +562,20 @@ export default function CryptoSellScreen() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <Text
+                    <AppText
                       style={[
                         styles.balance,
                         { fontFamily: getFontFamily("800") },
                       ]}
                     >
                       Balance in USD:
-                    </Text>
-                    <Text style={styles.balance}>
+                    </AppText>
+                    <AppText style={styles.balance}>
                       {formatAmount(
                         Number(assetDetails?.balance) * marketPrice || 0,
                         { currency: "USD", decimalPlace: 8 },
                       )}
-                    </Text>
+                    </AppText>
                   </View>
 
                   <View style={{ height: 1, backgroundColor: "#d4edda" }} />
@@ -580,17 +587,17 @@ export default function CryptoSellScreen() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <Text
+                    <AppText
                       style={[
                         styles.balance,
                         { fontFamily: getFontFamily("800") },
                       ]}
                     >
                       Sell Rate:
-                    </Text>
-                    <Text style={styles.balance}>
+                    </AppText>
+                    <AppText style={styles.balance}>
                       {formatAmount(acknowledgedSellRateRef.current ?? 0)}/$
-                    </Text>
+                    </AppText>
                   </View>
 
                   <View
@@ -599,20 +606,20 @@ export default function CryptoSellScreen() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <Text
+                    <AppText
                       style={[
                         styles.balance,
                         { fontFamily: getFontFamily("800") },
                       ]}
                     >
                       Market Price:
-                    </Text>
-                    <Text style={styles.balance}>
+                    </AppText>
+                    <AppText style={styles.balance}>
                       {formatAmount(marketPrice || 0, {
                         currency: "USD",
                       })}
                       /{assetDetails?.symbol}
-                    </Text>
+                    </AppText>
                   </View>
 
                   {/* Fee breakdown — only show when amount is entered */}
@@ -626,21 +633,21 @@ export default function CryptoSellScreen() {
                           justifyContent: "space-between",
                         }}
                       >
-                        <Text
+                        <AppText
                           style={[
                             styles.balance,
                             { fontFamily: getFontFamily("800") },
                           ]}
                         >
                           You Sell:
-                        </Text>
-                        <Text style={styles.balance}>
+                        </AppText>
+                        <AppText style={styles.balance}>
                           {feeBreakdown?.coinAmount} {assetDetails?.symbol} (≈{" "}
                           {formatAmount(feeBreakdown?.grossUsd, {
                             currency: "USD",
                           })}
                           )
-                        </Text>
+                        </AppText>
                       </View>
 
                       <View style={{ height: 1, backgroundColor: "#d4edda" }} />
@@ -651,15 +658,15 @@ export default function CryptoSellScreen() {
                           justifyContent: "space-between",
                         }}
                       >
-                        <Text
+                        <AppText
                           style={[
                             styles.balance,
                             { fontFamily: getFontFamily("800") },
                           ]}
                         >
                           You'll Receive (₦):
-                        </Text>
-                        <Text
+                        </AppText>
+                        <AppText
                           style={[
                             styles.balance,
                             {
@@ -668,7 +675,7 @@ export default function CryptoSellScreen() {
                           ]}
                         >
                           {feeBreakdown?.netNgn}
-                        </Text>
+                        </AppText>
                       </View>
                     </>
                   )}
@@ -681,8 +688,8 @@ export default function CryptoSellScreen() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <Text style={styles.ngn}>You’ll be paid:</Text>
-                    <Text style={styles.ngn}>{ngnAmount}</Text>
+                    <AppText style={styles.ngn}>You’ll be paid:</AppText>
+                    <AppText style={styles.ngn}>{ngnAmount}</AppText>
                   </View>
                 </View>
               </View>
@@ -696,7 +703,7 @@ export default function CryptoSellScreen() {
               disabled={hasInsufficientBalance}
               onPress={handleSubmit(onSubmit)}
             >
-              <Text style={styles.buttonText}>Continue</Text>
+              <AppText style={styles.buttonText}>Continue</AppText>
             </TouchableOpacity>
           </View>
         )}

@@ -16,6 +16,7 @@ import CustomIcon from "../CustomIcon";
 import { PlusCircleIcon, ArrowDownLeftIcon } from "../../assets";
 import { ArrowRight2, Eye, EyeSlash } from "iconsax-react-nativejs";
 import { useAuthStore } from "../../stores/authSlice";
+import { AppText } from "../AppText";
 
 interface BalanceCardProps {
   balance?: number;
@@ -49,14 +50,14 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
       style={styles.balanceCard}
     >
       <View style={styles.balanceHeader}>
-        <Text style={styles.availableBalance}>{title}</Text>
+        <AppText style={styles.availableBalance}>{title}</AppText>
         {showTransactionsButton && (
           <TouchableOpacity
             onPress={() => navigation.navigate("Transactions" as never)}
             activeOpacity={0.9}
             style={styles.seeTransaction}
           >
-            <Text style={styles.seeTransactionText}>See Transaction</Text>
+            <AppText style={styles.seeTransactionText}>See Transaction</AppText>
             <ArrowRight2 size={12} color="#fff" />
           </TouchableOpacity>
         )}
@@ -64,9 +65,9 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
 
       <View style={styles.balanceAmount}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={styles.amount}>
+          <AppText style={styles.amount}>
             {visible ? formatAmount(balance ?? 0, { currency }) : "**********"}
-          </Text>
+          </AppText>
         </View>
         <TouchableOpacity
           activeOpacity={0.8}
@@ -74,9 +75,9 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
           onPress={() => setVisible(!visible)}
         >
           {visible ? (
-            <EyeSlash variant="Linear" size={20} color="#fff" />
+            <EyeSlash variant="Linear" size={16} color="#fff" />
           ) : (
-            <Eye variant="Linear" size={20} color="#fff" />
+            <Eye variant="Linear" size={16} color="#fff" />
           )}
         </TouchableOpacity>
       </View>
@@ -88,8 +89,8 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
             style={styles.depositButton}
             onPress={() => setDepositModalVisible(true)}
           >
-            <CustomIcon source={PlusCircleIcon} size={16} />
-            <Text style={styles.depositText}>Deposit</Text>
+            <CustomIcon source={PlusCircleIcon} size={13} />
+            <AppText style={styles.depositText}>Deposit</AppText>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -97,8 +98,8 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
             style={styles.withdrawButton}
             onPress={() => setWithdrawModalVisible(true)}
           >
-            <CustomIcon source={ArrowDownLeftIcon} size={16} color="#333" />
-            <Text style={styles.withdrawText}>Withdraw</Text>
+            <CustomIcon source={ArrowDownLeftIcon} size={14} color="#333" />
+            <AppText style={styles.withdrawText}>Withdraw</AppText>
           </TouchableOpacity>
         </View>
       )}
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
   },
   availableBalance: {
     color: "#fff",
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily(700),
   },
   seeTransaction: {
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
   },
   seeTransactionText: {
     color: "#fff",
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily(700),
     marginRight: 4,
   },
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
   },
   amount: {
     color: "#fff",
-    fontSize: normalize(40),
+    fontSize: normalize(30),
     fontFamily: getFontFamily(800),
   },
   eyeIcon: {
@@ -221,13 +222,13 @@ const styles = StyleSheet.create({
     borderColor: "white",
     borderWidth: 1,
     borderRadius: 250,
-    paddingVertical: 10,
+    paddingVertical: 9,
     gap: 8,
   },
   depositText: {
     color: "#fff",
-    fontSize: normalize(19),
-    fontFamily: getFontFamily(700),
+    fontSize: normalize(17),
+    fontFamily: getFontFamily(800),
   },
   withdrawButton: {
     flex: 1,
@@ -236,13 +237,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#fff",
     borderRadius: 25,
-    paddingVertical: 12,
+    paddingVertical: 8,
     gap: 8,
   },
   withdrawText: {
     color: "#333",
-    fontSize: normalize(19),
-    fontFamily: getFontFamily(700),
+    fontSize: normalize(17),
+    fontFamily: getFontFamily(800),
   },
 });
 

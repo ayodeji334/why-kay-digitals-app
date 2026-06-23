@@ -16,6 +16,7 @@ import { ArrowDown2 } from "iconsax-react-nativejs";
 import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
 import { COLORS } from "../constants/colors";
+import { AppText } from "./AppText";
 
 interface Option {
   label: string;
@@ -92,7 +93,7 @@ export function SelectInput({
 
     return (
       <>
-        {label && <Text style={styles.label}>{label}</Text>}
+        {label && <AppText style={styles.label}>{label}</AppText>}
 
         <Pressable
           style={[styles.input, errorMessage && styles.errorBorder]}
@@ -107,36 +108,36 @@ export function SelectInput({
               />
             )}
             <View style={styles.selectedCryptoInfo}>
-              <Text
+              <AppText
                 style={[
                   styles.selectedCryptoName,
                   !selectedOption && { color: "#838383" },
                 ]}
               >
                 {selectedOption ? selectedOption.label : placeholder}
-              </Text>
+              </AppText>
 
               {selectedOption?.network_charges ? (
-                <Text style={styles.optionPrice}>
+                <AppText style={styles.optionPrice}>
                   Network fee:{" "}
                   {formatNumber(selectedOption?.network_charges ?? 0, {
                     decimalPlace: 6,
                   })}{" "}
                   {selectedOption?.symbol}{" "}
-                  <Text style={{ paddingLeft: 3 }}>
+                  <AppText style={{ paddingLeft: 3 }}>
                     (≈{" "}
                     {formatAmount(selectedOption?.network_charges_in_usd ?? 0, {
                       currency: "USD",
                     })}
                     )
-                  </Text>
-                </Text>
+                  </AppText>
+                </AppText>
               ) : undefined}
             </View>
             <ArrowDown2 size={15} color="#374151" />
           </View>
         </Pressable>
-        {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+        {errorMessage && <AppText style={styles.error}>{errorMessage}</AppText>}
 
         <Modal visible={visible} animationType="slide" transparent>
           <View style={styles.modalOverlay}>
@@ -149,7 +150,7 @@ export function SelectInput({
                   alignItems: "center",
                 }}
               >
-                <Text style={styles.modalTitle}>{title}</Text>
+                <AppText style={styles.modalTitle}>{title}</AppText>
                 <Pressable onPress={() => setVisible(false)}>
                   <CustomIcon
                     source={CloseIcon}
@@ -168,6 +169,8 @@ export function SelectInput({
                   onChangeText={setSearch}
                   placeholderTextColor="#9CA3AF"
                   style={styles.search}
+                  maxFontSizeMultiplier={1}
+                  allowFontScaling={false}
                 />
               )}
 
@@ -197,25 +200,25 @@ export function SelectInput({
                           )}
 
                           <View style={styles.cryptoInfo}>
-                            <Text style={styles.optionName}>
+                            <AppText style={styles.optionName}>
                               {`${item.label}`}
-                            </Text>
+                            </AppText>
                             {item?.market_value ? (
-                              <Text style={styles.optionPrice}>
+                              <AppText style={styles.optionPrice}>
                                 {formatAmount(item.market_value, {
                                   currency: "USD",
                                   decimalPlace: 2,
                                 })}
-                              </Text>
+                              </AppText>
                             ) : undefined}
                             {item?.network_charges ? (
-                              <Text style={styles.optionPrice}>
+                              <AppText style={styles.optionPrice}>
                                 Network fee:{" "}
                                 {formatNumber(item?.network_charges ?? 0, {
                                   decimalPlace: 6,
                                 })}{" "}
                                 {item?.symbol}{" "}
-                                <Text style={{ paddingLeft: 3 }}>
+                                <AppText style={{ paddingLeft: 3 }}>
                                   (≈{" "}
                                   {formatAmount(
                                     item?.network_charges_in_usd ?? 0,
@@ -224,8 +227,8 @@ export function SelectInput({
                                     },
                                   )}
                                   )
-                                </Text>
-                              </Text>
+                                </AppText>
+                              </AppText>
                             ) : undefined}
                           </View>
 
@@ -238,22 +241,22 @@ export function SelectInput({
                               }}
                             >
                               {item?.balance && (
-                                <Text style={styles.optionName}>
+                                <AppText style={styles.optionName}>
                                   {item?.balance}
-                                </Text>
+                                </AppText>
                               )}
                               {item?.total_price ? (
-                                <Text style={styles.optionName}>
+                                <AppText style={styles.optionName}>
                                   {`${formatAmount(item?.total_price, {
                                     currency: "USD",
                                   })}`}
-                                </Text>
+                                </AppText>
                               ) : (
-                                <Text style={styles.optionName}>
+                                <AppText style={styles.optionName}>
                                   {`${formatAmount(item?.price, {
                                     currency: "USD",
                                   })}`}
-                                </Text>
+                                </AppText>
                               )}
                             </View>
                           ) : undefined}
@@ -264,14 +267,14 @@ export function SelectInput({
                 }}
                 ListEmptyComponent={
                   <View style={{ paddingVertical: 20, alignItems: "center" }}>
-                    <Text
+                    <AppText
                       style={{
-                        fontSize: 14,
+                        fontSize: normalize(14),
                         fontFamily: getFontFamily("700"),
                       }}
                     >
                       No options found
-                    </Text>
+                    </AppText>
                   </View>
                 }
               />
@@ -301,18 +304,18 @@ export function SelectInput({
 const styles = StyleSheet.create({
   label: {
     fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
+    fontSize: normalize(17),
   },
   input: {
     borderWidth: 1,
     borderColor: "#D1D5DB",
     borderRadius: 8,
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 6,
     backgroundColor: "#fff",
-    minHeight: 50,
     justifyContent: "center",
     marginBottom: 5,
+    minHeight: 45,
   },
   selectedCryptoContainer: {
     flexDirection: "row",
@@ -322,8 +325,8 @@ const styles = StyleSheet.create({
   },
   selectedCryptoInfo: { flex: 1, marginLeft: 12 },
   selectedCryptoName: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("700"),
   },
   cryptoLogo: {
     width: 26,
@@ -347,7 +350,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontFamily: getFontFamily("900"),
-    fontSize: normalize(20),
+    fontSize: normalize(18),
     color: "#374151",
   },
   search: {
@@ -372,12 +375,12 @@ const styles = StyleSheet.create({
   },
   cryptoInfo: { flex: 1 },
   optionName: {
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("800"),
     color: "#000",
   },
   optionPrice: {
-    fontSize: normalize(18),
+    fontSize: normalize(10),
     fontFamily: getFontFamily("700"),
     color: "#343435",
   },

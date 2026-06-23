@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
+import { AppText } from "./AppText";
 
 interface InfoCardProps {
   title: string;
@@ -56,14 +57,14 @@ const InfoCard: React.FC<InfoCardProps> = ({
       >
         {IconComponent}
         <View style={{ flex: 1, gap: 4 }}>
-          <Text style={[styles.title]}>{title}</Text>
+          <AppText style={[styles.title]}>{title}</AppText>
           {typeof description === "string" ? (
-            <Text style={styles.description}>{description}</Text>
+            <AppText style={styles.description}>{description}</AppText>
           ) : Array.isArray(description) ? (
             <View style={styles.listContainer}>
               {description.map((item, index) => (
                 <View key={index} style={styles.listItem}>
-                  <Text style={styles.listText}>{item}</Text>
+                  <AppText style={styles.listText}>{item}</AppText>
                 </View>
               ))}
             </View>
@@ -81,7 +82,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
                 style={styles.editButton}
                 onPress={onButtonPress}
               >
-                <Text style={styles.editButtonText}>{buttonText}</Text>
+                <AppText style={styles.editButtonText}>{buttonText}</AppText>
               </TouchableOpacity>
             </View>
           )}

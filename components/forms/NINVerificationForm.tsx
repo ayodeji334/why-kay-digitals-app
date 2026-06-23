@@ -14,6 +14,7 @@ import { InfoCircle } from "iconsax-react-nativejs";
 import { useAuthStore } from "../../stores/authSlice";
 import { useNavigation } from "@react-navigation/native";
 import { AxiosError } from "axios";
+import { AppText } from "../AppText";
 
 const ninSchema = yup.object({
   nin: yup
@@ -75,7 +76,7 @@ const NINVerificationForm = () => {
         maxLength={11}
       />
 
-      <Text style={styles.instruction}>Dial *346# to get your NIN</Text>
+      <AppText style={styles.instruction}>Dial *346# to get your NIN</AppText>
 
       <InfoCard
         IconComponent={<InfoCircle color={COLORS.primary} size={18} />}
@@ -93,7 +94,7 @@ const NINVerificationForm = () => {
         style={styles.button}
         onPress={handleSubmit(onSubmit)}
       >
-        <Text style={styles.buttonText}>Verify My Identity</Text>
+        <AppText style={styles.buttonText}>Verify My Identity</AppText>
       </TouchableOpacity>
 
       <CustomLoading loading={loading} />

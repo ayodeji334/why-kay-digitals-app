@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { getFontFamily, normalize } from "../../constants/settings";
 import { Eye, EyeSlash } from "iconsax-react-nativejs";
+import { AppText } from "../AppText";
 
 type BalanceProps = {
   balance: number;
@@ -17,10 +18,10 @@ const BalanceDisplay: React.FC<BalanceProps> = ({
   return (
     <View style={styles.balanceAmount}>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Text style={styles.currency}>{currency}</Text>
-        <Text style={styles.amount}>
+        <AppText style={styles.currency}>{currency}</AppText>
+        <AppText style={styles.amount}>
           {visible ? balance.toLocaleString() : "******"}
-        </Text>
+        </AppText>
       </View>
       <TouchableOpacity
         activeOpacity={0.8}

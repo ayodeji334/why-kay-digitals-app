@@ -8,6 +8,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import TransactionSectionList from "../TransactionList";
 import CustomLoading from "../CustomLoading";
 import FiatWalletBalanceCard from "./FiatWalletBalanceCard";
+import { AppText } from "../AppText";
 
 const FiatWalletSection = () => {
   const { apiGet } = useAxios();
@@ -74,7 +75,9 @@ const FiatWalletSection = () => {
           ListHeaderComponent={
             <View>
               <FiatWalletBalanceCard />
-              <Text style={styles.sectionHeader}>Transaction History</Text>
+              <AppText style={styles.sectionHeader}>
+                Transaction History
+              </AppText>
             </View>
           }
         />
@@ -88,7 +91,7 @@ export default FiatWalletSection;
 const styles = StyleSheet.create({
   sectionHeader: {
     paddingVertical: 8,
-    fontSize: normalize(20),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     color: "#353348",
   },

@@ -30,6 +30,7 @@ import { useWallets } from "../../hooks/useWallet";
 import LoadingBalance from "../LoadingState";
 import { TradeIntent } from "../../libs/types";
 import { SvgUri } from "react-native-svg";
+import { AppText } from "../AppText";
 
 const CryptoWalletSection = () => {
   const [showAddAssetWalletModal, setShowAddAssetWalletModal] = useState(false);
@@ -181,7 +182,7 @@ const CryptoWalletSection = () => {
 
             {/* Assets header */}
             <View style={styles.assetsHeader}>
-              <Text style={styles.sectionTitle}>Assets</Text>
+              <AppText style={styles.sectionTitle}>Assets</AppText>
               <View
                 style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
               >
@@ -191,7 +192,7 @@ const CryptoWalletSection = () => {
                   style={styles.generateButton}
                 >
                   <Refresh2 color="black" size={12} />
-                  <Text style={styles.generateButtonText}>Refresh</Text>
+                  <AppText style={styles.generateButtonText}>Refresh</AppText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setShowAddAssetWalletModal(true)}
@@ -199,7 +200,7 @@ const CryptoWalletSection = () => {
                   style={styles.generateButton}
                 >
                   <Add color="black" size={15} />
-                  <Text style={styles.generateButtonText}>Add</Text>
+                  <AppText style={styles.generateButtonText}>Add</AppText>
                 </TouchableOpacity>
               </View>
             </View>
@@ -213,10 +214,12 @@ const CryptoWalletSection = () => {
             <LoadingBalance />
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>No asset wallets found</Text>
-              <Text style={styles.emptyStateSubtext}>
+              <AppText style={styles.emptyStateText}>
+                No asset wallets found
+              </AppText>
+              <AppText style={styles.emptyStateSubtext}>
                 Your asset wallets will appear here once added
-              </Text>
+              </AppText>
             </View>
           )
         }
@@ -256,9 +259,9 @@ const CryptoWalletSection = () => {
                     // />
                   )}
                   <View style={styles.cryptoInfo}>
-                    <Text style={styles.optionName}>
+                    <AppText style={styles.optionName}>
                       {item.name} ({item.symbol})
-                    </Text>
+                    </AppText>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -266,12 +269,12 @@ const CryptoWalletSection = () => {
           />
         ) : (
           <View style={styles.emptyModalState}>
-            <Text style={styles.emptyStateText}>
+            <AppText style={styles.emptyStateText}>
               No more assets available to add
-            </Text>
-            <Text style={styles.emptyStateSubtext}>
+            </AppText>
+            <AppText style={styles.emptyStateSubtext}>
               You've added all wallets currently supported.
-            </Text>
+            </AppText>
           </View>
         )}
       </CustomModal>
@@ -288,7 +291,7 @@ const ActionCard = React.memo(({ title, source, onPress }: any) => (
     activeOpacity={0.7}
   >
     <View style={styles.actionIcon}>{source}</View>
-    <Text style={styles.actionTitle}>{title}</Text>
+    <AppText style={styles.actionTitle}>{title}</AppText>
   </TouchableOpacity>
 ));
 
@@ -307,19 +310,19 @@ const AssetItem = React.memo(({ asset, onPress }: any) => (
         />
       )}
       <View style={styles.assetInfo}>
-        <Text style={styles.assetName}>
+        <AppText style={styles.assetName}>
           {asset.name} ({asset.symbol})
-        </Text>
-        <Text style={styles.assetSymbol}>
+        </AppText>
+        <AppText style={styles.assetSymbol}>
           {formatAmount(asset.price, { currency: "USD" })}
-        </Text>
+        </AppText>
       </View>
     </View>
     <View style={styles.assetRight}>
-      <Text style={styles.assetPrice}>{asset.balance}</Text>
-      <Text style={[styles.assetPrice, { fontSize: 17 }]}>
+      <AppText style={styles.assetPrice}>{asset.balance}</AppText>
+      <AppText style={[styles.assetPrice, { fontSize: 17 }]}>
         {formatAmount(asset.balance * asset.price, { currency: "USD" })}
-      </Text>
+      </AppText>
     </View>
   </TouchableOpacity>
 ));

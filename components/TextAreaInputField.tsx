@@ -9,6 +9,7 @@ import {
 import { Controller, Control, FieldValues } from "react-hook-form";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize, width } from "../constants/settings";
+import { AppText } from "./AppText";
 
 interface TextAreaInputProps extends TextInputProps {
   name: string;
@@ -27,7 +28,7 @@ const TextAreaInput = ({
 }: TextAreaInputProps) => {
   return (
     <View style={{ marginVertical: 8 }}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && <AppText style={styles.label}>{label}</AppText>}
       <Controller
         control={control}
         name={name}
@@ -47,8 +48,12 @@ const TextAreaInput = ({
               onChangeText={onChange}
               onBlur={onBlur}
               {...rest}
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
             />
-            {error && <Text style={styles.errorText}>{error.message}</Text>}
+            {error && (
+              <AppText style={styles.errorText}>{error.message}</AppText>
+            )}
           </>
         )}
       />

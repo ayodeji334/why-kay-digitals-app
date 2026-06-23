@@ -34,6 +34,7 @@ import { useWallets } from "../hooks/useWallet";
 import { useSummaryDetail } from "../hooks/useSummaryDetail";
 import useAxios from "../hooks/useAxios";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
+import { AppText } from "../components/AppText";
 
 // const fiatSchema = yup.object({
 //   username: yup.string().required("Username is required"),
@@ -400,15 +401,15 @@ export default function TransferScreen() {
         {activeTab === "crypto" && (
           <View style={styles.limitContainer}>
             <View style={styles.limitHeader}>
-              <Text style={styles.limitLabel}>
+              <AppText style={styles.limitLabel}>
                 Daily Limit: {formatAmount(cryptoLimit ?? 0) || "0"}
-              </Text>
-              <Text
+              </AppText>
+              <AppText
                 onPress={() => navigation.navigate("Verification" as any)}
                 style={styles.upgradeText}
               >
                 Upgrade Limit
-              </Text>
+              </AppText>
             </View>
             <View style={styles.progressBarBackground}>
               <View
@@ -419,13 +420,13 @@ export default function TransferScreen() {
               />
             </View>
             <View style={styles.limitRange}>
-              <Text style={styles.limitValue}>
+              <AppText style={styles.limitValue}>
                 {formatAmount(walletSummary?.total_crypto_transfers_today) ??
                   "0"}
-              </Text>
-              <Text style={styles.limitValue}>
+              </AppText>
+              <AppText style={styles.limitValue}>
                 {formatAmount(cryptoLimit ?? 0) || "0"}
-              </Text>
+              </AppText>
             </View>
           </View>
         )}
@@ -433,16 +434,16 @@ export default function TransferScreen() {
         {activeTab === "fiat" && (
           <View style={styles.limitContainer}>
             <View style={styles.limitHeader}>
-              <Text style={styles.limitLabel}>
+              <AppText style={styles.limitLabel}>
                 Daily Limit:{" "}
                 {formatAmount(walletSummary?.daily_limit ?? 0) ?? "0"}
-              </Text>
-              <Text
+              </AppText>
+              <AppText
                 onPress={() => navigation.navigate("Verification" as any)}
                 style={styles.upgradeText}
               >
                 Upgrade Limit
-              </Text>
+              </AppText>
             </View>
             <View style={styles.progressBarBackground}>
               <View
@@ -453,12 +454,12 @@ export default function TransferScreen() {
               />
             </View>
             <View style={styles.limitRange}>
-              <Text style={styles.limitValue}>
+              <AppText style={styles.limitValue}>
                 {formatAmount(walletSummary?.total_today ?? 0) ?? "0"}
-              </Text>
-              <Text style={styles.limitValue}>
+              </AppText>
+              <AppText style={styles.limitValue}>
                 {formatAmount(walletSummary?.daily_limit ?? 0) ?? "0"}
-              </Text>
+              </AppText>
             </View>
           </View>
         )}
@@ -475,13 +476,15 @@ export default function TransferScreen() {
 
           {isChecking && (
             <View style={styles.usernameStatus}>
-              <Text style={styles.usernameChecking}>Validating username…</Text>
+              <AppText style={styles.usernameChecking}>
+                Validating username…
+              </AppText>
             </View>
           )}
 
           {!isChecking && usernameIsValid === true && (
             <View style={styles.usernameStatus}>
-              <Text style={styles.usernameValid}>✓ Username found</Text>
+              <AppText style={styles.usernameValid}>✓ Username found</AppText>
             </View>
           )}
 
@@ -500,18 +503,20 @@ export default function TransferScreen() {
           )}
 
           <View style={{ marginVertical: 4 }}>
-            <Text style={styles.label}>
+            <AppText style={styles.label}>
               Amount in {activeTab === "fiat" ? "Naira (₦)" : "Dollars (USD)"}
-            </Text>
+            </AppText>
             <Controller
               control={control}
               name="amount"
               render={({ field: { onBlur, onChange } }) => (
                 <View style={styles.inputContainer}>
-                  <Text style={styles.dollarSign}>
+                  <AppText style={styles.dollarSign}>
                     {activeTab === "fiat" ? "₦" : "$"}
-                  </Text>
+                  </AppText>
                   <TextInput
+                    maxFontSizeMultiplier={1}
+                    allowFontScaling={false}
                     style={styles.input}
                     value={displayAmount}
                     placeholder="0.00"
@@ -528,9 +533,9 @@ export default function TransferScreen() {
               )}
             />
             {errors.amount && (
-              <Text style={styles.error}>
+              <AppText style={styles.error}>
                 {errors?.amount?.message as string}
-              </Text>
+              </AppText>
             )}
           </View>
 
@@ -548,19 +553,19 @@ export default function TransferScreen() {
 
         {exceedsDailyLimit && (
           <View style={styles.warningContainer}>
-            <Text style={styles.warningText}>
+            <AppText style={styles.warningText}>
               This amount exceeds your daily transfer limit of{" "}
               {formatAmount(walletSummary?.daily_limit ?? 0)}. Please reduce the
               amount or upgrade your limit.
-            </Text>
+            </AppText>
           </View>
         )}
 
         {!exceedsDailyLimit && hasInsufficientBalance && (
           <View style={styles.warningContainer}>
-            <Text style={styles.warningText}>
+            <AppText style={styles.warningText}>
               You do not have enough balance to complete this transfer.
-            </Text>
+            </AppText>
           </View>
         )}
 
@@ -575,7 +580,7 @@ export default function TransferScreen() {
             marginVertical: 30,
           }}
         >
-          <Text
+          <AppText
             style={{
               color: "#fff",
               fontSize: normalize(18),
@@ -585,7 +590,7 @@ export default function TransferScreen() {
             }}
           >
             Continue
-          </Text>
+          </AppText>
         </TouchableOpacity>
 
         <CustomLoading loading={isLoading} />

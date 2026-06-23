@@ -16,6 +16,7 @@ import useAxios from "../hooks/useAxios";
 import CustomLoading from "../components/CustomLoading";
 import CustomModal from "../components/CustomModal";
 import { formatDate } from "../libs/formatDate";
+import { AppText } from "../components/AppText";
 
 export default function NotificationsScreen() {
   const { apiGet } = useAxios();
@@ -93,24 +94,24 @@ export default function NotificationsScreen() {
       >
         <View style={styles.assetLeft}>
           <View style={styles.assetInfo}>
-            <Text style={styles.assetName}>{item.title}</Text>
+            <AppText style={styles.assetName}>{item.title}</AppText>
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 1 }}
             >
               {isUnread && <View style={styles.unreadDot} />}
-              <Text
+              <AppText
                 style={{
                   fontSize: normalize(16),
                   fontFamily: getFontFamily("800"),
                 }}
               >
                 {formatDate(item?.created_at, { dateFormat: "relative" })}
-              </Text>
+              </AppText>
             </View>
           </View>
-          <Text style={styles.assetSymbol} numberOfLines={1}>
+          <AppText style={styles.assetSymbol} numberOfLines={1}>
             {item.message}
-          </Text>
+          </AppText>
         </View>
       </TouchableOpacity>
     );
@@ -138,14 +139,14 @@ export default function NotificationsScreen() {
             style={[styles.tabButton, activeTab === title && styles.activeTab]}
             onPress={() => setActiveTab(title)}
           >
-            <Text
+            <AppText
               style={[
                 styles.tabText,
                 activeTab === title && styles.activeTabText,
               ]}
             >
               {title}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         ))}
       </View>
@@ -153,8 +154,10 @@ export default function NotificationsScreen() {
       <View style={styles.scrollContainer}>
         {!isLoading && filteredNotifications.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No notifications</Text>
-            <Text style={styles.emptyStateSubtext}>You're all caught up!</Text>
+            <AppText style={styles.emptyStateText}>No notifications</AppText>
+            <AppText style={styles.emptyStateSubtext}>
+              You're all caught up!
+            </AppText>
           </View>
         ) : (
           <FlatList
@@ -180,14 +183,14 @@ export default function NotificationsScreen() {
       >
         {selectedNotification && (
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
+            <AppText style={styles.modalTitle}>
               {formatDate(selectedNotification?.created_at, {
                 timeFormat: "12h",
               })}
-            </Text>
-            <Text style={styles.modalMessage}>
+            </AppText>
+            <AppText style={styles.modalMessage}>
               {selectedNotification?.message}
-            </Text>
+            </AppText>
           </View>
         )}
       </CustomModal>

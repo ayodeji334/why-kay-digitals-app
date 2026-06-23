@@ -12,6 +12,7 @@ import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize, width } from "../constants/settings";
 import { ArrowRight2, DocumentText, ReceiptEdit } from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
+import { AppText } from "../components/AppText";
 
 interface MenuItemProps {
   title: string;
@@ -65,15 +66,17 @@ const MenuItem = ({
         />
       </View>
       <View style={styles.menuItemContent}>
-        <Text
+        <AppText
           style={[
             styles.menuItemTitle,
             { color: isDangerous ? "#DC2626" : color },
           ]}
         >
           {title}
-        </Text>
-        {subtitle && <Text style={styles.menuItemSubtitle}>{subtitle}</Text>}
+        </AppText>
+        {subtitle && (
+          <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
+        )}
       </View>
       {showArrow && !showSwitch && <ArrowRight2 size={15} color={color} />}
       {showSwitch && (
@@ -99,10 +102,10 @@ export default function LegalScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Screen Description */}
-        <Text style={styles.screenDescription}>
+        <AppText style={styles.screenDescription}>
           Stay informed about our terms, policies, and how we handle your data.
           You can review the Privacy Policy and Terms & Conditions here.
-        </Text>
+        </AppText>
 
         {/* Menu Items */}
         <View style={{ marginTop: 20 }}>

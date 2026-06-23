@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
+import { AppText } from "./AppText";
 
 interface Props {
   control: any;
@@ -80,7 +81,9 @@ const EmailInputField: React.FC<Props> = ({
 
         return (
           <View style={[styles.container, containerStyle]}>
-            {showLabel && label && <Text style={styles.label}>{label}</Text>}
+            {showLabel && label && (
+              <AppText style={styles.label}>{label}</AppText>
+            )}
             <TextInput
               style={[
                 styles.input,
@@ -88,6 +91,8 @@ const EmailInputField: React.FC<Props> = ({
                 isFocused && styles.focusedBorder,
                 style,
               ]}
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
               placeholder={placeholder}
               placeholderTextColor={placeholderTextColor}
               onBlur={() => {
@@ -117,13 +122,17 @@ const EmailInputField: React.FC<Props> = ({
                       onChange(suggestion);
                     }}
                   >
-                    <Text style={styles.suggestionText}>{suggestion}</Text>
+                    <AppText style={styles.suggestionText}>
+                      {suggestion}
+                    </AppText>
                   </TouchableOpacity>
                 ))}
               </View>
             )}
 
-            {error && <Text style={styles.errorText}>{error.message}</Text>}
+            {error && (
+              <AppText style={styles.errorText}>{error.message}</AppText>
+            )}
           </View>
         );
       }}
@@ -140,7 +149,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 10,
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 12,
     color: "#1A1A1A",
     fontFamily: getFontFamily("400"),
     fontSize: normalize(18),
@@ -162,9 +171,9 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   label: {
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     fontSize: normalize(18),
-    marginBottom: 6,
+    marginBottom: 1,
     color: "#000",
   },
   suggestionsContainer: {

@@ -12,6 +12,7 @@ import { Controller } from "react-hook-form";
 import { getFontFamily, normalize } from "../constants/settings";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { COLORS } from "../constants/colors";
+import { AppText } from "./AppText";
 
 interface OtpInputFieldProps {
   control: any;
@@ -109,7 +110,9 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
 
         return (
           <View style={[styles.wrapper, containerStyle]}>
-            {showLabel && label && <Text style={styles.label}>{label}</Text>}
+            {showLabel && label && (
+              <AppText style={styles.label}>{label}</AppText>
+            )}
 
             <View style={styles.container}>
               {Array.from({ length: boxes }, (_, index) => (
@@ -125,6 +128,8 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                   ]}
                 >
                   <TextInput
+                    maxFontSizeMultiplier={1}
+                    allowFontScaling={false}
                     ref={el => {
                       if (el) inputs.current[index] = el;
                     }}
@@ -139,12 +144,11 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                     selectionColor={COLORS.primary}
                     // caretHidden={true}
                     autoCapitalize="none"
-                    maxFontSizeMultiplier={0}
                     autoCorrect={false}
                     contextMenuHidden={false}
                   />
 
-                  <Text style={styles.boxText} pointerEvents="none">
+                  <AppText style={styles.boxText} pointerEvents="none">
                     {otpArray[index] ? (
                       isSecuredText ? (
                         "●"
@@ -152,14 +156,16 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                         otpArray[index]
                       )
                     ) : (
-                      <Text style={styles.placeholder}>●</Text>
+                      <AppText style={styles.placeholder}>●</AppText>
                     )}
-                  </Text>
+                  </AppText>
                 </TouchableOpacity>
               ))}
             </View>
 
-            {error && <Text style={styles.errorText}>{error.message}</Text>}
+            {error && (
+              <AppText style={styles.errorText}>{error.message}</AppText>
+            )}
           </View>
         );
       }}

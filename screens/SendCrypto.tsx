@@ -38,6 +38,7 @@ import { useMarketPrice } from "../components/useMarketPrice";
 import { showError } from "../utlis/toast";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import NumberInputField from "../components/NumberInputField";
+import { AppText } from "../components/AppText";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -409,6 +410,20 @@ export default function SendScreen() {
     }
   }, [networkOptions, setValue]);
 
+  useResetFormOnMount(
+    reset,
+    {
+      amount: parseFloat(intent?.amount ?? "0"),
+      asset_id: selectedAssetUuid,
+      wallet_address: "",
+      chain: "",
+      tag: "",
+    },
+    () => {
+      setDisplayAmount(intent?.amount ? formatWithCommas(intent.amount) : "");
+    },
+  );
+
   // const hasInsufficientBalance = useMemo(() => {
   //   if (!feeBreakdown?.usdAmountAfterFee || !assetDetails) return false;
 
@@ -475,33 +490,20 @@ export default function SendScreen() {
           style={styles.closeScannerButton}
           onPress={() => setShowScanner(false)}
         >
-          <Text style={styles.closeScannerText}>Close</Text>
+          <AppText style={styles.closeScannerText}>Close</AppText>
         </TouchableOpacity>
       </View>
     );
   }
 
-  useResetFormOnMount(
-    reset,
-    {
-      amount: parseFloat(intent?.amount ?? "0"),
-      asset_id: selectedAssetUuid,
-      wallet_address: "",
-      chain: "",
-      tag: "",
-    },
-    () => {
-      setDisplayAmount(intent?.amount ? formatWithCommas(intent.amount) : "");
-    },
-  );
-
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "#fff" }}
-      edges={["bottom", "right", "left"]}
+      edges={["bottom", "right", "left", "top"]}
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        style={styles.scrollContainer}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
         refreshControl={
           <RefreshControl refreshing={isFetching} onRefresh={() => refetch()} />
         }
@@ -511,33 +513,35 @@ export default function SendScreen() {
         ) : (
           <View style={styles.container}>
             <View style={styles.linkContainer}>
-              <Text style={styles.text}>
+              <AppText style={styles.text}>
                 This screen is for
-                <Text style={styles.bold}> on-chain withdrawals</Text> to
+                <AppText style={styles.bold}> on-chain withdrawals</AppText> to
                 external wallets.{" "}
-                <Text
+                <AppText
                   onPress={() => navigation.navigate("Transfer")}
                   style={styles.link}
                 >
                   Click here for internal transfers
-                </Text>{" "}
+                </AppText>{" "}
                 to other users on the app.
-              </Text>
+              </AppText>
             </View>
 
             <View style={{ gap: 10, flex: 1 }}>
               <View>
-                <Text style={styles.label}>
+                <AppText style={styles.label}>
                   Enter the amount you want to send
-                </Text>
+                </AppText>
 
                 <Controller
                   control={control}
                   name="amount"
                   render={({ field: { onBlur, onChange } }) => (
                     <View style={styles.inputContainer}>
-                      <Text style={styles.dollarSign}>$</Text>
+                      <AppText style={styles.dollarSign}>$</AppText>
                       <TextInput
+                        maxFontSizeMultiplier={1}
+                        allowFontScaling={false}
                         style={styles.input}
                         value={displayAmount}
                         placeholder="0.00"
@@ -556,19 +560,19 @@ export default function SendScreen() {
                 />
 
                 {errors.amount && (
-                  <Text style={styles.error}>
+                  <AppText style={styles.error}>
                     {errors?.amount?.message as string}
-                  </Text>
+                  </AppText>
                 )}
 
-                <Text style={styles.walletBalance}>
+                <AppText style={styles.walletBalance}>
                   Wallet Balance: {balance} {symbol}
                   {" ≈ "}
                   {formatAmount(balanceInUsd, {
                     currency: "USD",
                     decimalPlace: 5,
                   })}
-                </Text>
+                </AppText>
               </View>
               <View style={styles.walletAddressRow}>
                 <View style={{ flex: 1 }}>
@@ -613,71 +617,73 @@ export default function SendScreen() {
 
               {feeBreakdown && (
                 <View style={styles.feeBreakdownContainer}>
-                  <Text style={styles.feeBreakdownTitle}>Fee Breakdown</Text>
+                  <AppText style={styles.feeBreakdownTitle}>
+                    Fee Breakdown
+                  </AppText>
 
                   <View style={styles.feeRow}>
-                    <Text style={styles.feeLabel}>You Send</Text>
-                    <Text style={styles.feeValue}>
+                    <AppText style={styles.feeLabel}>You Send</AppText>
+                    <AppText style={styles.feeValue}>
                       {feeBreakdown.coinAmount} {symbol} (≈ $
                       {amount?.toFixed(2)})
-                    </Text>
+                    </AppText>
                   </View>
                   <View style={styles.feeRow}>
-                    <Text style={[styles.feeLabel]}>Market Price:</Text>
-                    <Text style={styles.feeValue}>
+                    <AppText style={[styles.feeLabel]}>Market Price:</AppText>
+                    <AppText style={styles.feeValue}>
                       {formatAmount(marketPrice || 0, {
                         currency: "USD",
                         decimalPlace: 4,
                       })}
                       /{assetDetails?.symbol}
-                    </Text>
+                    </AppText>
                   </View>
                   <View style={styles.feeDivider} />
 
                   <View style={styles.feeRow}>
-                    <Text style={styles.feeLabel}>
+                    <AppText style={styles.feeLabel}>
                       Network and On-chain Fee ({selectedNetwork?.chain})
-                    </Text>
-                    <Text style={styles.feeValue}>
+                    </AppText>
+                    <AppText style={styles.feeValue}>
                       {feeBreakdown.bybitFeeCoin} {symbol} (≈ $
                       {feeBreakdown.bybitFeeUsd})
-                    </Text>
+                    </AppText>
                   </View>
 
                   <View style={styles.feeRow}>
-                    <Text style={styles.feeLabel}>Operation Fee</Text>
-                    <Text style={styles.feeValue}>
+                    <AppText style={styles.feeLabel}>Operation Fee</AppText>
+                    <AppText style={styles.feeValue}>
                       {feeBreakdown.platformFeeCoin} {symbol} (≈ $1.00)
-                    </Text>
+                    </AppText>
                   </View>
 
                   <View style={styles.feeDivider} />
 
                   <View style={styles.feeRow}>
-                    <Text style={[styles.feeLabel]}>Recipient Gets</Text>
-                    <Text style={[styles.feeValue]}>
+                    <AppText style={[styles.feeLabel]}>Recipient Gets</AppText>
+                    <AppText style={[styles.feeValue]}>
                       {feeBreakdown.coinAmount} {symbol} (≈ $
                       {feeBreakdown.usdAmountAfterFee})
-                    </Text>
+                    </AppText>
                   </View>
 
                   <View style={styles.feeDivider} />
 
                   <View style={styles.feeRow}>
-                    <Text style={styles.feeLabel}>Total Deducted</Text>
-                    <Text style={[styles.feeValue]}>
+                    <AppText style={styles.feeLabel}>Total Deducted</AppText>
+                    <AppText style={[styles.feeValue]}>
                       {feeBreakdown.totalCoinDeducted} {symbol} (≈ $
                       {feeBreakdown.totalUsdDeducted})
-                    </Text>
+                    </AppText>
                   </View>
                 </View>
               )}
 
               {withdrawalStatus.hasIssue && (
                 <View style={styles.warningContainer}>
-                  <Text style={styles.warningText}>
+                  <AppText style={styles.warningText}>
                     {withdrawalStatus.message}
-                  </Text>
+                  </AppText>
                 </View>
               )}
 
@@ -708,7 +714,7 @@ export default function SendScreen() {
               {isPending ? (
                 <ActivityIndicator color="#fff" size={10} />
               ) : (
-                <Text style={styles.buttonText}>Continue</Text>
+                <AppText style={styles.buttonText}>Continue</AppText>
               )}
             </TouchableOpacity>
           </View>
@@ -723,9 +729,12 @@ export default function SendScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: normalize(20),
+    paddingHorizontal: normalize(20),
     backgroundColor: "#fff",
     justifyContent: "space-between",
+  },
+  scrollContainer: {
+    flex: 1,
   },
   linkContainer: {
     marginBottom: 20,
@@ -738,7 +747,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   text: {
-    fontSize: 14,
+    fontSize: normalize(17),
     color: "#374151",
     fontFamily: getFontFamily("700"),
   },
@@ -754,11 +763,11 @@ const styles = StyleSheet.create({
   label: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
-    marginBottom: normalize(8),
+    marginBottom: 3,
   },
   error: {
     color: "red",
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("700"),
     marginBottom: normalize(10),
   },
@@ -837,8 +846,8 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   walletBalance: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("700"),
     color: "#000",
     marginBottom: normalize(4),
   },
@@ -877,7 +886,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontSize: normalize(19),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
   },
   closeScannerButton: {
@@ -886,12 +895,12 @@ const styles = StyleSheet.create({
     right: 20,
     backgroundColor: COLORS.primary,
     paddingHorizontal: 20,
-    paddingVertical: 9,
+    paddingVertical: 7,
     borderRadius: 20,
   },
   closeScannerText: {
     color: "#fff",
-    fontSize: normalize(16),
+    fontSize: normalize(20),
     fontFamily: getFontFamily("700"),
   },
 });

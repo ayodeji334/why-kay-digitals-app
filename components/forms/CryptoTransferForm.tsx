@@ -8,6 +8,7 @@ import {
   parseToNumber,
 } from "../../screens/SwapCryptoScreen";
 import { getFontFamily, normalize } from "../../constants/settings";
+import { AppText } from "../AppText";
 
 type CryptoTransferFormProps = {
   control: any;
@@ -63,18 +64,20 @@ export function CryptoTransferForm({
       </View>
 
       <View style={{ marginVertical: 4 }}>
-        <Text style={styles.label}>Amount </Text>
+        <AppText style={styles.label}>Amount </AppText>
 
         <Controller
           control={control}
           name="amount"
           render={({ field: { onBlur, onChange } }) => (
             <View style={styles.inputContainer}>
-              <Text style={styles.dollarSign}>$</Text>
+              <AppText style={styles.dollarSign}>$</AppText>
 
               <TextInput
                 style={styles.input}
                 value={displayAmount}
+                maxFontSizeMultiplier={1}
+                allowFontScaling={false}
                 placeholder="0.00"
                 placeholderTextColor="#999"
                 keyboardType="decimal-pad"
@@ -91,15 +94,15 @@ export function CryptoTransferForm({
         />
 
         {errors.amount && (
-          <Text style={styles.error}>{errors?.amount?.message}</Text>
+          <AppText style={styles.error}>{errors?.amount?.message}</AppText>
         )}
       </View>
 
       {hasInsufficientBalance && (
         <View style={styles.warningContainer}>
-          <Text style={styles.warningText}>
+          <AppText style={styles.warningText}>
             You do not have enough balance to complete this transfer.
-          </Text>
+          </AppText>
         </View>
       )}
     </>
@@ -135,13 +138,13 @@ export function CryptoTransferForm({
 //       </View>
 
 //       <View style={{ marginVertical: 4 }}>
-//         <Text style={styles.label}>Amount in Dollars (USD)</Text>
+//         <AppText style={styles.label}>Amount in Dollars (USD)</AppText>
 //         <Controller
 //           control={control}
 //           name="amount"
 //           render={({ field: { onBlur, onChange } }) => (
 //             <View style={styles.inputContainer}>
-//               <Text style={styles.dollarSign}>$</Text>
+//               <AppText style={styles.dollarSign}>$</AppText>
 //               <TextInput
 //                 style={styles.input}
 //                 value={displayAmount}
@@ -160,7 +163,7 @@ export function CryptoTransferForm({
 //           )}
 //         />
 //         {errors.amount && (
-//           <Text style={styles.error}>{errors?.amount?.message}</Text>
+//           <AppText style={styles.error}>{errors?.amount?.message}</AppText>
 //         )}
 //       </View>
 //     </>

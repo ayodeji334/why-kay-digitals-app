@@ -25,6 +25,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
 import { SvgUri } from "react-native-svg";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
+import { AppText } from "../components/AppText";
 
 const schema = yup.object({
   phone: yup
@@ -181,7 +182,7 @@ export default function BuyAirtimeScreen() {
         </View>
 
         <View style={{ marginBottom: 20 }}>
-          <Text style={styles.subHeader}>Select Network Provider</Text>
+          <AppText style={styles.subHeader}>Select Network Provider</AppText>
           <View style={styles.networkRow}>
             {networks.map((item, index) => (
               <TouchableOpacity
@@ -205,7 +206,7 @@ export default function BuyAirtimeScreen() {
               >
                 {selectedNetwork === item.id && (
                   <View style={styles.checkIconContainer}>
-                    <Text style={styles.checkIcon}>✓</Text>
+                    <AppText style={styles.checkIcon}>✓</AppText>
                   </View>
                 )}
                 <Image source={item.logo} style={styles.networkLogo} />
@@ -213,7 +214,7 @@ export default function BuyAirtimeScreen() {
             ))}
           </View>
           {errors.network && (
-            <Text style={styles.errorText}>{errors.network.message}</Text>
+            <AppText style={styles.errorText}>{errors.network.message}</AppText>
           )}
         </View>
 
@@ -236,14 +237,14 @@ export default function BuyAirtimeScreen() {
                 ]}
                 onPress={() => handleAmountSelect(amountValue)}
               >
-                <Text
+                <AppText
                   style={[
                     styles.quickAmountText,
                     amount === amountValue && styles.quickAmountTextActive,
                   ]}
                 >
                   {formatAmount(amountValue)}
-                </Text>
+                </AppText>
               </TouchableOpacity>
             ))}
           </View>
@@ -264,9 +265,9 @@ export default function BuyAirtimeScreen() {
             onPress={handleSubmit(onSubmit)}
             disabled={loading || (isDirty && !isValid)}
           >
-            <Text style={styles.buttonText}>
+            <AppText style={styles.buttonText}>
               {loading ? "Processing..." : "Proceed"}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         </View>
 

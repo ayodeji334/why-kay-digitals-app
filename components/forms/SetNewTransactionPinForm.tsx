@@ -11,6 +11,7 @@ import { showError, showSuccess } from "../../utlis/toast";
 import useAxios from "../../hooks/useAxios";
 import OtpInputField from "../OtpInputField";
 import { useNavigation } from "@react-navigation/native";
+import { AppText } from "../AppText";
 
 const loginSchema = yup.object().shape({
   token: yup
@@ -98,7 +99,7 @@ const SetNewTransactionPinForm: React.FC<any> = () => {
         style={styles.button}
         onPress={handleSubmit(onSubmit)}
       >
-        <Text style={styles.buttonText}>Save Changes</Text>
+        <AppText style={styles.buttonText}>Save Changes</AppText>
       </TouchableOpacity>
 
       <CustomLoading loading={loading} />

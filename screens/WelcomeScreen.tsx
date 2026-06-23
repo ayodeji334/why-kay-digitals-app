@@ -13,6 +13,7 @@ import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../constants/settings";
+import { AppText } from "../components/AppText";
 
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -40,25 +41,25 @@ const WelcomeScreen = () => {
 
         <View style={styles.contentWrapper}>
           {/* <View style={styles.header}>
-            <Text style={styles.title}>
+            <AppText style={styles.title}>
               Lorem ipsum dolor sit amet,{" "}
-              <Text style={styles.highlight}>consectetur</Text>
+              <AppText style={styles.highlight}>consectetur</AppText>
             </Text>
-            <Text style={styles.subtitle}>
+            <AppText style={styles.subtitle}>
               Experience seamless transactions, smart insights, and instant
               access to your funds.
-            </Text>
+            </AppText>
           </View> */}
           <View style={styles.header}>
-            <Text style={styles.title}>
+            <AppText style={styles.title}>
               Smarter way to{" "}
-              <Text style={styles.highlight}>pay, trade, and grow</Text>
-            </Text>
+              <AppText style={styles.highlight}>pay, trade, and grow</AppText>
+            </AppText>
 
-            <Text style={styles.subtitle}>
+            <AppText style={styles.subtitle}>
               From crypto to daily payments, manage everything seamlessly in one
               powerful platform.
-            </Text>
+            </AppText>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -68,21 +69,22 @@ const WelcomeScreen = () => {
               }}
               style={[styles.button, styles.createButton]}
             >
-              <Text style={styles.createButtonText}>Create Account</Text>
+              <AppText style={styles.createButtonText}>Create Account</AppText>
             </Pressable>
             <Pressable
               onPress={() => navigation.navigate("SignIn" as never)}
               style={[styles.button, styles.signInButton]}
             >
-              <Text style={styles.signInButtonText}>Sign In</Text>
+              <AppText style={styles.signInButtonText}>Sign In</AppText>
             </Pressable>
           </View>
 
-          <Text style={styles.termsText}>
-            By tapping <Text style={styles.termsHighlight}>Create account</Text>{" "}
-            or <Text style={styles.termsHighlight}>Sign in</Text>, you agree to
-            our{" "}
-            <Text
+          <AppText style={styles.termsText}>
+            By tapping{" "}
+            <AppText style={styles.termsHighlight}>Create account</AppText> or{" "}
+            <AppText style={styles.termsHighlight}>Sign in</AppText>, you agree
+            to our{" "}
+            <AppText
               onPress={() =>
                 navigation.navigate(
                   "WebView" as never,
@@ -94,10 +96,10 @@ const WelcomeScreen = () => {
               style={styles.termsHighlight}
             >
               Term & Conditions
-            </Text>
+            </AppText>
             .{"\n"}
             Learn more about how we process your data in our{" "}
-            <Text
+            <AppText
               onPress={() =>
                 navigation.navigate(
                   "WebView" as never,
@@ -109,8 +111,8 @@ const WelcomeScreen = () => {
               style={styles.termsHighlight}
             >
               Privacy Policy
-            </Text>
-          </Text>
+            </AppText>
+          </AppText>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -162,13 +164,13 @@ const styles = StyleSheet.create({
     maxWidth: "90%",
     marginHorizontal: "auto",
     marginBottom: 10,
-    // lineHeight: 40,
+    lineHeight: 22,
   },
   highlight: {
-    color: COLORS.primary,
+    color: "#72FFB0",
   },
   subtitle: {
-    fontSize: normalize(19),
+    fontSize: normalize(20),
     color: COLORS.whiteBackground,
     textAlign: "center",
     lineHeight: 24,
@@ -204,12 +206,12 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("700"),
   },
   termsText: {
-    fontSize: normalize(15),
+    fontSize: normalize(17),
     color: COLORS.whiteBackground,
     fontFamily: getFontFamily("400"),
-    lineHeight: 18,
+    lineHeight: 19,
     textAlign: "center",
-    paddingHorizontal: 10,
+    paddingHorizontal: 2,
   },
   termsHighlight: {
     color: "#72FFB0",

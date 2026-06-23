@@ -27,6 +27,7 @@ import useAxios from "../hooks/useAxios";
 import { useQuery } from "@tanstack/react-query";
 import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
+import { AppText } from "../components/AppText";
 
 const BankTransferScreen = () => {
   const { apiGet } = useAxios();
@@ -97,15 +98,15 @@ const BankTransferScreen = () => {
             <View style={styles.emptyIcon}>
               <WalletAdd size={30} color="#000" />
             </View>
-            <Text style={styles.emptyTitle}>No Virtual Account</Text>
-            <Text style={styles.emptyDescription}>
+            <AppText style={styles.emptyTitle}>No Virtual Account</AppText>
+            <AppText style={styles.emptyDescription}>
               You need to create a virtual account before you can make deposits.
               This only takes a moment and is required for secure transactions.
               Please ensure your BVN is verified to activate your virtual
               account.
-            </Text>
+            </AppText>
             <TouchableOpacity style={styles.emptyButton} onPress={onRefresh}>
-              <Text style={styles.emptyButtonText}>Try again</Text>
+              <AppText style={styles.emptyButtonText}>Try again</AppText>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -126,41 +127,41 @@ const BankTransferScreen = () => {
           }
         >
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>
+            <AppText style={styles.sectionTitle}>
               Transfer to your virtual account
-            </Text>
-            <Text style={styles.instructionText}>
+            </AppText>
+            <AppText style={styles.instructionText}>
               Make a bank transfer to the account number below and your fund
               will be creddited immediately into your account.
-            </Text>
+            </AppText>
           </View>
 
           <View style={styles.accountSection}>
             <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Account Name</Text>
+              <AppText style={styles.detailLabel}>Account Name</AppText>
               <View style={styles.copyableField}>
-                <Text style={styles.detailValue} numberOfLines={1}>
+                <AppText style={styles.detailValue} numberOfLines={1}>
                   {data?.account_name}
-                </Text>
+                </AppText>
               </View>
             </View>
 
             <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Bank Name</Text>
+              <AppText style={styles.detailLabel}>Bank Name</AppText>
               <View style={styles.copyableField}>
-                <Text style={styles.detailValue}>
+                <AppText style={styles.detailValue}>
                   {/* BLOOMS (MFB) MICROFINANCE BANK */}
                   Blooms Micro finance bank ( Blooms MFB )
-                </Text>
+                </AppText>
               </View>
             </View>
 
             <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Account Number</Text>
+              <AppText style={styles.detailLabel}>Account Number</AppText>
               <View style={styles.copyableField}>
-                <Text style={[styles.detailValue, styles.accountNumber]}>
+                <AppText style={[styles.detailValue, styles.accountNumber]}>
                   {data?.account_number}
-                </Text>
+                </AppText>
               </View>
             </View>
 
@@ -171,7 +172,7 @@ const BankTransferScreen = () => {
               }
               style={styles.copyButton}
             >
-              <Text
+              <AppText
                 style={{
                   color: "white",
                   fontSize: normalize(19),
@@ -179,7 +180,7 @@ const BankTransferScreen = () => {
                 }}
               >
                 Tap to copy account details
-              </Text>
+              </AppText>
               {copiedField === "accountNumber" ? (
                 <Check size={13} color="white" />
               ) : (
@@ -205,7 +206,9 @@ const BankTransferScreen = () => {
               style={styles.button}
               onPress={() => navigation.goBack()}
             >
-              <Text style={styles.buttonText}>I have transfer the money</Text>
+              <AppText style={styles.buttonText}>
+                I have transfer the money
+              </AppText>
             </TouchableOpacity>
           </View>
         </ScrollView>

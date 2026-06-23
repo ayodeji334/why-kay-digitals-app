@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   View,
-  Text,
   TouchableOpacity,
   ScrollView,
   StyleSheet,
@@ -25,6 +24,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { TradeIntent } from "../../libs/types";
 import { Dribbble } from "iconsax-react-nativejs";
+import { AppText } from "../AppText";
 
 const ServicesSection = () => {
   const queryClient = useQueryClient();
@@ -167,7 +167,7 @@ const ServicesSection = () => {
             style={styles.serviceItem}
           >
             <View style={styles.iconContainer}>{service.icon}</View>
-            <Text style={styles.serviceText}>{service.title}</Text>
+            <AppText style={styles.serviceText}>{service.title}</AppText>
           </TouchableOpacity>
         ))}
       </View>
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   serviceText: {
-    fontSize: normalize(17),
+    fontSize: normalize(16),
     fontFamily: getFontFamily(800),
     textAlign: "center",
     color: "#333",

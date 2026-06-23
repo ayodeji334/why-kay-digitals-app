@@ -6,6 +6,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import HalfScreenModal from "../components/HalfScreenModal";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { AppText } from "../components/AppText";
 
 export default function SetNewPasswordScreen({ route }: any) {
   const { email } = route.params;
@@ -17,8 +18,8 @@ export default function SetNewPasswordScreen({ route }: any) {
       <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Set A New Password</Text>
-          <Text
+          <AppText style={styles.title}>Set A New Password</AppText>
+          <AppText
             style={[
               styles.title,
               {
@@ -30,7 +31,7 @@ export default function SetNewPasswordScreen({ route }: any) {
             ]}
           >
             Enter your new password below and check the hint while setting it.
-          </Text>
+          </AppText>
         </View>
 
         <SetNewPasswordForm

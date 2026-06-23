@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
+import { AppText } from "./AppText";
 
 interface DatePickerFieldProps {
   label: string;
@@ -72,19 +73,19 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
 
   return (
     <View>
-      <Text style={styles.label}>{label}</Text>
+      <AppText style={styles.label}>{label}</AppText>
       <TouchableOpacity
         style={styles.dateField}
         onPress={toggle}
         activeOpacity={0.8}
       >
-        <Text style={styles.dateText}>{displayText}</Text>
+        <AppText style={styles.dateText}>{displayText}</AppText>
       </TouchableOpacity>
 
       <Modal visible={visible} transparent animationType="slide">
         <View style={styles.overlay}>
           <View style={styles.modal}>
-            <Text style={styles.modalTitle}>{label}</Text>
+            <AppText style={styles.modalTitle}>{label}</AppText>
 
             <View style={styles.scrollPickerRow}>
               <View style={styles.highlightBar} />
@@ -110,14 +111,14 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
                 }}
                 renderItem={({ item }) => (
                   <View style={styles.scrollItem}>
-                    <Text
+                    <AppText
                       style={[
                         styles.scrollText,
                         item === tempDate.getDate() && styles.selectedText,
                       ]}
                     >
                       {item}
-                    </Text>
+                    </AppText>
                   </View>
                 )}
               />
@@ -144,14 +145,14 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
                 }}
                 renderItem={({ item, index }) => (
                   <View style={styles.scrollItem}>
-                    <Text
+                    <AppText
                       style={[
                         styles.scrollText,
                         index === tempDate.getMonth() && styles.selectedText,
                       ]}
                     >
                       {item.slice(0, 3)}
-                    </Text>
+                    </AppText>
                   </View>
                 )}
               />
@@ -178,14 +179,14 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
                 }}
                 renderItem={({ item }) => (
                   <View style={styles.scrollItem}>
-                    <Text
+                    <AppText
                       style={[
                         styles.scrollText,
                         item === tempDate.getFullYear() && styles.selectedText,
                       ]}
                     >
                       {item}
-                    </Text>
+                    </AppText>
                   </View>
                 )}
               />
@@ -193,13 +194,15 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
 
             <View style={styles.buttonRow}>
               <TouchableOpacity style={styles.cancelBtn} onPress={toggle}>
-                <Text style={[styles.btnText, { color: "#000" }]}>Cancel</Text>
+                <AppText style={[styles.btnText, { color: "#000" }]}>
+                  Cancel
+                </AppText>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.confirmBtn}
                 onPress={handleConfirm}
               >
-                <Text style={styles.btnText}>Confirm</Text>
+                <AppText style={styles.btnText}>Confirm</AppText>
               </TouchableOpacity>
             </View>
           </View>

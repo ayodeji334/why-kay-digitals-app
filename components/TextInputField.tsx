@@ -9,6 +9,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
+import { AppText } from "./AppText";
 
 interface Props {
   control: any;
@@ -57,7 +58,9 @@ const TextInputField: React.FC<Props> = ({
         fieldState: { error },
       }) => (
         <View style={[styles.container, containerStyle]}>
-          {showLabel && label && <Text style={styles.label}>{label}</Text>}
+          {showLabel && label && (
+            <AppText style={styles.label}>{label}</AppText>
+          )}
           <TextInput
             style={[styles.input, error && styles.errorBorder, style]}
             placeholder={placeholder}
@@ -67,8 +70,10 @@ const TextInputField: React.FC<Props> = ({
             value={value?.toString()}
             keyboardType={keyboardType}
             autoCapitalize={autoCapitalize}
+            maxFontSizeMultiplier={1}
+            allowFontScaling={false}
           />
-          {error && <Text style={styles.errorText}>{error.message}</Text>}
+          {error && <AppText style={styles.errorText}>{error.message}</AppText>}
         </View>
       )}
     />
@@ -84,7 +89,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 10,
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 12,
     color: "#1A1A1A",
     fontFamily: getFontFamily("400"),
     fontSize: normalize(18),
@@ -104,7 +109,7 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: getFontFamily("800"),
     fontSize: normalize(18),
-    marginBottom: 6,
+    marginBottom: 2,
     color: "#000",
   },
 });

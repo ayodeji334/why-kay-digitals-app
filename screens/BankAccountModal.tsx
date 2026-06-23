@@ -17,10 +17,8 @@ import { normalize, getFontFamily } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AppText } from "../components/AppText";
 const STATUS_BAR_PADDING =
   Platform.OS === "android" ? StatusBar.currentHeight ?? 0 : 0;
 
@@ -144,7 +142,7 @@ export default function BankAccountModal({
     //         <TouchableOpacity onPress={onClose}>
     //           <ArrowLeft2 size={20} color="#000" />
     //         </TouchableOpacity>
-    //         <Text style={styles.title}>Add Bank Account</Text>
+    //         <AppText style={styles.title}>Add Bank Account</AppText>
     //       </View>
 
     //       <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
@@ -157,7 +155,7 @@ export default function BankAccountModal({
     //         />
 
     //         <View style={styles.inputContainer}>
-    //           <Text style={styles.label}>Account Number</Text>
+    //           <AppText style={styles.label}>Account Number</AppText>
     //           <TextInput
     //             style={[error && styles.errorBorder, styles.input]}
     //             value={accountNumber}
@@ -169,16 +167,16 @@ export default function BankAccountModal({
     //         </View>
 
     //         {!validating && error ? (
-    //           <Text style={[styles.text, { color: "red" }]}>{error}</Text>
+    //           <AppText style={[styles.text, { color: "red" }]}>{error}</AppText>
     //         ) : null}
     //         {!validating && success ? (
-    //           <Text style={[styles.text, { color: "green" }]}>{success}</Text>
+    //           <AppText style={[styles.text, { color: "green" }]}>{success}</AppText>
     //         ) : null}
 
     //         {validating ? (
-    //           <Text style={[styles.text, { color: "green" }]}>
+    //           <AppText style={[styles.text, { color: "green" }]}>
     //             Kindly wait while the system validate your the details
-    //           </Text>
+    //           </AppText>
     //         ) : null}
 
     //         <TouchableOpacity
@@ -199,7 +197,7 @@ export default function BankAccountModal({
     //             !!error
     //           }
     //         >
-    //           <Text style={styles.buttonText}>Save Recipient</Text>
+    //           <AppText style={styles.buttonText}>Save Recipient</AppText>
     //         </TouchableOpacity>
     //         <View style={{ marginVertical: 10 }}>
     //           <SavedBeneficiaries
@@ -236,7 +234,7 @@ export default function BankAccountModal({
           <TouchableOpacity onPress={onClose}>
             <ArrowLeft2 size={20} color="#000" />
           </TouchableOpacity>
-          <Text style={styles.title}>Add Bank Account</Text>
+          <AppText style={styles.title}>Add Bank Account</AppText>
         </View>
 
         <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
@@ -249,28 +247,33 @@ export default function BankAccountModal({
           />
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Account Number</Text>
+            <AppText style={styles.label}>Account Number</AppText>
             <TextInput
               style={[error && styles.errorBorder, styles.input]}
               value={accountNumber}
               onChangeText={setAccountNumber}
               placeholder="Enter 10-digit account number"
+              placeholderTextColor={"gray"}
               keyboardType="numeric"
               maxLength={10}
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
             />
           </View>
 
           {!validating && error ? (
-            <Text style={[styles.text, { color: "red" }]}>{error}</Text>
+            <AppText style={[styles.text, { color: "red" }]}>{error}</AppText>
           ) : null}
           {!validating && success ? (
-            <Text style={[styles.text, { color: "green" }]}>{success}</Text>
+            <AppText style={[styles.text, { color: "green" }]}>
+              {success}
+            </AppText>
           ) : null}
 
           {validating ? (
-            <Text style={[styles.text, { color: "green" }]}>
+            <AppText style={[styles.text, { color: "green" }]}>
               Kindly wait while the system validate your the details
-            </Text>
+            </AppText>
           ) : null}
 
           <TouchableOpacity
@@ -291,7 +294,7 @@ export default function BankAccountModal({
               !!error
             }
           >
-            <Text style={styles.buttonText}>Save Recipient</Text>
+            <AppText style={styles.buttonText}>Save Recipient</AppText>
           </TouchableOpacity>
           <View style={{ marginVertical: 10 }}>
             <SavedBeneficiaries
@@ -343,8 +346,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   label: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("900"),
+    fontSize: normalize(17),
+    fontFamily: getFontFamily("800"),
     marginBottom: 3,
   },
   // input: {
@@ -360,9 +363,9 @@ const styles = StyleSheet.create({
     borderColor: "#e0e0e0",
     borderRadius: 8,
     paddingHorizontal: 16,
-    paddingVertical: 15,
+    paddingVertical: 14,
     color: "#1A1A1A",
-    fontFamily: getFontFamily("800"),
+    fontFamily: getFontFamily("400"),
     fontSize: normalize(18),
     // backgroundColor: "#FFFFFF",
   },

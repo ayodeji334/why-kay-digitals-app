@@ -12,6 +12,7 @@ import { InfoCircle } from "iconsax-react-nativejs";
 import { useAuthStore } from "../../stores/authSlice";
 import useAxios from "../../hooks/useAxios";
 import { useNavigation } from "@react-navigation/native";
+import { AppText } from "../AppText";
 
 const bvnSchema = yup.object({
   bvn: yup
@@ -63,7 +64,7 @@ const BVNForm = () => {
         maxLength={11}
       />
 
-      <Text style={styles.instruction}>Dial *565*0# to get your BVN</Text>
+      <AppText style={styles.instruction}>Dial *565*0# to get your BVN</AppText>
 
       <InfoCard
         IconComponent={<InfoCircle size={17} />}
@@ -81,7 +82,7 @@ const BVNForm = () => {
         style={styles.button}
         onPress={handleSubmit(onSubmit)}
       >
-        <Text style={styles.buttonText}>Verify BVN</Text>
+        <AppText style={styles.buttonText}>Verify BVN</AppText>
       </TouchableOpacity>
 
       <CustomLoading loading={isSubmitting} />

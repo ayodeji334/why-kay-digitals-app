@@ -4,6 +4,7 @@ import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
+import { AppText } from "./AppText";
 
 interface HalfScreenModalProps {
   isVisible: boolean;
@@ -70,9 +71,9 @@ const HalfScreenModal = ({
               </View>
             )}
 
-            <Text style={styles.title}>{title}</Text>
+            <AppText style={styles.title}>{title}</AppText>
             {description && (
-              <Text style={styles.description}>{description}</Text>
+              <AppText style={styles.description}>{description}</AppText>
             )}
 
             <TouchableOpacity
@@ -87,14 +88,14 @@ const HalfScreenModal = ({
               ]}
               onPress={actionButton ? actionButton : onClose}
             >
-              <Text
+              <AppText
                 style={[
                   styles.buttonText,
                   { color: isDangerous ? "white" : "white" },
                 ]}
               >
                 {buttonText}
-              </Text>
+              </AppText>
             </TouchableOpacity>
 
             {secondaryButtonText && secondaryAction && (
@@ -103,9 +104,11 @@ const HalfScreenModal = ({
                 style={[styles.button, styles.secondaryButton]}
                 onPress={secondaryAction}
               >
-                <Text style={[styles.buttonText, styles.secondaryButtonText]}>
+                <AppText
+                  style={[styles.buttonText, styles.secondaryButtonText]}
+                >
                   {secondaryButtonText}
-                </Text>
+                </AppText>
               </TouchableOpacity>
             )}
           </View>

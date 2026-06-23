@@ -19,6 +19,7 @@ import CustomIcon from "../components/CustomIcon";
 import { FaceIdIcon } from "../assets";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { Image } from "react-native-compressor";
+import { AppText } from "../components/AppText";
 
 const MAX_BASE64_SIZE = 900 * 1024; // 900 KB
 
@@ -90,11 +91,11 @@ export default function SelfieVerificationScreen() {
             <CustomIcon source={FaceIdIcon} size={74} color={COLORS.primary} />
           </View>
 
-          <Text style={styles.infoTitle}>Face Verification</Text>
-          <Text style={styles.infoSubtitle}>
+          <AppText style={styles.infoTitle}>Face Verification</AppText>
+          <AppText style={styles.infoSubtitle}>
             Your face will be scanned to verify your identity to upgrade your
             account.
-          </Text>
+          </AppText>
         </View>
 
         <View style={styles.footer}>
@@ -104,9 +105,9 @@ export default function SelfieVerificationScreen() {
             disabled={loading}
             style={styles.primaryButton}
           >
-            <Text style={styles.primaryButtonText}>
+            <AppText style={styles.primaryButtonText}>
               {loading ? "Checking..." : "Verify My Face"}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -150,10 +151,10 @@ export default function SelfieVerificationScreen() {
       <FaceOverlay />
 
       <View style={styles.cameraInstructions}>
-        <Text style={styles.title}>Align your face</Text>
-        <Text style={styles.subtitle}>
+        <AppText style={styles.title}>Align your face</AppText>
+        <AppText style={styles.subtitle}>
           Make sure your face is centered within the frame
-        </Text>
+        </AppText>
       </View>
 
       <View style={styles.captureWrapper}>

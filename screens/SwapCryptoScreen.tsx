@@ -25,6 +25,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { showError } from "../utlis/toast";
 import { formatAmount } from "../libs/formatNumber";
 import { useQuoteStore } from "../stores/quoteStore";
+import { AppText } from "../components/AppText";
 
 const CANCEL_COOLDOWN_MS = 3000;
 
@@ -327,14 +328,14 @@ export default function CryptoSwapScreen() {
                 title="Select from your wallet"
                 showWalletPrice={true}
               />
-              <Text style={styles.walletBalance}>
+              <AppText style={styles.walletBalance}>
                 Wallet Balance: {balance} {symbol}
                 {" ≈ "}
                 {formatAmount(price * balance, {
                   currency: "USD",
                   decimalPlace: 5,
                 })}
-              </Text>
+              </AppText>
             </View>
 
             <View style={{ marginVertical: 4 }}>
@@ -354,14 +355,16 @@ export default function CryptoSwapScreen() {
               />
             </View>
             <View style={{ marginVertical: 4 }}>
-              <Text style={styles.label}>Amount (USD)</Text>
+              <AppText style={styles.label}>Amount (USD)</AppText>
               <Controller
                 control={control}
                 name="amount"
                 render={({ field: { onBlur } }) => (
                   <View style={styles.inputContainer}>
-                    <Text style={styles.dollarSign}>$</Text>
+                    <AppText style={styles.dollarSign}>$</AppText>
                     <TextInput
+                      maxFontSizeMultiplier={1}
+                      allowFontScaling={false}
                       style={styles.input}
                       placeholder="0.00"
                       placeholderTextColor="#999"
@@ -383,23 +386,23 @@ export default function CryptoSwapScreen() {
               />
 
               {errors.amount && (
-                <Text style={styles.error}>{errors.amount.message}</Text>
+                <AppText style={styles.error}>{errors.amount.message}</AppText>
               )}
               {fromAsset && amount > 0 && (
-                <Text style={styles.approx}>
+                <AppText style={styles.approx}>
                   Approximately {fromAmount} will debited from your {symbol}{" "}
                   wallet
-                </Text>
+                </AppText>
               )}
             </View>
 
             {insufficientBalance && fromAsset && (
               <View style={styles.warningContainer}>
-                <Text style={styles.warningText}>
+                <AppText style={styles.warningText}>
                   Insufficient balance! You need {requiredAssetAmount}{" "}
                   {fromAsset.symbol} but you only have {balance}{" "}
                   {fromAsset.symbol}
-                </Text>
+                </AppText>
               </View>
             )}
           </View>
@@ -414,17 +417,17 @@ export default function CryptoSwapScreen() {
               onPress={handleSubmit(onSubmit)}
               disabled={!canSubmit || swapMutation.isPending || isCooldown}
             >
-              <Text style={styles.buttonText}>
+              <AppText style={styles.buttonText}>
                 {swapMutation.isPending
                   ? "Please Wait"
                   : isCooldown
                   ? "Loading... Please wait"
                   : "Continue"}
-              </Text>
+              </AppText>
             </TouchableOpacity>
 
             <View style={{ paddingVertical: 10 }}>
-              <Text
+              <AppText
                 style={{
                   color: "#3b3b3bff",
                   fontFamily: getFontFamily("400"),
@@ -434,7 +437,7 @@ export default function CryptoSwapScreen() {
                 The market prices are volatile. Estimated amounts may change due
                 to market fluctuations between initiating and completing your
                 swap.
-              </Text>
+              </AppText>
             </View>
           </View>
         </View>
