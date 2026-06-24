@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   optionPrice: {
-    fontSize: normalize(10),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("700"),
     color: "#343435",
   },

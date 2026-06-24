@@ -175,7 +175,7 @@ const BankTransferScreen = () => {
               <AppText
                 style={{
                   color: "white",
-                  fontSize: normalize(19),
+                  fontSize: normalize(17),
                   fontFamily: getFontFamily(700),
                 }}
               >
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   emptyDescription: {
-    fontSize: 13,
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
     color: "black",
     textAlign: "center",
@@ -294,16 +294,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: normalize(20),
+    fontSize: normalize(19),
     fontFamily: getFontFamily("800"),
     color: "#000000",
     marginBottom: 8,
     lineHeight: 22,
   },
   instructionText: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
-    lineHeight: 20,
     color: "#000",
   },
   accountSection: {
@@ -321,8 +320,8 @@ const styles = StyleSheet.create({
     borderColor: "#c8c8c8ff",
   },
   detailLabel: {
-    marginBottom: 4,
-    fontSize: normalize(18),
+    marginBottom: 2,
+    fontSize: normalize(16),
     fontFamily: getFontFamily("700"),
     color: "#666666",
   },
@@ -334,13 +333,13 @@ const styles = StyleSheet.create({
   },
   detailValue: {
     color: "#000000",
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("800"),
     flex: 1,
     textTransform: "uppercase",
   },
   accountNumber: {
-    fontSize: normalize(26),
+    fontSize: normalize(20),
     fontFamily: getFontFamily("800"),
     letterSpacing: 1,
   },
@@ -358,7 +357,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   amountText: {
-    fontSize: normalize(19),
+    fontSize: normalize(14),
     fontFamily: getFontFamily("800"),
   },
   additionalAccounts: {

@@ -458,6 +458,8 @@ export default function CryptoSellScreen() {
           <View style={styles.container}>
             <View>
               <View style={{ marginBottom: 15 }}>
+                <AppText style={styles.label}>Asset</AppText>
+
                 <View style={styles.cryptoRow}>
                   {assetDetails?.asset_logo_url && (
                     <Image
@@ -476,7 +478,7 @@ export default function CryptoSellScreen() {
 
               <View>
                 <AppText style={styles.label}>
-                  Enter the amount (in $ dollars) you want to buy
+                  Enter the amount (in $ dollars)
                 </AppText>
 
                 <Controller
@@ -738,8 +740,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   label: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
+    fontSize: normalize(17),
+    fontFamily: getFontFamily("800"),
     marginBottom: normalize(8),
   },
   inputContainer: {
@@ -760,14 +762,14 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(15),
+    paddingVertical: normalize(13),
     fontSize: normalize(26),
     fontFamily: getFontFamily("800"),
     color: "#000",
   },
   error: {
     color: "red",
-    fontSize: normalize(19),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("800"),
     marginBottom: normalize(10),
   },
@@ -778,7 +780,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   balance: {
-    fontSize: normalize(19),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("800"),
     marginBottom: normalize(4),
   },
@@ -823,7 +825,7 @@ const styles = StyleSheet.create({
   },
   ngn: {
     color: "#fff",
-    fontSize: normalize(23),
+    fontSize: normalize(21),
     fontFamily: getFontFamily("800"),
   },
   button: {

@@ -96,11 +96,11 @@ export default InfoCard;
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("800"),
   },
   description: {
-    fontSize: normalize(17),
+    fontSize: normalize(15),
     fontFamily: getFontFamily("400"),
     color: "#000",
   },

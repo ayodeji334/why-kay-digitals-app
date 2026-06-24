@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonText: {
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("700"),
     color: COLORS.whiteBackground,
   },
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: COLORS.dark,
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("800"),
   },
 });

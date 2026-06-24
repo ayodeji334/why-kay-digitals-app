@@ -87,7 +87,7 @@ const HomeScreen = () => {
 
         <AssetsSection />
 
-        {hasCompleteVerification && (
+        {!hasCompleteVerification && (
           <Pressable
             style={styles.verificationBanner}
             onPress={() => navigation.navigate("Verification" as never)}

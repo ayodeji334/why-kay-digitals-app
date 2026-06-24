@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   View,
   Text,
@@ -273,21 +273,21 @@ const styles = StyleSheet.create({
     borderRadius: 1000,
     top: -15,
   },
-  tab: { flex: 1, padding: 10, alignItems: "center" },
+  tab: { flex: 1, padding: 9, alignItems: "center" },
   activeTab: { backgroundColor: COLORS.primary, borderRadius: 800 },
   activeTabText: {
     color: "#fff",
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("800"),
   },
   inactiveTabText: {
     color: "#000",
     fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
+    fontSize: normalize(16),
   },
   label: {
     marginBottom: 6,
-    fontSize: normalize(18),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#000000ff",
   },
@@ -308,8 +308,8 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(16),
-    fontSize: normalize(26),
+    paddingVertical: normalize(14),
+    fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
     color: "#000",
   },
@@ -336,12 +336,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   infoLabel: {
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("700"),
     color: "#000",
   },
   infoValue: {
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     fontFamily: getFontFamily("800"),
     color: COLORS.darkBackground,
   },
@@ -400,21 +400,21 @@ const styles = StyleSheet.create({
     borderColor: "#eeeeee",
   },
   rateText: {
-    fontSize: normalize(28),
+    fontSize: normalize(24),
     fontFamily: getFontFamily("800"),
     color: "#111827",
   },
   tradeButton: {
     backgroundColor: COLORS.secondary,
-    padding: 16,
+    padding: 14,
     borderRadius: 120,
     alignItems: "center",
     marginVertical: 16,
   },
   tradeButtonText: {
     color: "#fff",
-    fontFamily: getFontFamily("900"),
-    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    fontSize: normalize(17),
   },
   bottomNav: {
     flexDirection: "row",

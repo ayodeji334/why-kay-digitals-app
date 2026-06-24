@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     maxWidth: "90%",
     marginHorizontal: "auto",
     marginBottom: 10,
-    lineHeight: 22,
+    // lineHeight: 28,
   },
   highlight: {
     color: "#72FFB0",
