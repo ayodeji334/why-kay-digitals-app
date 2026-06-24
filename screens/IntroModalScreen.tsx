@@ -50,7 +50,7 @@ const slides = [
 
 const marginTop = Platform.select({
   android: 0,
-  ios: 46,
+  ios: 0,
   default: 0,
 });
 
@@ -85,7 +85,7 @@ export default function IntroModalScreen() {
 
   return (
     <SafeAreaView
-      edges={["bottom", "left", "right", "top"]}
+      edges={["left", "right", "top", "bottom"]}
       style={styles.container}
     >
       <StatusBar barStyle="dark-content" backgroundColor={"white"} />
@@ -151,6 +151,7 @@ const styles = StyleSheet.create({
   },
   slide: {
     width: screenWidth,
+    marginTop: 20,
   },
   imageWrapper: {
     height: Math.min(height * 0.8, 390),

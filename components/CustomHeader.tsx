@@ -34,7 +34,11 @@ const CustomHeader: React.FC<Props> = ({
   return (
     <View style={[styles.container, { paddingTop: marginTop }]}>
       {showBack ? (
-        <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
+        <Pressable
+          hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
+          onPress={() => navigation.goBack()}
+          style={styles.backBtn}
+        >
           <ArrowLeft2 size={20} />
         </Pressable>
       ) : (
@@ -57,7 +61,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   backBtn: {
-    paddingVertical: 9,
+    paddingVertical: 0,
   },
   title: {
     flex: 1,
