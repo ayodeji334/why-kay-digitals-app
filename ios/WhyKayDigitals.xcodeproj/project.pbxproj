@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		05EC78D029BC45819B5613A4 /* Zain-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DDE7827C08F8453F8537470E /* Zain-ExtraLight.ttf */; };
 		069FFFE3EB0E4873AC809575 /* Zain-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B4E631A89F694D24ABD066DE /* Zain-Light.ttf */; };
+		08BB28B8D8E481D8EA38CFE0 /* libPods-OneSignalNotificationServiceExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 89E0851F9056D5578D0D1188 /* libPods-OneSignalNotificationServiceExtension.a */; };
 		0D5135E9498049D2A46E9CF8 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF9B3A33E93A4893A8247B58 /* Colors.xcassets */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		19C00167A99B46B2A57760EA /* Zain-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 45C5514DA72D476DA938BF15 /* Zain-ExtraBold.ttf */; };
@@ -19,8 +20,34 @@
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		CB4F4483AE9B4698A6C17EA2 /* Zain-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E4AC89C85119425F97DEC7A1 /* Zain-Black.ttf */; };
+		D68E0B682FEBB60100D5E136 /* OneSignalNotificationServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D68E0B612FEBB60100D5E136 /* OneSignalNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D68E0B9F2FEBBF2800D5E136 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D68E0B9C2FEBBF2800D5E136 /* NotificationService.swift */; };
 		F9DA16F4832F4B8495FE22CA /* Zain-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F16B16F1FB1549C4BB54E98D /* Zain-Regular.ttf */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D68E0B662FEBB60100D5E136 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D68E0B602FEBB60100D5E136;
+			remoteInfo = OneSignalNotificationServiceExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D68E0B692FEBB60100D5E136 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D68E0B682FEBB60100D5E136 /* OneSignalNotificationServiceExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		13B07F961A680F5B00A75B9A /* WhyKayDigitals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WhyKayDigitals.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -28,19 +55,27 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = WhyKayDigitals/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = WhyKayDigitals/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		2900CB9051AA65048439F9C5 /* libPods-WhyKayDigitals.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WhyKayDigitals.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		45C5514DA72D476DA938BF15 /* Zain-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-ExtraBold.ttf"; path = "../assets/fonts/Zain-ExtraBold.ttf"; sourceTree = "<group>"; };
+		45C5514DA72D476DA938BF15 /* Zain-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-ExtraBold.ttf"; path = "../assets/fonts/Zain-ExtraBold.ttf"; sourceTree = "<group>"; };
 		4E740282D5E275767FC92B2F /* Pods-WhyKayDigitals.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WhyKayDigitals.debug.xcconfig"; path = "Target Support Files/Pods-WhyKayDigitals/Pods-WhyKayDigitals.debug.xcconfig"; sourceTree = "<group>"; };
 		51ACBA4527A11C0DC66369F1 /* Pods-WhyKayDigitals.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WhyKayDigitals.release.xcconfig"; path = "Target Support Files/Pods-WhyKayDigitals/Pods-WhyKayDigitals.release.xcconfig"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = WhyKayDigitals/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = WhyKayDigitals/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		A656D0CEFD8442B9BC6DEBB2 /* Zain-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Bold.ttf"; path = "../assets/fonts/Zain-Bold.ttf"; sourceTree = "<group>"; };
-		A99FA71178664676A52CBC27 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = WhyKayDigitals/BootSplash.storyboard; sourceTree = "<group>"; };
-		B4E631A89F694D24ABD066DE /* Zain-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Light.ttf"; path = "../assets/fonts/Zain-Light.ttf"; sourceTree = "<group>"; };
-		CF9B3A33E93A4893A8247B58 /* Colors.xcassets */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = WhyKayDigitals/Colors.xcassets; sourceTree = "<group>"; };
-		DDE7827C08F8453F8537470E /* Zain-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-ExtraLight.ttf"; path = "../assets/fonts/Zain-ExtraLight.ttf"; sourceTree = "<group>"; };
-		E4AC89C85119425F97DEC7A1 /* Zain-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Black.ttf"; path = "../assets/fonts/Zain-Black.ttf"; sourceTree = "<group>"; };
+		89E0851F9056D5578D0D1188 /* libPods-OneSignalNotificationServiceExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OneSignalNotificationServiceExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A656D0CEFD8442B9BC6DEBB2 /* Zain-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Bold.ttf"; path = "../assets/fonts/Zain-Bold.ttf"; sourceTree = "<group>"; };
+		A99FA71178664676A52CBC27 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = WhyKayDigitals/BootSplash.storyboard; sourceTree = "<group>"; };
+		B4E631A89F694D24ABD066DE /* Zain-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Light.ttf"; path = "../assets/fonts/Zain-Light.ttf"; sourceTree = "<group>"; };
+		CACB67FE5294D4EE36EBC442 /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; path = "Target Support Files/Pods-OneSignalNotificationServiceExtension/Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		CF9B3A33E93A4893A8247B58 /* Colors.xcassets */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = WhyKayDigitals/Colors.xcassets; sourceTree = "<group>"; };
+		D3F1E6E392C4FE95897ABFE8 /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalNotificationServiceExtension.release.xcconfig"; path = "Target Support Files/Pods-OneSignalNotificationServiceExtension/Pods-OneSignalNotificationServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
+		D68E0B5C2FEAE5E100D5E136 /* WhyKayDigitals.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = WhyKayDigitals.entitlements; path = WhyKayDigitals/WhyKayDigitals.entitlements; sourceTree = "<group>"; };
+		D68E0B612FEBB60100D5E136 /* OneSignalNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OneSignalNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D68E0B9B2FEBBF2800D5E136 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D68E0B9C2FEBBF2800D5E136 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		D68E0B9D2FEBBF2800D5E136 /* OneSignalNotificationServiceExtensionRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OneSignalNotificationServiceExtensionRelease.entitlements; sourceTree = "<group>"; };
+		DDE7827C08F8453F8537470E /* Zain-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-ExtraLight.ttf"; path = "../assets/fonts/Zain-ExtraLight.ttf"; sourceTree = "<group>"; };
+		E4AC89C85119425F97DEC7A1 /* Zain-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Black.ttf"; path = "../assets/fonts/Zain-Black.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F16B16F1FB1549C4BB54E98D /* Zain-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Regular.ttf"; path = "../assets/fonts/Zain-Regular.ttf"; sourceTree = "<group>"; };
+		F16B16F1FB1549C4BB54E98D /* Zain-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Zain-Regular.ttf"; path = "../assets/fonts/Zain-Regular.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,12 +87,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D68E0B5E2FEBB60100D5E136 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				08BB28B8D8E481D8EA38CFE0 /* libPods-OneSignalNotificationServiceExtension.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		13B07FAE1A68108700A75B9A /* WhyKayDigitals */ = {
 			isa = PBXGroup;
 			children = (
+				D68E0B5C2FEAE5E100D5E136 /* WhyKayDigitals.entitlements */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -74,6 +118,7 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				2900CB9051AA65048439F9C5 /* libPods-WhyKayDigitals.a */,
+				89E0851F9056D5578D0D1188 /* libPods-OneSignalNotificationServiceExtension.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -90,6 +135,7 @@
 			children = (
 				13B07FAE1A68108700A75B9A /* WhyKayDigitals */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
+				D68E0B9E2FEBBF2800D5E136 /* OneSignalNotificationServiceExtension */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
@@ -104,6 +150,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* WhyKayDigitals.app */,
+				D68E0B612FEBB60100D5E136 /* OneSignalNotificationServiceExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -119,7 +166,6 @@
 				B4E631A89F694D24ABD066DE /* Zain-Light.ttf */,
 			);
 			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
@@ -127,8 +173,20 @@
 			children = (
 				4E740282D5E275767FC92B2F /* Pods-WhyKayDigitals.debug.xcconfig */,
 				51ACBA4527A11C0DC66369F1 /* Pods-WhyKayDigitals.release.xcconfig */,
+				CACB67FE5294D4EE36EBC442 /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */,
+				D3F1E6E392C4FE95897ABFE8 /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		D68E0B9E2FEBBF2800D5E136 /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				D68E0B9B2FEBBF2800D5E136 /* Info.plist */,
+				D68E0B9C2FEBBF2800D5E136 /* NotificationService.swift */,
+				D68E0B9D2FEBBF2800D5E136 /* OneSignalNotificationServiceExtensionRelease.entitlements */,
+			);
+			path = OneSignalNotificationServiceExtension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -145,15 +203,35 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				0CA2E964416259085C5DD4AD /* [CP] Embed Pods Frameworks */,
 				5F70B70286DBC9887517353C /* [CP] Copy Pods Resources */,
+				D68E0B692FEBB60100D5E136 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D68E0B672FEBB60100D5E136 /* PBXTargetDependency */,
 			);
 			name = WhyKayDigitals;
 			productName = WhyKayDigitals;
 			productReference = 13B07F961A680F5B00A75B9A /* WhyKayDigitals.app */;
 			productType = "com.apple.product-type.application";
+		};
+		D68E0B602FEBB60100D5E136 /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D68E0B6D2FEBB60100D5E136 /* Build configuration list for PBXNativeTarget "OneSignalNotificationServiceExtension" */;
+			buildPhases = (
+				A1FC938F2F8A7F9E1A221534 /* [CP] Check Pods Manifest.lock */,
+				D68E0B5D2FEBB60100D5E136 /* Sources */,
+				D68E0B5E2FEBB60100D5E136 /* Frameworks */,
+				D68E0B5F2FEBB60100D5E136 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OneSignalNotificationServiceExtension;
+			productName = OneSignalNotificationServiceExtension;
+			productReference = D68E0B612FEBB60100D5E136 /* OneSignalNotificationServiceExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -161,10 +239,14 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 1210;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1120;
+					};
+					D68E0B602FEBB60100D5E136 = {
+						CreatedOnToolsVersion = 26.3;
 					};
 				};
 			};
@@ -182,6 +264,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* WhyKayDigitals */,
+				D68E0B602FEBB60100D5E136 /* OneSignalNotificationServiceExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -202,6 +285,13 @@
 				19C00167A99B46B2A57760EA /* Zain-ExtraBold.ttf in Resources */,
 				658D173CD27648C1A7170839 /* Zain-Bold.ttf in Resources */,
 				069FFFE3EB0E4873AC809575 /* Zain-Light.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D68E0B5F2FEBB60100D5E136 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,6 +370,28 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-WhyKayDigitals/Pods-WhyKayDigitals-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		A1FC938F2F8A7F9E1A221534 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-OneSignalNotificationServiceExtension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -291,7 +403,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D68E0B5D2FEBB60100D5E136 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D68E0B9F2FEBBF2800D5E136 /* NotificationService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D68E0B672FEBB60100D5E136 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D68E0B602FEBB60100D5E136 /* OneSignalNotificationServiceExtension */;
+			targetProxy = D68E0B662FEBB60100D5E136 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -300,21 +428,25 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_ENTITLEMENTS = WhyKayDigitals/WhyKayDigitals.entitlements;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = F9G5TB29MU;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = WhyKayDigitals/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WHYKAY;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.whykaydigitals.app;
 				PRODUCT_NAME = WhyKayDigitals;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -328,20 +460,24 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_ENTITLEMENTS = WhyKayDigitals/WhyKayDigitals.entitlements;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = F9G5TB29MU;
 				INFOPLIST_FILE = WhyKayDigitals/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WHYKAY;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.whykaydigitals.app;
 				PRODUCT_NAME = WhyKayDigitals;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -492,6 +628,96 @@
 			};
 			name = Release;
 		};
+		D68E0B6A2FEBB60100D5E136 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CACB67FE5294D4EE36EBC442 /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "$(inherited)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = F9G5TB29MU;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = OneSignalNotificationServiceExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.whykaydigitals.app.OneSignalNotificationServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D68E0B6B2FEBB60100D5E136 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D3F1E6E392C4FE95897ABFE8 /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "$(inherited)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = OneSignalNotificationServiceExtension/OneSignalNotificationServiceExtensionRelease.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 5;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = F9G5TB29MU;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = OneSignalNotificationServiceExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.whykaydigitals.app.OneSignalNotificationServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -509,6 +735,15 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D68E0B6D2FEBB60100D5E136 /* Build configuration list for PBXNativeTarget "OneSignalNotificationServiceExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D68E0B6A2FEBB60100D5E136 /* Debug */,
+				D68E0B6B2FEBB60100D5E136 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
