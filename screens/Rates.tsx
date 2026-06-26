@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 6,
     fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#000000ff",
   },
   inputContainer: {
@@ -336,12 +336,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   infoLabel: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#000",
   },
   infoValue: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     color: COLORS.darkBackground,
   },

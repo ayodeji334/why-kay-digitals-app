@@ -17,6 +17,16 @@ import { normalize, getFontFamily } from "../constants/settings";
 import { EmptyTransactionState } from "../screens/TransactionHistory";
 import { AppText } from "./AppText";
 
+interface TransactionSectionListProps {
+  transactions: any[];
+  onRefresh: () => void;
+  refreshing: boolean;
+  onLoadMore?: () => void;
+  isFetchingMore?: boolean;
+  ListHeaderComponent?: any;
+  contentContainerStyle?: ViewStyle;
+}
+
 export const groupTransactionsByDate = (transactions: any[]) => {
   const grouped: Record<string, any[]> = {};
 
@@ -58,16 +68,6 @@ export const groupTransactionsByDate = (transactions: any[]) => {
     data: grouped[label],
   }));
 };
-
-interface TransactionSectionListProps {
-  transactions: any[];
-  onRefresh: () => void;
-  refreshing: boolean;
-  onLoadMore?: () => void;
-  isFetchingMore?: boolean;
-  ListHeaderComponent?: any;
-  contentContainerStyle?: ViewStyle;
-}
 
 const TransactionItem = ({ item }: any) => {
   const navigation: any = useNavigation();
@@ -113,7 +113,7 @@ const TransactionItem = ({ item }: any) => {
                     item?.status.toLowerCase() === "pending"
                   ? "#b46108"
                   : "#DC2626",
-              fontSize: normalize(16),
+              fontSize: normalize(17),
               fontFamily: getFontFamily(700),
             }}
           >
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     paddingHorizontal: 0,
     paddingVertical: 4,
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#868686",
     marginTop: 10,
@@ -220,17 +220,17 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   transactionTitle: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#000",
     maxWidth: "70%",
   },
   transactionAmount: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
   },
   transactionTime: {
-    fontSize: normalize(15),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#7f7f7f",
   },

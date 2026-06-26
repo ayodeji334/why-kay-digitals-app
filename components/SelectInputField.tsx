@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
   },
   selectedCryptoInfo: { flex: 1, marginLeft: 12 },
   selectedCryptoName: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
   },
   cryptoLogo: {

@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   modalTitle: {
-    fontSize: normalize(18),
+    fontSize: normalize(19),
     fontFamily: getFontFamily("800"),
     marginBottom: 16,
   },

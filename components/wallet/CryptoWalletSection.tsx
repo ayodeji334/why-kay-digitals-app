@@ -320,7 +320,7 @@ const AssetItem = React.memo(({ asset, onPress }: any) => (
     </View>
     <View style={styles.assetRight}>
       <AppText style={styles.assetPrice}>{asset.balance}</AppText>
-      <AppText style={[styles.assetPrice, { fontSize: 17 }]}>
+      <AppText style={[styles.assetPrice, { fontSize: 15 }]}>
         {formatAmount(asset.balance * asset.price, { currency: "USD" })}
       </AppText>
     </View>
@@ -492,13 +492,13 @@ const styles = StyleSheet.create({
     color: "#000000",
   },
   assetSymbol: {
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
     color: "#000000",
   },
   assetRight: { alignItems: "flex-end" },
   assetPrice: {
-    fontSize: normalize(19),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     color: "#000",
   },

@@ -405,11 +405,11 @@ const TransactionDetailScreen = () => {
           {transaction?.status.toUpperCase() !== "FAILED" && (
             <DetailRow label="Description" value={transaction?.description} />
           )}
-          <DetailRow
+          {/* <DetailRow
             label="Reference"
             value={transaction?.reference.split("-").join("")}
             copyable
-          />
+          /> */}
           <DetailRow
             label="Occurred At"
             value={

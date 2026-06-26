@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   StatusBar,
   TouchableOpacity,
   Pressable,
+  InteractionManager,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -134,7 +135,8 @@ const TransactionHistoryScreen: React.FC = () => {
 
   const transactions = useMemo(
     () => data?.pages.flatMap(page => page.data) ?? [],
-    [data?.pages],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data?.pages.length, data?.pages.at(-1)],
   );
 
   const toggleFilterModal = () => {
@@ -142,15 +144,36 @@ const TransactionHistoryScreen: React.FC = () => {
     setFilterQuery(filters); // sync draft to committed filters on every open/close
   };
 
-  const handleApplyFilter = (newFilters: FilterType) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
-    toggleFilterModal();
-  };
+  // const handleApplyFilter = (newFilters: FilterType) => {
+  //   toggleFilterModal();
+  //   InteractionManager.runAfterInteractions(() => {
+  //     setFilters(prev => ({ ...prev, ...newFilters }));
+  //   });
+  // };
 
-  const handleClearFilter = () => {
-    setFilters(defaultFilter);
+  // const handleClearFilter = () => {
+  //   setFilters(defaultFilter);
+  //   toggleFilterModal();
+  // };
+
+  const handleApplyFilter = useCallback(
+    (newFilters: typeof filterQuery) => {
+      toggleFilterModal();
+
+      setTimeout(() => {
+        setFilters(prev => ({ ...prev, ...newFilters }));
+      }, 300);
+    },
+    [toggleFilterModal],
+  );
+
+  const handleClearFilter = useCallback(() => {
     toggleFilterModal();
-  };
+
+    setTimeout(() => {
+      setFilters(defaultFilter);
+    }, 300);
+  }, [toggleFilterModal]);
 
   const downloadAccountStatement = async () => {
     try {

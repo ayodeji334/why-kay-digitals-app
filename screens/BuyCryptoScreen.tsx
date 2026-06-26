@@ -1303,7 +1303,7 @@ export default function CryptoBuyScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: normalize(20),
+    paddingHorizontal: normalize(20),
     backgroundColor: "#fff",
     justifyContent: "space-between",
   },
@@ -1374,7 +1374,7 @@ const styles = StyleSheet.create({
     borderColor: "#cdcdcdff",
   },
   balance: {
-    fontSize: normalize(19),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     paddingVertical: 3,
   },
@@ -1395,7 +1395,7 @@ const styles = StyleSheet.create({
     color: "black",
   },
   note: {
-    fontSize: normalize(19),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     color: "#000",
     marginBottom: normalize(10),

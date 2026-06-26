@@ -458,7 +458,7 @@ export default function CryptoSellScreen() {
           <View style={styles.container}>
             <View>
               <View style={{ marginBottom: 15 }}>
-                <AppText style={styles.label}>Asset</AppText>
+                <AppText style={styles.label}>Coin</AppText>
 
                 <View style={styles.cryptoRow}>
                   {assetDetails?.asset_logo_url && (
@@ -529,7 +529,7 @@ export default function CryptoSellScreen() {
                   style={{
                     marginVertical: 10,
                     backgroundColor: "#EFF7EC",
-                    padding: 10,
+                    padding: 13,
                     borderRadius: 10,
                     gap: 8,
                   }}
@@ -545,14 +545,7 @@ export default function CryptoSellScreen() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <AppText
-                      style={[
-                        styles.balance,
-                        { fontFamily: getFontFamily("800") },
-                      ]}
-                    >
-                      Wallet Balance:
-                    </AppText>
+                    <AppText style={[styles.balance]}>Wallet Balance:</AppText>
                     <AppText style={styles.balance}>
                       {assetDetails?.balance || 0} {assetDetails?.symbol}
                     </AppText>
@@ -564,14 +557,7 @@ export default function CryptoSellScreen() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <AppText
-                      style={[
-                        styles.balance,
-                        { fontFamily: getFontFamily("800") },
-                      ]}
-                    >
-                      Balance in USD:
-                    </AppText>
+                    <AppText style={[styles.balance]}>Balance in USD:</AppText>
                     <AppText style={styles.balance}>
                       {formatAmount(
                         Number(assetDetails?.balance) * marketPrice || 0,
@@ -660,13 +646,8 @@ export default function CryptoSellScreen() {
                           justifyContent: "space-between",
                         }}
                       >
-                        <AppText
-                          style={[
-                            styles.balance,
-                            { fontFamily: getFontFamily("800") },
-                          ]}
-                        >
-                          You'll Receive (₦):
+                        <AppText style={[styles.balance]}>
+                          You'll Receive:
                         </AppText>
                         <AppText
                           style={[
@@ -717,7 +698,7 @@ export default function CryptoSellScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: normalize(20),
+    paddingHorizontal: normalize(20),
     backgroundColor: "#fff",
     justifyContent: "space-between",
   },
@@ -740,7 +721,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   label: {
-    fontSize: normalize(17),
+    fontSize: normalize(19),
     fontFamily: getFontFamily("800"),
     marginBottom: normalize(8),
   },
@@ -748,7 +729,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#9f9f9fff",
     borderRadius: normalize(12),
     paddingHorizontal: normalize(16),
     marginBottom: normalize(10),
@@ -762,7 +743,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(13),
+    paddingVertical: normalize(15),
     fontSize: normalize(26),
     fontFamily: getFontFamily("800"),
     color: "#000",
@@ -780,8 +761,8 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   balance: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("800"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("700"),
     marginBottom: normalize(4),
   },
   rate: {
@@ -796,8 +777,8 @@ const styles = StyleSheet.create({
     color: "black",
   },
   note: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
     color: "#ffffff",
     marginBottom: normalize(10),
   },

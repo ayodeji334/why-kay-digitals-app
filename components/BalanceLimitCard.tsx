@@ -25,7 +25,7 @@ export default function BalanceLimitCard({ walletSummary }: any) {
       <AppText
         style={{
           fontFamily: getFontFamily(700),
-          fontSize: 13,
+          fontSize: normalize(18),
           color: "black",
           borderRadius: 10,
         }}
@@ -87,12 +87,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   limitLabel: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     color: "#000",
     fontFamily: getFontFamily("700"),
   },
   upgradeText: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     color: COLORS.secondary,
     fontFamily: getFontFamily("700"),
   },
