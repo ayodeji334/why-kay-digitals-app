@@ -1,5 +1,12 @@
 import React from "react";
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Pressable,
+} from "react-native";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 import CustomIcon from "./CustomIcon";
@@ -44,9 +51,9 @@ const HalfScreenModal = ({
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           {showCloseButton && (
-            <TouchableOpacity
+            <Pressable
               style={styles.closeButton}
-              activeOpacity={0.7}
+              hitSlop={100}
               onPress={onClose}
             >
               <CustomIcon
@@ -56,7 +63,7 @@ const HalfScreenModal = ({
                 overrideColor
                 size={18}
               />
-            </TouchableOpacity>
+            </Pressable>
           )}
 
           <View style={styles.modalContent}>

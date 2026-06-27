@@ -1228,8 +1228,8 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("800"),
   },
   paymentTypeTextActive: {
-    color: COLORS.secondary,
-    fontFamily: getFontFamily("700"),
+    color: COLORS.primary,
+    fontFamily: getFontFamily("800"),
   },
   detailsContainer: {
     marginVertical: 10,

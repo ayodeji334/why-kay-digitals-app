@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { CloseCircle } from "iconsax-react-nativejs";
+import { ArrowRight2, CloseCircle } from "iconsax-react-nativejs";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   Image,
   Alert,
   Share,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
@@ -28,7 +29,7 @@ import useAxios from "../hooks/useAxios";
 import { showError } from "../utlis/toast";
 import { AppText } from "../components/AppText";
 
-const DetailRow: React.FC<{
+export const DetailRow: React.FC<{
   label: string;
   value?: string | number;
   color?: string;
@@ -63,12 +64,42 @@ const DetailRow: React.FC<{
   );
 };
 
+interface Voucher {
+  unit: number;
+  zendit_tx_id: string;
+  epin?: string;
+  voucher_id?: string;
+  expires_at?: string;
+  redemption_url?: string;
+  instructions?: string;
+  terms?: string;
+  send?: number;
+  send_currency?: string;
+  status?: string;
+  confirmation?: {
+    confirmationNumber: string;
+    externalReferenceId: string;
+    transactionTime: string;
+  };
+}
+
+/** Returns true if this transaction is a gift card with at least one voucher. */
+function isGiftCardWithVouchers(transaction: any): boolean {
+  return (
+    transaction?.category === "GIFT_CARD" &&
+    Array.isArray(transaction?.meta?.vouchers) &&
+    transaction.meta.vouchers.length > 0
+  );
+}
+
 const TransactionDetailScreen = () => {
   const navigation: any = useNavigation();
   const route = useRoute();
   const { apiGet } = useAxios();
   const { transaction }: any = route.params;
   const [isDownloading, setIsDownloading] = useState(false);
+
+  console.log(transaction);
 
   const isSuccess = useMemo(
     () => transaction?.status?.toLowerCase() === "successful",
@@ -81,6 +112,9 @@ const TransactionDetailScreen = () => {
       transaction?.status?.toLowerCase() === "pending",
     [transaction?.status],
   );
+
+  const hasVouchers = isGiftCardWithVouchers(transaction);
+  const vouchers: Voucher[] = transaction?.meta?.vouchers ?? [];
 
   const StatusIcon = () =>
     isSuccess ? (
@@ -254,7 +288,10 @@ const TransactionDetailScreen = () => {
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+      >
         <View style={styles.iconContainer}>
           <StatusIcon />
         </View>
@@ -285,6 +322,39 @@ const TransactionDetailScreen = () => {
             }}
           >
             {isSuccess
+              ? transaction?.category === "GIFT_CARD"
+                ? `Your ${
+                    transaction?.meta?.offer_snapshot?.brand_name ?? "gift card"
+                  } purchase was successful`
+                : transaction?.category === "CRYPTO_DEPOSIT"
+                ? `Your ${transaction?.meta?.asset_symbol} deposit was successful`
+                : transaction?.category === "CRYPTO_WITHDRAW"
+                ? `Your ${transaction?.meta?.asset_symbol} withdrawal was successful`
+                : transaction?.category === "CABLETV"
+                ? "Your TV bill payment was successful"
+                : transaction?.category === "MOBILEDATA"
+                ? "Your data purchase was successful"
+                : transaction?.category === "AIRTIME"
+                ? "Your airtime purchase was successful"
+                : transaction?.category === "REFERRAL_BONUS"
+                ? "You've received a referral bonus"
+                : transaction?.category === "BANK_TRANSFER"
+                ? "Your deposit was successful"
+                : transaction?.category === "WITHDRAWAL"
+                ? "Your withdrawal was successful"
+                : "Transaction completed successfully"
+              : isProcessing
+              ? "Your order is being processed"
+              : "Transaction failed"}
+          </AppText>
+          {/* <AppText
+            style={{
+              fontSize: normalize(18),
+              fontFamily: getFontFamily("400"),
+              textAlign: "center",
+            }}
+          >
+            {isSuccess
               ? transaction?.category === "CRYPTO_DEPOSIT"
                 ? `Your ${transaction?.meta?.asset_symbol} deposit was successful`
                 : transaction?.category === "CRYPTO_WITHDRAW"
@@ -305,8 +375,42 @@ const TransactionDetailScreen = () => {
               : isProcessing
               ? "Transaction is pending the confirmation"
               : "Transaction failed"}
-          </AppText>
+          </AppText> */}
         </View>
+
+        {/* ── Gift card vouchers ── */}
+        {hasVouchers && (
+          <TouchableOpacity
+            style={styles.viewVouchersButton}
+            activeOpacity={0.8}
+            onPress={() =>
+              navigation.navigate(
+                "GiftCardVouchers" as never,
+                {
+                  vouchers,
+                  brandName:
+                    transaction?.meta?.offer_snapshot?.brand_name ??
+                    "Gift Card",
+                  totalAmountNgn: transaction?.amount,
+                  txReference: transaction?.tx_reference,
+                  quantity: transaction?.meta?.quantity ?? vouchers.length,
+                } as never,
+              )
+            }
+          >
+            <View style={styles.viewVouchersLeft}>
+              <AppText style={styles.viewVouchersTitle}>
+                {vouchers.length > 1
+                  ? `Your gift cards are ready`
+                  : "Your gift card is ready"}
+              </AppText>
+              <AppText style={styles.viewVouchersHint}>
+                Tap to see the detail about your gift cards
+              </AppText>
+            </View>
+            <ArrowRight2 size={17} color={styles.viewVouchersChevron.color} />
+          </TouchableOpacity>
+        )}
 
         {transaction?.meta?.data?.recharge_token && (
           <View
@@ -420,13 +524,20 @@ const TransactionDetailScreen = () => {
 
         <View style={styles.header}>
           <TouchableOpacity
+            hitSlop={10}
+            activeOpacity={0.7}
             onPress={handleShareReceipt}
             style={styles.headerButton}
           >
             <CustomIcon source={ShareIcon} size={18} color={COLORS.primary} />
             <AppText style={styles.headerTitle}>Share Receipt</AppText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton}>
+          <TouchableOpacity
+            hitSlop={10}
+            activeOpacity={0.7}
+            onPress={handleGoBack}
+            style={styles.goBackButton}
+          >
             <AppText style={[styles.headerTitle, { color: "white" }]}>
               Done
             </AppText>
@@ -434,8 +545,248 @@ const TransactionDetailScreen = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
+    // <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
+    //   <StatusBar style="dark" backgroundColor="#fff" />
+    //   <ScrollView contentContainerStyle={styles.content}>
+    //     {/* Status icon */}
+    //     <View style={styles.iconContainer}>{/* <StatusIcon /> */}</View>
+
+    //     {/* Amount + status message */}
+    //     <View style={{ marginBottom: 20, gap: 0 }}>
+    //       <AppText style={styles.amount}>
+    //         {transaction?.medium?.toUpperCase() === "CRYPTO"
+    //           ? ["failed", "pending"].includes(
+    //               transaction.status?.toLowerCase(),
+    //             )
+    //             ? formatAmount(transaction?.meta?.amount_in_usd ?? 0, {
+    //                 currency: transaction?.currency || "USD",
+    //                 decimalPlace: 2,
+    //               })
+    //             : `${transaction?.meta?.amount || 0} ${
+    //                 transaction?.meta?.asset_symbol ?? ""
+    //               }`
+    //           : formatAmount(transaction?.amount ?? 0, {
+    //               currency: transaction?.currency || "NGN",
+    //               decimalPlace: 2,
+    //             })}
+    //       </AppText>
+    //       <AppText
+    //         style={{
+    //           fontSize: normalize(18),
+    //           fontFamily: getFontFamily("400"),
+    //           textAlign: "center",
+    //         }}
+    //       >
+    //         {isSuccess
+    //           ? transaction?.category === "GIFT_CARD"
+    //             ? `Your ${
+    //                 transaction?.meta?.offer_snapshot?.brand_name ?? "gift card"
+    //               } purchase was successful`
+    //             : transaction?.category === "CRYPTO_DEPOSIT"
+    //             ? `Your ${transaction?.meta?.asset_symbol} deposit was successful`
+    //             : transaction?.category === "CRYPTO_WITHDRAW"
+    //             ? `Your ${transaction?.meta?.asset_symbol} withdrawal was successful`
+    //             : transaction?.category === "CABLETV"
+    //             ? "Your TV bill payment was successful"
+    //             : transaction?.category === "MOBILEDATA"
+    //             ? "Your data purchase was successful"
+    //             : transaction?.category === "AIRTIME"
+    //             ? "Your airtime purchase was successful"
+    //             : transaction?.category === "REFERRAL_BONUS"
+    //             ? "You've received a referral bonus"
+    //             : transaction?.category === "BANK_TRANSFER"
+    //             ? "Your deposit was successful"
+    //             : transaction?.category === "WITHDRAWAL"
+    //             ? "Your withdrawal was successful"
+    //             : "Transaction completed successfully"
+    //           : isProcessing
+    //           ? "Your order is being processed"
+    //           : "Transaction failed"}
+    //       </AppText>
+    //     </View>
+
+    //     {/* ── Electricity token (existing) ── */}
+    //     {transaction?.meta?.data?.recharge_token && (
+    //       <View
+    //         style={{
+    //           backgroundColor: "#F9FAFB",
+    //           paddingHorizontal: 10,
+    //           marginBottom: 20,
+    //         }}
+    //       >
+    //         <DetailRow
+    //           label="Token"
+    //           value={
+    //             transaction.meta.data.recharge_token
+    //               .match(/.{1,4}/g)
+    //               ?.join("-") || ""
+    //           }
+    //           copyable
+    //         />
+    //       </View>
+    //     )}
+
+    //     {/* ── Gift card vouchers ── */}
+    //     {hasVouchers && (
+    //       <View style={styles.vouchersSection}>
+    //         <AppText style={styles.vouchersSectionTitle}>
+    //           {vouchers.length > 1
+    //             ? `${vouchers.length} Gift Cards`
+    //             : "Gift Card"}
+    //         </AppText>
+    //         <AppText style={styles.vouchersSectionHint}>
+    //           {vouchers.length > 1
+    //             ? "Each card below has a unique code or redemption link."
+    //             : "Use the code or link below to redeem your gift card."}
+    //         </AppText>
+    //         {vouchers.map((voucher, index) => (
+    //           <VoucherCard
+    //             key={voucher.zendit_tx_id ?? index}
+    //             voucher={voucher}
+    //             index={index}
+    //             total={vouchers.length}
+    //           />
+    //         ))}
+    //       </View>
+    //     )}
+
+    //     {/* ── Transaction details ── */}
+    //     <View style={styles.detailsContainer}>
+    //       <DetailRow
+    //         label="Transaction ID"
+    //         value={transaction?.uuid?.split("-")?.join("")}
+    //         copyable
+    //       />
+    //       {transaction?.category === "CRYPTO_DEPOSIT" && (
+    //         <DetailRow
+    //           label="Blockchain Trx ID"
+    //           value={transaction?.meta?.tx_reference}
+    //           copyable
+    //         />
+    //       )}
+
+    //       {/* Gift card specifics */}
+    //       {transaction?.category === "GIFT_CARD" && (
+    //         <>
+    //           <DetailRow
+    //             label="Gift Card"
+    //             value={transaction?.meta?.offer_snapshot?.brand_name}
+    //           />
+    //           <DetailRow
+    //             label="Quantity"
+    //             value={String(transaction?.meta?.quantity ?? 1)}
+    //           />
+    //           <DetailRow
+    //             label="Face Value"
+    //             value={formatAmount(
+    //               (transaction?.meta?.offer_snapshot?.send?.fixed ?? 0) /
+    //                 (transaction?.meta?.offer_snapshot?.send?.currencyDivisor ??
+    //                   100),
+    //               {
+    //                 currency:
+    //                   transaction?.meta?.offer_snapshot?.send?.currency ??
+    //                   "USD",
+    //                 decimalPlace: 2,
+    //               },
+    //             )}
+    //           />
+    //           <DetailRow
+    //             label="Exchange Rate"
+    //             value={
+    //               formatAmount(transaction?.meta?.exchange_rate ?? 0, {
+    //                 currency: "NGN",
+    //                 decimalPlace: 2,
+    //               }) + "/$"
+    //             }
+    //           />
+    //         </>
+    //       )}
+
+    //       <DetailRow
+    //         label="Amount"
+    //         value={
+    //           transaction?.medium?.toUpperCase() === "CRYPTO"
+    //             ? formatAmount(transaction?.meta?.amount_in_usd || 0, {
+    //                 currency: "USD",
+    //                 decimalPlace: 2,
+    //               })
+    //             : formatAmount(transaction?.amount || 0, {
+    //                 currency: "NGN",
+    //                 decimalPlace: 2,
+    //               })
+    //         }
+    //         color={getDirectionColor()}
+    //       />
+    //       {transaction?.category !== "CRYPTO_SELL" && (
+    //         <DetailRow
+    //           label="Fee"
+    //           value={formatAmount(transaction?.fee, {
+    //             currency:
+    //               transaction?.medium?.toUpperCase() === "CRYPTO"
+    //                 ? "USD"
+    //                 : "NGN",
+    //             decimalPlace:
+    //               transaction?.medium?.toUpperCase() === "CRYPTO" ? 4 : 2,
+    //           })}
+    //         />
+    //       )}
+    //       <DetailRow
+    //         label="Net Amount"
+    //         value={formatAmount(transaction?.net_amount, {
+    //           currency:
+    //             transaction?.medium?.toUpperCase() === "CRYPTO" ? "USD" : "NGN",
+    //           decimalPlace: 2,
+    //         })}
+    //       />
+    //       <DetailRow
+    //         label="Status"
+    //         value={isSuccess ? "Successful" : transaction?.status}
+    //         color={isSuccess ? "#059669" : isProcessing ? "#CA8A04" : "#DC2626"}
+    //       />
+    //       {transaction?.status?.toUpperCase() !== "FAILED" && (
+    //         <DetailRow label="Description" value={transaction?.description} />
+    //       )}
+    //       <DetailRow
+    //         label="Occurred At"
+    //         value={
+    //           transaction?.occurred_at && formatDate(transaction?.occurred_at)
+    //         }
+    //       />
+    //     </View>
+
+    //     {/* Actions */}
+    //     <View style={styles.header}>
+    //       <TouchableOpacity
+    //         hitSlop={10}
+    //         activeOpacity={0.7}
+    //         onPress={handleShareReceipt}
+    //         style={styles.headerButton}
+    //       >
+    //         <CustomIcon source={ShareIcon} size={18} color={COLORS.primary} />
+    //         <AppText style={styles.headerTitle}>Share Receipt</AppText>
+    //       </TouchableOpacity>
+    //       <TouchableOpacity
+    //         hitSlop={10}
+    //         activeOpacity={0.7}
+    //         onPress={handleGoBack}
+    //         style={styles.goBackButton}
+    //       >
+    //         <AppText style={[styles.headerTitle, { color: "white" }]}>
+    //           Done
+    //         </AppText>
+    //       </TouchableOpacity>
+    //     </View>
+    //   </ScrollView>
+    // </SafeAreaView>
   );
 };
+
+// function getDeliveryType(voucher: Voucher): "code" | "url" | "unknown" {
+//   if (voucher.epin && voucher.epin.trim() !== "") return "code";
+//   if (voucher.redemption_url && voucher.redemption_url.trim() !== "")
+//     return "url";
+//   return "unknown";
+// }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
@@ -447,6 +798,23 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     margin: "auto",
+  },
+  // Vouchers section
+  vouchersSection: {
+    marginBottom: 24,
+  },
+  vouchersSectionTitle: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    color: "#000000",
+    marginBottom: 4,
+  },
+  vouchersSectionHint: {
+    fontSize: normalize(17),
+    fontFamily: getFontFamily("700"),
+    color: "#5d6066",
+    marginBottom: 14,
+    lineHeight: normalize(20),
   },
   header: {
     justifyContent: "space-between",
@@ -478,6 +846,37 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 40,
+  },
+  viewVouchersButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: `${COLORS.primary}10`,
+    borderWidth: 1,
+    borderColor: `${COLORS.primary}30`,
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 20,
+  },
+  viewVouchersLeft: {
+    flex: 1,
+    gap: 3,
+  },
+  viewVouchersTitle: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    color: COLORS.primary,
+  },
+  viewVouchersHint: {
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("700"),
+    color: "#41454d",
+  },
+  viewVouchersChevron: {
+    fontSize: normalize(26),
+    fontFamily: getFontFamily("400"),
+    color: COLORS.primary,
+    lineHeight: normalize(28),
   },
   headerTitle: {
     fontSize: normalize(18),

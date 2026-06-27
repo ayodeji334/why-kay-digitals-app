@@ -1,0 +1,341 @@
+import React, { useState, useMemo, useCallback } from "react";
+import {
+  View,
+  Modal,
+  TextInput,
+  FlatList,
+  Pressable,
+  Image,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { CloseIcon } from "../assets";
+import { COLORS } from "../constants/colors";
+import { getFontFamily, normalize } from "../constants/settings";
+import { AppText } from "./AppText";
+import CustomIcon from "./CustomIcon";
+import { ArrowDown2 } from "iconsax-react-nativejs";
+import { Country, CountryPickerProps } from "../libs/types";
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const defaultGetCountryName = (country: Country): string => {
+  if (!country.name) return country.cca2;
+  if (typeof country.name === "string") return country.name;
+  return country.name.common ?? country.name.official ?? country.cca2;
+};
+
+// ─── Country Row ─────────────────────────────────────────────────────────────
+
+interface CountryRowProps {
+  item: Country;
+  getCountryName: (c: Country) => string;
+  onPress: (item: Country) => void;
+  isSelected: boolean;
+}
+
+const CountryRow = React.memo(
+  ({ item, getCountryName, onPress, isSelected }: CountryRowProps) => (
+    <Pressable
+      style={[styles.countryRow, isSelected && styles.countryRowSelected]}
+      onPress={() => onPress(item)}
+      hitSlop={10}
+    >
+      <View style={styles.countryLeft}>
+        {item.flag && (
+          <Image
+            source={{ uri: item.flag }}
+            style={styles.flagImage}
+            resizeMode="contain"
+          />
+        )}
+        <AppText
+          style={[styles.countryName, isSelected && styles.countryNameSelected]}
+        >
+          {getCountryName(item)}
+        </AppText>
+      </View>
+      <AppText
+        style={[styles.countryCode, isSelected && styles.countryCodeSelected]}
+      >
+        {item.cca2}
+      </AppText>
+    </Pressable>
+  ),
+);
+
+const CountryPicker: React.FC<CountryPickerProps> = ({
+  value,
+  onChange,
+  countries,
+  getCountryName = defaultGetCountryName,
+  defaultCountry,
+  label,
+  placeholder = "Select country",
+  error,
+  disabled = false,
+  modalTitle = "Select Country",
+  searchPlaceholder = "Search country...",
+  showCode = true,
+}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  const selectedCountry = value ?? defaultCountry;
+
+  const filteredCountries = useMemo(() => {
+    const q = searchText.trim().toLowerCase();
+    if (!q) return countries;
+    return countries.filter(c => {
+      const name = getCountryName(c).toLowerCase();
+      const code = c.cca2.toLowerCase();
+      return name.includes(q) || code.includes(q);
+    });
+  }, [searchText, countries, getCountryName]);
+
+  const openModal = useCallback(() => {
+    if (!disabled) setModalVisible(true);
+  }, [disabled]);
+
+  const closeModal = useCallback(() => {
+    setModalVisible(false);
+    setSearchText("");
+  }, []);
+
+  const handleSelect = useCallback(
+    (item: Country) => {
+      onChange(item);
+      closeModal();
+    },
+    [onChange, closeModal],
+  );
+
+  return (
+    <View style={styles.container}>
+      {label && <AppText style={styles.label}>{label}</AppText>}
+
+      {/* Selector box */}
+      <Pressable
+        hitSlop={100}
+        style={[
+          styles.selectorBox,
+          error && styles.errorBorder,
+          disabled && styles.disabled,
+        ]}
+        onPress={openModal}
+      >
+        {selectedCountry ? (
+          <View style={styles.selectorContent}>
+            {selectedCountry.flag && (
+              <Image
+                source={{ uri: selectedCountry.flag }}
+                style={styles.flagImage}
+                resizeMode="contain"
+              />
+            )}
+            <AppText style={styles.selectorText}>
+              {getCountryName(selectedCountry)}
+              {showCode ? `  (${selectedCountry.cca2})` : ""}
+            </AppText>
+          </View>
+        ) : (
+          <AppText style={styles.placeholderText}>{placeholder}</AppText>
+        )}
+        <ArrowDown2 size={20} color="#666" />
+      </Pressable>
+
+      {error && <AppText style={styles.errorText}>{error}</AppText>}
+
+      {/* Country Picker Modal */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={closeModal}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={styles.overlay}
+        >
+          <Pressable style={styles.backdropTap} onPress={closeModal} />
+
+          <View style={styles.modalContainer}>
+            {/* Header */}
+            <View style={styles.modalHeader}>
+              <AppText style={styles.modalTitle}>{modalTitle}</AppText>
+              <Pressable onPress={closeModal} hitSlop={8}>
+                <CustomIcon
+                  source={CloseIcon}
+                  color={COLORS.primary}
+                  fill={COLORS.primary}
+                  overrideColor
+                  size={18}
+                />
+              </Pressable>
+            </View>
+
+            {/* Search */}
+            <TextInput
+              style={styles.searchInput}
+              placeholder={searchPlaceholder}
+              placeholderTextColor="#989898"
+              value={searchText}
+              onChangeText={setSearchText}
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
+              autoCorrect={false}
+            />
+
+            {/* List */}
+            <FlatList
+              data={filteredCountries}
+              keyExtractor={item => item.cca2}
+              renderItem={({ item }) => (
+                <CountryRow
+                  item={item}
+                  getCountryName={getCountryName}
+                  onPress={handleSelect}
+                  isSelected={selectedCountry?.cca2 === item.cca2}
+                />
+              )}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              initialNumToRender={20}
+              maxToRenderPerBatch={30}
+              windowSize={10}
+              getItemLayout={(_, index) => ({
+                length: 53,
+                offset: 53 * index,
+                index,
+              })}
+            />
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+    </View>
+  );
+};
+
+export default CountryPicker;
+
+const styles = StyleSheet.create({
+  container: { marginBottom: 10 },
+
+  label: {
+    fontFamily: getFontFamily("800"),
+    fontSize: normalize(18),
+    marginBottom: 6,
+    color: "#000",
+  },
+
+  selectorBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 8,
+    paddingHorizontal: 9,
+    paddingVertical: 14,
+    backgroundColor: "#fff",
+    minHeight: 45,
+  },
+  selectorContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    flex: 1,
+  },
+  selectorText: {
+    fontFamily: getFontFamily("800"),
+    fontSize: normalize(18),
+    color: "#1A1A1A",
+    flex: 1,
+    textTransform: "uppercase",
+  },
+  placeholderText: {
+    fontFamily: getFontFamily("400"),
+    fontSize: normalize(18),
+    color: "#989898",
+    flex: 1,
+  },
+
+  flagImage: { width: 30, height: 20 },
+  disabled: { opacity: 0.5 },
+  errorBorder: { borderColor: "#FF3B30", borderWidth: 1.5 },
+  errorText: {
+    color: "#FF3B30",
+    marginTop: 6,
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(14),
+    marginLeft: 4,
+  },
+
+  // Modal
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
+  },
+  backdropTap: { flex: 1 },
+  modalContainer: {
+    backgroundColor: "#fff",
+    paddingVertical: 26,
+    paddingHorizontal: 18,
+    maxHeight: "80%",
+    borderTopRightRadius: 12,
+    borderTopLeftRadius: 12,
+  },
+  modalHeader: {
+    marginBottom: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontFamily: getFontFamily("900"),
+    fontSize: normalize(20),
+    color: "#374151",
+  },
+  searchInput: {
+    fontFamily: getFontFamily("400"),
+    fontSize: normalize(17),
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+
+  // Country row
+  countryRow: {
+    paddingVertical: 14,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#e5e5e5",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  countryRowSelected: {
+    backgroundColor: `${COLORS.primary}10`,
+  },
+  countryLeft: { flexDirection: "row", alignItems: "center", gap: 10, flex: 1 },
+  countryName: {
+    fontFamily: getFontFamily("800"),
+    fontSize: normalize(19),
+    color: "#1A1A1A",
+    textTransform: "uppercase",
+  },
+  countryNameSelected: {
+    color: COLORS.primary,
+  },
+  countryCode: {
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(19),
+    color: "#666",
+  },
+  countryCodeSelected: {
+    color: COLORS.primary,
+  },
+});

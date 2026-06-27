@@ -44,7 +44,7 @@ const baseToastOptions = {
     alignSelf: "stretch",
   },
   textStyle: {
-    fontSize: normalize(20),
+    fontSize: normalize(21),
     textAlign: "left",
     flexWrap: "wrap",
     fontFamily: getFontFamily("700"),

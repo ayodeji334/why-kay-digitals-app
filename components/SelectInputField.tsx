@@ -134,7 +134,7 @@ export function SelectInput({
                 </AppText>
               ) : undefined}
             </View>
-            <ArrowDown2 size={15} color="#374151" />
+            <ArrowDown2 size={20} color="#374151" />
           </View>
         </Pressable>
         {errorMessage && <AppText style={styles.error}>{errorMessage}</AppText>}
@@ -151,7 +151,7 @@ export function SelectInput({
                 }}
               >
                 <AppText style={styles.modalTitle}>{title}</AppText>
-                <Pressable onPress={() => setVisible(false)}>
+                <Pressable hitSlop={200} onPress={() => setVisible(false)}>
                   <CustomIcon
                     source={CloseIcon}
                     color={COLORS.primary}
@@ -304,14 +304,14 @@ export function SelectInput({
 const styles = StyleSheet.create({
   label: {
     fontFamily: getFontFamily("800"),
-    fontSize: normalize(17),
+    fontSize: normalize(19),
   },
   input: {
     borderWidth: 1,
     borderColor: "#D1D5DB",
     borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 6,
+    paddingVertical: 14,
+    paddingHorizontal: 9,
     backgroundColor: "#fff",
     justifyContent: "center",
     marginBottom: 5,
@@ -323,10 +323,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     flex: 1,
   },
-  selectedCryptoInfo: { flex: 1, marginLeft: 12 },
+  selectedCryptoInfo: { flex: 1, marginLeft: 4 },
   selectedCryptoName: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
   },
   cryptoLogo: {
     width: 26,
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontFamily: getFontFamily("900"),
-    fontSize: normalize(18),
+    fontSize: normalize(20),
     color: "#374151",
   },
   search: {
@@ -375,12 +375,12 @@ const styles = StyleSheet.create({
   },
   cryptoInfo: { flex: 1 },
   optionName: {
-    fontSize: normalize(16),
+    fontSize: normalize(19),
     fontFamily: getFontFamily("800"),
     color: "#000",
   },
   optionPrice: {
-    fontSize: normalize(16),
+    fontSize: normalize(19),
     fontFamily: getFontFamily("700"),
     color: "#343435",
   },
@@ -388,6 +388,7 @@ const styles = StyleSheet.create({
     color: "#FF3B30",
     marginBottom: 9,
     fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
   },
   errorBorder: { borderColor: "#FF3B30", borderWidth: 1.5 },
   optionLogo: {

@@ -26,7 +26,6 @@ import ReferAndEarnScreen from "../screens/ReferAndEarnScreen";
 import ReferralHistoryScreen from "../screens/ReferralHistoryScreen";
 import BiometricsScreen from "../screens/EnableBiometricScreen";
 import { useAuthStore, useIsAuthenticated } from "../stores/authSlice";
-// import DepositScreen from "../screens/DepositScreen";
 import BankTransferScreen from "../screens/BankTransfer";
 import BVNVerificationScreen from "../screens/BVNVerificationScreen";
 import IdentityVerificationScreen from "../screens/IdentityVerificationScreen";
@@ -57,6 +56,9 @@ import ConversionQuote from "../screens/ConversionQuote";
 import NotificationSettingsScreen from "../screens/NotificationSettingsScreen";
 import SuggestionScreen from "../screens/Suggestions";
 import FundBettingAccountScreen from "../screens/FundBettingAccount";
+import GiftCardScreen from "../screens/BuyGiftCardScreen";
+import BuyGiftCardScreen from "../screens/BuyGiftCardScreen";
+import GiftCardVouchersScreen from "../screens/GiftCardVoucherScreen";
 
 export default function NavigationRoot() {
   const isAuthenticated = useIsAuthenticated();
@@ -237,11 +239,28 @@ export default function NavigationRoot() {
               ),
             },
           },
+          GiftCardVouchers: {
+            screen: GiftCardVouchersScreen,
+            options: {
+              header: () => (
+                <CustomHeader showTitle={true} title="Pay Cable TV Bills" />
+              ),
+            },
+          },
           BuyData: {
             screen: BuyDataScreen,
             options: {
               headerShown: true,
               header: () => <CustomHeader showTitle={true} title="Buy Data" />,
+            },
+          },
+          BuyGiftCard: {
+            screen: BuyGiftCardScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Buy GiftCard" />
+              ),
             },
           },
           BuyAirtime: {

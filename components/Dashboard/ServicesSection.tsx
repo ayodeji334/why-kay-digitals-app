@@ -74,7 +74,7 @@ const ServicesSection = () => {
       icon: (
         <CustomIcon source={GiftCardIcon} size={23} color={COLORS.primary} />
       ),
-      screenName: "",
+      screenName: "BuyGiftCard",
     },
     {
       id: 7,
@@ -161,6 +161,7 @@ const ServicesSection = () => {
       <View style={styles.servicesGrid}>
         {mainServices.map(service => (
           <TouchableOpacity
+            hitSlop={30}
             activeOpacity={0.8}
             key={service.id}
             onPress={() => handleNavigation(service)}

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   GestureResponderEvent,
+  Pressable,
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
@@ -35,9 +36,9 @@ const CustomModal: React.FC<CustomModalProps> = ({
       <View style={styles.overlay}>
         <View style={[styles.modalContainer, { minHeight: height }]}>
           {showCloseButton && (
-            <TouchableOpacity
+            <Pressable
               style={styles.closeButton}
-              activeOpacity={0.7}
+              hitSlop={100}
               onPress={onClose}
             >
               <CustomIcon
@@ -47,7 +48,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
                 overrideColor
                 size={18}
               />
-            </TouchableOpacity>
+            </Pressable>
           )}
 
           {title && <AppText style={styles.modalTitle}>{title}</AppText>}

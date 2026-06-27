@@ -23,12 +23,13 @@ export default function AppTabs() {
       screenOptions={{
         tabBarActiveTintColor: "#000000",
         tabBarInactiveTintColor: "#6c6c6c",
-        tabBarStyle: { height: 60 },
+        tabBarStyle: { height: 78 },
         headerTitleAllowFontScaling: false,
         tabBarAllowFontScaling: false,
         headerTitleStyle: {
           fontFamily: getFontFamily(700),
           fontSize: 12,
+          padding: 20,
         },
         tabBarLabelStyle: {
           fontFamily: getFontFamily(800),
