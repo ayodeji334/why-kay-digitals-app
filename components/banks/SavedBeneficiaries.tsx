@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerTitle: {
-    fontSize: 13,
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
   },
   itemSelected: {
@@ -471,7 +471,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emptyText: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     color: "#838383",
     fontFamily: getFontFamily("700"),
   },

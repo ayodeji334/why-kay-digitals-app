@@ -243,7 +243,7 @@ export default function NavigationRoot() {
             screen: GiftCardVouchersScreen,
             options: {
               header: () => (
-                <CustomHeader showTitle={true} title="Pay Cable TV Bills" />
+                <CustomHeader showTitle={true} title="Gift Card Vouchers" />
               ),
             },
           },

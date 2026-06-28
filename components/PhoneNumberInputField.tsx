@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
+    fontSize: normalize(19),
     marginBottom: 2,
     color: "#000",
   },

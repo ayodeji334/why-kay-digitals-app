@@ -267,14 +267,14 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   modalTitle: {
-    fontSize: normalize(17),
+    fontSize: normalize(19),
     fontFamily: getFontFamily("800"),
     color: "#000",
     marginBottom: 8,
   },
   modalMessage: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(19),
+    fontFamily: getFontFamily("400"),
     color: "#333",
     lineHeight: 22,
   },

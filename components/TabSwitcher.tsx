@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   tabText: {
-    fontSize: normalize(15),
+    fontSize: normalize(18),
     fontFamily: getFontFamily(400),
     color: "#000",
     textTransform: "capitalize",

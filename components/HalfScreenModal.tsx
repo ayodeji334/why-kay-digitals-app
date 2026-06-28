@@ -188,8 +188,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonText: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
     color: COLORS.whiteBackground,
   },
   secondaryButton: {
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: COLORS.dark,
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
   },
 });

@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   switchLabel: {
-    fontSize: normalize(18),
+    fontSize: normalize(19),
     color: "#1A1A1A",
     fontFamily: getFontFamily("800"),
     marginBottom: 6,

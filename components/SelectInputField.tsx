@@ -269,7 +269,7 @@ export function SelectInput({
                   <View style={{ paddingVertical: 20, alignItems: "center" }}>
                     <AppText
                       style={{
-                        fontSize: normalize(14),
+                        fontSize: normalize(18),
                         fontFamily: getFontFamily("700"),
                       }}
                     >

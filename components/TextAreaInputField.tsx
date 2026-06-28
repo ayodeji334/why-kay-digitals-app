@@ -63,8 +63,8 @@ const TextAreaInput = ({
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: normalize(13),
-    fontFamily: getFontFamily("500"),
+    fontSize: normalize(19),
+    fontFamily: getFontFamily("800"),
     marginBottom: 4,
     color: COLORS.darkBackground,
   },
