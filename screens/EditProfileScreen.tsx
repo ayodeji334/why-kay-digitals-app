@@ -183,13 +183,13 @@ export default function EditProfileScreen() {
     }
   };
 
-  const showImagePickerOptions = () => {
-    Alert.alert("Update Profile Picture", "Choose an option", [
-      { text: "Take Photo", onPress: takePhoto },
-      { text: "Choose from Gallery", onPress: handleImagePick },
-      { text: "Cancel", style: "cancel" },
-    ]);
-  };
+  // const showImagePickerOptions = () => {
+  //   Alert.alert("Update Profile Picture", "Choose an option", [
+  //     { text: "Take Photo", onPress: takePhoto },
+  //     { text: "Choose from Gallery", onPress: handleImagePick },
+  //     { text: "Cancel", style: "cancel" },
+  //   ]);
+  // };
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
@@ -211,7 +211,7 @@ export default function EditProfileScreen() {
               style={styles.profileImage}
               resizeMode="center"
             />
-            <TouchableOpacity
+            {/* <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
                 Alert.alert(
@@ -222,7 +222,7 @@ export default function EditProfileScreen() {
               style={styles.changePhotoText}
             >
               <CardEdit size={16} color={COLORS.primary} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {loading && (
               <View style={styles.imageOverlay}>

@@ -332,8 +332,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: getFontFamily("800"),
-    fontSize: normalize(19),
-    marginBottom: 2,
+    fontSize: normalize(18),
+    marginBottom: 1,
     color: "#000",
   },
   overlay: {

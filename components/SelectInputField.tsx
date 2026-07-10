@@ -3,12 +3,12 @@ import { Controller, Control } from "react-hook-form";
 import {
   Modal,
   View,
-  Text,
   Pressable,
   FlatList,
   StyleSheet,
   TextInput,
   Image,
+  TouchableOpacity,
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
@@ -95,7 +95,9 @@ export function SelectInput({
       <>
         {label && <AppText style={styles.label}>{label}</AppText>}
 
-        <Pressable
+        <TouchableOpacity
+          activeOpacity={0.8}
+          hitSlop={10}
           style={[styles.input, errorMessage && styles.errorBorder]}
           onPress={handlePress}
           disabled={isDisabled}
@@ -134,9 +136,10 @@ export function SelectInput({
                 </AppText>
               ) : undefined}
             </View>
-            <ArrowDown2 size={20} color="#374151" />
+            <ArrowDown2 size={normalize(20)} color="#374151" />
           </View>
-        </Pressable>
+        </TouchableOpacity>
+
         {errorMessage && <AppText style={styles.error}>{errorMessage}</AppText>}
 
         <Modal visible={visible} animationType="slide" transparent>
@@ -304,18 +307,18 @@ export function SelectInput({
 const styles = StyleSheet.create({
   label: {
     fontFamily: getFontFamily("800"),
-    fontSize: normalize(19),
+    fontSize: normalize(18),
   },
   input: {
     borderWidth: 1,
     borderColor: "#D1D5DB",
     borderRadius: 8,
-    paddingVertical: 14,
-    paddingHorizontal: 9,
+    paddingVertical: normalize(12),
+    paddingHorizontal: normalize(14),
     backgroundColor: "#fff",
     justifyContent: "center",
     marginBottom: 5,
-    minHeight: 45,
+    minHeight: normalize(50),
   },
   selectedCryptoContainer: {
     flexDirection: "row",
@@ -326,7 +329,7 @@ const styles = StyleSheet.create({
   selectedCryptoInfo: { flex: 1, marginLeft: 4 },
   selectedCryptoName: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
+    fontFamily: getFontFamily("700"),
   },
   cryptoLogo: {
     width: 26,
@@ -359,7 +362,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("400"),
     fontSize: normalize(18),
     color: "#374151",
     backgroundColor: "#F9FAFB",

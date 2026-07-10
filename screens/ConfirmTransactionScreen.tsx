@@ -55,8 +55,6 @@ export default function ConfirmTransactionScreen() {
 
       const { url, ...rest } = payload;
 
-      console.log(payload);
-
       const response = await post(url, {
         transaction_pin: values.pin,
         ...rest,
@@ -83,8 +81,12 @@ export default function ConfirmTransactionScreen() {
         transaction.status === "pending"
       ) {
         navigation.replace("PendingSwap", { transaction });
+      } else if (
+        transaction.category === "GIFT_CARD" &&
+        transaction.status === "pending"
+      ) {
+        navigation.replace("PendingGiftCard", { transaction });
       } else {
-        // navigation.replace("TransactionDetail", { transaction });
         navigation.dispatch((state: any) => {
           // Remove ConfirmTransaction (current screen) from the stack
           const routesWithoutConfirm = state.routes.filter(

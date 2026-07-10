@@ -175,6 +175,8 @@ export default function CryptoSellScreen() {
     enabled: !!selectedAssetUuid,
   });
 
+  console.log(assetDetails);
+
   const symbol = assetDetails?.symbol ?? "";
 
   const isStablecoin = useMemo(

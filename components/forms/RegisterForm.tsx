@@ -10,7 +10,7 @@ import { useForm, useWatch } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import TextInputField from "../TextInputField";
-import PasswordInputField from "../PaswordInputField";
+import PasswordInputField from "../PasswordInputField";
 import { COLORS } from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import CustomLoading from "../CustomLoading";

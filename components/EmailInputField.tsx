@@ -147,9 +147,9 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderRadius: 8,
+    paddingHorizontal: normalize(16),
+    paddingVertical: normalize(18),
     color: "#1A1A1A",
     fontFamily: getFontFamily("400"),
     fontSize: normalize(18),
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: getFontFamily("800"),
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     marginBottom: 1,
     color: "#000",
   },

@@ -59,6 +59,9 @@ import FundBettingAccountScreen from "../screens/FundBettingAccount";
 import GiftCardScreen from "../screens/BuyGiftCardScreen";
 import BuyGiftCardScreen from "../screens/BuyGiftCardScreen";
 import GiftCardVouchersScreen from "../screens/GiftCardVoucherScreen";
+import BrandsScreen from "../screens/BrandScreen";
+import BrandDetailScreen from "../screens/BrandDetailScreen";
+import PendingGiftCardScreen from "../screens/PendingGiftCardTransactionScreen";
 
 export default function NavigationRoot() {
   const isAuthenticated = useIsAuthenticated();
@@ -255,11 +258,20 @@ export default function NavigationRoot() {
             },
           },
           BuyGiftCard: {
-            screen: BuyGiftCardScreen,
+            screen: BrandsScreen,
             options: {
               headerShown: true,
               header: () => (
                 <CustomHeader showTitle={true} title="Buy GiftCard" />
+              ),
+            },
+          },
+          BrandDetail: {
+            screen: BrandDetailScreen,
+            options: {
+              headerShown: true,
+              header: () => (
+                <CustomHeader showTitle={true} title="Brand  Detail" />
               ),
             },
           },
@@ -485,6 +497,13 @@ export default function NavigationRoot() {
           },
           PendingSwap: {
             screen: PendingSwapScreen,
+            options: {
+              headerShown: false,
+              header: () => <CustomHeader showTitle={true} title="" />,
+            },
+          },
+          PendingGiftCard: {
+            screen: PendingGiftCardScreen,
             options: {
               headerShown: false,
               header: () => <CustomHeader showTitle={true} title="" />,

@@ -93,6 +93,7 @@ const AssetsSection = () => {
           <TouchableOpacity
             onPress={() => navigation.navigate("Rates" as never)}
             activeOpacity={0.8}
+            hitSlop={4}
             style={styles.sellAllButton}
           >
             <AppText style={styles.sellAllText}>View all</AppText>
@@ -231,13 +232,13 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   assetName: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     color: "#000",
     marginBottom: 4,
   },
   assetBalance: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#333",
   },
@@ -247,13 +248,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   assetLabel: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#666",
     marginBottom: 4,
   },
   assetValue: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     color: "#333",
   },

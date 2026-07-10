@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 import SetNewTransactionPinForm from "../components/forms/SetNewTransactionPinForm";
-import PasswordInputField from "../components/PaswordInputField";
+import PasswordInputField from "../components/PasswordInputField";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";

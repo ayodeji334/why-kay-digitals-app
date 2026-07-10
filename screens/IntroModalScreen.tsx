@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily(900),
   },
   subtitle: {
-    fontSize: normalize(19),
+    fontSize: normalize(21),
     marginTop: 10,
     lineHeight: 16,
     fontFamily: getFontFamily(400),

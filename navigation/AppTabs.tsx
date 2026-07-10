@@ -23,17 +23,17 @@ export default function AppTabs() {
       screenOptions={{
         tabBarActiveTintColor: "#000000",
         tabBarInactiveTintColor: "#6c6c6c",
-        tabBarStyle: { height: 78 },
+        tabBarStyle: { height: 78, paddingTop: 4 },
         headerTitleAllowFontScaling: false,
         tabBarAllowFontScaling: false,
         headerTitleStyle: {
           fontFamily: getFontFamily(700),
-          fontSize: 12,
+          fontSize: normalize(18),
           padding: 20,
         },
         tabBarLabelStyle: {
-          fontFamily: getFontFamily(800),
-          fontSize: normalize(15),
+          fontFamily: getFontFamily(700),
+          fontSize: normalize(16),
         },
       }}
     >
@@ -44,7 +44,7 @@ export default function AppTabs() {
           tabBarIcon: ({ color, size, focused }) => (
             <Home
               variant={focused ? "Bold" : "Outline"}
-              size={19}
+              size={21}
               color={color}
             />
           ),
@@ -59,7 +59,7 @@ export default function AppTabs() {
           tabBarIcon: ({ color, size, focused }) => (
             <Wallet
               variant={focused ? "Bold" : "Outline"}
-              size={19}
+              size={21}
               color={color}
             />
           ),
@@ -80,7 +80,7 @@ export default function AppTabs() {
           tabBarIcon: ({ color, size, focused }) => (
             <Graph
               variant={focused ? "Bold" : "Outline"}
-              size={17}
+              size={21}
               color={color}
             />
           ),
@@ -100,7 +100,7 @@ export default function AppTabs() {
           tabBarIcon: ({ color, size, focused }) => (
             <PercentageCircle
               variant={focused ? "Bold" : "Outline"}
-              size={19}
+              size={21}
               color={color}
             />
           ),
@@ -116,7 +116,7 @@ export default function AppTabs() {
           tabBarIcon: ({ color, size, focused }) => (
             <Setting
               variant={focused ? "Bold" : "Outline"}
-              size={19}
+              size={21}
               color={color}
             />
           ),

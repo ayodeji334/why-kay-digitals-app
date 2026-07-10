@@ -1,10 +1,9 @@
-import { Dimensions } from "react-native";
+import { Dimensions, PixelRatio } from "react-native";
 
 export const { width, height } = Dimensions.get("window");
-
-export function normalize(size: number) {
-  return size - 5;
-}
+const guidelineBaseWidth = 375;
+export const normalize = (size: number) =>
+  PixelRatio.roundToNearestPixel((width / guidelineBaseWidth) * (size - 5));
 
 export const getFontFamily = (weight: string | number) => {
   const fontWeights: any = {

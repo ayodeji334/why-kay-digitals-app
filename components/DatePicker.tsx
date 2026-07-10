@@ -215,7 +215,7 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
 const styles = StyleSheet.create({
   label: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#000",
     marginTop: 6,
   },

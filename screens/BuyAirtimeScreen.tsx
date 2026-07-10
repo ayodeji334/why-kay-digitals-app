@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   View,
-  Text,
   ScrollView,
   TouchableOpacity,
   Image,
@@ -23,7 +22,6 @@ import NumberInputField from "../components/NumberInputField";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
-import { SvgUri } from "react-native-svg";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
 

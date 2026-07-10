@@ -619,7 +619,6 @@ import React, {
 } from "react";
 import {
   View,
-  Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
@@ -775,7 +774,6 @@ const PaymentTypeSelector = memo(
 export default function PayElectricityBillsScreen() {
   const { post, apiGet, apiDelete } = useAxios();
   const navigation: any = useNavigation();
-
   const [isPrepaid, setIsPrepaid] = useState(true);
   const [saveBeneficiary, setSaveBeneficiary] = useState(true);
   const [displayAmount, setDisplayAmount] = useState("");
@@ -819,8 +817,6 @@ export default function PayElectricityBillsScreen() {
     refetchOnWindowFocus: false,
   });
 
-  console.log(providers);
-
   const {
     data: beneficiaries,
     isLoading: isLoadingSavedData,
@@ -855,8 +851,6 @@ export default function PayElectricityBillsScreen() {
       setSelectedBeneficiary(null);
     },
   });
-
-  console.log(beneficiaries);
 
   const providerOptions = useMemo(
     () =>
@@ -1171,7 +1165,7 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 6,
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#000000ff",
   },
   errorText: {

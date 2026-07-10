@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
 import ReturningUserLoginForm from "../components/forms/ReturningUserLoginForm";
 import { AppText } from "../components/AppText";
+import BiometricLoginButton from "../components/BiometricLoginBtn";
 
 export default function ReturningUserLoginScreen() {
   const navigation = useNavigation();
@@ -26,9 +27,7 @@ export default function ReturningUserLoginScreen() {
               styles.title,
               {
                 fontFamily: getFontFamily(400),
-                fontSize: normalize(18),
-                marginTop: 2,
-                marginLeft: 1,
+                fontSize: normalize(20),
               },
             ]}
           >
@@ -37,6 +36,8 @@ export default function ReturningUserLoginScreen() {
         </View>
 
         <ReturningUserLoginForm />
+        {user?.biometric_enabled && <BiometricLoginButton />}
+
         <View
           style={{
             gap: 10,
@@ -80,10 +81,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   header: {
-    marginBottom: 10,
+    marginVertical: 10,
   },
   title: {
-    fontSize: normalize(21),
+    fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 import { Controller } from "react-hook-form";
-import {
-  TextInput,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { TextInput, View, StyleSheet, TouchableOpacity } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { Eye, EyeSlash } from "iconsax-react-nativejs";
 import { AppText } from "./AppText";
@@ -130,7 +124,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 6,
   },
   input: {
     flex: 1,

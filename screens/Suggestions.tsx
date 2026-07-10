@@ -202,9 +202,10 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("800"),
   },
   subtitle: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     color: "#6B7280",
     fontFamily: getFontFamily("700"),
+    lineHeight: 18,
   },
   form: {
     gap: 20,
@@ -221,7 +222,7 @@ const styles = StyleSheet.create({
   },
   textarea: {
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#bababa",
     borderRadius: 10,
     padding: 14,
     fontFamily: getFontFamily("400"),

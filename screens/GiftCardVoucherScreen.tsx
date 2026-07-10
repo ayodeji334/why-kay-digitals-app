@@ -1,19 +1,11 @@
 import React, { useState } from "react";
-import {
-  View,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  Clipboard,
-} from "react-native";
+import { View, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { AppText } from "../components/AppText";
 import { DetailRow } from "./TransactionDetail";
-
-// ─── Types
 
 interface Voucher {
   unit: number;
@@ -34,15 +26,11 @@ interface Voucher {
   };
 }
 
-// ─── Helpers
-
-function getDelivery(v: Voucher): "code" | "url" | "unknown" {
-  if (v.epin && v.epin.trim()) return "code";
-  if (v.redemption_url && v.redemption_url.trim()) return "url";
-  return "unknown";
-}
-
-// ─── Single voucher card
+// function getDelivery(v: Voucher): "code" | "url" | "unknown" {
+//   if (v.epin && v.epin.trim()) return "code";
+//   if (v.redemption_url && v.redemption_url.trim()) return "url";
+//   return "unknown";
+// }
 
 const VoucherCard = ({
   voucher,
@@ -53,15 +41,6 @@ const VoucherCard = ({
   index: number;
   total: number;
 }) => {
-  const [copied, setCopied] = useState(false);
-  const delivery = getDelivery(voucher);
-
-  const handleCopy = (text: string) => {
-    Clipboard.setString(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -72,95 +51,41 @@ const VoucherCard = ({
         ) : (
           <AppText style={styles.unitLabel}>Card Detail</AppText>
         )}
-
-        {/* {voucher.send != null && (
-          <AppText style={styles.faceValue}>
-            {voucher.send_currency ?? "USD"} {voucher.send}
-          </AppText>
-        )} */}
       </View>
 
-      {/* ── Code delivery ── */}
-      {delivery === "code" && (
-        <View style={styles.valueBlock}>
-          <AppText style={styles.valueBlockLabel}>Gift card code</AppText>
-          <View style={styles.codeRow}>
-            <AppText style={styles.codeText} numberOfLines={1}>
-              {voucher.epin}
-            </AppText>
-            <TouchableOpacity
-              hitSlop={10}
-              style={[styles.copyBtn]}
-              onPress={() => handleCopy(voucher.epin!)}
-              activeOpacity={0.7}
-            >
-              <AppText style={[styles.copyBtnText]}>
-                {copied ? "Copied ✓" : "Copy code"}
-              </AppText>
-            </TouchableOpacity>
-          </View>
-          {!!voucher.expires_at?.trim() && (
-            <AppText style={styles.mutedText}>
-              Expires {voucher.expires_at}
-            </AppText>
-          )}
-        </View>
-      )}
-
-      {/* ── URL delivery ── */}
-      {/* {delivery === "url" && (
-        <View style={styles.valueBlock}>
-          <AppText style={styles.valueBlockLabel}>Redemption link</AppText>
-          <View style={styles.urlPill}>
-            <AppText style={styles.urlText} numberOfLines={1}>
-              {voucher.redemption_url}
-            </AppText>
-          </View>
-          <TouchableOpacity
-            style={[styles.copyBtn, styles.copyBtnFull]}
-            onPress={() => handleCopy(voucher.redemption_url!)}
-            activeOpacity={0.7}
-          >
-            <AppText style={[styles.copyBtnText]}>
-              {copied ? "Copied ✓" : "Copy link"}
-            </AppText>
-          </TouchableOpacity>
-          <AppText style={styles.urlWarning}>
-            This link is unique to your order — don't share it.
-          </AppText>
-        </View>
-      )} */}
-
-      {delivery === "url" ? (
-        <DetailRow
-          label="Redemption Link"
-          value={voucher.redemption_url}
-          copyable
-        />
-      ) : null}
-
-      {delivery === "code" ? (
-        <DetailRow label="Card PIN" value={voucher?.epin} copyable />
-      ) : null}
-
-      <DetailRow
-        label="Confirmation Number"
-        value={voucher?.confirmation?.confirmationNumber}
-        copyable
-      />
-
-      <DetailRow
-        label="Expires On"
-        value={voucher?.expires_at || "Not provided"}
-      />
-
-      {/* ── No voucher yet (PENDING state) ── */}
-      {delivery === "unknown" && (
+      {voucher?.status !== "DONE" ? (
         <View style={styles.pendingBlock}>
           <AppText style={styles.pendingText}>
             Your voucher is still being processed. Check back shortly.
           </AppText>
         </View>
+      ) : (
+        <>
+          <DetailRow
+            label="Redemption Link"
+            value={voucher?.redemption_url || "Not provided"}
+            copyable={!!voucher?.redemption_url}
+          />
+
+          {/* {delivery === "code" ? ( */}
+          <DetailRow
+            label="Card PIN"
+            value={voucher?.epin || "Not provided"}
+            copyable={!!voucher?.epin}
+          />
+          {/* ) : null} */}
+
+          <DetailRow
+            label="Confirmation Number"
+            value={voucher?.confirmation?.confirmationNumber || "Not provided"}
+            copyable={!!voucher?.confirmation?.confirmationNumber}
+          />
+
+          <DetailRow
+            label="Expires On"
+            value={voucher?.expires_at || "Not provided"}
+          />
+        </>
       )}
 
       {/* How to redeem */}
@@ -178,13 +103,6 @@ const VoucherCard = ({
           <AppText style={styles.infoText}>{voucher.terms}</AppText>
         </View>
       )}
-
-      {/* Confirmation number
-      {!!voucher.confirmation?.confirmationNumber && (
-        <AppText style={styles.confirmation}>
-          Confirmation #{voucher.confirmation.confirmationNumber}
-        </AppText>
-      )} */}
     </View>
   );
 };
@@ -394,7 +312,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   pendingText: {
-    fontSize: normalize(13),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
     color: "#92400E",
     lineHeight: normalize(19),
@@ -403,7 +321,7 @@ const styles = StyleSheet.create({
   // Info blocks
   infoBlock: { gap: 4 },
   infoLabel: {
-    fontSize: normalize(14),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#9CA3AF",
     textTransform: "uppercase",

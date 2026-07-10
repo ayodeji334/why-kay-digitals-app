@@ -66,13 +66,13 @@ const ServicesSection = () => {
       id: 5,
       title: "Swap",
       screenName: "SwapCrypto",
-      icon: <CustomIcon source={SwapIcon} size={20} color={COLORS.primary} />,
+      icon: <CustomIcon source={SwapIcon} size={24} color={COLORS.primary} />,
     },
     {
       id: 6,
       title: "Buy Giftcards",
       icon: (
-        <CustomIcon source={GiftCardIcon} size={23} color={COLORS.primary} />
+        <CustomIcon source={GiftCardIcon} size={24} color={COLORS.primary} />
       ),
       screenName: "BuyGiftCard",
     },
@@ -97,7 +97,7 @@ const ServicesSection = () => {
       icon: (
         <CustomIcon
           source={ElectricityBillIcon}
-          size={23}
+          size={24}
           color={COLORS.primary}
         />
       ),
@@ -109,7 +109,7 @@ const ServicesSection = () => {
       icon: (
         <Dribbble
           // source={ElectricityBillIcon}
-          size={23}
+          size={24}
           color={COLORS.primary}
         />
       ),
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   serviceText: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     fontFamily: getFontFamily(800),
     textAlign: "center",
     color: "#333",

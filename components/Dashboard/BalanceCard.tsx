@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   amount: {
     color: "#fff",
-    fontSize: normalize(30),
+    fontSize: normalize(36),
     fontFamily: getFontFamily(800),
   },
   eyeIcon: {
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   },
   depositText: {
     color: "#fff",
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily(800),
   },
   withdrawButton: {
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   },
   withdrawText: {
     color: "#333",
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily(800),
   },
 });

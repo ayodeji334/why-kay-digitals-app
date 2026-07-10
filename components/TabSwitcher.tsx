@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 7,
     paddingHorizontal: 16,
     borderRadius: 600,
     alignItems: "center",
@@ -83,8 +83,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   tabText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(400),
+    fontSize: normalize(17),
+    fontFamily: getFontFamily(800),
     color: "#000",
     textTransform: "capitalize",
   },

@@ -39,7 +39,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
     <View
       style={[
         {
-          marginVertical: 20,
+          marginVertical: normalize(20),
           backgroundColor: "#5AB2431A",
           borderRadius: 10,
           padding: 15,
@@ -96,13 +96,14 @@ export default InfoCard;
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
   },
   description: {
-    fontSize: normalize(15),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
     color: "#000",
+    lineHeight: 15,
   },
   listText: {
     fontSize: normalize(17),
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   listContainer: {
-    marginTop: 4,
+    marginTop: 1,
     gap: 3,
   },
   listItem: {
@@ -128,8 +129,8 @@ const styles = StyleSheet.create({
   },
   editButtonText: {
     color: "#fff",
-    fontSize: normalize(15),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
     textAlign: "center",
   },
 });

@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { COLORS } from "../constants/colors";
 import { InfoCircle } from "iconsax-react-nativejs";
-import { getFontFamily } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "../components/AppText";
 
 interface WebPageScreenProps {
@@ -34,18 +34,15 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       {error ? (
         <View style={styles.errorContainer}>
-          {/* Icon */}
           <View style={styles.errorIconContainer}>
             <InfoCircle size={60} color={COLORS.error} variant="Bold" />
           </View>
 
-          {/* Title */}
           <AppText style={styles.errorTitle}>Page Load Failed</AppText>
 
-          {/* Description */}
           <AppText style={styles.errorText}>
             Oops! Something went wrong while loading the page. Please check your
             internet connection or try again later.
@@ -60,8 +57,7 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
         <>
           {loading && (
             <View style={styles.loaderContainer}>
-              <ActivityIndicator size="large" color={COLORS.primary} />
-              <AppText style={styles.loadingText}>Loading...</AppText>
+              <ActivityIndicator size={20} color={COLORS.primary} />
             </View>
           )}
           <WebView
@@ -112,14 +108,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorTitle: {
-    fontSize: 20,
+    fontSize: normalize(20),
     fontFamily: getFontFamily("800"),
     color: "#000",
     marginBottom: 10,
     textAlign: "center",
   },
   errorText: {
-    fontSize: 16,
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#000",
     textAlign: "center",
@@ -130,11 +126,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 80,
   },
   retryButtonText: {
     color: "#fff",
-    fontSize: 16,
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
   },
 });

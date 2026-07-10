@@ -69,14 +69,14 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     backgroundColor: "white",
   },
   subtitle: {
     fontSize: normalize(18),
     color: "black",
-    fontFamily: getFontFamily(700),
-    paddingVertical: 20,
+    fontFamily: getFontFamily(400),
+    paddingBottom: 20,
   },
   formSection: {
     marginBottom: 32,

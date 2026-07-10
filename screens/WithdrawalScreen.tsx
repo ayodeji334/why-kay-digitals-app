@@ -3,7 +3,6 @@ import {
   ScrollView,
   RefreshControl,
   StatusBar,
-  Text,
   TouchableOpacity,
   StyleSheet,
   View,
@@ -213,7 +212,7 @@ export default function WithdrawScreen() {
     }
 
     const stampDuty = amount >= 10000 ? 50 : 0;
-    const withdrawalFee = calculateWithdrawalFee(amount); // ← dynamic fee
+    const withdrawalFee = calculateWithdrawalFee(amount);
 
     const totalFees = stampDuty + withdrawalFee;
     const totalDebit = amount + totalFees;

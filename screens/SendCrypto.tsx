@@ -158,7 +158,7 @@ export default function SendScreen() {
     enabled: !!selectedAssetUuid,
   });
 
-  // console.log(assetDetails);
+  console.log(assetDetails);
 
   const amount = watch("amount");
   const balance = Number(assetDetails?.balance ?? 0);
@@ -272,10 +272,8 @@ export default function SendScreen() {
     // total deducted from wallet = amount + fees
     const totalCoinDeducted = coinAmount + totalFeeCoin;
     const totalUsdDeducted = amount + totalFeesUsd;
-
     const bybitFeeUsd = bybitFeeCoin * marketPrice;
     const platformFeeUsd = 1;
-
     const minWithdrawCoin = parseFloat(selectedNetwork.withdraw_min ?? "0");
     const isBelowMinimum = coinAmount < minWithdrawCoin;
     const isTooSmall = coinAmount <= 0;
@@ -499,7 +497,7 @@ export default function SendScreen() {
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "#fff" }}
-      edges={["bottom", "right", "left", "top"]}
+      edges={["bottom", "right", "left"]}
     >
       <ScrollView
         style={styles.scrollContainer}
@@ -585,11 +583,12 @@ export default function SendScreen() {
                 </View>
 
                 <TouchableOpacity
+                  hitSlop={10}
                   activeOpacity={0.8}
                   style={styles.scanButton}
                   onPress={requestCameraPermission}
                 >
-                  <ScanBarcode size={22} color="#fff" />
+                  <ScanBarcode size={19} color="#fff" />
                 </TouchableOpacity>
               </View>
 
@@ -730,8 +729,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: normalize(20),
-    backgroundColor: "#fff",
-    justifyContent: "space-between",
   },
   scrollContainer: {
     flex: 1,
@@ -747,7 +744,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   text: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     color: "#374151",
     fontFamily: getFontFamily("700"),
   },
@@ -767,9 +764,9 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "red",
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
-    marginBottom: normalize(10),
+    marginBottom: 10,
   },
   inputContainer: {
     flexDirection: "row",
@@ -778,7 +775,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 10,
     paddingHorizontal: normalize(16),
-    marginBottom: normalize(10),
+    marginBottom: 10,
     gap: 5,
   },
   feeBreakdownContainer: {
@@ -827,14 +824,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   dollarSign: {
-    fontSize: normalize(26),
+    fontSize: normalize(23),
     fontFamily: getFontFamily("700"),
     color: "#000",
     marginRight: normalize(5),
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(16),
+    paddingVertical: normalize(14),
     fontSize: normalize(26),
     fontFamily: getFontFamily("800"),
     color: "#000",
@@ -846,18 +843,20 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   walletBalance: {
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#000",
-    marginBottom: normalize(4),
+    marginBottom: 4,
+    paddingBottom: 1,
   },
   walletAddressRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+    // marginTop: 30,
   },
   scanButton: {
-    padding: 12,
+    padding: 9,
     borderRadius: 10,
     backgroundColor: COLORS.primary,
     marginTop: 10,
@@ -865,7 +864,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   warningContainer: {
-    marginVertical: 12,
+    // marginVertical: 12,
     padding: 10,
     backgroundColor: "rgba(255, 0, 0, 0.03)",
     borderRadius: 6,

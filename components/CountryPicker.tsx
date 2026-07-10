@@ -142,7 +142,7 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
         ) : (
           <AppText style={styles.placeholderText}>{placeholder}</AppText>
         )}
-        <ArrowDown2 size={20} color="#666" />
+        <ArrowDown2 size={20} color="#374151" />
       </Pressable>
 
       {error && <AppText style={styles.errorText}>{error}</AppText>}
@@ -221,14 +221,12 @@ export default CountryPicker;
 
 const styles = StyleSheet.create({
   container: { marginBottom: 10 },
-
   label: {
     fontFamily: getFontFamily("800"),
     fontSize: normalize(18),
     marginBottom: 6,
     color: "#000",
   },
-
   selectorBox: {
     flexDirection: "row",
     alignItems: "center",
@@ -236,8 +234,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#D1D5DB",
     borderRadius: 8,
-    paddingHorizontal: 9,
-    paddingVertical: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     backgroundColor: "#fff",
     minHeight: 45,
   },

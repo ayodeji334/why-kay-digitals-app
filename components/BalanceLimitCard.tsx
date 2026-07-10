@@ -63,10 +63,16 @@ export default function BalanceLimitCard({ walletSummary }: any) {
 
         <View style={styles.limitRange}>
           <AppText style={styles.limitValue}>
-            ₦{walletSummary?.total_today?.toLocaleString() || "0"}
+            ₦
+            {walletSummary?.total_today
+              ? walletSummary?.total_today?.toLocaleString()
+              : "0"}
           </AppText>
           <AppText style={styles.limitValue}>
-            ₦{walletSummary?.daily_limit?.toLocaleString() || "0"}
+            ₦
+            {walletSummary?.daily_limit
+              ? walletSummary?.daily_limit?.toLocaleString()
+              : "0"}
           </AppText>
         </View>
       </View>

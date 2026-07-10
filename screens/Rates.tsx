@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  RefreshControl,
 } from "react-native";
 import CustomLoading from "../components/CustomLoading";
 import { useQuery } from "@tanstack/react-query";
@@ -30,13 +31,12 @@ export default function CryptoRatesScreen() {
   const { apiGet } = useAxios();
   const navigation: any = useNavigation();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isRefetching, refetch } = useQuery({
     queryKey: ["rates"],
     queryFn: async () => {
       const res = await apiGet("/crypto-assets/available/rates");
       return res?.data?.data;
     },
-    refetchInterval: 9000,
   });
 
   const cryptoOptions = useMemo<CryptoOption[]>(() => {
@@ -71,26 +71,26 @@ export default function CryptoRatesScreen() {
     if (!matchedRate) return null;
 
     const defaultValue = parseFloat(matchedRate.default_value ?? "0");
-    const categories = matchedRate.categories ?? [];
+    // const categories = matchedRate.categories ?? [];
 
     // Resolve effective rate — match category by amount range, fallback to default
     let effectiveRate = defaultValue;
     let categoryLabel = "Default rate";
     let source: "category" | "default" = "default";
 
-    if (categories.length > 0 && amountNum > 0) {
-      const matched = categories.find(
-        (cat: any) =>
-          amountNum >= parseFloat(cat.min_amount ?? "0") &&
-          amountNum <= parseFloat(cat.max_amount ?? "0"),
-      );
+    // if (categories.length > 0 && amountNum > 0) {
+    //   const matched = categories.find(
+    //     (cat: any) =>
+    //       amountNum >= parseFloat(cat.min_amount ?? "0") &&
+    //       amountNum <= parseFloat(cat.max_amount ?? "0"),
+    //   );
 
-      if (matched) {
-        effectiveRate = parseFloat(matched.value ?? "0");
-        categoryLabel = matched.label ?? "Category rate";
-        source = "category";
-      }
-    }
+    //   if (matched) {
+    //     effectiveRate = parseFloat(matched.value ?? "0");
+    //     categoryLabel = matched.label ?? "Category rate";
+    //     source = "category";
+    //   }
+    // }
 
     return {
       value: effectiveRate,
@@ -140,7 +140,17 @@ export default function CryptoRatesScreen() {
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
+      <ScrollView
+        contentContainerStyle={{ padding: 16 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            tintColor={COLORS.primary}
+            colors={[COLORS.primary]}
+          />
+        }
+      >
         <View style={styles.tabs}>
           {(["sell", "buy"] as TradeTab[]).map(tab => (
             <TouchableOpacity
@@ -172,7 +182,7 @@ export default function CryptoRatesScreen() {
           />
 
           <View style={{ marginBottom: 2, marginTop: 10 }}>
-            <AppText style={styles.label}>Amount in USD ($)</AppText>
+            <AppText style={styles.label}>Amount</AppText>
             <View style={styles.inputContainer}>
               <AppText style={styles.dollarSign}>$</AppText>
               <TextInput
@@ -200,10 +210,11 @@ export default function CryptoRatesScreen() {
           </View>
 
           <View style={{ marginVertical: 12 }}>
-            <AppText style={styles.label}>Expected Amount (₦)</AppText>
+            <AppText style={styles.label}>Expected Amount</AppText>
             <View style={styles.rateBox}>
+              <AppText style={styles.dollarSign}>₦</AppText>
               <AppText style={styles.rateText}>
-                {formatAmount(rateInfo?.totalNgn ?? 0, { currency: "NGN" })}
+                {formatNumber(rateInfo?.totalNgn ?? 0, { decimalPlace: 2 })}
               </AppText>
             </View>
           </View>
@@ -213,18 +224,18 @@ export default function CryptoRatesScreen() {
               <View style={styles.infoRow}>
                 <AppText style={styles.infoLabel}>Exchange Rate:</AppText>
                 <AppText style={styles.infoValue}>
-                  {formatAmount(rateInfo.value)}/$
+                  {formatAmount(rateInfo.value, { decimalPlace: 2 })}/$
                 </AppText>
               </View>
 
-              <View style={styles.infoRow}>
+              {/* <View style={styles.infoRow}>
                 <AppText style={styles.infoLabel}>Rate Category:</AppText>
                 <AppText style={styles.infoValue}>
                   {rateInfo.source === "category"
                     ? rateInfo.label
                     : "Default rate"}
                 </AppText>
-              </View>
+              </View> */}
 
               <View style={styles.infoRow}>
                 <AppText style={styles.infoLabel}>Estimated Coin:</AppText>
@@ -249,7 +260,11 @@ export default function CryptoRatesScreen() {
           <AppText
             style={[
               styles.label,
-              { textAlign: "center", fontFamily: getFontFamily("400") },
+              {
+                textAlign: "center",
+                fontFamily: getFontFamily("400"),
+                fontSize: normalize(18),
+              },
             ]}
           >
             Note: This is an estimated rate. Actual rate may differ.
@@ -287,7 +302,7 @@ const styles = StyleSheet.create({
   },
   label: {
     marginBottom: 6,
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     color: "#000000ff",
   },
@@ -394,15 +409,17 @@ const styles = StyleSheet.create({
   },
   rateBox: {
     backgroundColor: "#fff",
-    padding: 12,
+    paddingVertical: normalize(12),
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#eeeeee",
+    flexDirection: "row",
   },
   rateText: {
     fontSize: normalize(24),
     fontFamily: getFontFamily("800"),
     color: "#111827",
+    paddingLeft: 2,
   },
   tradeButton: {
     backgroundColor: COLORS.secondary,
@@ -414,7 +431,7 @@ const styles = StyleSheet.create({
   tradeButtonText: {
     color: "#fff",
     fontFamily: getFontFamily("800"),
-    fontSize: normalize(17),
+    fontSize: normalize(18),
   },
   bottomNav: {
     flexDirection: "row",

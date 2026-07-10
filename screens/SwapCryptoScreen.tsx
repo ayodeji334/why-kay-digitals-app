@@ -426,12 +426,14 @@ export default function CryptoSwapScreen() {
               </AppText>
             </TouchableOpacity>
 
-            <View style={{ paddingVertical: 10 }}>
+            <View style={{ paddingVertical: 15 }}>
               <AppText
                 style={{
                   color: "#3b3b3bff",
                   fontFamily: getFontFamily("400"),
                   textAlign: "center",
+                  fontSize: normalize(18),
+                  lineHeight: 15,
                 }}
               >
                 The market prices are volatile. Estimated amounts may change due
@@ -556,8 +558,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
   },
   paymentContainer: {
     backgroundColor: COLORS.primary,

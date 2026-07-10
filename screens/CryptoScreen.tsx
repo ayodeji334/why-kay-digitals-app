@@ -208,9 +208,7 @@ const CryptoWalletScreen = () => {
         </View>
         {item?.hasWallet ? (
           <View style={styles.cryptoRight}>
-            <AppText style={styles.cryptoBalance}>
-              {formatNumber(balance, { decimalPlace: 8 })}
-            </AppText>
+            <AppText style={styles.cryptoBalance}>{balance}</AppText>
             <AppText style={styles.cryptoValue}>
               {formatAmount(balanceInUsd, { currency: "USD" })}
             </AppText>

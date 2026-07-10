@@ -2,7 +2,6 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
 } from "react-native";
@@ -96,7 +95,7 @@ const MenuItem = ({
           </AppText>
         </View>
       ) : (
-        showArrow && <ArrowRight2 size={16} color={color} />
+        showArrow && <ArrowRight2 size={normalize(18)} color={color} />
       )}
     </TouchableOpacity>
   );
@@ -216,12 +215,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuItemTitle: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     color: COLORS.darkBackground,
     fontFamily: getFontFamily("800"),
   },
   menuItemSubtitle: {
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     color: COLORS.primary,
     fontFamily: getFontFamily("400"),
     marginTop: 2,

@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   fieldLabel: {
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
     color: COLORS.dark,
   },

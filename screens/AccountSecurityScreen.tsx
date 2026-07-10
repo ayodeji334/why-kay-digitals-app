@@ -96,15 +96,15 @@ export const MenuItem = ({
 };
 
 export default function AccountSecurityScreen() {
-  const { user: userData, isGoogleAuthenticatorEnabled } = useAuthStore(
-    state => state,
+  const userData = useAuthStore(state => state.user);
+  const isGoogleAuthenticatorEnabled = useAuthStore(
+    state => state?.isGoogleAuthenticatorEnabled,
   );
+
   const navigation = useNavigation();
   const setIsShowBalance = useAuthStore(state => state.setIsShowBalance);
   const isShowBalance = useAuthStore(state => state.isShowBalance);
-  const isBiometricEnabled =
-    userData?.biometric_enabled ||
-    useAuthStore(state => state.isBiometricEnabled);
+  const isBiometricEnabled = userData?.biometric_enabled;
   const is2FAEnabled = userData?.two_factor_enabled || false;
 
   return (

@@ -26,11 +26,9 @@ export default function RegisterScreen() {
           <AppText style={styles.title}>Getting Started</AppText>
           <AppText
             style={[
-              styles.title,
               {
                 fontFamily: getFontFamily(400),
-                fontSize: normalize(18),
-                marginLeft: 1,
+                fontSize: normalize(20),
               },
             ]}
           >
@@ -50,7 +48,7 @@ export default function RegisterScreen() {
           <AppText
             style={{
               fontSize: normalize(18),
-              fontFamily: getFontFamily(400),
+              fontFamily: getFontFamily(700),
             }}
           >
             Already have an account?
@@ -83,10 +81,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   header: {
-    marginBottom: 10,
+    marginVertical: 10,
   },
   title: {
-    fontSize: normalize(21),
+    fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

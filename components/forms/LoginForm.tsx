@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import TextInputField from "../TextInputField";
-import PasswordInputField from "../PaswordInputField";
+import PasswordInputField from "../PasswordInputField";
 import { COLORS } from "../../constants/colors";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../../constants/settings";
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   },
   link: {
     paddingVertical: 10,
-    fontFamily: getFontFamily("800"),
+    fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
     color: "blue",
   },

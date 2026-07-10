@@ -378,11 +378,11 @@ export default function FundBettingAccountScreen() {
         </View>
 
         <View style={{ marginTop: -10 }}>
-          <AppText style={styles.label}>Customer ID</AppText>
+          <AppText style={styles.label}>Customer Detail</AppText>
           <View style={styles.inputContainer}>
             <TextInput
               style={[styles.input, { paddingHorizontal: 15 }]}
-              placeholder="Enter customer ID"
+              placeholder="Enter customer detail"
               placeholderTextColor="#aeaeaeff"
               value={customerId}
               onChangeText={handleCustomerIdChange}
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 6,
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#000000ff",
   },
   errorText: {
@@ -485,8 +485,8 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingVertical: 14,
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("400"),
     color: "#000",
   },
   currencySign: {

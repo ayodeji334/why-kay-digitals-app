@@ -358,7 +358,8 @@ export default function CryptoBuyScreen() {
       navigation.navigate("ConfirmTransaction" as never, {
         payload: { ...values, url: "/wallets/user/buy-crypto" },
       });
-    } catch {
+    } catch (error: any) {
+      console.log(error);
       showError("Error checking rates. Try again.");
     }
   };

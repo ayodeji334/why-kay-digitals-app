@@ -105,7 +105,7 @@ const MenuItem = ({
         <Switch
           value={switchValue}
           onValueChange={onSwitchChange}
-          trackColor={{ false: COLORS.gray, true: "green" }}
+          trackColor={{ false: "black", true: "green" }}
           style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] }}
         />
       )}

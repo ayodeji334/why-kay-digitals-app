@@ -6,6 +6,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
 import { AppText } from "../components/AppText";
+import BiometricLoginButton from "../components/BiometricLoginBtn";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -23,10 +24,9 @@ export default function LoginScreen() {
           <AppText style={styles.title}>Welcome</AppText>
           <AppText
             style={[
-              styles.title,
               {
                 fontFamily: getFontFamily(400),
-                fontSize: normalize(18),
+                fontSize: normalize(20),
               },
             ]}
           >
@@ -35,6 +35,9 @@ export default function LoginScreen() {
         </View>
 
         <LoginForm />
+
+        {user?.biometric_enabled && <BiometricLoginButton />}
+
         <View
           style={{
             gap: 10,
@@ -45,7 +48,7 @@ export default function LoginScreen() {
           <AppText
             style={{
               fontSize: normalize(18),
-              fontFamily: getFontFamily(400),
+              fontFamily: getFontFamily(700),
             }}
           >
             Don’t have an account?
@@ -55,7 +58,7 @@ export default function LoginScreen() {
             style={[
               {
                 fontSize: normalize(18),
-                fontFamily: getFontFamily(800),
+                fontFamily: getFontFamily(700),
               },
               { color: "blue" },
             ]}
@@ -78,10 +81,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   header: {
-    marginBottom: 10,
+    marginVertical: 10,
   },
   title: {
-    fontSize: normalize(21),
+    fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

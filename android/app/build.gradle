@@ -79,7 +79,7 @@ android {
 
     namespace "com.whykaydigitals"
     defaultConfig {
-        applicationId "com.whykaydigitals"
+        applicationId "com.whykaydigitals.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

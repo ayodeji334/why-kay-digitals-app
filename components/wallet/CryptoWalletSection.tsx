@@ -29,7 +29,6 @@ import { useAssets } from "../../hooks/useAssets";
 import { useWallets } from "../../hooks/useWallet";
 import LoadingBalance from "../LoadingState";
 import { TradeIntent } from "../../libs/types";
-import { SvgUri } from "react-native-svg";
 import { AppText } from "../AppText";
 
 const CryptoWalletSection = () => {
@@ -330,7 +329,7 @@ const AssetItem = React.memo(({ asset, onPress }: any) => (
 export default CryptoWalletSection;
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: "white" },
+  container: { backgroundColor: "white", paddingBottom: 50 },
   scrollContainer: { flex: 1, paddingBottom: 20 },
   tabContainer: {
     flexDirection: "row",
@@ -383,7 +382,7 @@ const styles = StyleSheet.create({
   cryptoInfo: { flex: 1 },
   optionName: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#374151",
   },
   optionPrice: {
@@ -432,7 +431,7 @@ const styles = StyleSheet.create({
   actionIcon: { marginBottom: 10 },
   actionTitle: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     color: "#000",
   },
   assetsSection: { paddingVertical: 30 },

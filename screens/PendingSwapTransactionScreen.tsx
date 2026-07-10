@@ -1,7 +1,6 @@
 import React from "react";
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   StatusBar,
@@ -10,7 +9,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  CommonActions,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { ArrowRight } from "iconsax-react-nativejs";
 import { AppText } from "../components/AppText";
 
@@ -20,10 +23,24 @@ const PendingSwapScreen = () => {
   const { transaction }: any = route.params;
 
   const handleContinue = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Dashboard" as never }],
-    });
+    try {
+      const state = navigation.getState();
+      const routes = state.routes;
+      const previousRoute = routes[routes.length - 2];
+
+      if (previousRoute) {
+        navigation.dispatch({
+          ...CommonActions.setParams({ resetForm: true }),
+          source: previousRoute.key,
+        });
+
+        navigation.goBack();
+      } else {
+        navigation.goBack();
+      }
+    } catch (error) {
+      navigation.goBack();
+    }
   };
 
   return (
@@ -82,13 +99,13 @@ const styles = StyleSheet.create({
   },
   icon: { width: 80, height: 80, marginBottom: 20 },
   title: {
-    fontSize: normalize(24),
+    fontSize: normalize(22),
     fontFamily: getFontFamily("900"),
     color: COLORS.dark,
     marginBottom: 12,
   },
   message: {
-    fontSize: normalize(19),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#000",
     textAlign: "center",

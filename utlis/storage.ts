@@ -2,6 +2,10 @@ import { MMKV } from "react-native-mmkv";
 
 export const storage = new MMKV();
 
+export const STORAGE_KEYS = {
+  BIOMETRIC_KEY_ID: "biometric_key_id",
+} as const;
+
 export const setItem = (key: string, value: string) => {
   storage.set(key, value);
 };
