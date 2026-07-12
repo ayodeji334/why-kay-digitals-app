@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: normalize(21),
     marginTop: 10,
-    lineHeight: 16,
+    // lineHeight: 16,
     fontFamily: getFontFamily(400),
   },
   dotsContainer: {

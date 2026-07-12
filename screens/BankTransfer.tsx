@@ -150,8 +150,7 @@ const BankTransferScreen = () => {
               <AppText style={styles.detailLabel}>Bank Name</AppText>
               <View style={styles.copyableField}>
                 <AppText style={styles.detailValue}>
-                  {/* BLOOMS (MFB) MICROFINANCE BANK */}
-                  Blooms Micro finance bank ( Blooms MFB )
+                  Blooms or Boost Micro finance bank ( Blooms or Boost MFB )
                 </AppText>
               </View>
             </View>
@@ -315,7 +314,7 @@ const styles = StyleSheet.create({
   },
   detailItem: {
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     borderWidth: 0.5,
     borderColor: "#c8c8c8ff",
   },

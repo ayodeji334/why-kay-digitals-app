@@ -22,6 +22,7 @@ import {
 } from "../assets";
 import CustomIcon from "../components/CustomIcon";
 import { AppText } from "../components/AppText";
+import { useBiometricLogin } from "../hooks/useBiometricLogin";
 
 interface MenuItemProps {
   title: string;
@@ -101,6 +102,8 @@ export default function AccountSecurityScreen() {
     state => state?.isGoogleAuthenticatorEnabled,
   );
 
+  const { isReady } = useBiometricLogin();
+
   const navigation = useNavigation();
   const setIsShowBalance = useAuthStore(state => state.setIsShowBalance);
   const isShowBalance = useAuthStore(state => state.isShowBalance);
@@ -150,8 +153,8 @@ export default function AccountSecurityScreen() {
               navigation.navigate("BiometricSettings" as never);
             }}
             IconComponent={<CustomIcon source={FingerprintIcon} size={20} />}
-            showSwitch={true}
-            switchValue={isBiometricEnabled}
+            showSwitch={false}
+            // switchValue={isReady}
           />
           <MenuItem
             title="Show Balance"

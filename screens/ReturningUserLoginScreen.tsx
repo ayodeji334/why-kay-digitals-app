@@ -36,7 +36,7 @@ export default function ReturningUserLoginScreen() {
         </View>
 
         <ReturningUserLoginForm />
-        {user?.biometric_enabled && <BiometricLoginButton />}
+        {<BiometricLoginButton />}
 
         <View
           style={{

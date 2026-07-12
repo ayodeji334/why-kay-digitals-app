@@ -732,6 +732,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
+    paddingTop: 20,
   },
   linkContainer: {
     marginBottom: 20,

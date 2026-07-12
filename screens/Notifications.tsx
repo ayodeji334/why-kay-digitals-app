@@ -16,10 +16,11 @@ import CustomLoading from "../components/CustomLoading";
 import CustomModal from "../components/CustomModal";
 import { formatDate } from "../libs/formatDate";
 import { AppText } from "../components/AppText";
+import TabSwitcher from "../components/TabSwitcher";
 
 export default function NotificationsScreen() {
   const { apiGet } = useAxios();
-  const [activeTab, setActiveTab] = useState<"all" | "unread" | "read">("all");
+  const [activeTab, setActiveTab] = useState<string>("all");
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
   const queryClient = useQueryClient();
 
@@ -132,22 +133,18 @@ export default function NotificationsScreen() {
       <StatusBar barStyle="dark-content" backgroundColor={"#fff"} />
 
       <View style={styles.tabContainer}>
-        {(["all", "unread", "read"] as const).map(title => (
-          <TouchableOpacity
-            key={title}
-            style={[styles.tabButton, activeTab === title && styles.activeTab]}
-            onPress={() => setActiveTab(title)}
-          >
-            <AppText
-              style={[
-                styles.tabText,
-                activeTab === title && styles.activeTabText,
-              ]}
-            >
-              {title}
-            </AppText>
-          </TouchableOpacity>
-        ))}
+        <TabSwitcher
+          activeTab={activeTab}
+          tabs={[
+            { label: "All", value: "all" },
+            { label: "Unread", value: "unread" },
+            { label: "Read", value: "read" },
+          ]}
+          onTabChange={value => setActiveTab(value)}
+          containerStyle={{ backgroundColor: "#f3f3f3ff", marginVertical: 10 }}
+          activeTabStyle={{ backgroundColor: COLORS.primary }}
+          activeTabTextStyle={{ color: "#fff" }}
+        />
       </View>
 
       <View style={styles.scrollContainer}>
@@ -278,12 +275,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   tabContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    backgroundColor: "#F5F5F5",
-    borderRadius: 120,
-    marginHorizontal: 20,
-    padding: 5,
+    paddingHorizontal: 15,
   },
   tabButton: {
     flex: 1,

@@ -53,7 +53,7 @@ export default function AppTabs() {
         }}
       />
       <Tab.Screen
-        name="Wallet"
+        name="Wallets"
         component={WalletScreen}
         options={{
           tabBarIcon: ({ color, size, focused }) => (

@@ -116,7 +116,7 @@ export default function LegalScreen() {
               navigation.navigate(
                 "WebView" as never,
                 {
-                  url: "https://whykay.net/faq/",
+                  url: "https://why-kay-digitals.netlify.app/privacy",
                 } as never,
               )
             }
@@ -130,7 +130,7 @@ export default function LegalScreen() {
               navigation.navigate(
                 "WebView" as never,
                 {
-                  url: "https://whykay.net",
+                  url: "https://why-kay-digitals.netlify.app/terms",
                 } as never,
               )
             }

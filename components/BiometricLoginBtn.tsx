@@ -13,7 +13,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "./AppText";
 import { useBiometricLogin } from "../hooks/useBiometricLogin";
 import { useAuthStore } from "../stores/authSlice";
-import { storage, STORAGE_KEYS } from "../utlis/storage";
+// import { storage, STORAGE_KEYS } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 
 const BiometricLoginButton = () => {
@@ -27,8 +27,6 @@ const BiometricLoginButton = () => {
   const { biometryLabel, isReady, isBusy, loginWithBiometrics } =
     useBiometricLogin();
 
-  console.log(biometryLabel, isReady, isBusy);
-
   // Fall back gracefully while the sensor check resolves / when unknown
   const label = biometryLabel ?? "Biometrics";
   const Icon = biometryLabel === "Face ID" ? Scan : FingerScan;
@@ -38,8 +36,6 @@ const BiometricLoginButton = () => {
     // backend verify the signature. Returns the verify response data
     // (or null on cancel/failure — toasts are handled inside the hook).
     const result = await loginWithBiometrics(user?.uuid);
-
-    console.log(result);
 
     const { user: updatedUser, auth } = result?.data ?? {};
 

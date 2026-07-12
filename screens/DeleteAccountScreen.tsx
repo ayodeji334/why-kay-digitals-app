@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   },
   reasonText: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
+    fontFamily: getFontFamily("700"),
     color: COLORS.dark,
   },
   textArea: {

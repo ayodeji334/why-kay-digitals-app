@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Modal,
   View,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   GestureResponderEvent,
   Pressable,
+  Platform,
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
@@ -17,6 +18,7 @@ import { AppText } from "./AppText";
 interface CustomModalProps {
   visible: boolean;
   onClose: (event?: GestureResponderEvent) => void;
+  onDismiss?: () => void;
   title?: string;
   children?: React.ReactNode;
   showCloseButton?: boolean;
@@ -26,13 +28,31 @@ interface CustomModalProps {
 const CustomModal: React.FC<CustomModalProps> = ({
   visible,
   onClose,
+  onDismiss,
   title,
   children,
   showCloseButton = true,
   height = 600,
 }) => {
+  // RN's <Modal onDismiss> only fires on iOS. On Android there's no native
+  // presentation queue to wait out, so we call the same callback ourselves
+  // right after the visible -> false transition commits.
+  const wasVisible = useRef(visible);
+
+  useEffect(() => {
+    if (Platform.OS === "android" && wasVisible.current && !visible) {
+      onDismiss?.();
+    }
+    wasVisible.current = visible;
+  }, [visible, onDismiss]);
+
   return (
-    <Modal visible={visible} transparent animationType="slide">
+    <Modal
+      onDismiss={Platform.OS === "ios" ? onDismiss : undefined}
+      visible={visible}
+      transparent
+      animationType="slide"
+    >
       <View style={styles.overlay}>
         <View style={[styles.modalContainer, { minHeight: height }]}>
           {showCloseButton && (

@@ -8,7 +8,7 @@ import {
   Text,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import WalletDetails from "./WalletAddress";
@@ -142,7 +142,8 @@ const CryptoWalletDepositScreen = () => {
             style={styles.actionButton}
             onPress={onPress}
             disabled={!asset}
-            activeOpacity={0.7}
+            activeOpacity={0.8}
+            hitSlop={10}
           >
             <AppText style={styles.actionLabel}>{label}</AppText>
           </TouchableOpacity>
@@ -170,11 +171,11 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     alignItems: "center",
-    backgroundColor: "#f7f7f7",
+    backgroundColor: COLORS.primary,
     gap: 6,
     opacity: 1,
-    paddingHorizontal: 2,
-    paddingVertical: 9,
+    paddingHorizontal: normalize(14),
+    paddingVertical: normalize(12),
     borderRadius: 340,
     flex: 1,
   },
@@ -187,9 +188,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   actionLabel: {
-    fontSize: 13,
-    fontFamily: getFontFamily(900),
-    color: COLORS.primary,
+    fontSize: normalize(18),
+    fontFamily: getFontFamily(800),
+    color: COLORS.whiteBackground,
     fontWeight: "500",
   },
   header: {

@@ -421,11 +421,14 @@ export default function TransferScreen() {
             </View>
             <View style={styles.limitRange}>
               <AppText style={styles.limitValue}>
-                {formatAmount(walletSummary?.total_crypto_transfers_today) ??
-                  "0"}
+                {formatAmount(walletSummary?.total_crypto_transfers_today, {
+                  currency: "USD",
+                }) ?? "0"}
               </AppText>
               <AppText style={styles.limitValue}>
-                {formatAmount(cryptoLimit ?? 0) || "0"}
+                {formatAmount(cryptoLimit ?? 0, {
+                  currency: "USD",
+                }) || "0"}
               </AppText>
             </View>
           </View>

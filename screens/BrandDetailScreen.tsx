@@ -1798,8 +1798,8 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#fff" },
   loadingWrap: { flex: 1, alignItems: "center", justifyContent: "center" },
   scrollContent: {
-    paddingHorizontal: normalize(16),
-    paddingTop: normalize(10),
+    paddingHorizontal: normalize(24),
+    paddingTop: normalize(16),
     paddingBottom: normalize(40),
   },
   brandLogo: {

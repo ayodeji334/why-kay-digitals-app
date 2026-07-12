@@ -36,7 +36,7 @@ export default function LoginScreen() {
 
         <LoginForm />
 
-        {user?.biometric_enabled && <BiometricLoginButton />}
+        <BiometricLoginButton />
 
         <View
           style={{
