@@ -33,6 +33,7 @@ interface Props {
   placeholderTextColor?: string;
   style?: TextStyle; // allow custom TextInput styling
   containerStyle?: ViewStyle; // allow custom container styling
+  isEditable?: boolean;
 }
 
 const TextInputField: React.FC<Props> = ({
@@ -47,12 +48,14 @@ const TextInputField: React.FC<Props> = ({
   placeholderTextColor = "#aeaeaeff",
   style,
   containerStyle,
+  isEditable = true,
 }) => {
   return (
     <Controller
       control={control}
       name={name}
       rules={rules}
+      // disabled={isEditable}
       render={({
         field: { onChange, onBlur, value },
         fieldState: { error },
@@ -62,7 +65,12 @@ const TextInputField: React.FC<Props> = ({
             <AppText style={styles.label}>{label}</AppText>
           )}
           <TextInput
-            style={[styles.input, error && styles.errorBorder, style]}
+            style={[
+              styles.input,
+              error && styles.errorBorder,
+              !isEditable && styles.disabled,
+              style,
+            ]}
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}
             onBlur={onBlur}
@@ -72,6 +80,7 @@ const TextInputField: React.FC<Props> = ({
             autoCapitalize={autoCapitalize}
             maxFontSizeMultiplier={1}
             allowFontScaling={false}
+            editable={isEditable}
           />
           {error && <AppText style={styles.errorText}>{error.message}</AppText>}
         </View>
@@ -83,6 +92,9 @@ const TextInputField: React.FC<Props> = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 10,
+  },
+  disabled: {
+    opacity: 0.6,
   },
   input: {
     borderWidth: 1,

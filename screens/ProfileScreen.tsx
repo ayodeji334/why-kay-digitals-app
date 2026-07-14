@@ -17,6 +17,8 @@ import { useAuthStore } from "../stores/authSlice";
 import CustomIcon from "../components/CustomIcon";
 import { CopyIcon, DeleteIcon } from "../assets";
 import { AppText } from "../components/AppText";
+import { DEFAULT_IMAGE } from "./SettingsScreen";
+import { capitalizeFirst } from "../libs/helpers";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
@@ -82,23 +84,20 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.profileHeader}>
-          <Image
-            source={
-              userData?.profile_picture_url
-                ? {
-                    uri: userData?.profile_picture_url || undefined,
-                  }
-                : require("../assets/avatar.png")
-            }
-            style={styles.profileImage}
-            resizeMode="center"
-          />
+          <View style={styles.imageWrapper}>
+            <Image
+              source={{
+                uri: userData?.selfie_url
+                  ? `data:image/png;base64,${userData?.selfie_url}`
+                  : DEFAULT_IMAGE,
+              }}
+              style={styles.profileImage}
+              resizeMode="cover"
+            />
+          </View>
           <View style={styles.profileInfo}>
             <AppText style={styles.userName}>
-              {userData?.username
-                ? userData.username.charAt(0).toUpperCase() +
-                  userData.username.slice(1)
-                : ""}{" "}
+              {userData?.username ? capitalizeFirst(userData.username) : ""}
             </AppText>
             <AppText style={styles.userEmail}>{userData?.email}</AppText>
           </View>
@@ -175,13 +174,18 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 20,
   },
+  imageWrapper: {
+    width: 90,
+    height: 90,
+    borderRadius: 2500,
+    marginRight: 12,
+    overflow: "hidden",
+    backgroundColor: "#f0f0f0",
+    marginBottom: 6,
+  },
   profileImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 40,
-    marginBottom: 12,
-    padding: 4,
-    backgroundColor: COLORS.lightGray,
+    width: "100%",
+    height: "100%",
   },
   profileInfo: {
     alignItems: "center",

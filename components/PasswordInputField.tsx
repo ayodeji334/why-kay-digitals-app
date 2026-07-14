@@ -73,10 +73,16 @@ const PasswordInputField: React.FC<Props> = ({
               allowFontScaling={false}
             />
             <TouchableOpacity
-              activeOpacity={0.8}
+              style={{ marginRight: 5 }}
+              hitSlop={10}
+              activeOpacity={1}
               onPress={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <Eye size={20} /> : <EyeSlash size={20} />}
+              {showPassword ? (
+                <Eye size={normalize(22)} />
+              ) : (
+                <EyeSlash size={normalize(22)} />
+              )}
             </TouchableOpacity>
           </View>
           {error && <AppText style={styles.errorText}>{error.message}</AppText>}
@@ -124,7 +130,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    paddingHorizontal: 6,
+    paddingHorizontal: 8,
   },
   input: {
     flex: 1,

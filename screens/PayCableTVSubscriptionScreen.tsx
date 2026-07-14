@@ -292,17 +292,17 @@ export default function PayCableTVSubscriptionScreen() {
   };
 
   const networks = [
-    { id: "dstv", label: "DSTV", logo: require("../assets/dstv-icon.png") },
-    { id: "gotv", label: "GOTV", logo: require("../assets/gotv-icon.png") },
+    { id: "dstv", label: "DSTV", logo: require("../assets/dstv-icon.webp") },
+    { id: "gotv", label: "GOTV", logo: require("../assets/gotv-icon.webp") },
     {
       id: "showmax",
       label: "SHOWMAX",
-      logo: require("../assets/showmax-icon.png"),
+      logo: require("../assets/showmax-icon.webp"),
     },
     {
       id: "startimes",
       label: "STARTIMES",
-      logo: require("../assets/startimes-icon.png"),
+      logo: require("../assets/startimes-icon.webp"),
     },
   ];
 

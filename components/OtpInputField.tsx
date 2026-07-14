@@ -179,13 +179,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flexDirection: "row",
-    gap: 16,
+    gap: 10,
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "center",
   },
   box: {
-    width: 45,
-    height: 45,
+    width: normalize(48),
+    height: normalize(48),
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,

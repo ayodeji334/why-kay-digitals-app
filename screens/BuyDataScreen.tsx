@@ -137,17 +137,17 @@ export default function BuyDataScreen() {
   });
 
   const networks = [
-    { id: "mtn", label: "MTN", logo: require("../assets/mtn-logo.jpg") },
-    { id: "glo", label: "GLO", logo: require("../assets/glo-logo.png") },
+    { id: "mtn", label: "MTN", logo: require("../assets/mtn-logo.webp") },
+    { id: "glo", label: "GLO", logo: require("../assets/glo-logo.webp") },
     {
       id: "airtel",
       label: "Airtel",
-      logo: require("../assets/airtel-logo.png"),
+      logo: require("../assets/airtel-logo.webp"),
     },
     {
       id: "9mobile",
       label: "9mobile",
-      logo: require("../assets/nine-mobile.png"),
+      logo: require("../assets/nine-mobile.webp"),
     },
   ];
 

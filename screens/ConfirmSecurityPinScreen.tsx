@@ -22,6 +22,8 @@ import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
 import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
+import { useBiometricPromptStore } from "../stores/biometricPromptSlice";
+import { refreshBiometricState } from "../stores/biometricSlice";
 
 type FormData = {
   pin: string;
@@ -67,6 +69,10 @@ export default function ConfirmSecurityPinScreen() {
       });
 
       setUser(user);
+
+      await useBiometricPromptStore.getState().hydrate();
+      await refreshBiometricState();
+
       setIsAuthenticated(true);
     } catch (err) {
       if (err instanceof AxiosError) {
@@ -145,7 +151,7 @@ const styles = StyleSheet.create({
     marginBottom: 23,
   },
   title: {
-    fontSize: normalize(23),
+    fontSize: normalize(22),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

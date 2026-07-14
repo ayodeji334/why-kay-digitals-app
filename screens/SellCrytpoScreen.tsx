@@ -563,7 +563,7 @@ export default function CryptoSellScreen() {
                     <AppText style={styles.balance}>
                       {formatAmount(
                         Number(assetDetails?.balance) * marketPrice || 0,
-                        { currency: "USD", decimalPlace: 8 },
+                        { currency: "USD", decimalPlace: 2 },
                       )}
                     </AppText>
                   </View>

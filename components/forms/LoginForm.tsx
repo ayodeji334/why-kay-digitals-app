@@ -12,10 +12,15 @@ import CustomLoading from "../CustomLoading";
 import { showError } from "../../utlis/toast";
 import { AxiosError } from "axios";
 import useAxios from "../../hooks/useAxios";
-import { useAuthStore } from "../../stores/authSlice";
+import { useAuthStore, useIsAuthenticated } from "../../stores/authSlice";
 import { OneSignal } from "react-native-onesignal";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppText } from "../AppText";
+import {
+  refreshBiometricState,
+  useBiometricStore,
+} from "../../stores/biometricSlice";
+import { useBiometricPromptStore } from "../../stores/biometricPromptSlice";
 
 const loginSchema = yup.object().shape({
   login: yup.string().required("Email or Username is required"),
@@ -101,6 +106,10 @@ const LoginForm: React.FC = () => {
 
       setToken(auth.accessToken, auth.refreshToken);
       setUser(user);
+
+      await useBiometricPromptStore.getState().hydrate();
+      await refreshBiometricState();
+
       setIsAuthenticated(true);
     } catch (err: any) {
       if (err instanceof AxiosError) {

@@ -1066,6 +1066,7 @@ export default function PayElectricityBillsScreen() {
               ? "Loading providers..."
               : "Select electricity provider"
           }
+          loading={isLoadingProviders}
           options={providerOptions}
           onChange={handleProviderChange}
         />
@@ -1185,13 +1186,13 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(16),
+    paddingVertical: normalize(14),
     fontSize: normalize(26),
     fontFamily: getFontFamily("800"),
     color: "#000",
   },
   dollarSign: {
-    fontSize: normalize(26),
+    fontSize: normalize(22),
     fontFamily: getFontFamily("800"),
     color: "#000",
     paddingLeft: 15,

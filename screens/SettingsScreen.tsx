@@ -33,7 +33,10 @@ import {
   UserIdCardIcon,
 } from "../assets";
 import { AppText } from "../components/AppText";
+import { setItem } from "../utlis/storage";
+import { biometricPromptKey } from "../stores/biometricPromptSlice";
 
+export const DEFAULT_IMAGE = require("../assets/avatar.png");
 interface MenuItemProps {
   title: string;
   subtitle?: string;
@@ -137,16 +140,14 @@ export default function SettingsScreen() {
     ],
   );
 
-  // const handleKYCPress = () => {
-  //   navigation.navigate("Verification" as never);
-  // };
-
   const handleLogout = async () => {
+    const uuid = useAuthStore.getState().user?.uuid;
+    await setItem(
+      biometricPromptKey(uuid!),
+      JSON.stringify({ status: "skipped", promptCount: 1, lastPromptedAt: 0 }),
+    );
+
     logout();
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "SignIn" as never }],
-    });
   };
 
   return (
@@ -165,17 +166,18 @@ export default function SettingsScreen() {
               justifyContent: "center",
             }}
           >
-            <Image
-              source={
-                user?.profile_picture_url
-                  ? {
-                      uri: user?.profile_picture_url || undefined,
-                    }
-                  : require("../assets/avatar.png")
-              }
-              style={styles.profileImage}
-              resizeMode="center"
-            />
+            <View style={styles.imageWrapper}>
+              <Image
+                source={{
+                  uri: user?.selfie_url
+                    ? `data:image/png;base64,${user?.selfie_url}`
+                    : DEFAULT_IMAGE,
+                }}
+                style={styles.profileImage}
+                resizeMode="cover"
+              />
+            </View>
+
             <View>
               <AppText style={styles.title}>
                 {user?.username
@@ -372,12 +374,17 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
-  profileImage: {
+  imageWrapper: {
     width: 50,
     height: 50,
     borderRadius: 25,
     marginRight: 12,
+    overflow: "hidden",
     backgroundColor: "#f0f0f0",
+  },
+  profileImage: {
+    width: "100%",
+    height: "100%",
   },
   verificationBanner: {
     flexDirection: "row",

@@ -310,7 +310,10 @@ export default function SendScreen() {
         hasIssue: true,
         message: `Minimum withdrawal is ${formatAmount(minWithdrawUsd, {
           currency: "USD",
-        })}. You entered ${formatAmount(amount, { currency: "USD" })}.`,
+        })}. You entered ${formatAmount(amount, {
+          currency: "USD",
+          decimalPlace: 2,
+        })}.`,
       };
     }
 

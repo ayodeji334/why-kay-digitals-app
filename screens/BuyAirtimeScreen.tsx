@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   ScrollView,
@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   StatusBar,
+  TextInput,
 } from "react-native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -24,6 +25,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
+import { formatWithCommas } from "./SwapCryptoScreen";
 
 const schema = yup.object({
   phone: yup
@@ -54,6 +56,7 @@ export default function BuyAirtimeScreen() {
   const [loading, setLoading] = useState(false);
   const [saveBeneficiary, setSaveBeneficiary] = useState(false);
   const navigation: any = useNavigation();
+  const [displayAmount, setDisplayAmount] = useState("");
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<string | null>(
     null,
   );
@@ -100,20 +103,21 @@ export default function BuyAirtimeScreen() {
 
   const handleAmountSelect = (selectedAmount: number) => {
     setValue("amount", selectedAmount, { shouldValidate: true });
+    setDisplayAmount(formatWithCommas(selectedAmount.toString()));
   };
 
   const networks = [
-    { id: "mtn", label: "MTN", logo: require("../assets/mtn-new.svg") },
-    { id: "glo", label: "GLO", logo: require("../assets/glo-logo.png") },
+    { id: "mtn", label: "MTN", logo: require("../assets/mtn-logo.webp") },
+    { id: "glo", label: "GLO", logo: require("../assets/glo-logo.webp") },
     {
       id: "airtel",
       label: "Airtel",
-      logo: require("../assets/airtel-logo.png"),
+      logo: require("../assets/airtel-logo.webp"),
     },
     {
       id: "9mobile",
       label: "9mobile",
-      logo: require("../assets/nine-mobile.png"),
+      logo: require("../assets/nine-mobile.webp"),
     },
   ];
 
@@ -144,6 +148,16 @@ export default function BuyAirtimeScreen() {
       setSelectedBeneficiary(null);
     },
   });
+
+  const handleAmountChange = useCallback(
+    (text: string) => {
+      const numeric = text.replace(/,/g, "");
+      const parsed = parseFloat(numeric);
+      setValue("amount", isNaN(parsed) ? 0 : parsed, { shouldValidate: true });
+      setDisplayAmount(formatWithCommas(numeric));
+    },
+    [setValue],
+  );
 
   useResetFormOnMount(reset, { network: "", phone: "" });
 
@@ -217,17 +231,37 @@ export default function BuyAirtimeScreen() {
         </View>
 
         <View style={styles.amountSection}>
-          <TextInputField
-            label="Enter the amount you want to buy"
-            control={control}
-            name="amount"
-            placeholder="0.00"
-            keyboardType="numeric"
-          />
+          <View style={{ marginBottom: 2, marginTop: -6 }}>
+            <AppText style={styles.label}>Amount</AppText>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  fontFamily: getFontFamily("800"),
+                  paddingVertical: normalize(14),
+                  fontSize: normalize(26),
+                },
+              ]}
+              keyboardType="numeric"
+              placeholderTextColor="#aeaeaeff"
+              placeholder="0.00"
+              value={displayAmount}
+              onChangeText={handleAmountChange}
+              maxFontSizeMultiplier={1}
+              allowFontScaling={false}
+            />
+            {errors.amount && (
+              <AppText style={styles.errorText}>
+                {errors.amount.message as string}
+              </AppText>
+            )}
+          </View>
 
           <View style={styles.quickAmountsContainer}>
             {quickAmounts.map((amountValue, index) => (
               <TouchableOpacity
+                activeOpacity={0.9}
+                hitSlop={9}
                 key={index}
                 style={[
                   styles.quickAmountButton,
@@ -345,6 +379,22 @@ const styles = StyleSheet.create({
   amountSection: {
     marginBottom: 24,
   },
+  label: {
+    marginBottom: 6,
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    color: "#000000ff",
+  },
+  input: {
+    paddingVertical: normalize(18),
+    paddingHorizontal: normalize(18),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("400"),
+    color: "#000",
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 8,
+  },
   amountInputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -371,28 +421,28 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   quickAmountButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingHorizontal: normalize(18),
+    paddingVertical: normalize(14),
     borderWidth: 1,
     borderColor: "#E5E7EB",
     backgroundColor: "#f4f4f4ff",
     borderRadius: 8,
-    minWidth: 80,
+    // minWidth: 65,
   },
   quickAmountButtonActive: {
     borderColor: COLORS.secondary,
     backgroundColor: COLORS.secondary + "20",
   },
   quickAmountText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(19),
+    fontFamily: getFontFamily("800"),
     color: "#374151",
     textAlign: "center",
   },
   quickAmountTextActive: {
     color: "black",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(19),
+    fontFamily: getFontFamily("800"),
   },
   beneficiaryContainer: {
     flexDirection: "row",

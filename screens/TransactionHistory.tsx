@@ -1,13 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  TouchableOpacity,
-  Pressable,
-  InteractionManager,
-} from "react-native";
+import { View, StyleSheet, StatusBar, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Filter, DocumentDownload } from "iconsax-react-nativejs";
@@ -313,20 +305,24 @@ const TransactionHistoryScreen: React.FC = () => {
         />
 
         <TouchableOpacity
+          hitSlop={10}
+          activeOpacity={0.9}
           style={styles.closeButton}
           onPress={() => handleApplyFilter(filterQuery)}
         >
           <AppText style={styles.closeButtonText}>Apply Filter</AppText>
         </TouchableOpacity>
 
-        <Pressable
+        <TouchableOpacity
+          hitSlop={10}
+          activeOpacity={0.9}
           style={[styles.closeButton, { backgroundColor: "#e7e7e7" }]}
           onPress={handleClearFilter}
         >
           <AppText style={[styles.closeButtonText, { color: "#000" }]}>
             Clear Filter
           </AppText>
-        </Pressable>
+        </TouchableOpacity>
       </CustomModal>
     </SafeAreaView>
   );

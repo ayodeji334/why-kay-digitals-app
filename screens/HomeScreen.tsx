@@ -22,6 +22,7 @@ import { useMemo } from "react";
 import { useFiatBalance } from "../hooks/useFiatBalance";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppText } from "../components/AppText";
+import { DEFAULT_IMAGE } from "./SettingsScreen";
 
 const HomeScreen = () => {
   const user = useUser();
@@ -41,9 +42,23 @@ const HomeScreen = () => {
     ],
   );
 
+  const greeting = useMemo(() => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 17) return "Good afternoon";
+    return "Good evening";
+  }, []);
+
+  const raw = user?.first_name || user?.username || "";
+  const displayName = raw
+    ? raw.charAt(0).toUpperCase() + raw.slice(1)
+    : "there";
+
   useFocusEffect(() => {
     queryClient.invalidateQueries({ queryKey: ["rates"] });
   });
+
+  console.log(user);
 
   return (
     <SafeAreaView edges={["left", "right", "top"]} style={styles.container}>
@@ -58,26 +73,23 @@ const HomeScreen = () => {
       >
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Image
-              source={
-                user?.profile_picture_url
-                  ? {
-                      uri: user?.profile_picture_url || undefined,
-                    }
-                  : require("../assets/avatar.png")
-              }
-              style={styles.profileImage}
-              resizeMode="center"
-            />
+            <Pressable
+              style={styles.imageWrapper}
+              onPress={() => navigation.navigate("Profile" as never)}
+            >
+              <Image
+                source={{
+                  uri: user?.selfie_url
+                    ? `data:image/png;base64,${user?.selfie_url}`
+                    : DEFAULT_IMAGE,
+                }}
+                style={styles.profileImage}
+                resizeMode="cover"
+              />
+            </Pressable>
             <View style={styles.welcomeText}>
-              <AppText style={styles.welcomeBack}>Welcome back</AppText>
-              <AppText style={styles.userName}>
-                Hi,{" "}
-                {(user?.username
-                  ? user.username.charAt(0).toUpperCase() +
-                    user.username.slice(1)
-                  : "") || "User"}
-              </AppText>
+              <AppText style={styles.welcomeBack}>{greeting}</AppText>
+              <AppText style={styles.userName}>{displayName}</AppText>
             </View>
           </View>
           <NotificationBell />
@@ -132,12 +144,17 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   headerLeft: { flexDirection: "row", alignItems: "center" },
-  profileImage: {
-    width: 36,
-    height: 36,
+  imageWrapper: {
+    width: 40,
+    height: 40,
     borderRadius: 25,
     marginRight: 12,
+    overflow: "hidden",
     backgroundColor: "#f0f0f0",
+  },
+  profileImage: {
+    width: "100%",
+    height: "100%",
   },
   welcomeText: { justifyContent: "center" },
   welcomeBack: {

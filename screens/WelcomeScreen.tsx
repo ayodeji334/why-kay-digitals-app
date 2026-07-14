@@ -1,7 +1,6 @@
 import React from "react";
 import {
   View,
-  Text,
   StyleSheet,
   Image,
   Pressable,
@@ -33,7 +32,7 @@ const WelcomeScreen = () => {
       >
         <View style={styles.imageWrapper}>
           <Image
-            source={require("../assets/welcome-slider.png")}
+            source={require("../assets/welcome-slider.webp")}
             style={styles.image}
             resizeMode="contain"
           />

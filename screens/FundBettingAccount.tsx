@@ -413,7 +413,11 @@ export default function FundBettingAccountScreen() {
             <TextInput
               style={[
                 styles.input,
-                { fontSize: normalize(22), fontFamily: getFontFamily("800") },
+                {
+                  fontFamily: getFontFamily("800"),
+                  paddingVertical: normalize(14),
+                  fontSize: normalize(26),
+                },
               ]}
               keyboardType="numeric"
               placeholderTextColor="#aeaeaeff"
@@ -484,7 +488,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: normalize(18),
     fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
     color: "#000",
@@ -493,7 +497,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(22),
     fontFamily: getFontFamily("800"),
     color: "#000",
-    paddingLeft: 10,
+    paddingLeft: 15,
   },
   detailsContainer: {
     marginVertical: 10,

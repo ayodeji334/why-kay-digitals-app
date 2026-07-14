@@ -81,6 +81,11 @@ const RegisterForm: React.FC = () => {
   const { showSuccess, showError } = useToastHelpers();
   const navigation: any = useNavigation();
   const [loading, setLoading] = useState(false);
+  // const [checkingUsername, setCheckingUsername] = useState(false);
+  // const [usernameStatus, setUsernameStatus] = useState<{
+  //   available?: boolean;
+  //   message?: string;
+  // }>({});
   const [checkingUsername, setCheckingUsername] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<{
     available?: boolean;
@@ -94,29 +99,38 @@ const RegisterForm: React.FC = () => {
     });
 
   const username = useWatch({ control, name: "username" });
-
-  // Debounced username value (3s delay)
-  const debouncedUsername = useDebounce(username, 1000);
+  const debouncedUsername = useDebounce(username?.trim() ?? "", 500);
 
   useEffect(() => {
-    const checkUsernameAvailability = async (usernameValue: string) => {
-      if (!usernameValue || usernameValue.length < 5) {
-        setUsernameStatus({});
-        clearErrors("username");
-        return;
-      }
+    setUsernameStatus({});
+  }, [username]);
 
-      setCheckingUsername(true);
-      try {
-        const res = await apiGet(
-          `/auth/check-username?username=${usernameValue}`,
-        );
-        setUsernameStatus({
-          available: res.data.available,
-          message: res.data.message,
-        });
+  useEffect(() => {
+    if (!debouncedUsername || debouncedUsername.length < 5) {
+      setUsernameStatus({});
+      clearErrors("username");
+      setCheckingUsername(false);
+      return;
+    }
 
-        if (res.data.available === false) {
+    let cancelled = false;
+    const controller = new AbortController();
+
+    setCheckingUsername(true);
+
+    apiGet(
+      `/auth/check-username?username=${encodeURIComponent(debouncedUsername)}`,
+      {
+        signal: controller.signal,
+      },
+    )
+      .then(res => {
+        if (cancelled) return; // a newer keystroke has superseded this
+
+        const available = res.data.available;
+        setUsernameStatus({ available, message: res.data.message });
+
+        if (available === false) {
           setError("username", {
             type: "manual",
             message: "Username is already taken",
@@ -124,22 +138,71 @@ const RegisterForm: React.FC = () => {
         } else {
           clearErrors("username");
         }
-
-        setValue("username", usernameValue.trim());
-      } catch {
+      })
+      .catch(err => {
+        if (
+          cancelled ||
+          err.name === "CanceledError" ||
+          err.name === "AbortError"
+        )
+          return;
         setUsernameStatus({
           available: false,
-          message: "Error checking username",
+          message: "Couldn't check that username",
         });
-      } finally {
-        setCheckingUsername(false);
-      }
-    };
+      })
+      .finally(() => {
+        if (!cancelled) setCheckingUsername(false);
+      });
 
-    if (debouncedUsername) {
-      checkUsernameAvailability(debouncedUsername);
-    }
-  }, [debouncedUsername, apiGet, setError, clearErrors, setValue]);
+    return () => {
+      cancelled = true;
+      controller.abort(); // kill the in-flight request
+    };
+  }, [debouncedUsername, apiGet, setError, clearErrors]);
+
+  // useEffect(() => {
+  //   const checkUsernameAvailability = async (usernameValue: string) => {
+  //     if (!usernameValue || usernameValue.length < 5) {
+  //       setUsernameStatus({});
+  //       clearErrors("username");
+  //       return;
+  //     }
+
+  //     setCheckingUsername(true);
+  //     try {
+  //       const res = await apiGet(
+  //         `/auth/check-username?username=${usernameValue}`,
+  //       );
+  //       setUsernameStatus({
+  //         available: res.data.available,
+  //         message: res.data.message,
+  //       });
+
+  //       if (res.data.available === false) {
+  //         setError("username", {
+  //           type: "manual",
+  //           message: "Username is already taken",
+  //         });
+  //       } else {
+  //         clearErrors("username");
+  //       }
+
+  //       setValue("username", usernameValue.trim());
+  //     } catch {
+  //       setUsernameStatus({
+  //         available: false,
+  //         message: "Error checking username",
+  //       });
+  //     } finally {
+  //       setCheckingUsername(false);
+  //     }
+  //   };
+
+  //   if (debouncedUsername) {
+  //     checkUsernameAvailability(debouncedUsername);
+  //   }
+  // }, [debouncedUsername, apiGet, setError, clearErrors, setValue]);
 
   const handleRegister = async (values: any) => {
     const userOneSignalID = await OneSignal.User.getOnesignalId();

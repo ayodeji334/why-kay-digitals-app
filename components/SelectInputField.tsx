@@ -9,6 +9,7 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
@@ -41,6 +42,9 @@ interface SelectInputProps {
   showSearchBox?: boolean;
   showWalletPrice?: boolean;
   isDisabled?: boolean;
+  loading?: boolean;
+  loadingText?: string;
+  emptyText?: string;
 }
 
 export function SelectInput({
@@ -57,6 +61,9 @@ export function SelectInput({
   showSearchBox = true,
   showWalletPrice = false,
   isDisabled = false,
+  loading = false,
+  loadingText = "Loading...",
+  emptyText = "No options found",
 }: SelectInputProps) {
   const [visible, setVisible] = useState(false);
   const [search, setSearch] = useState("");
@@ -81,7 +88,7 @@ export function SelectInput({
   };
 
   const handlePress = () => {
-    if (!isDisabled) setVisible(true);
+    if (!isDisabled && !loading) setVisible(true);
   };
 
   const renderSelectView = (
@@ -113,10 +120,14 @@ export function SelectInput({
               <AppText
                 style={[
                   styles.selectedCryptoName,
-                  !selectedOption && { color: "#838383" },
+                  (!selectedOption || loading) && { color: "#838383" },
                 ]}
               >
-                {selectedOption ? selectedOption.label : placeholder}
+                {loading
+                  ? loadingText
+                  : selectedOption
+                  ? selectedOption.label
+                  : placeholder}
               </AppText>
 
               {selectedOption?.network_charges ? (
@@ -130,13 +141,18 @@ export function SelectInput({
                     (≈{" "}
                     {formatAmount(selectedOption?.network_charges_in_usd ?? 0, {
                       currency: "USD",
+                      decimalPlace: 2,
                     })}
                     )
                   </AppText>
                 </AppText>
               ) : undefined}
             </View>
-            <ArrowDown2 size={normalize(20)} color="#374151" />
+            {loading ? (
+              <ActivityIndicator size="small" color={COLORS.primary} />
+            ) : (
+              <ArrowDown2 size={normalize(20)} color="#374151" />
+            )}
           </View>
         </TouchableOpacity>
 
@@ -178,9 +194,18 @@ export function SelectInput({
               )}
 
               <FlatList
-                data={options.filter(opt =>
-                  opt.label?.toLowerCase().includes(search?.toLowerCase()),
-                )}
+                // data={options.filter(opt =>
+                //   opt.label?.toLowerCase().includes(search?.toLowerCase()),
+                // )}
+                data={
+                  loading
+                    ? []
+                    : options.filter(opt =>
+                        opt.label
+                          ?.toLowerCase()
+                          .includes(search?.toLowerCase()),
+                      )
+                }
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item, index) => `${item.value}-${index + 0.456}`}
                 renderItem={({ item }) => {
@@ -210,7 +235,6 @@ export function SelectInput({
                               <AppText style={styles.optionPrice}>
                                 {formatAmount(item.market_value, {
                                   currency: "USD",
-                                  decimalPlace: 2,
                                 })}
                               </AppText>
                             ) : undefined}
@@ -252,6 +276,7 @@ export function SelectInput({
                                 <AppText style={styles.optionName}>
                                   {`${formatAmount(item?.total_price, {
                                     currency: "USD",
+                                    decimalPlace: 2,
                                   })}`}
                                 </AppText>
                               ) : (
@@ -270,14 +295,32 @@ export function SelectInput({
                 }}
                 ListEmptyComponent={
                   <View style={{ paddingVertical: 20, alignItems: "center" }}>
-                    <AppText
-                      style={{
-                        fontSize: normalize(18),
-                        fontFamily: getFontFamily("700"),
-                      }}
-                    >
-                      No options found
-                    </AppText>
+                    {loading ? (
+                      <>
+                        <ActivityIndicator
+                          size="small"
+                          color={COLORS.primary}
+                        />
+                        <AppText
+                          style={{
+                            marginTop: 8,
+                            fontSize: normalize(14),
+                            color: "#838383",
+                          }}
+                        >
+                          {loadingText}
+                        </AppText>
+                      </>
+                    ) : (
+                      <AppText
+                        style={{
+                          fontSize: normalize(18),
+                          fontFamily: getFontFamily("700"),
+                        }}
+                      >
+                        {emptyText}
+                      </AppText>
+                    )}
                   </View>
                 }
               />

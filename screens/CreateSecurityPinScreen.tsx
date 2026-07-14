@@ -59,7 +59,7 @@ export default function CreateSecurityPinScreen() {
               styles.title,
               {
                 fontFamily: getFontFamily(400),
-                fontSize: normalize(18),
+                fontSize: normalize(19),
                 marginTop: 2,
                 marginLeft: 1,
               },
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     marginBottom: 23,
   },
   title: {
-    fontSize: normalize(23),
+    fontSize: normalize(22),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

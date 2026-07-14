@@ -3,7 +3,6 @@ import {
   ScrollView,
   RefreshControl,
   StatusBar,
-  Text,
   TouchableOpacity,
   StyleSheet,
   View,
@@ -36,33 +35,13 @@ import useAxios from "../hooks/useAxios";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
 
-// const fiatSchema = yup.object({
-//   username: yup.string().required("Username is required"),
-//   amount: yup
-//     .number()
-//     .typeError("Enter a valid amount")
-//     .min(100, "Minimum amount you can transfer is ₦100")
-//     .max(300000, "Maximum amount you can transfer is ₦300,000")
-//     .required(),
-//   description: yup.string().optional(),
-// });
-
-// const cryptoSchema = yup.object({
-//   username: yup.string().required("Username is required"),
-//   amount: yup
-//     .number()
-//     .typeError("Enter a valid amount")
-//     .min(2, "The amount is too small. The minimum is 6 USD")
-//     .required(),
-//   asset_id: yup.string().required("Select a cryptocurrency"),
-// });
-
 interface ValidationState {
   isChecking: boolean;
   isValid: boolean | null;
 }
 
 export function useUsernameValidation(
+  username: string,
   setError: UseFormSetError<any>,
   clearErrors: UseFormClearErrors<any>,
   debounceMs = 600,
@@ -73,56 +52,68 @@ export function useUsernameValidation(
   });
   const { post } = useAxios();
 
-  const validate = useCallback(
-    (() => {
-      let timer: ReturnType<typeof setTimeout>;
+  const trimmed = username?.trim() ?? "";
 
-      return (username: string) => {
-        clearTimeout(timer);
+  useEffect(() => {
+    if (trimmed.length < 3) {
+      setState({ isChecking: false, isValid: null });
+      clearErrors("username");
+      return;
+    }
 
-        if (!username || username.length < 3) {
-          setState({ isChecking: false, isValid: null });
+    let cancelled = false;
+    const controller = new AbortController();
+
+    setState({ isChecking: true, isValid: null });
+
+    const timer = setTimeout(async () => {
+      try {
+        const { data } = await post(
+          "/users/user/validate-username",
+          { username: trimmed },
+          { signal: controller.signal },
+        );
+
+        if (cancelled) return; // superseded by a newer keystroke
+
+        if (data.success) {
+          setState({ isChecking: false, isValid: true });
           clearErrors("username");
-          return;
+        } else {
+          setState({ isChecking: false, isValid: false });
+          setError("username", {
+            type: "manual",
+            message: "Username cannot be verified",
+          });
         }
+      } catch (err: any) {
+        if (
+          cancelled ||
+          err?.name === "CanceledError" ||
+          err?.name === "AbortError"
+        )
+          return;
+        setState({ isChecking: false, isValid: false });
+        setError("username", {
+          type: "manual",
+          message: "Could not verify username",
+        });
+      }
+    }, debounceMs);
 
-        setState(prev => ({ ...prev, isChecking: true }));
-
-        timer = setTimeout(async () => {
-          try {
-            const { data } = await post("/users/user/validate-username", {
-              username,
-            });
-
-            if (data.success) {
-              setState({ isChecking: false, isValid: true });
-              clearErrors("username");
-            } else {
-              setState({ isChecking: false, isValid: false });
-              setError("username", {
-                type: "manual",
-                message: "Username cannot be verified",
-              });
-            }
-          } catch {
-            setState({ isChecking: false, isValid: false });
-            setError("username", {
-              type: "manual",
-              message: "Could not verify username",
-            });
-          }
-        }, debounceMs);
-      };
-    })(),
-    [setError, clearErrors],
-  );
+    return () => {
+      cancelled = true;
+      clearTimeout(timer); // cancels a pending debounce
+      controller.abort(); // cancels an in-flight request
+    };
+  }, [trimmed, debounceMs, post, setError, clearErrors]);
 
   const reset = useCallback(() => {
     setState({ isChecking: false, isValid: null });
     clearErrors("username");
   }, [clearErrors]);
 
-  return { ...state, validate, reset };
+  return { ...state, validate: undefined, reset };
 }
 
 export type TransferTab = "fiat" | "crypto";
@@ -155,36 +146,6 @@ export const getTransferSchema = (tab: TransferTab): yup.AnyObjectSchema => {
   });
 };
 
-// export const getTransferSchema = (tab: TransferTab) => {
-//   const base = {
-//     username: yup
-//       .string()
-//       .min(3, "Username must be at least 3 characters")
-//       .required("Username is required"),
-//     amount: yup
-//       .number()
-//       .typeError("Enter a valid amount")
-//       .moreThan(0, "Amount must be greater than 0")
-//       .required("Amount is required"),
-//   };
-
-//   if (tab === "fiat") {
-//     return yup.object({
-//       ...base,
-//       description: yup
-//         .string()
-//         .required("Narration is required"),
-//     });
-//   }
-
-//   return yup.object({
-//     ...base,
-//     asset_id: yup
-//       .string()
-//       .required("Please select an asset"),
-//   });
-// };
-
 export default function TransferScreen() {
   const navigation = useNavigation<any>();
   const [activeTab, setActiveTab] = useState<TransferTab>("crypto");
@@ -197,7 +158,6 @@ export default function TransferScreen() {
     useWallets();
   const { isLoading, walletSummary, refetch } = useSummaryDetail();
 
-  // single form, schema swaps when tab changes
   const {
     control,
     handleSubmit,
@@ -212,15 +172,6 @@ export default function TransferScreen() {
     mode: "onChange",
   });
 
-  // username validation hook
-  const {
-    isChecking,
-    isValid: usernameIsValid,
-    validate: validateUsername,
-    reset: resetUsernameValidation,
-  } = useUsernameValidation(setError, clearErrors);
-
-  // tab switching — reset form + schema + username validation
   const handleTabChange = (tab: string) => {
     const nextTab = tab as any;
     setActiveTab(nextTab);
@@ -237,16 +188,16 @@ export default function TransferScreen() {
     );
   };
 
-  // re-validate username whenever it changes
   const username = watch("username");
   const amount = watch("amount") || 0;
   const assetId = watch("asset_id");
 
-  useEffect(() => {
-    validateUsername(username);
-  }, [username]);
+  const {
+    isChecking,
+    isValid: usernameIsValid,
+    reset: resetUsernameValidation,
+  } = useUsernameValidation(username, setError, clearErrors);
 
-  // wallets
   const userWallets: any[] = useMemo(() => {
     if (!wallets || wallets.length === 0) return [];
     return wallets
@@ -506,9 +457,7 @@ export default function TransferScreen() {
           )}
 
           <View style={{ marginVertical: 4 }}>
-            <AppText style={styles.label}>
-              Amount in {activeTab === "fiat" ? "Naira (₦)" : "Dollars (USD)"}
-            </AppText>
+            <AppText style={styles.label}>Amount</AppText>
             <Controller
               control={control}
               name="amount"
@@ -564,7 +513,7 @@ export default function TransferScreen() {
           </View>
         )}
 
-        {!exceedsDailyLimit && hasInsufficientBalance && (
+        {!exceedsDailyLimit && hasInsufficientBalance && !!assetId && (
           <View style={styles.warningContainer}>
             <AppText style={styles.warningText}>
               You do not have enough balance to complete this transfer.
@@ -661,7 +610,7 @@ const styles = StyleSheet.create({
   },
   form: { marginVertical: 10 },
   label: {
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     fontSize: normalize(18),
     marginBottom: 4,
   },
@@ -676,15 +625,15 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   dollarSign: {
-    fontSize: normalize(26),
+    fontSize: normalize(23),
     fontFamily: getFontFamily("700"),
     color: "#000",
     marginRight: normalize(5),
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(16),
-    fontSize: normalize(26),
+    paddingVertical: normalize(14),
+    fontSize: normalize(23),
     fontFamily: getFontFamily("700"),
     color: "#000",
     borderRadius: 10,

@@ -10,7 +10,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { formatAmount } from "../libs/formatNumber";
+import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { formatDate } from "../libs/formatDate";
 import { COLORS } from "../constants/colors";
 import { normalize, getFontFamily } from "../constants/settings";
@@ -90,13 +90,13 @@ const TransactionItem = ({ item }: any) => {
             {isCredit
               ? `+ ${
                   item?.medium.toUpperCase() === "CRYPTO"
-                    ? item?.amount.toString()
-                    : formatAmount(item?.amount)
+                    ? formatNumber(item?.amount)
+                    : formatAmount(item?.amount, { decimalPlace: 2 })
                 }`
               : `- ${
                   item?.medium.toUpperCase() === "CRYPTO"
-                    ? item?.amount.toString()
-                    : formatAmount(item?.amount)
+                    ? formatNumber(item?.amount)
+                    : formatAmount(item?.amount, { decimalPlace: 2 })
                 }`}
           </AppText>
         </View>

@@ -1,4 +1,4 @@
-import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
@@ -7,10 +7,13 @@ import { useAuthStore } from "../stores/authSlice";
 import ReturningUserLoginForm from "../components/forms/ReturningUserLoginForm";
 import { AppText } from "../components/AppText";
 import BiometricLoginButton from "../components/BiometricLoginBtn";
+import { useBiometricLogin } from "../hooks/useBiometricLogin";
+import { capitalizeFirst } from "../libs/helpers";
 
 export default function ReturningUserLoginScreen() {
   const navigation = useNavigation();
   const user = useAuthStore(state => state.user);
+  const { isReady } = useBiometricLogin();
 
   const handleNavigate = () => {
     navigation.navigate("SignIn" as never);
@@ -21,7 +24,10 @@ export default function ReturningUserLoginScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
-          <AppText style={styles.title}>Welcome Back, {user?.username}</AppText>
+          <AppText style={styles.title}>
+            Welcome Back,{" "}
+            {user?.username ? capitalizeFirst(user?.username) : ""}
+          </AppText>
           <AppText
             style={[
               styles.title,
@@ -36,7 +42,7 @@ export default function ReturningUserLoginScreen() {
         </View>
 
         <ReturningUserLoginForm />
-        {<BiometricLoginButton />}
+        {isReady && <BiometricLoginButton />}
 
         <View
           style={{
@@ -84,7 +90,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   title: {
-    fontSize: normalize(23),
+    fontSize: normalize(22),
     fontFamily: getFontFamily("800"),
   },
   highlight: {

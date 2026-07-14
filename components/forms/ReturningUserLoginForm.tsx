@@ -14,6 +14,8 @@ import useAxios from "../../hooks/useAxios";
 import { useAuthStore, useUser } from "../../stores/authSlice";
 import { OneSignal } from "react-native-onesignal";
 import { AppText } from "../AppText";
+import { useBiometricPromptStore } from "../../stores/biometricPromptSlice";
+import { refreshBiometricState } from "../../stores/biometricSlice";
 
 const loginSchema = yup.object().shape({
   password: yup.string().required("Password is required"),
@@ -56,6 +58,10 @@ const ReturningUserLoginForm: React.FC = () => {
 
       setToken(auth.accessToken, auth.refreshToken);
       setUser(user);
+
+      await useBiometricPromptStore.getState().hydrate();
+      await refreshBiometricState();
+
       setIsAuthenticated(true);
     } catch (err: any) {
       if (err instanceof AxiosError) {

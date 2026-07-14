@@ -1,28 +1,20 @@
 import React, { useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   Image,
-  Alert,
   ActivityIndicator,
   StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import {
-  CameraOptions,
-  launchCamera,
-  launchImageLibrary,
-} from "react-native-image-picker";
 import { showError, showSuccess } from "../utlis/toast";
 import TextInputField from "../components/TextInputField";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CardEdit } from "iconsax-react-nativejs";
 import { SelectInput } from "../components/SelectInputField";
 import { getFontFamily, normalize } from "../constants/settings";
 import CustomLoading from "../components/CustomLoading";
@@ -32,6 +24,7 @@ import PhoneNumberInputField from "../components/PhoneNumberInputField";
 import parsePhoneNumberFromString from "libphonenumber-js";
 import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
+import { DEFAULT_IMAGE } from "./SettingsScreen";
 
 const profileSchema = yup.object().shape({
   first_name: yup.string().required("First Name is required"),
@@ -136,52 +129,52 @@ export default function EditProfileScreen() {
     }
   };
 
-  const handleImagePick = async () => {
-    try {
-      const options: CameraOptions = {
-        mediaType: "photo",
-        includeBase64: false,
-        maxHeight: 2000,
-        maxWidth: 2000,
-      };
+  // const handleImagePick = async () => {
+  //   try {
+  //     const options: CameraOptions = {
+  //       mediaType: "photo",
+  //       includeBase64: false,
+  //       maxHeight: 2000,
+  //       maxWidth: 2000,
+  //     };
 
-      launchImageLibrary(options, response => {
-        if (response.didCancel) return;
-        if (response.errorCode)
-          return showError(response.errorMessage ?? "Failed to pick image");
+  //     launchImageLibrary(options, response => {
+  //       if (response.didCancel) return;
+  //       if (response.errorCode)
+  //         return showError(response.errorMessage ?? "Failed to pick image");
 
-        if (response.assets && response.assets[0].uri) {
-          // const uri = response.assets[0].uri;
-          // setImageUri(uri);
-        }
-      });
-    } catch (error) {
-      showError("Failed to pick image");
-    }
-  };
+  //       if (response.assets && response.assets[0].uri) {
+  //         // const uri = response.assets[0].uri;
+  //         // setImageUri(uri);
+  //       }
+  //     });
+  //   } catch (error) {
+  //     showError("Failed to pick image");
+  //   }
+  // };
 
-  const takePhoto = async () => {
-    try {
-      const options: CameraOptions = {
-        mediaType: "photo",
-        includeBase64: false,
-        saveToPhotos: true,
-        presentationStyle: "formSheet",
-      };
+  // const takePhoto = async () => {
+  //   try {
+  //     const options: CameraOptions = {
+  //       mediaType: "photo",
+  //       includeBase64: false,
+  //       saveToPhotos: true,
+  //       presentationStyle: "formSheet",
+  //     };
 
-      launchCamera(options, response => {
-        if (response.didCancel) return;
-        if (response.errorCode)
-          return showError(response.errorMessage ?? "Failed to take photo");
+  //     launchCamera(options, response => {
+  //       if (response.didCancel) return;
+  //       if (response.errorCode)
+  //         return showError(response.errorMessage ?? "Failed to take photo");
 
-        if (response.assets && response.assets[0].uri) {
-          // setImageUri(response.assets[0].uri);
-        }
-      });
-    } catch (error) {
-      showError("Failed to take photo");
-    }
-  };
+  //       if (response.assets && response.assets[0].uri) {
+  //         // setImageUri(response.assets[0].uri);
+  //       }
+  //     });
+  //   } catch (error) {
+  //     showError("Failed to take photo");
+  //   }
+  // };
 
   // const showImagePickerOptions = () => {
   //   Alert.alert("Update Profile Picture", "Choose an option", [
@@ -190,6 +183,8 @@ export default function EditProfileScreen() {
   //     { text: "Cancel", style: "cancel" },
   //   ]);
   // };
+
+  console.log(user);
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
@@ -200,17 +195,17 @@ export default function EditProfileScreen() {
       >
         <View style={styles.profilePictureSection}>
           <View>
-            <Image
-              source={
-                user?.profile_picture_url
-                  ? {
-                      uri: user?.profile_picture_url || undefined,
-                    }
-                  : require("../assets/avatar.png")
-              }
-              style={styles.profileImage}
-              resizeMode="center"
-            />
+            <View style={styles.imageWrapper}>
+              <Image
+                source={{
+                  uri: user?.selfie_url
+                    ? `data:image/png;base64,${user?.selfie_url}`
+                    : DEFAULT_IMAGE,
+                }}
+                style={styles.profileImage}
+                resizeMode="cover"
+              />
+            </View>
             {/* <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
@@ -238,12 +233,14 @@ export default function EditProfileScreen() {
             control={control}
             name="first_name"
             placeholder="Enter first name"
+            isEditable={false}
           />
           <TextInputField
             label="Last Name"
             control={control}
             name="last_name"
             placeholder="Enter last name"
+            isEditable={false}
           />
           <TextInputField
             label="Username"
@@ -265,6 +262,9 @@ export default function EditProfileScreen() {
             control={control}
             name="phone_number"
             placeholder="Enter your phone number"
+            containerStyle={{
+              marginTop: 5,
+            }}
           />
         </View>
 
@@ -286,11 +286,17 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "white" },
   scrollView: { flex: 1 },
   profilePictureSection: { alignItems: "center", padding: 20 },
-  profileImage: {
+  imageWrapper: {
     width: 70,
     height: 70,
-    borderRadius: 50,
-    backgroundColor: "#e7e7e7",
+    borderRadius: 2500,
+    marginRight: 12,
+    overflow: "hidden",
+    backgroundColor: "#f0f0f0",
+  },
+  profileImage: {
+    width: "100%",
+    height: "100%",
   },
   imageOverlay: {
     position: "absolute",

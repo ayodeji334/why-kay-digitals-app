@@ -34,7 +34,8 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="dark-content" />
+
       {error ? (
         <View style={styles.errorContainer}>
           <View style={styles.errorIconContainer}>
@@ -80,6 +81,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    paddingVertical: 20,
   },
   loaderContainer: {
     position: "absolute",
@@ -103,6 +105,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 30,
+    paddingVertical: 20,
   },
   errorIconContainer: {
     marginBottom: 20,
@@ -116,7 +119,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("400"),
     color: "#000",
     textAlign: "center",
     marginBottom: 20,

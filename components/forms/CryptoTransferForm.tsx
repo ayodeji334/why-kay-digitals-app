@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, StyleSheet, TextInput } from "react-native";
 import { Controller } from "react-hook-form";
 import TextInputField from "../TextInputField";
 import { SelectInput } from "../SelectInputField";
@@ -64,7 +64,7 @@ export function CryptoTransferForm({
       </View>
 
       <View style={{ marginVertical: 4 }}>
-        <AppText style={styles.label}>Amount </AppText>
+        <AppText style={styles.label}>Amount</AppText>
 
         <Controller
           control={control}
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   dollarSign: {
-    fontSize: 18,
+    fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
     color: "#333",
     marginRight: 8,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingVertical: normalize(16),
-    fontSize: normalize(26),
+    fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
     color: "#000",
   },

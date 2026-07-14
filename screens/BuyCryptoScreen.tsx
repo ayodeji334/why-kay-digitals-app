@@ -464,7 +464,10 @@ export default function CryptoBuyScreen() {
                 >
                   <AppText style={[styles.balance]}>Fiat Balance:</AppText>
                   <AppText style={styles.balance}>
-                    {formatAmount(fiatBalance, { currency: "NGN" })}
+                    {formatAmount(fiatBalance, {
+                      currency: "NGN",
+                      decimalPlace: 2,
+                    })}
                   </AppText>
                 </View>
 
@@ -518,6 +521,7 @@ export default function CryptoBuyScreen() {
                         {feeBreakdown.coinAmount} {assetDetails?.symbol} (≈{" "}
                         {formatAmount(feeBreakdown.grossUsd, {
                           currency: "USD",
+                          decimalPlace: 2,
                         })}
                         )
                       </AppText>
@@ -570,7 +574,7 @@ export default function CryptoBuyScreen() {
                       <AppText style={[styles.balance]}>
                         {formatAmount(
                           Number(feeBreakdown.totalCostUsd ?? 100),
-                          { currency: "USD", decimalPlace: 3 },
+                          { currency: "USD", decimalPlace: 4 },
                         )}
                       </AppText>
                     </View>

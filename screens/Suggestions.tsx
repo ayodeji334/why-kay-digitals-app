@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(18),
     color: "#111827",
     minHeight: 180,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: "#fff",
   },
   inputError: {
     borderColor: "#e10c0c",

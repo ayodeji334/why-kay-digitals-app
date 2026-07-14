@@ -131,7 +131,7 @@ const AssetsSection = () => {
                       <AppText style={styles.assetBalance}>
                         {formatAmount(
                           parseFloat(asset.market_current_value || 0),
-                          { currency: "USD", decimalPlace: 2 },
+                          { currency: "USD" },
                         )}
                       </AppText>
                       {asset?.price_status ? (

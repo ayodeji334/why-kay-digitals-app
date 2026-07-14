@@ -4,13 +4,13 @@ import { COLORS } from "../constants/colors";
 import LoginForm from "../components/forms/LoginForm";
 import { getFontFamily, normalize } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
-import { useAuthStore } from "../stores/authSlice";
 import { AppText } from "../components/AppText";
 import BiometricLoginButton from "../components/BiometricLoginBtn";
+import { useBiometricLogin } from "../hooks/useBiometricLogin";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
-  const user = useAuthStore(state => state.user);
+  const { isReady } = useBiometricLogin();
 
   const handleNavigate = () => {
     navigation.navigate("SignUp" as never);
@@ -36,7 +36,7 @@ export default function LoginScreen() {
 
         <LoginForm />
 
-        <BiometricLoginButton />
+        {isReady && <BiometricLoginButton />}
 
         <View
           style={{

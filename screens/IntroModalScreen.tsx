@@ -2,7 +2,6 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useRef, useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   Image,
   Pressable,
@@ -26,7 +25,7 @@ const slides = [
     highlight: "Your Gateway to Digital Wealth",
     subtitle:
       "Buy, sell, and manage cryptocurrencies with confidence. Pay utility bills, buy airtime, data and gift cards, and join thousands of users taking control of their financial future through smart, secure crypto investing.",
-    image: require("../assets/first-slider.png"),
+    image: require("../assets/first-slider.webp"),
   },
   {
     id: "2",
@@ -35,7 +34,7 @@ const slides = [
     highlight: "With Real Insights",
     subtitle:
       "Access real-time market data, price alerts, and intelligent tools designed to help you make better trading decisions anytime, anywhere.",
-    image: require("../assets/welcome-pattern.png"),
+    image: require("../assets/welcome-pattern.webp"),
   },
   {
     id: "3",
@@ -44,7 +43,7 @@ const slides = [
     highlight: "Priority",
     subtitle:
       "Your assets are protected with bank-grade encryption, multi-layer authentication, and advanced fraud detection — so you can trade with total peace of mind.",
-    image: require("../assets/security_illustration.png"),
+    image: require("../assets/security_illustration.webp"),
   },
 ];
 

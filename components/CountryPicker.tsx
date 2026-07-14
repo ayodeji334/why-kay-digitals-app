@@ -9,6 +9,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { CloseIcon } from "../assets";
 import { COLORS } from "../constants/colors";
@@ -18,15 +19,11 @@ import CustomIcon from "./CustomIcon";
 import { ArrowDown2 } from "iconsax-react-nativejs";
 import { Country, CountryPickerProps } from "../libs/types";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 const defaultGetCountryName = (country: Country): string => {
   if (!country.name) return country.cca2;
   if (typeof country.name === "string") return country.name;
   return country.name.common ?? country.name.official ?? country.cca2;
 };
-
-// ─── Country Row ─────────────────────────────────────────────────────────────
 
 interface CountryRowProps {
   item: Country;
@@ -74,9 +71,12 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
   label,
   placeholder = "Select country",
   error,
-  disabled = false,
   modalTitle = "Select Country",
   searchPlaceholder = "Search country...",
+  disabled = false,
+  loading = false,
+  loadingText = "Loading countries...",
+  emptyText = "No countries found",
   showCode = true,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -95,8 +95,8 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
   }, [searchText, countries, getCountryName]);
 
   const openModal = useCallback(() => {
-    if (!disabled) setModalVisible(true);
-  }, [disabled]);
+    if (!disabled && !loading) setModalVisible(true);
+  }, [disabled, loading]);
 
   const closeModal = useCallback(() => {
     setModalVisible(false);
@@ -116,7 +116,7 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
       {label && <AppText style={styles.label}>{label}</AppText>}
 
       {/* Selector box */}
-      <Pressable
+      {/* <Pressable
         hitSlop={100}
         style={[
           styles.selectorBox,
@@ -143,6 +143,41 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
           <AppText style={styles.placeholderText}>{placeholder}</AppText>
         )}
         <ArrowDown2 size={20} color="#374151" />
+      </Pressable> */}
+      <Pressable
+        hitSlop={100}
+        style={[
+          styles.selectorBox,
+          error && styles.errorBorder,
+          (disabled || loading) && styles.disabled,
+        ]}
+        onPress={openModal}
+      >
+        {loading ? (
+          <AppText style={styles.placeholderText}>{loadingText}</AppText>
+        ) : selectedCountry ? (
+          <View style={styles.selectorContent}>
+            {selectedCountry.flag && (
+              <Image
+                source={{ uri: selectedCountry.flag }}
+                style={styles.flagImage}
+                resizeMode="contain"
+              />
+            )}
+            <AppText style={styles.selectorText}>
+              {getCountryName(selectedCountry)}
+              {showCode ? `  (${selectedCountry.cca2})` : ""}
+            </AppText>
+          </View>
+        ) : (
+          <AppText style={styles.placeholderText}>{placeholder}</AppText>
+        )}
+
+        {loading ? (
+          <ActivityIndicator size="small" color={COLORS.primary} />
+        ) : (
+          <ArrowDown2 size={20} color="#374151" />
+        )}
       </Pressable>
 
       {error && <AppText style={styles.errorText}>{error}</AppText>}
@@ -188,7 +223,7 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
             />
 
             {/* List */}
-            <FlatList
+            {/* <FlatList
               data={filteredCountries}
               keyExtractor={item => item.cca2}
               renderItem={({ item }) => (
@@ -199,6 +234,47 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
                   isSelected={selectedCountry?.cca2 === item.cca2}
                 />
               )}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              initialNumToRender={20}
+              maxToRenderPerBatch={30}
+              windowSize={10}
+              getItemLayout={(_, index) => ({
+                length: 53,
+                offset: 53 * index,
+                index,
+              })}
+            /> */}
+
+            <FlatList
+              data={loading ? [] : filteredCountries}
+              keyExtractor={item => item.cca2}
+              renderItem={({ item }) => (
+                <CountryRow
+                  item={item}
+                  getCountryName={getCountryName}
+                  onPress={handleSelect}
+                  isSelected={selectedCountry?.cca2 === item.cca2}
+                />
+              )}
+              ListEmptyComponent={
+                <View style={styles.listState}>
+                  {loading ? (
+                    <>
+                      <ActivityIndicator size="small" color={COLORS.primary} />
+                      <AppText style={styles.listStateText}>
+                        {loadingText}
+                      </AppText>
+                    </>
+                  ) : (
+                    <AppText style={styles.listStateText}>
+                      {searchText.trim()
+                        ? "No match for your search"
+                        : emptyText}
+                    </AppText>
+                  )}
+                </View>
+              }
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
               initialNumToRender={20}
@@ -226,6 +302,16 @@ const styles = StyleSheet.create({
     fontSize: normalize(18),
     marginBottom: 6,
     color: "#000",
+  },
+  listState: {
+    paddingVertical: 32,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  listStateText: {
+    marginTop: 8,
+    color: "#838383",
+    fontSize: normalize(18),
   },
   selectorBox: {
     flexDirection: "row",

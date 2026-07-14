@@ -82,7 +82,7 @@ const CustomHeader: React.FC<Props> = ({
           onPress={() => navigation.goBack()}
           style={styles.backBtn}
         >
-          <ArrowLeft2 size={20} />
+          <ArrowLeft2 size={normalize(23)} />
         </TouchableOpacity>
       ) : (
         <View style={{ width: 24 }} />

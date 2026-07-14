@@ -10,6 +10,8 @@ import { queryClient } from "./libs/queryClient";
 import { OneSignal, LogLevel } from "react-native-onesignal";
 import { Text, TextInput } from "react-native";
 import { ONE_SIGNAL_ID } from "./config";
+import { refreshBiometricState } from "./stores/biometricSlice";
+import { useBiometricPromptStore } from "./stores/biometricPromptSlice";
 
 // remove logs from production build
 if (!__DEV__) {
@@ -50,22 +52,54 @@ const styles = StyleSheet.create({
   },
 });
 
+// function MainApp() {
+//   const [isLoading, setIsLoading] = useState(true);
+//   const initializeAuth = useAuthStore(state => state.initializeAuth);
+
+//   useEffect(() => {
+//     const initializeApp = async () => {
+//       await initializeAuth();
+//       setIsLoading(false);
+//     };
+
+//     initializeApp();
+//   }, [initializeAuth]);
+
+//   if (isLoading) {
+//     return <SplashScreen />;
+//   }
+
+//   return (
+//     <SafeAreaProvider>
+//       <View style={styles.container}>
+//         <NavigationRoot />
+//       </View>
+//     </SafeAreaProvider>
+//   );
+// }
+
 function MainApp() {
   const [isLoading, setIsLoading] = useState(true);
   const initializeAuth = useAuthStore(state => state.initializeAuth);
 
   useEffect(() => {
     const initializeApp = async () => {
+      // Auth first — the prompt store keys off user.uuid, so it can't
+      // hydrate until the user record is in the store.
       await initializeAuth();
+
+      await Promise.all([
+        refreshBiometricState(),
+        useBiometricPromptStore.getState().hydrate(),
+      ]);
+
       setIsLoading(false);
     };
 
     initializeApp();
   }, [initializeAuth]);
 
-  if (isLoading) {
-    return <SplashScreen />;
-  }
+  if (isLoading) return <SplashScreen />;
 
   return (
     <SafeAreaProvider>

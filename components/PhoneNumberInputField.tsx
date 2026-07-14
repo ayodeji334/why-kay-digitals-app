@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
-  Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
@@ -15,16 +14,15 @@ import { Controller, Control, UseFormTrigger } from "react-hook-form";
 import { getFontFamily, normalize } from "../constants/settings";
 import { CountryCode, parsePhoneNumberFromString } from "libphonenumber-js";
 import {
-  getAllCountries,
   Country,
   CountryCode as CountryCodeR,
-  FlagType,
   TranslationLanguageCodeMap,
 } from "react-native-country-picker-modal";
 import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
+import { getCachedCountries, loadCountries } from "../libs/countries";
 
 interface Props {
   control: Control<any>;
@@ -58,10 +56,13 @@ const PhoneNumberInputField: React.FC<Props> = ({
   onChangeText,
   defaultCountryCode = "NG",
 }) => {
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
+
+  const [countries, setCountries] = useState<Country[]>(
+    () => getCachedCountries() ?? [],
+  );
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
 
   const getCountryName = (country: Country): string => {
     if (typeof country.name === "string") return country.name;
@@ -72,15 +73,20 @@ const PhoneNumberInputField: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    const loadCountries = async () => {
-      const allCountries = await getAllCountries(FlagType.FLAT);
-      setCountries(allCountries);
-      const defaultCountry = allCountries.find(
-        c => c.cca2 === defaultCountryCode,
-      );
-      if (defaultCountry) setSelectedCountry(defaultCountry);
+    let cancelled = false;
+
+    loadCountries()
+      .then(all => {
+        if (cancelled) return;
+        setCountries(all);
+        const def = all.find(c => c.cca2 === defaultCountryCode);
+        if (def) setSelectedCountry(def);
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
     };
-    loadCountries();
   }, [defaultCountryCode]);
 
   const filteredCountries = useMemo(() => {

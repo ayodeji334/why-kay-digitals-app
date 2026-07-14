@@ -1116,7 +1116,7 @@ const TransactionDetailScreen = () => {
   const StatusIcon = ({ size = 60 }: { size?: number }) =>
     isSuccess ? (
       <Image
-        source={require("../assets/success.png")}
+        source={require("../assets/success.webp")}
         style={{ width: size + 10, height: size + 10, resizeMode: "contain" }}
       />
     ) : (
@@ -1309,7 +1309,7 @@ const TransactionDetailScreen = () => {
     await ShareLib.open({
       url: `data:application/pdf;base64,${base64}`,
       type: "application/pdf",
-      filename: `receipt-${transaction?.uuid?.replace(/-/g, "")}`,
+      filename: `Transaction-Receipt:${transaction?.uuid?.replace(/-/g, "")}`,
       title: "Transaction Receipt",
       failOnCancel: false,
     });
@@ -1581,7 +1581,7 @@ const TransactionDetailScreen = () => {
         >
           <TouchableOpacity activeOpacity={1} style={styles.modalSheet}>
             <View style={styles.modalHandle} />
-            <AppText style={styles.modalTitle}>Share receipt as</AppText>
+            <AppText style={styles.modalTitle}>Share receipt</AppText>
 
             <TouchableOpacity
               hitSlop={10}
@@ -1589,11 +1589,11 @@ const TransactionDetailScreen = () => {
               activeOpacity={0.8}
               onPress={() => handleFormatSelected("pdf")}
             >
-              <View style={styles.formatBadge}>
+              {/* <View style={styles.formatBadge}>
                 <AppText style={styles.formatBadgeText}>PDF</AppText>
-              </View>
+              </View> */}
               <View style={styles.formatTextWrap}>
-                <AppText style={styles.formatTitle}>PDF Document</AppText>
+                <AppText style={styles.formatTitle}>Share as PDF</AppText>
                 <AppText style={styles.formatHint}>
                   Best for records, email and printing
                 </AppText>
@@ -1607,11 +1607,11 @@ const TransactionDetailScreen = () => {
               activeOpacity={0.8}
               onPress={() => handleFormatSelected("image")}
             >
-              <View style={[styles.formatBadge, styles.formatBadgeAlt]}>
+              {/* <View style={[styles.formatBadge, styles.formatBadgeAlt]}>
                 <AppText style={styles.formatBadgeText}>IMG</AppText>
-              </View>
+              </View> */}
               <View style={styles.formatTextWrap}>
-                <AppText style={styles.formatTitle}>Image (PNG)</AppText>
+                <AppText style={styles.formatTitle}>Share as image</AppText>
                 <AppText style={styles.formatHint}>
                   Quick preview, easy to share on chat apps
                 </AppText>
@@ -1821,8 +1821,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#eeeeee",
   },
-
-  /* ============ Format picker modal ============ */
   modalBackdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.45)",
@@ -1840,12 +1838,12 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#E5E7EB",
+    backgroundColor: "#fff",
     alignSelf: "center",
     marginBottom: 12,
   },
   modalTitle: {
-    fontSize: normalize(19),
+    fontSize: normalize(20),
     fontFamily: getFontFamily("800"),
     color: "#000",
     marginBottom: 14,
@@ -1858,20 +1856,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#EDEDED",
-    backgroundColor: "#FAFAFA",
+    borderColor: "#659e5f",
+    backgroundColor: "#ffffff",
     marginBottom: 10,
   },
   formatBadge: {
     width: 46,
     height: 46,
     borderRadius: 12,
-    backgroundColor: `${COLORS.primary}15`,
+    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
   },
   formatBadgeAlt: {
-    backgroundColor: "#FFF4E0",
+    backgroundColor: "#ffffff",
   },
   formatBadgeText: {
     fontSize: normalize(16),
@@ -1884,7 +1882,7 @@ const styles = StyleSheet.create({
   },
   formatTitle: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
+    fontFamily: getFontFamily("700"),
     color: "#000",
   },
   formatHint: {
@@ -1898,15 +1896,14 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#cccccc",
   },
   modalCancelText: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
     color: "#374151",
   },
 
-  /* ============ Receipt card (the exported PNG) ============ */
   receiptOffscreen: {
     position: "absolute",
     top: -10000,

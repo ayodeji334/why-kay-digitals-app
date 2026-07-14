@@ -150,7 +150,7 @@ const BankTransferScreen = () => {
               <AppText style={styles.detailLabel}>Bank Name</AppText>
               <View style={styles.copyableField}>
                 <AppText style={styles.detailValue}>
-                  Blooms or Boost Micro finance bank ( Blooms or Boost MFB )
+                  Boost Microfinance Bank ( Boost MFB )
                 </AppText>
               </View>
             </View>

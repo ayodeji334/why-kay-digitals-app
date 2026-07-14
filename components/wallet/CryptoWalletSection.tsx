@@ -209,7 +209,7 @@ const CryptoWalletSection = () => {
               >
                 <TouchableOpacity
                   onPress={() => refetch()}
-                  activeOpacity={0.68}
+                  activeOpacity={0.78}
                   style={styles.generateButton}
                 >
                   <Refresh2 color="black" size={12} />
@@ -592,7 +592,10 @@ const AssetItem = React.memo(({ asset, onPress }: any) => (
     <View style={styles.assetRight}>
       <AppText style={styles.assetPrice}>{asset.balance}</AppText>
       <AppText style={[styles.assetPrice, { fontSize: 15 }]}>
-        {formatAmount(asset.balance * asset.price, { currency: "USD" })}
+        {formatAmount(asset.balance * asset.price, {
+          currency: "USD",
+          decimalPlace: 2,
+        })}
       </AppText>
     </View>
   </TouchableOpacity>

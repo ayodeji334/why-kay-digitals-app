@@ -333,7 +333,7 @@ export default function CryptoSwapScreen() {
                 {" ≈ "}
                 {formatAmount(price * balance, {
                   currency: "USD",
-                  decimalPlace: 5,
+                  decimalPlace: 2,
                 })}
               </AppText>
             </View>
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
+    fontFamily: getFontFamily("800"),
     marginBottom: normalize(8),
   },
   inputContainer: {
@@ -480,15 +480,15 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   dollarSign: {
-    fontSize: normalize(26),
-    fontFamily: getFontFamily("700"),
+    fontSize: normalize(23),
+    fontFamily: getFontFamily("800"),
     color: "#000",
     marginRight: normalize(5),
   },
   input: {
     flex: 1,
     paddingVertical: normalize(16),
-    fontSize: normalize(26),
+    fontSize: normalize(22),
     fontFamily: getFontFamily("700"),
     color: "#000",
   },
@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
   warningText: {
     color: "#db0b0bff",
     fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
+    fontFamily: getFontFamily("700"),
     textAlign: "center",
   },
 });

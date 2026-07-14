@@ -42,28 +42,19 @@ export interface Country {
 }
 
 export interface CountryPickerProps {
-  /** Currently selected country */
   value?: Country;
-  /** Called when user selects a country */
   onChange: (country: Country) => void;
-  /** List of countries to populate the picker */
   countries: Country[];
-  /** Derive a display name from a Country object */
   getCountryName?: (country: Country) => string;
-  /** Pre-selected country on mount */
   defaultCountry?: Country;
-  /** Label rendered above the selector */
   label?: string;
-  /** Placeholder text when nothing is selected */
   placeholder?: string;
-  /** Validation error message */
   error?: string;
-  /** Disable the picker */
-  disabled?: boolean;
-  /** Modal title */
   modalTitle?: string;
-  /** Search input placeholder */
   searchPlaceholder?: string;
-  /** Show the short country code (cca2) inside the selector box */
   showCode?: boolean;
+  disabled?: boolean;
+  loading?: boolean;
+  loadingText?: string;
+  emptyText?: string;
 }

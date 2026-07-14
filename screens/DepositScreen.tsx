@@ -110,7 +110,10 @@ const DepositScreen = () => {
             ) : (
               amount && (
                 <AppText style={styles.amountDisplay}>
-                  {formatAmount(parseFloat(amount), { currency: "USD" })}
+                  {formatAmount(parseFloat(amount), {
+                    currency: "USD",
+                    decimalPlace: 2,
+                  })}
                 </AppText>
               )
             )}

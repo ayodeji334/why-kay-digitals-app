@@ -62,10 +62,10 @@ export default function DeleteAccountScreen() {
         removeItem("refresh_token");
         removeItem("user");
         setIsAuthenticated(false);
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "SignIn" as never }],
-        });
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{ name: "SignIn" as never }],
+        // });
       } else {
         showError(response.data?.message || "Failed to delete your account");
       }

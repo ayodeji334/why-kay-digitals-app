@@ -11,7 +11,6 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getAllCountries, FlagType } from "react-native-country-picker-modal";
 import { useEffect } from "react";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
@@ -19,6 +18,8 @@ import { AppText } from "../components/AppText";
 import CountryPicker from "../components/CountryPicker";
 import useAxios from "../hooks/useAxios";
 import { Country } from "../libs/types";
+import { getCachedCountries, loadCountries } from "../libs/countries";
+import { useCountries } from "../hooks/useCountries";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -26,18 +27,41 @@ export default function BrandsScreen() {
   const navigation = useNavigation<any>();
   const { apiGet } = useAxios();
 
-  const [countries, setCountries] = useState<Country[]>([]);
+  // const [countries, setCountries] = useState<Country[]>(
+  //   () => getCachedCountries() ?? [],
+  // );
   const [selectedCountry, setSelectedCountry] = useState<Country | undefined>();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  const {
+    data: countries = [],
+    isPending: countriesLoading,
+    isError: countriesError,
+  } = useCountries();
+
   useEffect(() => {
-    (async () => {
-      const all = await getAllCountries(FlagType.FLAT);
-      setCountries(all);
-      setSelectedCountry(all.find(c => c.cca2 === "US"));
-    })();
-  }, []);
+    if (!selectedCountry && countries.length) {
+      setSelectedCountry(countries.find(c => c.cca2 === "US"));
+    }
+  }, [countries, selectedCountry]);
+
+  // useEffect(() => {
+  //   let cancelled = false;
+
+  //   loadCountries()
+  //     .then(all => {
+  //       if (cancelled) return;
+  //       setCountries(all);
+  //       const def = all.find(c => c.cca2 === "US");
+  //       if (def) setSelectedCountry(def);
+  //     })
+  //     .catch(() => {});
+
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 400);
@@ -152,12 +176,23 @@ export default function BrandsScreen() {
       <View style={styles.container}>
         <View style={styles.filterRow}>
           <View style={styles.countryPickerWrap}>
-            <CountryPicker
+            {/* <CountryPicker
               countries={countries}
               value={selectedCountry}
               onChange={setSelectedCountry}
               placeholder="Select country"
               showCode
+            /> */}
+            <CountryPicker
+              countries={countries}
+              value={selectedCountry}
+              onChange={setSelectedCountry}
+              loading={isLoading}
+              emptyText={
+                isError
+                  ? "Couldn't load countries. Check your connection."
+                  : "No countries found"
+              }
             />
           </View>
         </View>

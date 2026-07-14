@@ -33,7 +33,7 @@ export default function AppTabs() {
         },
         tabBarLabelStyle: {
           fontFamily: getFontFamily(700),
-          fontSize: normalize(16),
+          fontSize: normalize(17),
         },
       }}
     >
