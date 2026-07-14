@@ -78,11 +78,13 @@ const HomeScreen = () => {
               onPress={() => navigation.navigate("Profile" as never)}
             >
               <Image
-                source={{
-                  uri: user?.selfie_url
-                    ? `data:image/png;base64,${user?.selfie_url}`
-                    : DEFAULT_IMAGE,
-                }}
+                source={
+                  user?.selfie_url
+                    ? {
+                        uri: `data:image/png;base64,${user?.selfie_url}`,
+                      }
+                    : DEFAULT_IMAGE
+                }
                 style={styles.profileImage}
                 resizeMode="cover"
               />

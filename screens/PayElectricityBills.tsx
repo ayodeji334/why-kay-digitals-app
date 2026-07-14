@@ -1056,7 +1056,6 @@ export default function PayElectricityBillsScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Provider */}
         <SelectInput
           control={control}
           name="provider"

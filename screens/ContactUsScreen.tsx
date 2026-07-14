@@ -118,19 +118,19 @@ const HelpSupportScreen: React.FC = () => {
   };
 
   const handleEmail = () => {
-    Linking.openURL("mailto:support@whjkaydigitals.com");
+    Linking.openURL("mailto:support@whykay.net");
   };
 
   const handleInstagram = () => {
-    Linking.openURL("https://instagram.com/whjkaydigital");
+    Linking.openURL("https://instagram.com/whykay");
   };
 
   const handleFacebook = () => {
-    Linking.openURL("https://facebook.com/whjkaydigitals");
+    Linking.openURL("https://facebook.com/whykays");
   };
 
   const handleWebsite = () => {
-    Linking.openURL("https://www.whjkay.net");
+    Linking.openURL("https://www.whykay.net");
   };
 
   return (
@@ -164,7 +164,7 @@ const HelpSupportScreen: React.FC = () => {
         />
         <MenuItem
           title="Email"
-          subtitle="Support@whjkaydigitals.com"
+          subtitle="support@whykay.net"
           onPress={handleEmail}
           IconComponent={Sms}
         />
@@ -173,19 +173,19 @@ const HelpSupportScreen: React.FC = () => {
       <Section title="CONNECT WITH US">
         <MenuItem
           title="Instagram"
-          subtitle="@whjkaydigital"
+          subtitle="@whykay"
           onPress={handleInstagram}
           IconComponent={Instagram}
         />
         <MenuItem
           title="Facebook"
-          subtitle="@whjkaydigitals"
+          subtitle="@whykay"
           onPress={handleFacebook}
           IconComponent={Facebook}
         />
         <MenuItem
           title="Website"
-          subtitle="www.whjkay.net"
+          subtitle="www.whykay.net"
           onPress={handleWebsite}
           IconComponent={Global}
         />

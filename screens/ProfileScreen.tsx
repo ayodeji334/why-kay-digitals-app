@@ -86,11 +86,13 @@ export default function ProfileScreen() {
         <View style={styles.profileHeader}>
           <View style={styles.imageWrapper}>
             <Image
-              source={{
-                uri: userData?.selfie_url
-                  ? `data:image/png;base64,${userData?.selfie_url}`
-                  : DEFAULT_IMAGE,
-              }}
+              source={
+                userData?.selfie_url
+                  ? {
+                      uri: `data:image/png;base64,${userData?.selfie_url}`,
+                    }
+                  : DEFAULT_IMAGE
+              }
               style={styles.profileImage}
               resizeMode="cover"
             />
