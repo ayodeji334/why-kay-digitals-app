@@ -983,6 +983,7 @@ import {
   TouchableOpacity,
   Image,
   Modal,
+  LayoutChangeEvent,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
@@ -1003,6 +1004,8 @@ import { AppText } from "../components/AppText";
 import { captureRef } from "react-native-view-shot";
 import ShareLib from "react-native-share";
 import { CardPatternBackground } from "./WalletAddress";
+import { useAuthStore } from "../stores/authSlice";
+import { generatePDF } from "react-native-html-to-pdf";
 
 const APP_NAME = "WHYKAY APP";
 const RECEIPT_CARD_WIDTH = 340;
@@ -1092,11 +1095,14 @@ function isGiftCardWithVouchers(transaction: any): boolean {
 const TransactionDetailScreen = () => {
   const navigation: any = useNavigation();
   const route = useRoute();
-  const { apiGet } = useAxios();
+  // const { apiGet } = useAxios();
   const { transaction }: any = route.params;
   const [isDownloading, setIsDownloading] = useState(false);
   const [formatModalVisible, setFormatModalVisible] = useState(false);
   const receiptCardRef = useRef<View>(null);
+  const user = useAuthStore(state => state.user);
+
+  console.log(transaction);
 
   const isSuccess = useMemo(
     () => transaction?.status?.toLowerCase() === "successful",
@@ -1109,6 +1115,17 @@ const TransactionDetailScreen = () => {
       transaction?.status?.toLowerCase() === "pending",
     [transaction?.status],
   );
+
+  const [receiptSize, setReceiptSize] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  // attach to the receipt card's onLayout so we know its rendered pixel size
+  const handleReceiptLayout = (e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    setReceiptSize({ width, height });
+  };
 
   const hasVouchers = isGiftCardWithVouchers(transaction);
   const vouchers: Voucher[] = transaction?.meta?.vouchers ?? [];
@@ -1290,30 +1307,113 @@ const TransactionDetailScreen = () => {
   /* ---------------- Sharing ---------------- */
 
   const shareAsPdf = async () => {
-    // 1. Fetch the PDF from the backend as a blob
-    const response = await apiGet(
-      `/transactions/${transaction.uuid}/download-receipt`,
-      { responseType: "blob" },
-    );
-
-    // 2. Blob → base64 via FileReader
-    const base64: string = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve((reader.result as string).split(",")[1]);
-      reader.onerror = () => reject(new Error("FileReader failed"));
-      reader.readAsDataURL(response.data);
+    // 1. Snapshot the same off-screen receipt card used for shareAsImage,
+    // as base64 so it can be embedded directly in the HTML (no filesystem
+    // path juggling across platforms).
+    const base64Image = await captureRef(receiptCardRef, {
+      format: "png",
+      quality: 1,
+      result: "base64",
     });
 
-    // 3. react-native-share handles base64 data URIs on BOTH platforms
-    //    (the old built-in Share approach only worked on iOS)
+    // 2. Wrap it in a single <img>, sized to fill one page with no margins.
+    const html = `
+    <html>
+      <body style="margin:0;padding:0;">
+        <img
+          src="data:image/png;base64,${base64Image}"
+          style="width:100%;height:100%;display:block;"
+        />
+      </body>
+    </html>
+  `;
+
+    const filename = `Transaction-Receipt-${transaction?.uuid?.replace(
+      /-/g,
+      "",
+    )}`;
+
+    // 3. Match the PDF page size to the receipt card's own aspect ratio so
+    // the whole thing renders on one page without being cropped or padded.
+    const pdf = await generatePDF({
+      html,
+      fileName: filename,
+      base64: false,
+      width: receiptSize?.width ?? 375,
+      height: receiptSize?.height ?? 700,
+      padding: 0,
+    });
+
+    console.log(pdf);
+
+    // 4. Share the generated PDF file
     await ShareLib.open({
-      url: `data:application/pdf;base64,${base64}`,
+      url: `file://${pdf.filePath}`,
       type: "application/pdf",
-      filename: `Transaction-Receipt:${transaction?.uuid?.replace(/-/g, "")}`,
+      filename: `${filename}.pdf`,
       title: "Transaction Receipt",
       failOnCancel: false,
     });
   };
+
+  // const shareAsPdf = async () => {
+  //   // 1. Fetch the PDF from the backend as a blob
+  //   const response = await apiGet(
+  //     `/transactions/${transaction.uuid}/download-receipt`,
+  //     { responseType: "blob" },
+  //   );
+
+  //   // 2. Blob → base64 via FileReader
+  //   const base64: string = await new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.onload = () => resolve((reader.result as string).split(",")[1]);
+  //     reader.onerror = () => reject(new Error("FileReader failed"));
+  //     reader.readAsDataURL(response.data);
+  //   });
+
+  //   // 3. react-native-share handles base64 data URIs on BOTH platforms
+  //   //    (the old built-in Share approach only worked on iOS)
+  //   await ShareLib.open({
+  //     url: `data:application/pdf;base64,${base64}`,
+  //     type: "application/pdf",
+  //     // Must end in .pdf — the extension is what tells "Save to Files"/other
+  //     // targets what kind of file this is. Also avoid ":" — it's an invalid
+  //     // filename character on iOS/Android and can get silently stripped or
+  //     // cause the save to fail/produce an unopenable file.
+  //     filename: `Transaction-Receipt-${transaction?.uuid?.replace(
+  //       /-/g,
+  //       "",
+  //     )}.pdf`,
+  //     title: "Transaction Receipt",
+  //     failOnCancel: false,
+  //   });
+  // };
+
+  // const shareAsPdf = async () => {
+  //   // 1. Fetch the PDF from the backend as a blob
+  //   const response = await apiGet(
+  //     `/transactions/${transaction.uuid}/download-receipt`,
+  //     { responseType: "blob" },
+  //   );
+
+  //   // 2. Blob → base64 via FileReader
+  //   const base64: string = await new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.onload = () => resolve((reader.result as string).split(",")[1]);
+  //     reader.onerror = () => reject(new Error("FileReader failed"));
+  //     reader.readAsDataURL(response.data);
+  //   });
+
+  //   // 3. react-native-share handles base64 data URIs on BOTH platforms
+  //   //    (the old built-in Share approach only worked on iOS)
+  //   await ShareLib.open({
+  //     url: `data:application/pdf;base64,${base64}`,
+  //     type: "application/pdf",
+  //     filename: `Transaction-Receipt:${transaction?.uuid?.replace(/-/g, "")}`,
+  //     title: "Transaction Receipt",
+  //     failOnCancel: false,
+  //   });
+  // };
 
   const shareAsImage = async () => {
     // Snapshot the off-screen receipt card as a PNG file
@@ -1530,13 +1630,60 @@ const TransactionDetailScreen = () => {
             </>
           )}
 
+          {transaction?.category === "GIFT_CARD" &&
+            transaction?.meta?.is_for_friend && (
+              <>
+                <DetailRow
+                  label="Recipient Name"
+                  value={`${transaction?.meta?.recipient?.firstName} ${transaction?.meta?.recipient?.lastName}`}
+                />
+                <DetailRow
+                  label="Recipient Email"
+                  value={transaction?.meta?.recipient?.email}
+                />
+                <DetailRow
+                  label="Recipient Phone Number"
+                  value={transaction?.meta?.recipient?.phone}
+                />
+              </>
+            )}
+
+          {["FIAT_TRANSFER", "CRYPTO_TRANSFER"].includes(
+            transaction?.category,
+          ) && (
+            <>
+              {transaction?.meta?.sender_id && (
+                <DetailRow
+                  label={
+                    user?.uuid === transaction?.meta?.sender_id
+                      ? "Recipient Name"
+                      : "Sender Name"
+                  }
+                  value={
+                    user?.uuid === transaction?.meta?.sender_id
+                      ? transaction?.meta?.receiver_username
+                      : transaction?.meta?.sender_username
+                  }
+                />
+              )}
+            </>
+          )}
+
           {transaction?.status.toUpperCase() !== "FAILED" && (
             <DetailRow label="Description" value={transaction?.description} />
           )}
+
           <DetailRow
             label="Occurred At"
             value={
               transaction?.occurred_at && formatDate(transaction?.occurred_at)
+            }
+          />
+
+          <DetailRow
+            label="Confirmed At"
+            value={
+              transaction?.confirmed_at && formatDate(transaction?.confirmed_at)
             }
           />
         </View>
@@ -1678,6 +1825,12 @@ const TransactionDetailScreen = () => {
           </View> */}
         </View>
       </View>
+      <View
+        ref={receiptCardRef}
+        collapsable={false}
+        style={styles.receiptCard}
+        onLayout={handleReceiptLayout}
+      ></View>
     </SafeAreaView>
   );
 };

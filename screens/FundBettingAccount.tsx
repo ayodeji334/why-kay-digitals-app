@@ -24,6 +24,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { AppText } from "../components/AppText";
+import { useFiatBalance } from "../hooks/useFiatBalance";
+import { formatAmount } from "../libs/formatNumber";
 
 interface BettingProvider {
   biller_id: string;
@@ -110,6 +112,7 @@ export default function FundBettingAccountScreen() {
   const [customerValid, setCustomerValid] = useState(false);
   const [userDetail, setUserDetail] = useState<any>(null);
   const [hasFiredValidation, setHasFiredValidation] = useState(false);
+  const { fiatBalance } = useFiatBalance();
 
   const {
     control,
@@ -127,6 +130,7 @@ export default function FundBettingAccountScreen() {
 
   const providerCode = watch("provider");
   const customerId = watch("customer_id");
+  const amount = watch("amount");
 
   // Queries
   const {
@@ -335,6 +339,11 @@ export default function FundBettingAccountScreen() {
     },
   );
 
+  const hasInsufficientBalance = useMemo(() => {
+    const numericBalance = parseFloat(fiatBalance);
+    return !!amount && !isNaN(numericBalance) && amount > numericBalance;
+  }, [amount, fiatBalance]);
+
   const isDisabled =
     !isValid || !customerValid || validatingCustomer || isSubmitting;
 
@@ -359,6 +368,7 @@ export default function FundBettingAccountScreen() {
               : "Select betting provider"
           }
           options={providerOptions}
+          loading={isLoadingProviders}
           onChange={handleProviderChange}
         />
 
@@ -434,6 +444,21 @@ export default function FundBettingAccountScreen() {
             </AppText>
           )}
         </View>
+
+        <View style={styles.balanceCard}>
+          <AppText style={styles.balanceLabel}>
+            Wallet Balance: {formatAmount(fiatBalance ?? 0)}
+          </AppText>
+        </View>
+
+        {hasInsufficientBalance && (
+          <View style={styles.warningContainer}>
+            <AppText style={styles.warningText}>
+              Insufficent Balance. You do not have enough money in your fiat
+              wallet to complete this transaction.
+            </AppText>
+          </View>
+        )}
 
         <SaveAsBeneficiarySwitch
           value={saveBeneficiary}
@@ -533,6 +558,22 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: getFontFamily("700"),
     color: "#000",
+  },
+  balanceCard: {
+    // backgroundColor: COLORS.secondary + "15",
+    // borderRadius: 12,
+    paddingHorizontal: normalize(10),
+    paddingVertical: normalize(9),
+  },
+  balanceLabel: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    color: "#000000",
+    marginBottom: 4,
+  },
+  balanceValue: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("900"),
   },
   button: {
     backgroundColor: COLORS.secondary,

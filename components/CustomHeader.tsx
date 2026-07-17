@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     textAlign: "center",
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     paddingVertical: 18,
   },

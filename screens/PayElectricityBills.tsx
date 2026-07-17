@@ -642,6 +642,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { AppText } from "../components/AppText";
+import { useFiatBalance } from "../hooks/useFiatBalance";
+import { formatAmount } from "../libs/formatNumber";
 
 interface ElectricityProvider {
   biller_code: string;
@@ -803,6 +805,8 @@ export default function PayElectricityBillsScreen() {
 
   const meterNumber = useWatch({ control, name: "meter_number" });
   const providerCode = useWatch({ control, name: "provider" });
+  const amount = useWatch({ control, name: "amount" });
+  const { fiatBalance } = useFiatBalance();
 
   const {
     data: providers = [],
@@ -1044,7 +1048,17 @@ export default function PayElectricityBillsScreen() {
     },
   );
 
-  const isDisabled = !isValid || !meterValid || validatingMeter || isSubmitting;
+  const hasInsufficientBalance = useMemo(() => {
+    const numericBalance = parseFloat(fiatBalance);
+    return !!amount && !isNaN(numericBalance) && amount > numericBalance;
+  }, [amount, fiatBalance]);
+
+  const isDisabled =
+    !isValid ||
+    !meterValid ||
+    validatingMeter ||
+    isSubmitting ||
+    hasInsufficientBalance;
 
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
@@ -1133,6 +1147,20 @@ export default function PayElectricityBillsScreen() {
             </AppText>
           )}
         </View>
+        <View style={styles.balanceCard}>
+          <AppText style={styles.balanceLabel}>
+            Wallet Balance: {formatAmount(fiatBalance ?? 0)}
+          </AppText>
+        </View>
+
+        {hasInsufficientBalance && (
+          <View style={styles.warningContainer}>
+            <AppText style={styles.warningText}>
+              Insufficent Balance. You do not have enough money in your fiat
+              wallet to complete this transaction.
+            </AppText>
+          </View>
+        )}
 
         <SaveAsBeneficiarySwitch
           value={saveBeneficiary}
@@ -1236,6 +1264,22 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start",
     gap: 5,
+  },
+  balanceCard: {
+    // backgroundColor: COLORS.secondary + "15",
+    // borderRadius: 12,
+    paddingHorizontal: normalize(10),
+    paddingVertical: normalize(9),
+  },
+  balanceLabel: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    color: "#000000",
+    marginBottom: 4,
+  },
+  balanceValue: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("900"),
   },
   warningContainer: {
     marginVertical: 12,

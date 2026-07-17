@@ -39,8 +39,13 @@ const BankTransferScreen = () => {
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["userBankAccounts"],
     queryFn: async () => {
-      const response = await apiGet(`/users/user/virtual-account`);
-      return response.data.data || {};
+      try {
+        const response = await apiGet(`/users/user/virtual-account`);
+        return response.data.data || {};
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
     },
     enabled:
       user?.bvn_verification_status &&
@@ -271,11 +276,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   emptyDescription: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
     color: "black",
     textAlign: "center",
     marginBottom: 20,
+    lineHeight: 16,
   },
   emptyButton: {
     backgroundColor: COLORS.primary,

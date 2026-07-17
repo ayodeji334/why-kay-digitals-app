@@ -9,4 +9,5 @@ export const COLORS = {
   dark: "#03001A",
   iconColor: "#00863B",
   fadePrimary: "#DDF1D8",
+  fadeBackgroundPrimary: "#f4fff0",
 };

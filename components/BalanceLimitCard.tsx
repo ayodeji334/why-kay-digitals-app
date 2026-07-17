@@ -10,7 +10,7 @@ export default function BalanceLimitCard({ walletSummary }: any) {
   const navigation = useNavigation<any>();
   const progress =
     walletSummary && walletSummary.daily_limit
-      ? walletSummary.total_today / walletSummary.daily_limit
+      ? walletSummary.total_fiat_transfer_today / walletSummary.daily_limit
       : 0;
 
   return (
@@ -64,8 +64,8 @@ export default function BalanceLimitCard({ walletSummary }: any) {
         <View style={styles.limitRange}>
           <AppText style={styles.limitValue}>
             ₦
-            {walletSummary?.total_today
-              ? walletSummary?.total_today?.toLocaleString()
+            {walletSummary?.total_fiat_transfer_today
+              ? walletSummary?.total_fiat_transfer_today?.toLocaleString()
               : "0"}
           </AppText>
           <AppText style={styles.limitValue}>

@@ -31,7 +31,7 @@ export default function FaceOverlay() {
           cy={height * 0.38}
           rx={width * 0.32}
           ry={height * 0.22}
-          stroke="#FF3B30"
+          stroke="#0bac23"
           strokeWidth={4}
           fill="transparent"
         />

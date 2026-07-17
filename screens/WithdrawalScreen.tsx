@@ -51,7 +51,7 @@ export default function WithdrawScreen() {
   const currentWalletBalance = walletSummary?.withdrawable_balance ?? 0;
   const dailyLimit = walletSummary?.daily_limit ?? 1000000;
   const singleLimit = walletSummary?.single_limit ?? 1000000;
-  const todayVolume = walletSummary?.total_today ?? 0;
+  const todayVolume = walletSummary?.total_fiat_transfer_today ?? 0;
 
   // Fetch withdrawal fee from backend
   const { data: withdrawalChargeData, refetch } = useQuery({
@@ -159,7 +159,6 @@ export default function WithdrawScreen() {
           throw err;
         });
     },
-    refetchOnWindowFocus: true,
     staleTime: 800000,
   });
 
@@ -467,7 +466,7 @@ export default function WithdrawScreen() {
 //   const currentWalletBalance = walletSummary?.withdrawable_balance ?? 0;
 //   const dailyLimit = walletSummary?.daily_limit ?? 1000000; // fallback to 1M
 //   const singleLimit = walletSummary?.single_limit ?? 1000000; // fallback to 1M
-//   const todayVolume = walletSummary?.total_today ?? 0;
+//   const todayVolume = walletSummary?.total_fiat_transfer_today ?? 0;
 
 //   const schema = yup.object({
 //     amount: yup
@@ -845,13 +844,13 @@ const styles = StyleSheet.create({
   feeLabel: {
     color: "#000",
     fontFamily: getFontFamily("700"),
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     flex: 1,
   },
   feeValue: {
     color: "#000",
     fontFamily: getFontFamily("900"),
-    fontSize: normalize(16),
+    fontSize: normalize(17),
     textAlign: "right",
     flex: 1,
   },
@@ -901,13 +900,13 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(16),
-    fontSize: normalize(26),
+    paddingVertical: normalize(12),
+    fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
     color: "#000",
   },
   dollarSign: {
-    fontSize: normalize(26),
+    fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
     color: "#000",
     paddingLeft: 15,

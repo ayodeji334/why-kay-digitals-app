@@ -9,7 +9,7 @@ import {
   StatusBar,
 } from "react-native";
 import { ArrowDown } from "iconsax-react-nativejs";
-import { getFontFamily } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
@@ -296,6 +296,8 @@ export default function ConversionQuote() {
         <View style={styles.buttonBox}>
           {!isExpiredVisible && (
             <TouchableOpacity
+              hitSlop={10}
+              activeOpacity={0.9}
               onPress={handleConfirm}
               disabled={isExpired || confirmMutation.isPending}
               style={[
@@ -316,6 +318,8 @@ export default function ConversionQuote() {
 
           {isExpiredVisible && (
             <TouchableOpacity
+              hitSlop={10}
+              activeOpacity={0.9}
               onPress={handleRequestNewQuote}
               disabled={swapMutation.isPending}
               style={[
@@ -910,7 +914,7 @@ const styles = StyleSheet.create({
   },
   expiredText: {
     fontFamily: getFontFamily("700"),
-    fontSize: 13,
+    fontSize: normalize(17),
     color: "#b91c1c",
     flex: 1,
   },
@@ -998,8 +1002,8 @@ const styles = StyleSheet.create({
   },
   confirmText: {
     color: "#fff",
-    fontFamily: getFontFamily("800"),
-    fontSize: 14,
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
   },
   disabledButton: { backgroundColor: "#d1dbd4ff" },
   cancelButton: {
@@ -1011,8 +1015,8 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     color: COLORS.primary,
-    fontFamily: getFontFamily("800"),
-    fontSize: 14,
+    fontFamily: getFontFamily("700"),
+    fontSize: normalize(18),
   },
   footerNote: {
     textAlign: "center",

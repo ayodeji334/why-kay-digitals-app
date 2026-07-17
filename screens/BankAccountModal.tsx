@@ -88,9 +88,7 @@ export default function BankAccountModal({
       });
 
       if (!response.data?.success) {
-        setError(
-          "Account unavailabe. We cannot verify the receipient's account",
-        );
+        setError("We cannot verify the account details");
         setSuccess("");
         setAccountDetails(null);
         return;
@@ -104,7 +102,9 @@ export default function BankAccountModal({
         bankName: selectedBank.label,
       });
     } catch (err) {
-      setError("Account unavailabe. We cannot verify the receipient's account");
+      setError(
+        "We cannot verify the account details. Please check your internet connection and try again",
+      );
     } finally {
       setValidating(false);
     }
@@ -231,8 +231,8 @@ export default function BankAccountModal({
         ]}
       >
         <View style={styles.header}>
-          <TouchableOpacity onPress={onClose}>
-            <ArrowLeft2 size={20} color="#000" />
+          <TouchableOpacity hitSlop={10} activeOpacity={0.9} onPress={onClose}>
+            <ArrowLeft2 size={normalize(23)} color="#000" />
           </TouchableOpacity>
           <AppText style={styles.title}>Add Bank Account</AppText>
         </View>
@@ -272,7 +272,7 @@ export default function BankAccountModal({
 
           {validating ? (
             <AppText style={[styles.text, { color: "green" }]}>
-              Kindly wait while the system validate your the details
+              Kindly wait while the system validate the account details...
             </AppText>
           ) : null}
 
@@ -332,7 +332,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    marginBottom: 30,
+    marginBottom: 26,
+    paddingVertical: 10,
   },
   title: {
     flex: 1,

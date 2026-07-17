@@ -19,7 +19,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigation } from "@react-navigation/native";
 import CustomLoading from "../components/CustomLoading";
-// import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import ConfirmationModal from "../components/ConfirmationModal";
 import TabSwitcher, { TabOption } from "../components/TabSwitcher";
 import { COLORS } from "../constants/colors";
@@ -218,7 +217,7 @@ export default function TransferScreen() {
 
   // derived state
   const dailyLimit = walletSummary?.daily_limit ?? 0;
-  const todayVolume = walletSummary?.total_today ?? 0;
+  const todayVolume = walletSummary?.total_fiat_transfer_today ?? 0;
   const fiatBalance = walletSummary?.withdrawable_balance ?? 0;
   const cryptoLimit = walletSummary?.daily_crypto_transfer_limit ?? 0;
 
@@ -240,7 +239,7 @@ export default function TransferScreen() {
   }, [amount, activeTab, fiatBalance, selectedCryptoWallet?.price]);
 
   const progress = dailyLimit
-    ? (walletSummary?.total_today ?? 0) / dailyLimit
+    ? (walletSummary?.total_fiat_transfer_today ?? 0) / dailyLimit
     : 0;
 
   const isDisabled = useMemo(
@@ -353,7 +352,11 @@ export default function TransferScreen() {
           <View style={styles.limitContainer}>
             <View style={styles.limitHeader}>
               <AppText style={styles.limitLabel}>
-                Daily Limit: {formatAmount(cryptoLimit ?? 0) || "0"}
+                Daily Limit:{" "}
+                {formatAmount(cryptoLimit ?? 0, {
+                  decimalPlace: 2,
+                  currency: "USD",
+                }) || "0"}
               </AppText>
               <AppText
                 onPress={() => navigation.navigate("Verification" as any)}
@@ -374,11 +377,13 @@ export default function TransferScreen() {
               <AppText style={styles.limitValue}>
                 {formatAmount(walletSummary?.total_crypto_transfers_today, {
                   currency: "USD",
+                  decimalPlace: 2,
                 }) ?? "0"}
               </AppText>
               <AppText style={styles.limitValue}>
                 {formatAmount(cryptoLimit ?? 0, {
                   currency: "USD",
+                  decimalPlace: 2,
                 }) || "0"}
               </AppText>
             </View>
@@ -409,10 +414,14 @@ export default function TransferScreen() {
             </View>
             <View style={styles.limitRange}>
               <AppText style={styles.limitValue}>
-                {formatAmount(walletSummary?.total_today ?? 0) ?? "0"}
+                {formatAmount(walletSummary?.total_fiat_transfer_today ?? 0, {
+                  decimalPlace: 2,
+                }) ?? "0"}
               </AppText>
               <AppText style={styles.limitValue}>
-                {formatAmount(walletSummary?.daily_limit ?? 0) ?? "0"}
+                {formatAmount(walletSummary?.daily_limit ?? 0, {
+                  decimalPlace: 2,
+                }) ?? "0"}
               </AppText>
             </View>
           </View>
@@ -525,6 +534,7 @@ export default function TransferScreen() {
           activeOpacity={0.9}
           onPress={handleSubmit(onSubmit)}
           disabled={isDisabled}
+          hitSlop={10}
           style={{
             backgroundColor: isDisabled ? COLORS.fadePrimary : COLORS.secondary,
             borderRadius: 100,

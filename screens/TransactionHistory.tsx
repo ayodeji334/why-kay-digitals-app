@@ -17,6 +17,7 @@ import useAxios from "../hooks/useAxios";
 import { AxiosError } from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
+import LoadingState from "../components/LoadingState";
 
 export const EmptyTransactionState: React.FC = () => (
   <View style={styles.emptyState}>
@@ -98,7 +99,7 @@ const TransactionHistoryScreen: React.FC = () => {
     refetch,
     isRefetching,
   } = useInfiniteQuery({
-    queryKey: ["transactions", filters], // pass the object, not stringified
+    queryKey: ["transactions", filters],
     queryFn: fetchTransactions,
     initialPageParam: 1,
     getNextPageParam: lastPage =>
@@ -194,6 +195,10 @@ const TransactionHistoryScreen: React.FC = () => {
     return unsubscribe; // cleans up the listener on unmount too
   }, [navigation]);
 
+  if (isLoading) {
+    return <LoadingState message={"Loading the transactions..."} />;
+  }
+
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -237,9 +242,6 @@ const TransactionHistoryScreen: React.FC = () => {
           />
         </View>
       )}
-
-      {/* Loading Overlay */}
-      <CustomLoading loading={isLoading} />
 
       {/* Filter Modal */}
       <CustomModal

@@ -1,4 +1,11 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -26,6 +33,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
+import { useFiatBalance } from "../hooks/useFiatBalance";
 
 // Validation Schema
 const schema = yup.object({
@@ -90,6 +98,7 @@ const SmartCardValidationStatus = memo(
 
 export default function PayCableTVSubscriptionScreen() {
   const [loading, setLoading] = useState(false);
+  const { fiatBalance, refetch: refetchBalance } = useFiatBalance();
   const [saveBeneficiary, setSaveBeneficiary] = useState(false);
   const [validatingCard, setValidatingCard] = useState(false);
   const [cardDetails, setCardDetails] = useState<any>(null);
@@ -237,6 +246,13 @@ export default function PayCableTVSubscriptionScreen() {
     staleTime: 4000,
   });
 
+  const selectedPlanCode = watch("plan");
+
+  const selectedPlan = useMemo(
+    () => tvPlans.find((plan: any) => plan.item_code === selectedPlanCode),
+    [tvPlans, selectedPlanCode],
+  );
+
   const { mutate: deleteAll, isPending: deleting } = useMutation({
     mutationFn: async () => {
       return apiDelete("/beneficiaries/type", {
@@ -294,11 +310,11 @@ export default function PayCableTVSubscriptionScreen() {
   const networks = [
     { id: "dstv", label: "DSTV", logo: require("../assets/dstv-icon.webp") },
     { id: "gotv", label: "GOTV", logo: require("../assets/gotv-icon.webp") },
-    {
-      id: "showmax",
-      label: "SHOWMAX",
-      logo: require("../assets/showmax-icon.webp"),
-    },
+    // {
+    //   id: "showmax",
+    //   label: "SHOWMAX",
+    //   logo: require("../assets/showmax-icon.webp"),
+    // },
     {
       id: "startimes",
       label: "STARTIMES",
@@ -333,7 +349,21 @@ export default function PayCableTVSubscriptionScreen() {
     [networks],
   );
 
-  const isDisabled = !isValid || !cardValid || validatingCard || isSubmitting;
+  const hasInsufficientBalance = useMemo(() => {
+    const numericBalance = parseFloat(fiatBalance);
+    return (
+      !!selectedPlan &&
+      !isNaN(numericBalance) &&
+      selectedPlan.amount > numericBalance
+    );
+  }, [selectedPlan?.id, fiatBalance]);
+
+  const isDisabled =
+    !isValid ||
+    !cardValid ||
+    validatingCard ||
+    isSubmitting ||
+    hasInsufficientBalance;
 
   useResetFormOnMount(reset, { network: "", smartcard_number: "", plan: "" });
 
@@ -403,13 +433,14 @@ export default function PayCableTVSubscriptionScreen() {
           control={control}
           name="plan"
           label="Subscription Plan"
+          showPlanPrice={true}
           options={
             tvPlans.length
               ? tvPlans.map((plan: any) => ({
-                  label: `${plan.biller_name || plan.name} - ${formatAmount(
-                    plan.amount,
-                  )}`,
+                  label: `${plan.biller_name || plan.name} Plan`,
                   value: plan.item_code,
+                  balance: plan.amount,
+                  item_code: plan.item_code,
                 }))
               : []
           }
@@ -419,6 +450,19 @@ export default function PayCableTVSubscriptionScreen() {
               : "Select Subscription Plan"
           }
         />
+        <View style={styles.balanceCard}>
+          <AppText style={styles.balanceLabel}>
+            Wallet Balance: {formatAmount(fiatBalance ?? 0)}
+          </AppText>
+        </View>
+        {hasInsufficientBalance && (
+          <View style={styles.warningContainer}>
+            <AppText style={styles.warningText}>
+              Insufficent Balance. You do not have enough money in your fiat
+              wallet to complete this transaction.
+            </AppText>
+          </View>
+        )}
         <SaveAsBeneficiarySwitch
           value={saveBeneficiary}
           onValueChange={setSaveBeneficiary}
@@ -428,7 +472,10 @@ export default function PayCableTVSubscriptionScreen() {
           <TouchableOpacity
             style={[
               styles.button,
-              (validatingCard || !!cardError || !cardDetails) && {
+              (validatingCard ||
+                !!cardError ||
+                !cardDetails ||
+                hasInsufficientBalance) && {
                 opacity: 0.5,
               },
             ]}
@@ -519,6 +566,41 @@ const styles = StyleSheet.create({
     width: 75,
     height: 75,
   },
+  balanceLabel: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("800"),
+    color: "#000000",
+    marginBottom: 4,
+  },
+  balanceValue: {
+    fontSize: normalize(18),
+    fontFamily: getFontFamily("900"),
+    color: "#000",
+  },
+  balanceCard: {
+    paddingHorizontal: normalize(10),
+    paddingVertical: normalize(9),
+  },
+  loader: {
+    marginTop: 12,
+  },
+  buttonWrapper: {
+    marginTop: 32,
+  },
+  warningContainer: {
+    marginVertical: 12,
+    padding: 10,
+    backgroundColor: "rgba(255, 0, 0, 0.03)",
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(255, 0, 0, 0.3)",
+  },
+  warningText: {
+    color: "#db0b0b",
+    fontSize: normalize(16),
+    fontFamily: getFontFamily("800"),
+    textAlign: "center",
+  },
   networkButtonActive: {
     borderColor: "#FBBF24",
   },
@@ -581,9 +663,9 @@ const styles = StyleSheet.create({
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
   },
-  buttonWrapper: {
-    marginTop: 32,
-  },
+  // buttonWrapper: {
+  //   marginTop: 32,
+  // },
   button: {
     backgroundColor: COLORS.secondary,
     paddingVertical: 14,
@@ -609,20 +691,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start",
     gap: 5,
-  },
-  warningContainer: {
-    marginVertical: 12,
-    padding: 10,
-    backgroundColor: "rgba(255, 0, 0, 0.03)",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 0, 0, 0.3)",
-  },
-  warningText: {
-    color: "#db0b0b",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("800"),
-    textAlign: "center",
   },
   detailsLabel: {
     fontSize: 12,

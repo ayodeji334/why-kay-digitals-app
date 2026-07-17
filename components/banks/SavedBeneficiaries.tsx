@@ -43,10 +43,29 @@ export default function SavedBeneficiaries({
   const [modalVisible, setModalVisible] = useState(false);
   const [search, setSearch] = useState("");
 
-  const previewData = useMemo(
-    () => data?.slice(0, PREVIEW_COUNT) ?? [],
-    [data],
-  );
+  // const previewData = useMemo(
+  //   () => data?.slice(0, PREVIEW_COUNT) ?? [],
+  //   [data],
+  // );
+
+  const previewData = useMemo(() => {
+    if (!data || data.length === 0) return [];
+
+    const selectedIndex = selectedBeneficiary
+      ? data.findIndex(item => item.uuid === selectedBeneficiary)
+      : -1;
+
+    // Already visible in the initial preview — no reordering needed
+    if (selectedIndex === -1 || selectedIndex < PREVIEW_COUNT) {
+      return data.slice(0, PREVIEW_COUNT);
+    }
+
+    // Selected item is further down — pull it to the front of the preview
+    const selectedItem = data[selectedIndex];
+    const rest = data.filter((_, i) => i !== selectedIndex);
+    return [selectedItem, ...rest].slice(0, PREVIEW_COUNT);
+  }, [data, selectedBeneficiary]);
+
   const hasMore = data?.length > PREVIEW_COUNT;
 
   const filteredData = useMemo(
@@ -98,52 +117,53 @@ export default function SavedBeneficiaries({
   }: {
     item: any;
     onPress: (item: any) => void;
-  }) => (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      style={[
-        styles.item,
-        selectedBeneficiary === item.uuid && styles.itemSelected,
-      ]}
-      onPress={() => onPress(item)}
-    >
-      <View style={styles.row}>
-        <View style={styles.info}>
-          <AppText style={styles.name}>
-            {item?.meta?.account_name ??
-              item?.meta?.network ??
-              item?.meta?.provider ??
-              item?.meta?.service}
-          </AppText>
-          {item?.meta?.bank_name && (
-            <AppText style={styles.details} numberOfLines={1}>
-              {item?.meta?.bank_name} • {item?.meta?.account_number}
+  }) => {
+    const isSelected = selectedBeneficiary === item.uuid;
+    return (
+      <TouchableOpacity
+        activeOpacity={0.9}
+        hitSlop={10}
+        style={[styles.item, isSelected && styles.itemSelected]}
+        onPress={() => onPress(item)}
+      >
+        <View style={[styles.row, isSelected && styles.rowSelected]}>
+          <View style={styles.info}>
+            <AppText style={styles.name}>
+              {item?.meta?.account_name ??
+                item?.meta?.network ??
+                item?.meta?.provider ??
+                item?.meta?.service}
             </AppText>
-          )}
-          {item?.meta?.phone_number && (
-            <AppText style={styles.details} numberOfLines={1}>
-              {item?.meta?.phone_number}
-            </AppText>
-          )}
-          {item?.meta?.cable_tv_number && (
-            <AppText style={styles.details} numberOfLines={1}>
-              {item?.meta?.cable_tv_number}
-            </AppText>
-          )}
-          {item?.meta?.customer_id && (
-            <AppText style={styles.details} numberOfLines={1}>
-              {item?.meta?.customer_id}
-            </AppText>
-          )}
-          {item?.meta?.meter_number && (
-            <AppText style={styles.details} numberOfLines={1}>
-              {item?.meta?.meter_number}
-            </AppText>
-          )}
+            {item?.meta?.bank_name && (
+              <AppText style={styles.details} numberOfLines={1}>
+                {item?.meta?.bank_name} • {item?.meta?.account_number}
+              </AppText>
+            )}
+            {item?.meta?.phone_number && (
+              <AppText style={styles.details} numberOfLines={1}>
+                {item?.meta?.phone_number}
+              </AppText>
+            )}
+            {item?.meta?.cable_tv_number && (
+              <AppText style={styles.details} numberOfLines={1}>
+                {item?.meta?.cable_tv_number}
+              </AppText>
+            )}
+            {item?.meta?.customer_id && (
+              <AppText style={styles.details} numberOfLines={1}>
+                {item?.meta?.customer_id}
+              </AppText>
+            )}
+            {item?.meta?.meter_number && (
+              <AppText style={styles.details} numberOfLines={1}>
+                {item?.meta?.meter_number}
+              </AppText>
+            )}
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View>
@@ -159,7 +179,6 @@ export default function SavedBeneficiaries({
         )}
       </View>
 
-      {/* preview list  */}
       {!data || data.length === 0 ? (
         <View style={styles.emptyContainer}>
           <AppText style={styles.emptyText}>
@@ -171,8 +190,15 @@ export default function SavedBeneficiaries({
           data={previewData}
           scrollEnabled={false}
           keyExtractor={item => item.uuid}
-          renderItem={({ item }) => renderItem({ item, onPress: onSelect })}
+          renderItem={({ item }) => renderItem({ item, onPress: handleSelect })}
           contentContainerStyle={styles.list}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <AppText style={styles.emptyText}>
+                No beneficiaries found.
+              </AppText>
+            </View>
+          }
         />
       )}
 
@@ -207,7 +233,6 @@ export default function SavedBeneficiaries({
               allowFontScaling={false}
             />
 
-            {/* full list */}
             <FlatList
               data={filteredData}
               showsVerticalScrollIndicator={false}
@@ -227,9 +252,10 @@ export default function SavedBeneficiaries({
 
             <View style={styles.modalActions}>
               <TouchableOpacity
-                activeOpacity={0.7}
+                activeOpacity={0.9}
                 onPress={() => refetch()}
                 disabled={isRefetching}
+                hitSlop={10}
                 style={[styles.actionButton, { borderColor: "gray" }]}
               >
                 <Refresh2 size={10} color="black" />
@@ -240,9 +266,10 @@ export default function SavedBeneficiaries({
 
               {data?.length > 0 && (
                 <TouchableOpacity
-                  activeOpacity={0.7}
+                  activeOpacity={0.9}
                   onPress={handleDeleteAll}
                   disabled={deleting}
+                  hitSlop={10}
                   style={styles.actionButton}
                 >
                   <Trash size={12} color="red" />
@@ -278,6 +305,11 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("900"),
     fontSize: normalize(20),
     color: "#374151",
+  },
+  rowSelected: {
+    borderColor: "#16a34a",
+    borderWidth: 2,
+    backgroundColor: "#f0fdf4",
   },
   search: {
     borderWidth: 1,
@@ -335,12 +367,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   cardDefault: {
-    borderColor: "#154bb7", // gray-200
+    borderColor: "#154bb7",
     backgroundColor: "#fff",
   },
   cardSelected: {
-    borderColor: "#16a34a", // green-600
-    backgroundColor: "#f0fdf4", // green-50
+    borderColor: "#16a34a",
+    backgroundColor: "#f0fdf4",
   },
   row: {
     flexDirection: "row",
@@ -366,40 +398,21 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   deleteText: {
-    fontSize: 12,
+    fontSize: normalize(16),
     fontFamily: getFontFamily("900"),
     color: "red",
   },
   viewAllText: {
-    fontSize: 14,
+    fontSize: normalize(16),
     color: COLORS.primary,
     fontFamily: getFontFamily("800"),
   },
-  // modalOverlay: {
-  //   flex: 1,
-  //   backgroundColor: "rgba(0,0,0,0.45)",
-  //   justifyContent: "flex-end",
-  // },
-  // modalContent: {
-  //   backgroundColor: "#fff",
-  //   borderTopLeftRadius: 20,
-  //   borderTopRightRadius: 20,
-  //   paddingHorizontal: 16,
-  //   paddingTop: 20,
-  //   paddingBottom: 34,
-  //   maxHeight: "80%",
-  // },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 12,
   },
-  // modalTitle: {
-  //   fontSize: 16,
-  //   fontFamily: getFontFamily("700"),
-  //   color: COLORS.primary,
-  // },
   modalActions: {
     flexDirection: "row",
     gap: 8,
@@ -416,7 +429,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   actionText: {
-    fontSize: 12,
+    fontSize: normalize(16),
     color: "red",
     fontFamily: getFontFamily("800"),
   },
@@ -427,7 +440,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     marginBottom: 12,
-    fontSize: 14,
+    fontSize: normalize(18),
     color: "#111",
     fontFamily: getFontFamily("700"),
   },
@@ -445,7 +458,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   lastUsed: {
-    fontSize: 10,
+    fontSize: normalize(17),
     fontFamily: getFontFamily("800"),
     color: "#9ca3af", // gray-400
   },
@@ -471,7 +484,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emptyText: {
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     color: "#838383",
     fontFamily: getFontFamily("700"),
   },

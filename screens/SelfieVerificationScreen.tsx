@@ -10,7 +10,7 @@ import {
 import { Camera, useCameraDevice } from "react-native-vision-camera";
 import Svg, { Ellipse } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import FaceOverlay from "../components/FaceOverlay";
 import CaptureButton from "../components/CaptureButton";
 import { COLORS } from "../constants/colors";
@@ -88,7 +88,11 @@ export default function SelfieVerificationScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>
           <View style={styles.iconContainer}>
-            <CustomIcon source={FaceIdIcon} size={74} color={COLORS.primary} />
+            <CustomIcon
+              source={FaceIdIcon}
+              size={normalize(40)}
+              color={COLORS.primary}
+            />
           </View>
 
           <AppText style={styles.infoTitle}>Face Verification</AppText>
@@ -124,7 +128,7 @@ export default function SelfieVerificationScreen() {
           width: width * 0.64,
           height: height * 0.44,
           overflow: "hidden",
-          borderRadius: Math.min(width * 0.32, height * 0.22), // rounded crop
+          borderRadius: Math.min(width * 0.32, height * 0.22),
         }}
       >
         <Camera
@@ -142,7 +146,7 @@ export default function SelfieVerificationScreen() {
           cy={height * 0.38}
           rx={width * 0.32}
           ry={height * 0.22}
-          stroke="#FF3B30"
+          stroke="#055316"
           strokeWidth={4}
           fill="transparent"
         />
@@ -189,25 +193,29 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     marginBottom: 40,
+    borderRadius: 200,
+    backgroundColor: COLORS.fadeBackgroundPrimary,
+    padding: 20,
+    marginTop: normalize(-100),
   },
   faceIcon: {
-    width: 120,
-    height: 120,
+    width: 50,
+    height: 50,
     tintColor: COLORS.primary,
   },
   infoTitle: {
-    fontSize: 19,
+    fontSize: normalize(22),
     fontFamily: getFontFamily("800"),
     color: "#000",
-    marginBottom: 12,
+    marginBottom: 8,
     textAlign: "center",
   },
   infoSubtitle: {
-    fontSize: 15,
+    fontSize: normalize(19),
     fontFamily: getFontFamily("400"),
     color: "#4b4b4bff",
     textAlign: "center",
-    lineHeight: 20,
+    lineHeight: 15,
   },
   footer: {
     paddingHorizontal: 20,
@@ -239,13 +247,13 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: normalize(19),
     fontFamily: getFontFamily("700"),
     marginBottom: 6,
   },
   subtitle: {
     color: "#000",
-    fontSize: 13,
+    fontSize: normalize(19),
     fontFamily: getFontFamily("700"),
     textAlign: "center",
   },

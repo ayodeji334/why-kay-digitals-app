@@ -1,3 +1,241 @@
+// import {
+//   ScrollView,
+//   StatusBar,
+//   StyleSheet,
+//   View,
+//   TouchableOpacity,
+// } from "react-native";
+// import { SafeAreaView } from "react-native-safe-area-context";
+// import { COLORS } from "../constants/colors";
+// import { getFontFamily, normalize } from "../constants/settings";
+// import { ArrowRight2 } from "iconsax-react-nativejs";
+// import { useNavigation } from "@react-navigation/native";
+// import { useAuthStore } from "../stores/authSlice";
+// import InfoCard from "../components/InfoCard";
+// import CustomIcon from "../components/CustomIcon";
+// import {
+//   ShieldCheckIcon,
+//   UserIdCardIcon,
+//   UserVerificationShieldIcon,
+// } from "../assets";
+// import { AppText } from "../components/AppText";
+
+// interface MenuItemProps {
+//   title: string;
+//   subtitle?: string;
+//   onPress?: () => void;
+//   showArrow?: boolean;
+//   isDangerous?: boolean;
+//   color?: string;
+//   IconComponent?: React.JSX.Element;
+//   isVerified?: boolean;
+// }
+
+// const MenuItem = ({
+//   title,
+//   subtitle,
+//   onPress,
+//   showArrow = true,
+//   isDangerous = false,
+//   color = "#000",
+//   IconComponent = <ArrowRight2 />,
+//   isVerified = false,
+// }: MenuItemProps) => {
+//   return (
+//     <TouchableOpacity
+//       disabled={isVerified}
+//       activeOpacity={0.5}
+//       style={[styles.menuItem]}
+//       onPress={onPress}
+//     >
+//       <View
+//         style={{
+//           marginRight: 12,
+//           height: 30,
+//           width: 30,
+//           borderRadius: 100,
+//           justifyContent: "center",
+//           alignItems: "center",
+//         }}
+//       >
+//         {IconComponent}
+//       </View>
+
+//       <View style={styles.menuItemContent}>
+//         <AppText
+//           style={[
+//             styles.menuItemTitle,
+//             { color: isDangerous ? "#DC2626" : color },
+//           ]}
+//         >
+//           {title}
+//         </AppText>
+//         {subtitle && (
+//           <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
+//         )}
+//       </View>
+
+//       {isVerified ? (
+//         <View
+//           style={{
+//             backgroundColor: "#80d09d34",
+//             paddingHorizontal: 10,
+//             paddingVertical: 4,
+//             borderRadius: 12,
+//           }}
+//         >
+//           <AppText
+//             style={{
+//               color: COLORS.primary,
+//               fontSize: normalize(15),
+//               fontFamily: getFontFamily(800),
+//             }}
+//           >
+//             Verified
+//           </AppText>
+//         </View>
+//       ) : (
+//         showArrow && <ArrowRight2 size={normalize(18)} color={color} />
+//       )}
+//     </TouchableOpacity>
+//   );
+// };
+
+// export default function KYCVerificationScreen() {
+//   const navigation = useNavigation();
+//   const user = useAuthStore(state => state.user);
+
+//   return (
+//     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
+//       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+//       <ScrollView
+//         style={styles.scrollContainer}
+//         showsVerticalScrollIndicator={false}
+//       >
+//         <InfoCard
+//           IconComponent={
+//             <CustomIcon
+//               source={UserIdCardIcon}
+//               size={17}
+//               color={COLORS.primary}
+//             />
+//           }
+//           title="Complete Your KYC!"
+//           description={
+//             "Verify your identity to unlock all features and enjoy a seamless, secure experience."
+//           }
+//         />
+
+//         <View style={{ marginTop: 20 }}>
+//           <MenuItem
+//             title="BVN Verification"
+//             subtitle="Link your BVN for account security"
+//             onPress={() => navigation.navigate("BVNVerification" as never)}
+//             IconComponent={
+//               <CustomIcon
+//                 source={UserVerificationShieldIcon}
+//                 size={17}
+//                 color={COLORS.primary}
+//               />
+//             }
+//             isVerified={user?.bvn_verification_status === "VERIFIED"}
+//           />
+//           <MenuItem
+//             title="Proof of Identity"
+//             subtitle="Link your government-issued ID"
+//             onPress={() => navigation.navigate("IdentityVerification" as never)}
+//             IconComponent={
+//               <CustomIcon
+//                 source={ShieldCheckIcon}
+//                 size={17}
+//                 fill={COLORS.primary}
+//               />
+//             }
+//             isVerified={user?.nin_verification_status === "VERIFIED"}
+//           />
+//           {/* <MenuItem
+//             title="Proof of Address"
+//             subtitle="Provide utility bill or similar document"
+//             onPress={() => navigation.navigate("Proof Of Address" as never)}
+//             IconComponent={
+//               <CustomIcon
+//                 source={LocationIcon}
+//                 size={17}
+//                 color={COLORS.primary}
+//               />
+//             }
+//           /> */}
+//           <MenuItem
+//             title="Selfie Verification"
+//             subtitle="Check your current transaction limits"
+//             onPress={() => navigation.navigate("SelfieVerification" as never)}
+//             IconComponent={
+//               <CustomIcon
+//                 source={ShieldCheckIcon}
+//                 size={17}
+//                 fill={COLORS.primary}
+//               />
+//             }
+//             isVerified={user?.selfie_verification_status === "VERIFIED"}
+//           />
+//         </View>
+//       </ScrollView>
+//     </SafeAreaView>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "white",
+//   },
+//   versionText: {
+//     textAlign: "center",
+//     color: "#888",
+//     fontSize: 14,
+//     marginVertical: 10,
+//   },
+//   scrollContainer: {
+//     flex: 1,
+//     paddingHorizontal: 20,
+//   },
+//   menuItem: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//     paddingVertical: 13,
+//     paddingHorizontal: 10,
+//     borderWidth: 0.5,
+//     borderColor: "#D2D2D2",
+//     marginVertical: 5,
+//     borderRadius: 8,
+//     backgroundColor: "#F9FAFB",
+//   },
+//   menuItemContent: {
+//     flex: 1,
+//   },
+//   menuItemTitle: {
+//     fontSize: normalize(18),
+//     color: COLORS.darkBackground,
+//     fontFamily: getFontFamily("800"),
+//   },
+//   menuItemSubtitle: {
+//     fontSize: normalize(17),
+//     color: COLORS.primary,
+//     fontFamily: getFontFamily("400"),
+//     marginTop: 2,
+//   },
+//   arrow: {
+//     fontSize: normalize(13),
+//     color: COLORS.gray,
+//     fontFamily: getFontFamily("900"),
+//   },
+//   divider: {
+//     height: 1,
+//     backgroundColor: "#D2D2D2",
+//     marginVertical: 16,
+//   },
+// });
 import {
   ScrollView,
   StatusBar,
@@ -19,6 +257,7 @@ import {
   UserVerificationShieldIcon,
 } from "../assets";
 import { AppText } from "../components/AppText";
+import { showError } from "../utlis/toast";
 
 interface MenuItemProps {
   title: string;
@@ -29,6 +268,8 @@ interface MenuItemProps {
   color?: string;
   IconComponent?: React.JSX.Element;
   isVerified?: boolean;
+  isLocked?: boolean;
+  lockedMessage?: string;
 }
 
 const MenuItem = ({
@@ -40,13 +281,23 @@ const MenuItem = ({
   color = "#000",
   IconComponent = <ArrowRight2 />,
   isVerified = false,
+  isLocked = false,
+  lockedMessage,
 }: MenuItemProps) => {
+  const handlePress = () => {
+    if (isLocked) {
+      if (lockedMessage) showError(lockedMessage);
+      return;
+    }
+    onPress?.();
+  };
+
   return (
     <TouchableOpacity
       disabled={isVerified}
       activeOpacity={0.5}
-      style={[styles.menuItem]}
-      onPress={onPress}
+      style={[styles.menuItem, isLocked && styles.menuItemLocked]}
+      onPress={handlePress}
     >
       <View
         style={{
@@ -56,6 +307,7 @@ const MenuItem = ({
           borderRadius: 100,
           justifyContent: "center",
           alignItems: "center",
+          opacity: isLocked ? 0.4 : 1,
         }}
       >
         {IconComponent}
@@ -66,12 +318,20 @@ const MenuItem = ({
           style={[
             styles.menuItemTitle,
             { color: isDangerous ? "#DC2626" : color },
+            isLocked && styles.menuItemTitleLocked,
           ]}
         >
           {title}
         </AppText>
         {subtitle && (
-          <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
+          <AppText
+            style={[
+              styles.menuItemSubtitle,
+              isLocked && styles.menuItemSubtitleLocked,
+            ]}
+          >
+            {isLocked ? lockedMessage ?? subtitle : subtitle}
+          </AppText>
         )}
       </View>
 
@@ -95,7 +355,12 @@ const MenuItem = ({
           </AppText>
         </View>
       ) : (
-        showArrow && <ArrowRight2 size={normalize(18)} color={color} />
+        showArrow && (
+          <ArrowRight2
+            size={normalize(18)}
+            color={isLocked ? "#B0B0B0" : color}
+          />
+        )
       )}
     </TouchableOpacity>
   );
@@ -104,6 +369,14 @@ const MenuItem = ({
 export default function KYCVerificationScreen() {
   const navigation = useNavigation();
   const user = useAuthStore(state => state.user);
+
+  const isBvnVerified = user?.bvn_verification_status === "VERIFIED";
+  const isNinVerified = user?.nin_verification_status === "VERIFIED";
+
+  // Sequential gating: NIN requires BVN done first; Selfie requires both
+  // BVN and NIN done first.
+  const isNinLocked = !isBvnVerified;
+  const isSelfieLocked = !isBvnVerified || !isNinVerified;
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
@@ -138,7 +411,7 @@ export default function KYCVerificationScreen() {
                 color={COLORS.primary}
               />
             }
-            isVerified={user?.bvn_verification_status === "VERIFIED"}
+            isVerified={isBvnVerified}
           />
           <MenuItem
             title="Proof of Identity"
@@ -151,20 +424,10 @@ export default function KYCVerificationScreen() {
                 fill={COLORS.primary}
               />
             }
-            isVerified={user?.nin_verification_status === "VERIFIED"}
+            isVerified={isNinVerified}
+            isLocked={isNinLocked}
+            lockedMessage="Complete BVN verification first"
           />
-          {/* <MenuItem
-            title="Proof of Address"
-            subtitle="Provide utility bill or similar document"
-            onPress={() => navigation.navigate("Proof Of Address" as never)}
-            IconComponent={
-              <CustomIcon
-                source={LocationIcon}
-                size={17}
-                color={COLORS.primary}
-              />
-            }
-          /> */}
           <MenuItem
             title="Selfie Verification"
             subtitle="Check your current transaction limits"
@@ -177,6 +440,8 @@ export default function KYCVerificationScreen() {
               />
             }
             isVerified={user?.selfie_verification_status === "VERIFIED"}
+            isLocked={isSelfieLocked}
+            lockedMessage="Complete BVN and NIN verification first"
           />
         </View>
       </ScrollView>
@@ -211,6 +476,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#F9FAFB",
   },
+  menuItemLocked: {
+    backgroundColor: "#F3F4F6",
+    borderColor: "#E5E7EB",
+  },
   menuItemContent: {
     flex: 1,
   },
@@ -219,11 +488,17 @@ const styles = StyleSheet.create({
     color: COLORS.darkBackground,
     fontFamily: getFontFamily("800"),
   },
+  menuItemTitleLocked: {
+    color: "#9CA3AF",
+  },
   menuItemSubtitle: {
     fontSize: normalize(17),
     color: COLORS.primary,
     fontFamily: getFontFamily("400"),
     marginTop: 2,
+  },
+  menuItemSubtitleLocked: {
+    color: "#B0B0B0",
   },
   arrow: {
     fontSize: normalize(13),

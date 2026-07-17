@@ -41,6 +41,7 @@ interface SelectInputProps {
   title?: string;
   showSearchBox?: boolean;
   showWalletPrice?: boolean;
+  showPlanPrice?: boolean;
   isDisabled?: boolean;
   loading?: boolean;
   loadingText?: string;
@@ -60,6 +61,7 @@ export function SelectInput({
   title = "Select an option",
   showSearchBox = true,
   showWalletPrice = false,
+  showPlanPrice = false,
   isDisabled = false,
   loading = false,
   loadingText = "Loading...",
@@ -126,7 +128,11 @@ export function SelectInput({
                 {loading
                   ? loadingText
                   : selectedOption
-                  ? selectedOption.label
+                  ? selectedOption?.validity_period || selectedOption?.item_code
+                    ? `${selectedOption.label}  -  ${formatAmount(
+                        selectedOption?.balance ?? 0,
+                      )}`
+                    : selectedOption.label
                   : placeholder}
               </AppText>
 
@@ -238,6 +244,16 @@ export function SelectInput({
                                 })}
                               </AppText>
                             ) : undefined}
+                            {item?.validity_period ? (
+                              <AppText
+                                style={[
+                                  styles.optionPrice,
+                                  { fontSize: normalize(17) },
+                                ]}
+                              >
+                                Validity: {item.validity_period} Days
+                              </AppText>
+                            ) : undefined}
                             {item?.network_charges ? (
                               <AppText style={styles.optionPrice}>
                                 Network fee:{" "}
@@ -251,6 +267,7 @@ export function SelectInput({
                                     item?.network_charges_in_usd ?? 0,
                                     {
                                       currency: "USD",
+                                      decimalPlace: 2,
                                     },
                                   )}
                                   )
@@ -274,18 +291,60 @@ export function SelectInput({
                               )}
                               {item?.total_price ? (
                                 <AppText style={styles.optionName}>
-                                  {`${formatAmount(item?.total_price, {
+                                  {`${formatAmount(item?.total_price ?? 0, {
                                     currency: "USD",
                                     decimalPlace: 2,
                                   })}`}
                                 </AppText>
                               ) : (
                                 <AppText style={styles.optionName}>
-                                  {`${formatAmount(item?.price, {
+                                  {`${formatAmount(item?.price ?? 0, {
                                     currency: "USD",
+                                    decimalPlace: 2,
                                   })}`}
                                 </AppText>
                               )}
+                            </View>
+                          ) : undefined}
+
+                          {showPlanPrice ? (
+                            <View
+                              style={{
+                                flexDirection: "column",
+                                alignItems: "flex-end",
+                                alignContent: "flex-end",
+                              }}
+                            >
+                              {item?.balance && (
+                                <AppText
+                                  style={[
+                                    styles.optionName,
+                                    { fontSize: normalize(16) },
+                                  ]}
+                                >
+                                  Amount
+                                </AppText>
+                              )}
+                              {item?.balance && (
+                                <AppText style={styles.optionName}>
+                                  {formatAmount(item?.balance)}
+                                </AppText>
+                              )}
+                              {/* {item?.total_price ? (
+                                <AppText style={styles.optionName}>
+                                  {`${formatAmount(item?.total_price ?? 0, {
+                                    currency: "USD",
+                                    decimalPlace: 2,
+                                  })}`}
+                                </AppText>
+                              ) : (
+                                <AppText style={styles.optionName}>
+                                  {`${formatAmount(item?.price ?? 0, {
+                                    currency: "USD",
+                                    decimalPlace: 2,
+                                  })}`}
+                                </AppText>
+                              )} */}
                             </View>
                           ) : undefined}
                         </View>

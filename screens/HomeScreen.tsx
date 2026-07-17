@@ -58,8 +58,6 @@ const HomeScreen = () => {
     queryClient.invalidateQueries({ queryKey: ["rates"] });
   });
 
-  console.log(user);
-
   return (
     <SafeAreaView edges={["left", "right", "top"]} style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -124,8 +122,7 @@ const HomeScreen = () => {
                 paddingVertical: 7,
               }}
             > */}
-            <ArrowRight2 size={20} color="white" />
-            {/* </TouchableOpacity> */}
+            <ArrowRight2 size={normalize(20)} color="white" />
           </Pressable>
         )}
 
@@ -274,8 +271,9 @@ const styles = StyleSheet.create({
   },
   verificationTitle: {
     color: "#fff",
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
+    lineHeight: 14,
   },
   emptyState: {
     borderRadius: 12,
