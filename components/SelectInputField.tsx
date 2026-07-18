@@ -258,10 +258,10 @@ export function SelectInput({
                                 <AppText
                                   style={[
                                     styles.optionPrice,
-                                    { fontSize: normalize(16) },
+                                    { fontSize: normalize(17) },
                                   ]}
                                 >
-                                  Special Package
+                                  {item?.info ?? "Special Package"}
                                 </AppText>
                               )
                             ) : null}

@@ -132,6 +132,7 @@ export default function SavedBeneficiaries({
               {item?.meta?.account_name ??
                 item?.meta?.network ??
                 item?.meta?.provider ??
+                item?.meta?.provider_name ??
                 item?.meta?.service}
             </AppText>
             {item?.meta?.bank_name && (

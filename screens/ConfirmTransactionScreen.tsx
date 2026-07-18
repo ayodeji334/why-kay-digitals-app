@@ -55,6 +55,8 @@ export default function ConfirmTransactionScreen() {
 
       const { url, ...rest } = payload;
 
+      console.log(rest);
+
       const response = await post(url, {
         transaction_pin: values.pin,
         ...rest,

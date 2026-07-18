@@ -2569,47 +2569,37 @@ const TransactionDetailScreen = () => {
       "",
     )}`;
 
-    // Same capture as shareAsImage — guarantees pixel-identical output
-    // const base64Image = await captureRef(receiptCardRef, {
-    //   format: "png",
-    //   quality: 1,
-    //   result: "base64",
-    //   fileName: filename,
-    // });
-
-    const base64Image = await captureRef(receiptCardRef, {
+    // Capture to a temp FILE, not base64 — huge base64 data URIs are what
+    // cause react-native-html-to-pdf to print a blank page.
+    const imageUri = await captureRef(receiptCardRef, {
       format: "png",
       quality: 1,
-      result: "base64",
-      width: RECEIPT_CARD_WIDTH * 3, // fixed 1020px wide
-      height: (receiptSize?.height ?? 700) * 3, // keep aspect from layout
+      result: "tmpfile",
+      width: RECEIPT_CARD_WIDTH * 3, // fixed 1020px output
+      height: (receiptSize?.height ?? 700) * 3,
     });
+
+    const imageSrc = imageUri.startsWith("file://")
+      ? imageUri
+      : `file://${imageUri}`;
 
     const html = `
     <html>
       <body style="margin:0;padding:0;">
-        <img
-          src="data:image/png;base64,${base64Image}"
-          style="width:100%;height:100%;display:block;"
-        />
+        <img src="${imageSrc}" style="width:100%;height:auto;display:block;" />
       </body>
     </html>
   `;
 
-    // const filename = `Transaction-Receipt-${Date.now()}-${transaction?.uuid?.replace(
-    //   /-/g,
-    //   "",
-    // )}`;
-
-    // Match the page to the card's aspect ratio so it fills one page cleanly.
-    // Scale factor keeps the PDF page at print-friendly dimensions.
-    const scale = 2;
+    // Page size = the card's layout size (points). No scale multiplier here:
+    // scaling the page while the image is width:100% just changes page size,
+    // and a page/image mismatch is another way to end up with blank output.
     const pdf = await generatePDF({
       html,
       fileName: filename,
       base64: false,
-      width: (receiptSize?.width ?? RECEIPT_CARD_WIDTH) * scale,
-      height: (receiptSize?.height ?? 700) * scale,
+      width: receiptSize?.width ?? RECEIPT_CARD_WIDTH,
+      height: receiptSize?.height ?? 700,
       padding: 0,
     });
 
@@ -2617,10 +2607,69 @@ const TransactionDetailScreen = () => {
       url: `file://${pdf.filePath}`,
       type: "application/pdf",
       filename: `${filename}.pdf`,
-      title: filename,
+      title: "Transaction Receipt",
       failOnCancel: false,
     });
   };
+
+  // const shareAsPdf = async () => {
+  //   const filename = `Transaction-Receipt-${Date.now()}-${transaction?.uuid?.replace(
+  //     /-/g,
+  //     "",
+  //   )}`;
+
+  //   // Same capture as shareAsImage — guarantees pixel-identical output
+  //   // const base64Image = await captureRef(receiptCardRef, {
+  //   //   format: "png",
+  //   //   quality: 1,
+  //   //   result: "base64",
+  //   //   fileName: filename,
+  //   // });
+
+  //   const base64Image = await captureRef(receiptCardRef, {
+  //     format: "png",
+  //     quality: 1,
+  //     result: "base64",
+  //     width: RECEIPT_CARD_WIDTH * 3, // fixed 1020px wide
+  //     height: (receiptSize?.height ?? 700) * 3, // keep aspect from layout
+  //   });
+
+  //   const html = `
+  //   <html>
+  //     <body style="margin:0;padding:0;">
+  //       <img
+  //         src="data:image/png;base64,${base64Image}"
+  //         style="width:100%;height:100%;display:block;"
+  //       />
+  //     </body>
+  //   </html>
+  // `;
+
+  //   // const filename = `Transaction-Receipt-${Date.now()}-${transaction?.uuid?.replace(
+  //   //   /-/g,
+  //   //   "",
+  //   // )}`;
+
+  //   // Match the page to the card's aspect ratio so it fills one page cleanly.
+  //   // Scale factor keeps the PDF page at print-friendly dimensions.
+  //   const scale = 2;
+  //   const pdf = await generatePDF({
+  //     html,
+  //     fileName: filename,
+  //     base64: false,
+  //     width: (receiptSize?.width ?? RECEIPT_CARD_WIDTH) * scale,
+  //     height: (receiptSize?.height ?? 700) * scale,
+  //     padding: 0,
+  //   });
+
+  //   await ShareLib.open({
+  //     url: `file://${pdf.filePath}`,
+  //     type: "application/pdf",
+  //     filename: `${filename}.pdf`,
+  //     title: filename,
+  //     failOnCancel: false,
+  //   });
+  // };
 
   // const shareAsPdf = async () => {
   //   // 1. Fetch the PDF from the backend as a blob

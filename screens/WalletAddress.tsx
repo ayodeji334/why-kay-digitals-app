@@ -522,7 +522,7 @@ import Svg, { Defs, Pattern, Circle, Rect } from "react-native-svg";
 import { captureRef } from "react-native-view-shot";
 import ShareLib from "react-native-share";
 
-const APP_NAME = "WHYKAY APP";
+const APP_NAME = "WHYKAY";
 const SHARE_CARD_WIDTH = 340;
 
 export const CardPatternBackground = () => (

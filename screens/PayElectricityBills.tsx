@@ -886,6 +886,7 @@ export default function PayElectricityBillsScreen() {
       const provider = providers.find(
         (p: any) => p.biller_code === value || p.code === value,
       );
+
       setSelectedProviderItems(provider?.items || []);
       setMeterValid(false);
       setUserDetail(null);
@@ -969,7 +970,7 @@ export default function PayElectricityBillsScreen() {
   const handleSelectBeneficiary = useCallback(
     async (item: any) => {
       const meter = item?.identifier ?? "";
-      const provider = item?.meta?.provider ?? "";
+      const provider = item?.meta?.service ?? "";
 
       setValue("meter_number", meter, { shouldValidate: true });
       setValue("provider", provider, { shouldValidate: true });
@@ -1020,7 +1021,7 @@ export default function PayElectricityBillsScreen() {
           amount: parseFloat(data.amount),
           biller_name: selectedOption?.value,
           item_code: selectedItem?.item_code || "",
-          provider_short_name: selectedOption?.name,
+          provider_short_name: selectedOption?.label,
           save_as_beneficiary: saveBeneficiary,
           type: isPrepaid ? "Prepaid" : "Postpaid",
           url: "/bills/buy-electricity",
@@ -1036,6 +1037,14 @@ export default function PayElectricityBillsScreen() {
     ],
   );
 
+  const hasInsufficientBalance = useMemo(() => {
+    const numericBalance = parseFloat(fiatBalance);
+    return !!amount && !isNaN(numericBalance) && amount > numericBalance;
+  }, [amount, fiatBalance]);
+
+  const isDisabled =
+    true || true || validatingMeter || isSubmitting || hasInsufficientBalance;
+
   useResetFormOnMount(
     reset,
     { provider: "", meter_number: "", amount: 0 },
@@ -1047,18 +1056,6 @@ export default function PayElectricityBillsScreen() {
       setSelectedProviderItems([]);
     },
   );
-
-  const hasInsufficientBalance = useMemo(() => {
-    const numericBalance = parseFloat(fiatBalance);
-    return !!amount && !isNaN(numericBalance) && amount > numericBalance;
-  }, [amount, fiatBalance]);
-
-  const isDisabled =
-    !isValid ||
-    !meterValid ||
-    validatingMeter ||
-    isSubmitting ||
-    hasInsufficientBalance;
 
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
@@ -1171,7 +1168,7 @@ export default function PayElectricityBillsScreen() {
         <TouchableOpacity
           style={[styles.button, isDisabled && { opacity: 0.5 }]}
           onPress={handleSubmit(onSubmit)}
-          disabled={isDisabled}
+          // disabled={isDisabled}
         >
           <AppText style={styles.buttonText}>
             {isSubmitting

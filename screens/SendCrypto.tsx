@@ -701,6 +701,8 @@ export default function SendScreen() {
             </View>
 
             <TouchableOpacity
+              hitSlop={9}
+              activeOpacity={0.89}
               disabled={withdrawalStatus.hasIssue || isPending}
               style={[
                 styles.button,
