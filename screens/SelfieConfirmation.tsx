@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     color: "#FF4D4D",
   },
   statusTitle: {
-    fontSize: 16,
+    fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     color: "#000",
     marginTop: 24,
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   statusDescription: {
-    fontSize: 14,
+    fontSize: normalize(16),
     fontFamily: getFontFamily("400"),
     color: "#000",
     textAlign: "center",

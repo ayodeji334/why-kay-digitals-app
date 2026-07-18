@@ -715,6 +715,7 @@ export default function BuyDataScreen() {
           control={control}
           name="plan"
           label="Data Plan"
+          loading={isLoading}
           showPlanPrice={true}
           options={dataPlans.map((plan: any) => ({
             label: `${plan.biller_name} Plan`,

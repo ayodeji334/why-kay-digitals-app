@@ -35,6 +35,7 @@ import {
 import { AppText } from "../components/AppText";
 import { setItem } from "../utlis/storage";
 import { biometricPromptKey } from "../stores/biometricPromptSlice";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const DEFAULT_IMAGE = require("../assets/avatar.png");
 interface MenuItemProps {
@@ -117,6 +118,7 @@ const MenuItem = ({
 };
 
 export default function SettingsScreen() {
+  const queryClient = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const appVersion = DeviceInfo.getVersion();
@@ -148,6 +150,8 @@ export default function SettingsScreen() {
     );
 
     logout();
+
+    queryClient.clear();
   };
 
   return (

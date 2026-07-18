@@ -32,7 +32,7 @@ export default function KYCStatusScreen() {
               <ShieldSearch size={30} color={COLORS.primary} variant="Linear" />
             </View>
             <AppText style={styles.emptyTitle}>
-              Complete Your BVN Verification
+              Complete Your KYC Verification
             </AppText>
             <AppText style={styles.emptyDescription}>
               To access this service, we need to verify your identity. This is a
@@ -41,7 +41,9 @@ export default function KYCStatusScreen() {
           </View>
 
           <View style={styles.requirementsCard}>
-            <AppText style={styles.cardTitle}>What you'll need:</AppText>
+            <AppText style={styles.cardTitle}>
+              What you'll need for a start:
+            </AppText>
 
             <View style={{ rowGap: 20 }}>
               <View style={styles.requirementRow}>
@@ -98,7 +100,7 @@ export default function KYCStatusScreen() {
             style={[styles.emptyButton, { backgroundColor: COLORS.primary }]}
           >
             <AppText style={styles.emptyButtonText}>
-              {isAlreadyVerified ? "Continue " : "Start "} BVN Verification
+              {isAlreadyVerified ? "Continue " : "Start "} KYC Verification
             </AppText>
           </TouchableOpacity>
 

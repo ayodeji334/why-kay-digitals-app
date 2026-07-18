@@ -244,16 +244,27 @@ export function SelectInput({
                                 })}
                               </AppText>
                             ) : undefined}
-                            {item?.validity_period ? (
-                              <AppText
-                                style={[
-                                  styles.optionPrice,
-                                  { fontSize: normalize(17) },
-                                ]}
-                              >
-                                Validity: {item.validity_period} Days
-                              </AppText>
-                            ) : undefined}
+                            {typeof item?.validity_period === "number" ? (
+                              item?.validity_period ? (
+                                <AppText
+                                  style={[
+                                    styles.optionPrice,
+                                    { fontSize: normalize(17) },
+                                  ]}
+                                >
+                                  Validity: {item.validity_period} Days
+                                </AppText>
+                              ) : (
+                                <AppText
+                                  style={[
+                                    styles.optionPrice,
+                                    { fontSize: normalize(16) },
+                                  ]}
+                                >
+                                  Special Package
+                                </AppText>
+                              )
+                            ) : null}
                             {item?.network_charges ? (
                               <AppText style={styles.optionPrice}>
                                 Network fee:{" "}

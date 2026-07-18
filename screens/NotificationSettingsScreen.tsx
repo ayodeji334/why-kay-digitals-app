@@ -10,19 +10,19 @@ import CustomLoading from "../components/CustomLoading";
 import { Notification } from "iconsax-react-nativejs";
 import { COLORS } from "../constants/colors";
 
-interface MenuItemProps {
-  title: string;
-  subtitle?: string;
-  onPress?: () => void;
-  showArrow?: boolean;
-  showSwitch?: boolean;
-  switchValue?: boolean;
-  onSwitchChange?: () => void;
-  color?: string;
-  isDangerous?: boolean;
-  IconComponent?: React.JSX.Element;
-  disable?: boolean;
-}
+// interface MenuItemProps {
+//   title: string;
+//   subtitle?: string;
+//   onPress?: () => void;
+//   showArrow?: boolean;
+//   showSwitch?: boolean;
+//   switchValue?: boolean;
+//   onSwitchChange?: () => void;
+//   color?: string;
+//   isDangerous?: boolean;
+//   IconComponent?: React.JSX.Element;
+//   disable?: boolean;
+// }
 
 import { OneSignal } from "react-native-onesignal";
 

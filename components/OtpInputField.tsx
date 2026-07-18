@@ -180,8 +180,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     gap: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
   },
   box: {
     width: normalize(48),

@@ -439,8 +439,8 @@ export default function KYCVerificationScreen() {
                 fill={COLORS.primary}
               />
             }
-            isVerified={user?.selfie_verification_status === "VERIFIED"}
-            isLocked={isSelfieLocked}
+            // isVerified={user?.selfie_verification_status === "VERIFIED"}
+            // isLocked={isSelfieLocked}
             lockedMessage="Complete BVN and NIN verification first"
           />
         </View>

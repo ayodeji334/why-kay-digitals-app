@@ -13,6 +13,7 @@ import { useAuthStore } from "../../stores/authSlice";
 import useAxios from "../../hooks/useAxios";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../AppText";
+import { AxiosError } from "axios";
 
 const bvnSchema = yup.object({
   bvn: yup
@@ -48,9 +49,17 @@ const BVNForm = () => {
       reset();
 
       showSuccess("BVN Verified successful");
-    } catch (error: any) {
-      showError("Cannot verify your BVN at the moment");
+    } catch (err: any) {
+      console.log(err);
+      // showError(err?.message ?? "Cannot verify your BVN at the moment");
       // console.log(error?.response);
+      if (err instanceof AxiosError) {
+        const errorMessage =
+          err.response?.data?.message ?? "Cannot verify your BVN at the moment";
+        showError(errorMessage);
+      } else {
+        showError("An unexpected error occurred. Please try again.");
+      }
     }
   };
 

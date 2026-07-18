@@ -242,9 +242,9 @@ export default function PayCableTVSubscriptionScreen() {
       return res.data?.data || [];
     },
     enabled: !!selectedNetwork,
-    refetchOnWindowFocus: false,
-    staleTime: 4000,
   });
+
+  console.log(tvPlans);
 
   const selectedPlanCode = watch("plan");
 
@@ -432,6 +432,7 @@ export default function PayCableTVSubscriptionScreen() {
         <SelectInput
           control={control}
           name="plan"
+          loading={isLoading}
           label="Subscription Plan"
           showPlanPrice={true}
           options={

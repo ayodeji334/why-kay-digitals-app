@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Linking,
   Dimensions,
+  Alert,
 } from "react-native";
 import { Camera, useCameraDevice } from "react-native-vision-camera";
 import Svg, { Ellipse } from "react-native-svg";
@@ -23,28 +24,68 @@ import { AppText } from "../components/AppText";
 
 const MAX_BASE64_SIZE = 900 * 1024; // 900 KB
 
+// export async function captureAndCompress(path: string) {
+//   let quality = 0.8;
+//   // start at 80% let
+//   let compressedPath = path;
+//   // initial read
+//   let base64String = await ReactNativeBlobUtil.fs.readFile(path, "base64");
+//   // check size and compress iteratively
+//   while (base64String.length * 0.75 > MAX_BASE64_SIZE && quality > 0.3) {
+//     compressedPath = await Image.compress(compressedPath, {
+//       compressionMethod: "manual",
+//       quality,
+//       maxWidth: 800,
+//       maxHeight: 800,
+//     });
+//     base64String = await ReactNativeBlobUtil.fs.readFile(
+//       compressedPath,
+//       "base64",
+//     );
+//     quality -= 0.1;
+//   }
+
+//   return { path: compressedPath, base64: base64String };
+// }
+
+function stripFileScheme(path: string) {
+  return path.startsWith("file://") ? path.replace("file://", "") : path;
+}
+
 export async function captureAndCompress(path: string) {
+  const cleanPath = stripFileScheme(path);
+
   let quality = 0.8;
+
   // start at 80% let
-  let compressedPath = path;
+  let compressedPath = cleanPath;
+
   // initial read
-  let base64String = await ReactNativeBlobUtil.fs.readFile(path, "base64");
+  let base64String = await ReactNativeBlobUtil.fs.readFile(
+    compressedPath,
+    "base64",
+  );
+
   // check size and compress iteratively
   while (base64String.length * 0.75 > MAX_BASE64_SIZE && quality > 0.3) {
-    compressedPath = await Image.compress(compressedPath, {
-      compressionMethod: "manual",
-      quality,
-      maxWidth: 800,
-      maxHeight: 800,
-    });
+    compressedPath = stripFileScheme(
+      await Image.compress(compressedPath, {
+        compressionMethod: "manual",
+        quality,
+        maxWidth: 800,
+        maxHeight: 800,
+      }),
+    );
     base64String = await ReactNativeBlobUtil.fs.readFile(
       compressedPath,
       "base64",
     );
     quality -= 0.1;
   }
+
   return { path: compressedPath, base64: base64String };
 }
+
 const { width, height } = Dimensions.get("window");
 
 export default function SelfieVerificationScreen() {
@@ -71,15 +112,38 @@ export default function SelfieVerificationScreen() {
     }
   };
 
+  // const takeSelfie = async () => {
+  //   if (cameraRef.current) {
+  //     const photo = await cameraRef.current.takePhoto({ flash: "off" });
+
+  //     const result = await captureAndCompress(photo.path);
+
+  //     if (result) {
+  //       navigation.replace("SelfieConfirmation", { image: result });
+  //     }
+  //   }
+  // };
+
+  const [capturing, setCapturing] = useState(false);
+
   const takeSelfie = async () => {
-    if (cameraRef.current) {
-      const photo = await cameraRef.current.takePhoto({ flash: "off" });
+    if (!cameraRef.current || capturing) return;
+
+    try {
+      setCapturing(true);
+      const photo = await cameraRef.current.takePhoto();
+      // Alert.alert("Photo captured at:", photo.path);
 
       const result = await captureAndCompress(photo.path);
+      // Alert.alert("Compression result:", result?.path);
 
       if (result) {
         navigation.replace("SelfieConfirmation", { image: result });
       }
+    } catch (error: any) {
+      Alert.alert("Capture failed", error?.message ?? String(error));
+    } finally {
+      setCapturing(false);
     }
   };
 

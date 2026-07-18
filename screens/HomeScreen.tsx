@@ -49,7 +49,7 @@ const HomeScreen = () => {
     return "Good evening";
   }, []);
 
-  const raw = user?.first_name || user?.username || "";
+  const raw = user?.username || user?.first_name || "";
   const displayName = raw
     ? raw.charAt(0).toUpperCase() + raw.slice(1)
     : "there";
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    lineHeight: 14,
+    lineHeight: 19,
   },
   emptyState: {
     borderRadius: 12,
