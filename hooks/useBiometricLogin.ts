@@ -4,6 +4,7 @@ import useAxios from "./useAxios";
 import { showError } from "../utlis/toast";
 import { storage, STORAGE_KEYS } from "../utlis/storage";
 import { OneSignal } from "react-native-onesignal";
+import { useAuthStore } from "../stores/authSlice";
 
 const rnBiometrics = new ReactNativeBiometrics({
   allowDeviceCredentials: true, // true = also allow PIN/pattern fallback
@@ -52,14 +53,45 @@ export const useBiometricLogin = () => {
   //   }
   // }, []);
 
+  // const refreshAvailability = useCallback(async () => {
+  //   try {
+  //     const { available, biometryType } =
+  //       await rnBiometrics.isSensorAvailable();
+  //     const { keysExist } = await rnBiometrics.biometricKeysExist();
+  //     const storedKeyId = storage.getString(STORAGE_KEYS.BIOMETRIC_KEY_ID);
+
+  //     console.log("[bio]", { available, biometryType, keysExist, storedKeyId });
+
+  //     if (!available) {
+  //       setBiometryLabel(null);
+  //       setIsReady(false);
+  //       return;
+  //     }
+
+  //     setBiometryLabel(
+  //       biometryType === BiometryTypes.FaceID
+  //         ? "Face ID"
+  //         : biometryType === BiometryTypes.TouchID
+  //         ? "Touch ID"
+  //         : "Biometrics",
+  //     );
+
+  //     setIsReady(keysExist && !!storedKeyId);
+  //   } catch (e) {
+  //     console.log("[bio] refresh threw", e); // <- don't swallow this
+  //     setBiometryLabel(null);
+  //     setIsReady(false);
+  //   }
+  // }, []);
+
   const refreshAvailability = useCallback(async () => {
     try {
       const { available, biometryType } =
         await rnBiometrics.isSensorAvailable();
       const { keysExist } = await rnBiometrics.biometricKeysExist();
       const storedKeyId = storage.getString(STORAGE_KEYS.BIOMETRIC_KEY_ID);
-
-      console.log("[bio]", { available, biometryType, keysExist, storedKeyId });
+      const storedUserId = storage.getString(STORAGE_KEYS.BIOMETRIC_USER_ID);
+      const currentUserId = useAuthStore.getState().user?.uuid;
 
       if (!available) {
         setBiometryLabel(null);
@@ -75,9 +107,16 @@ export const useBiometricLogin = () => {
           : "Biometrics",
       );
 
-      setIsReady(keysExist && !!storedKeyId);
+      // "Ready" now means: sensor available, key exists locally, AND that
+      // key was registered by the currently logged-in user — not just
+      // "some key exists" from a previous account.
+      setIsReady(
+        keysExist &&
+          !!storedKeyId &&
+          !!currentUserId &&
+          storedUserId === currentUserId,
+      );
     } catch (e) {
-      console.log("[bio] refresh threw", e); // <- don't swallow this
       setBiometryLabel(null);
       setIsReady(false);
     }
@@ -145,18 +184,50 @@ export const useBiometricLogin = () => {
     }
   };
 
+  const clearBiometricsIfDifferentUser = useCallback(
+    async (newUserUuid?: string): Promise<void> => {
+      if (!newUserUuid) return;
+
+      const storedUserId = storage.getString(STORAGE_KEYS.BIOMETRIC_USER_ID);
+      const storedKeyId = storage.getString(STORAGE_KEYS.BIOMETRIC_KEY_ID);
+
+      // Nothing enrolled on this device at all — nothing to clear.
+      if (!storedKeyId) return;
+
+      // Key belongs to this same user — leave it alone.
+      if (storedUserId === newUserUuid) return;
+
+      // Key belongs to someone else (or has no recorded owner, e.g. an
+      // older enrollment from before this field existed) — clear it.
+      await rnBiometrics.deleteKeys().catch(() => {});
+      storage.delete(STORAGE_KEYS.BIOMETRIC_KEY_ID);
+      storage.delete(STORAGE_KEYS.BIOMETRIC_USER_ID);
+      await refreshAvailability();
+    },
+    [refreshAvailability],
+  );
+
   /** Remove local keys + stored id (call alongside your revoke endpoint). */
+  // const clearLocalBiometrics = async () => {
+  //   await rnBiometrics.deleteKeys();
+  //   storage.delete(STORAGE_KEYS.BIOMETRIC_KEY_ID);
+  //   await refreshAvailability();
+  // };
+
   const clearLocalBiometrics = async () => {
     await rnBiometrics.deleteKeys();
     storage.delete(STORAGE_KEYS.BIOMETRIC_KEY_ID);
+    storage.delete(STORAGE_KEYS.BIOMETRIC_USER_ID);
     await refreshAvailability();
   };
 
   return {
-    biometryLabel, // "Face ID" | "Touch ID" | "Biometrics" | null
-    isReady, // sensor available AND a registered key exists
+    biometryLabel,
+    isReady,
     isBusy,
     loginWithBiometrics,
     clearLocalBiometrics,
+    clearBiometricsIfDifferentUser,
+    refreshAvailability,
   };
 };

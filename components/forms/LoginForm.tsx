@@ -21,6 +21,7 @@ import {
   useBiometricStore,
 } from "../../stores/biometricSlice";
 import { useBiometricPromptStore } from "../../stores/biometricPromptSlice";
+import { useBiometricLogin } from "../../hooks/useBiometricLogin";
 
 const loginSchema = yup.object().shape({
   login: yup.string().required("Email or Username is required"),
@@ -40,6 +41,7 @@ const LoginForm: React.FC = () => {
   const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
   const navigation: any = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
+  const { clearBiometricsIfDifferentUser } = useBiometricLogin();
 
   const { control, handleSubmit } = useForm<LoginFormInputs>({
     resolver: yupResolver(loginSchema),
@@ -107,6 +109,7 @@ const LoginForm: React.FC = () => {
       setToken(auth.accessToken, auth.refreshToken);
       setUser(user);
 
+      await clearBiometricsIfDifferentUser(user.uuid);
       await useBiometricPromptStore.getState().hydrate();
       await refreshBiometricState();
 

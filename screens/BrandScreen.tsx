@@ -18,7 +18,6 @@ import { AppText } from "../components/AppText";
 import CountryPicker from "../components/CountryPicker";
 import useAxios from "../hooks/useAxios";
 import { Country } from "../libs/types";
-import { getCachedCountries, loadCountries } from "../libs/countries";
 import { useCountries } from "../hooks/useCountries";
 
 const ITEMS_PER_PAGE = 20;
@@ -39,6 +38,8 @@ export default function BrandsScreen() {
     isPending: countriesLoading,
     isError: countriesError,
   } = useCountries();
+
+  console.log(countries);
 
   useEffect(() => {
     if (!selectedCountry && countries.length) {

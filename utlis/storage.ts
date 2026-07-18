@@ -5,6 +5,7 @@ export const storage = new MMKV();
 export const STORAGE_KEYS = {
   BIOMETRIC_KEY_ID: "biometric_key_id",
   BIOMETRIC_PROMPT: "biometric_prompt",
+  BIOMETRIC_USER_ID: "biometric_user_id",
 } as const;
 
 export const setItem = (key: string, value: string) => {

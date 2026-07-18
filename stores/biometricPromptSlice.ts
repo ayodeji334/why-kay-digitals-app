@@ -53,10 +53,30 @@ export const useBiometricPromptStore = create<
 
     setHoldGate: (v: boolean) => set({ holdGate: v }),
 
+    // hydrate: async () => {
+    //   const uuid = useAuthStore.getState().user?.uuid;
+    //   await removeItem(biometricPromptKey(uuid!));
+    //   await removeItem(STORAGE_KEYS.BIOMETRIC_PROMPT);
+
+    //   if (!uuid) {
+    //     set({
+    //       status: "never_asked",
+    //       promptCount: 0,
+    //       lastPromptedAt: 0,
+    //       hydrated: true,
+    //     });
+    //     return;
+    //   }
+    //   try {
+    //     const raw = await getItem(biometricPromptKey(uuid));
+    //     set({ ...(raw ? JSON.parse(raw) : {}), hydrated: true });
+    //   } catch {
+    //     set({ hydrated: true });
+    //   }
+    // },
+
     hydrate: async () => {
       const uuid = useAuthStore.getState().user?.uuid;
-      await removeItem(biometricPromptKey(uuid!));
-      await removeItem(STORAGE_KEYS.BIOMETRIC_PROMPT);
 
       if (!uuid) {
         set({
