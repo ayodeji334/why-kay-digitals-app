@@ -102,12 +102,12 @@ export default function AccountSecurityScreen() {
     state => state?.isGoogleAuthenticatorEnabled,
   );
 
-  const { isReady } = useBiometricLogin();
+  // const { isReady } = useBiometricLogin();
 
   const navigation = useNavigation();
   const setIsShowBalance = useAuthStore(state => state.setIsShowBalance);
   const isShowBalance = useAuthStore(state => state.isShowBalance);
-  const isBiometricEnabled = userData?.biometric_enabled;
+  // const isBiometricEnabled = userData?.biometric_enabled;
   const is2FAEnabled = userData?.two_factor_enabled || false;
 
   return (

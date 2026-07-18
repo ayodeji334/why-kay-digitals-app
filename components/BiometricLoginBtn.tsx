@@ -94,14 +94,15 @@ const BiometricLoginButton = () => {
     }
 
     // Confirm with the user before firing the native biometric prompt
-    Alert.alert(
-      `Log in with ${label}?`,
-      `Confirm to authenticate with ${label} and sign in to your account.`,
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Continue", onPress: completeLogin },
-      ],
-    );
+    // Alert.alert(
+    //   `Log in with ${label}?`,
+    //   `Confirm to authenticate with ${label} and sign in to your account.`,
+    //   [
+    //     { text: "Cancel", style: "cancel" },
+    //     { text: "Continue", onPress: completeLogin },
+    //   ],
+    // );
+    completeLogin();
   };
 
   return (

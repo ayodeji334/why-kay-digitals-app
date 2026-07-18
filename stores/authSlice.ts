@@ -114,16 +114,57 @@ export const useAuthStore = create<AuthState>()(
         set({ hasHydrated: true });
       },
     }),
+    // {
+    //   name: "auth-storage",
+
+    //   /**
+    //    * MMKV adapter
+    //    * IMPORTANT:
+    //    * - Zustand already serializes
+    //    * - MMKV stores raw strings
+    //    * - NEVER JSON.stringify here
+    //    */
+    //   storage: createJSONStorage(() => ({
+    //     getItem: key => {
+    //       const value = getItem(key);
+    //       return value ?? null;
+    //     },
+    //     setItem: (key, value) => {
+    //       setItem(key, value);
+    //     },
+    //     removeItem: key => {
+    //       removeItem(key);
+    //     },
+    //   })),
+
+    //   /**
+    //    * Persist ONLY what is needed
+    //    */
+    //   partialize: state => ({
+    //     token: state.token,
+    //     refreshToken: state.refreshToken,
+    //     user: state.user,
+    //     isBiometricEnabled: state.isBiometricEnabled,
+    //     isGoogleAuthenticatorEnabled: state.isGoogleAuthenticatorEnabled,
+    //   }),
+
+    //   /**
+    //    * Hydration callback (critical for real devices)
+    //    */
+    //   onRehydrateStorage: () => {
+    //     return (state, error) => {
+    //       if (error) {
+    //         console.log("an error happened during hydration", error);
+    //       } else {
+    //         state?.setHasHydrated;
+    //         console.log("hydration finished");
+    //       }
+    //     };
+    //   },
+    // },
     {
       name: "auth-storage",
 
-      /**
-       * MMKV adapter
-       * IMPORTANT:
-       * - Zustand already serializes
-       * - MMKV stores raw strings
-       * - NEVER JSON.stringify here
-       */
       storage: createJSONStorage(() => ({
         getItem: key => {
           const value = getItem(key);
@@ -146,17 +187,15 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         isBiometricEnabled: state.isBiometricEnabled,
         isGoogleAuthenticatorEnabled: state.isGoogleAuthenticatorEnabled,
+        isShowBalance: state.isShowBalance, // now persists across restarts
       }),
 
-      /**
-       * Hydration callback (critical for real devices)
-       */
       onRehydrateStorage: () => {
         return (state, error) => {
           if (error) {
             console.log("an error happened during hydration", error);
           } else {
-            state?.setHasHydrated;
+            state?.setHasHydrated();
             console.log("hydration finished");
           }
         };
@@ -172,12 +211,15 @@ export const useIsAuthenticated = () =>
 export const useIsBiometricEnabled = () =>
   useAuthStore(state => state.isBiometricEnabled);
 export const useHasHydrated = () => useAuthStore(state => state.hasHydrated);
+export const useIsShowBalance = () =>
+  useAuthStore(state => state.isShowBalance);
 
 export const useAuthActions = () =>
   useAuthStore(state => ({
     setToken: state.setToken,
     setUser: state.setUser,
     setIsAuthenticated: state.setIsAuthenticated,
+    setIsShowBalance: state.setIsShowBalance,
     logout: state.logout,
     clearAuth: state.clearAuth,
   }));

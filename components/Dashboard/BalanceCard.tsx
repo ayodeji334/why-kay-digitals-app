@@ -37,9 +37,9 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
   showActionButtons = true,
 }) => {
   const isShowBalance = useAuthStore(state => state.isShowBalance);
+  const setIsShowBalance = useAuthStore(state => state.setIsShowBalance);
   const [depositModalVisible, setDepositModalVisible] = useState(false);
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
-  const [visible, setVisible] = useState(isShowBalance);
   const navigation: any = useNavigation();
 
   return (
@@ -66,7 +66,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
       <View style={styles.balanceAmount}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <AppText style={styles.amount}>
-            {visible
+            {isShowBalance
               ? formatAmount(balance ?? 0, { currency, decimalPlace: 2 })
               : "**********"}
           </AppText>
@@ -74,9 +74,9 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         <TouchableOpacity
           activeOpacity={0.8}
           style={styles.eyeIcon}
-          onPress={() => setVisible(!visible)}
+          onPress={() => setIsShowBalance(!isShowBalance)}
         >
-          {visible ? (
+          {isShowBalance ? (
             <EyeSlash variant="Linear" size={16} color="#fff" />
           ) : (
             <Eye variant="Linear" size={16} color="#fff" />
