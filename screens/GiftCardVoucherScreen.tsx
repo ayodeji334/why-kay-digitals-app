@@ -26,11 +26,11 @@ interface Voucher {
   };
 }
 
-// function getDelivery(v: Voucher): "code" | "url" | "unknown" {
-//   if (v.epin && v.epin.trim()) return "code";
-//   if (v.redemption_url && v.redemption_url.trim()) return "url";
-//   return "unknown";
-// }
+function getDelivery(v: Voucher): "code" | "url" | "unknown" {
+  if (v.epin && v.epin.trim()) return "code";
+  if (v.redemption_url && v.redemption_url.trim()) return "url";
+  return "unknown";
+}
 
 const VoucherCard = ({
   voucher,
@@ -41,6 +41,7 @@ const VoucherCard = ({
   index: number;
   total: number;
 }) => {
+  console.log(voucher);
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -61,36 +62,52 @@ const VoucherCard = ({
         </View>
       ) : (
         <>
-          <DetailRow
-            label="Redemption Link"
-            value={voucher?.redemption_url || "Not provided"}
-            copyable={!!voucher?.redemption_url}
-          />
+          {voucher?.redemption_url && (
+            <DetailRow
+              label="Redemption Link"
+              value={voucher?.redemption_url || "Not provided"}
+              copyable={!!voucher?.redemption_url}
+            />
+          )}
 
-          {/* {delivery === "code" ? ( */}
-          <DetailRow
-            label="Card PIN"
-            value={voucher?.epin || "Not provided"}
-            copyable={!!voucher?.epin}
-          />
-          {/* ) : null} */}
+          {voucher?.epin && (
+            <DetailRow
+              label="Card PIN"
+              value={voucher?.epin || "Not provided"}
+              copyable={!!voucher?.epin}
+            />
+          )}
 
-          <DetailRow
-            label="Confirmation Number"
-            value={voucher?.confirmation?.confirmationNumber || "Not provided"}
-            copyable={!!voucher?.confirmation?.confirmationNumber}
-          />
+          {voucher?.voucher_id && (
+            <DetailRow
+              label="Card Number"
+              value={voucher?.voucher_id || "Not provided"}
+              copyable={!!voucher?.voucher_id}
+            />
+          )}
 
-          <DetailRow
-            label="Expires On"
-            value={voucher?.expires_at || "Not provided"}
-          />
+          {voucher?.confirmation?.confirmationNumber && (
+            <DetailRow
+              label="Confirmation Number"
+              value={
+                voucher?.confirmation?.confirmationNumber || "Not provided"
+              }
+              copyable={!!voucher?.confirmation?.confirmationNumber}
+            />
+          )}
+
+          {voucher?.expires_at && (
+            <DetailRow
+              label="Expires On"
+              value={voucher?.expires_at || "Not provided"}
+              copyable={!!voucher?.expires_at}
+            />
+          )}
         </>
       )}
 
-      {/* How to redeem */}
       {!!voucher.instructions?.trim() && (
-        <View style={styles.infoBlock}>
+        <View style={[styles.infoBlock, { marginTop: 10 }]}>
           <AppText style={styles.infoLabel}>How to redeem</AppText>
           <AppText style={styles.infoText}>{voucher.instructions}</AppText>
         </View>
@@ -321,16 +338,16 @@ const styles = StyleSheet.create({
   // Info blocks
   infoBlock: { gap: 4 },
   infoLabel: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    color: "#9CA3AF",
+    color: "#3f3f3f",
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
   infoText: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
-    color: "#6B7280",
+    color: "#000000",
     lineHeight: normalize(19),
   },
   mutedText: {

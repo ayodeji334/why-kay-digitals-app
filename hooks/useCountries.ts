@@ -2260,10 +2260,9 @@ const countries = [
 ];
 
 export const useCountries = () =>
-  useQuery<Country[]>({
+  useQuery<any[]>({
     queryKey: ["countries"],
-    queryFn: () =>
-      new Promise<any[]>(resolve => setTimeout(() => resolve(countries), 2000)),
+    queryFn: () => countries,
     staleTime: Infinity, // bundled data, never goes stale
     gcTime: Infinity,
     retry: 2,

@@ -18,7 +18,6 @@ import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
-import { getCachedCountries, loadCountries } from "../libs/countries";
 import { Country } from "../libs/types";
 import { TranslationLanguageCodeMap } from "react-native-country-picker-modal";
 import { useCountries } from "../hooks/useCountries";
@@ -55,11 +54,11 @@ const PhoneNumberInputField: React.FC<Props> = ({
   onChangeText,
   defaultCountryCode = "NG",
 }) => {
-  const { data: allCountries = [] } = useCountries();
+  const { data: allCountries } = useCountries();
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
 
-  const [countries, setCountries] = useState<any[]>(allCountries);
+  const [countries, setCountries] = useState<any[]>(allCountries ?? []);
   const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
 
   const getCountryName = (country: Country): string => {
@@ -74,7 +73,7 @@ const PhoneNumberInputField: React.FC<Props> = ({
     let cancelled = false;
 
     if (!cancelled) {
-      const def = allCountries.find(c => c.cca2 === defaultCountryCode);
+      const def = allCountries?.find(c => c.cca2 === defaultCountryCode);
       if (def) setSelectedCountry(def);
     }
 
@@ -236,7 +235,7 @@ const PhoneNumberInputField: React.FC<Props> = ({
                         newVal = currentVal.slice(oldCode.length);
                       }
                       const updatedVal = `${
-                        item.callingCode[0] ?? ""
+                        item?.callingCode[0] ?? ""
                       }${newVal}`;
                       onChange(updatedVal);
                       onChangeText?.(updatedVal);
@@ -258,7 +257,7 @@ const PhoneNumberInputField: React.FC<Props> = ({
                     </AppText>
                   </View>
                   <AppText style={styles.callingCode}>
-                    +{item.callingCode[0]}
+                    +{item?.callingCode[0]}
                   </AppText>
                 </TouchableOpacity>
               )}
