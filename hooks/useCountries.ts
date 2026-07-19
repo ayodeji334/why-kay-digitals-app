@@ -6,7 +6,7 @@ import {
   Country,
 } from "react-native-country-picker-modal";
 
-const countries = [
+export const allCountries = [
   {
     cca2: "AF",
     currency: ["AFN"],
@@ -2262,7 +2262,7 @@ const countries = [
 export const useCountries = () =>
   useQuery<any[]>({
     queryKey: ["countries"],
-    queryFn: () => countries,
+    queryFn: () => allCountries,
     staleTime: Infinity, // bundled data, never goes stale
     gcTime: Infinity,
     retry: 2,

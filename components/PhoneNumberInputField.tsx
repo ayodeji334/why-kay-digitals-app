@@ -20,7 +20,7 @@ import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
 import { Country } from "../libs/types";
 import { TranslationLanguageCodeMap } from "react-native-country-picker-modal";
-import { useCountries } from "../hooks/useCountries";
+import { allCountries, useCountries } from "../hooks/useCountries";
 
 interface Props {
   control: Control<any>;
@@ -54,12 +54,14 @@ const PhoneNumberInputField: React.FC<Props> = ({
   onChangeText,
   defaultCountryCode = "NG",
 }) => {
-  const { data: allCountries } = useCountries();
+  // const { data: allCountries } = useCountries();
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
 
   const [countries, setCountries] = useState<any[]>(allCountries ?? []);
   const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
+
+  console.log();
 
   const getCountryName = (country: Country): string => {
     if (typeof country.name === "string") return country.name;
@@ -301,7 +303,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 10,
     paddingHorizontal: 10,
-    paddingVertical: 12,
+    paddingVertical: normalize(18),
     backgroundColor: "#fff",
   },
   countryCode: {
@@ -315,7 +317,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 10,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: normalize(18),
     color: "#1A1A1A",
     fontFamily: getFontFamily("400"),
     fontSize: normalize(18),

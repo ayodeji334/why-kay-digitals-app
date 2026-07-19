@@ -1043,7 +1043,11 @@ export default function PayElectricityBillsScreen() {
   }, [amount, fiatBalance]);
 
   const isDisabled =
-    true || true || validatingMeter || isSubmitting || hasInsufficientBalance;
+    !isValid ||
+    !meterValid ||
+    validatingMeter ||
+    isSubmitting ||
+    hasInsufficientBalance;
 
   useResetFormOnMount(
     reset,

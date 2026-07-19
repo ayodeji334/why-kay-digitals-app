@@ -2195,7 +2195,8 @@ export const DetailRow: React.FC<{
   value?: string | number;
   color?: string;
   copyable?: boolean;
-}> = ({ label, value, color = "#000", copyable = false }) => {
+  truncate?: boolean;
+}> = ({ label, value, color = "#000", copyable = false, truncate = true }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -2213,7 +2214,7 @@ export const DetailRow: React.FC<{
       <View style={styles.valueContainer}>
         <AppText
           style={[styles.value, { color }]}
-          numberOfLines={1}
+          numberOfLines={truncate ? 1 : 10}
           ellipsizeMode="tail"
         >
           {value ?? "-"}
@@ -2290,6 +2291,8 @@ const TransactionDetailScreen = () => {
     setReceiptSize({ width, height });
   };
 
+  const isFlagged = !!transaction?.is_flagged;
+
   const isSuccess = useMemo(
     () => transaction?.status?.toLowerCase() === "successful",
     [transaction?.status],
@@ -2362,6 +2365,10 @@ const TransactionDetailScreen = () => {
   }, [transaction]);
 
   const statusMessage = useMemo(() => {
+    if (isFlagged) {
+      return "Your deposit is under review";
+    }
+
     return isSuccess
       ? transaction?.category === "GIFT_CARD"
         ? `Your ${
@@ -2389,6 +2396,7 @@ const TransactionDetailScreen = () => {
       : "Transaction failed";
   }, [transaction, isSuccess, isProcessing]);
 
+  console.log(transaction);
   /**
    * Rows rendered inside the shared receipt IMAGE. Mirrors the on-screen
    * details so the exported PNG reads like a full receipt.
@@ -2554,6 +2562,10 @@ const TransactionDetailScreen = () => {
         : null,
       transaction?.status?.toUpperCase() !== "FAILED"
         ? { label: "Description", value: transaction?.description }
+        : null,
+
+      transaction?.is_flagged
+        ? { label: "Status", value: "Under Review", color: "#CA8A04" }
         : null,
     ];
 
@@ -2900,11 +2912,39 @@ const TransactionDetailScreen = () => {
             label="Wallet"
             value={transaction?.medium?.toUpperCase()}
           />
+
           <DetailRow
+            label="Status"
+            value={
+              isFlagged
+                ? "Under Review"
+                : isSuccess
+                ? "Successful"
+                : transaction?.status
+            }
+            color={
+              isFlagged
+                ? "#CA8A04"
+                : isSuccess
+                ? "#059669"
+                : isProcessing
+                ? "#CA8A04"
+                : "#DC2626"
+            }
+          />
+
+          {isFlagged && Array.isArray(transaction?.meta?.flag_reasons) && (
+            <DetailRow
+              label="Review Reason"
+              value={transaction.meta.flag_reasons[0]}
+              truncate={false}
+            />
+          )}
+          {/* <DetailRow
             label="Status"
             value={isSuccess ? "Successful" : transaction?.status}
             color={isSuccess ? "#059669" : isProcessing ? "#CA8A04" : "#DC2626"}
-          />
+          /> */}
           {transaction?.category === "WITHDRAWAL" && (
             <>
               <DetailRow
@@ -3001,7 +3041,11 @@ const TransactionDetailScreen = () => {
           )}
 
           {transaction?.status.toUpperCase() !== "FAILED" && (
-            <DetailRow label="Description" value={transaction?.description} />
+            <DetailRow
+              label="Description"
+              truncate={false}
+              value={transaction?.description}
+            />
           )}
 
           <DetailRow
@@ -3303,8 +3347,9 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0,
     fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
+    fontFamily: getFontFamily("700"),
     textAlign: "right",
+    lineHeight: 17,
   },
   copyButton: {
     marginLeft: 6,
