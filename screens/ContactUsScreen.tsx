@@ -1,4 +1,302 @@
-import React from "react";
+// import React from "react";
+// import {
+//   View,
+//   Text,
+//   TouchableOpacity,
+//   ScrollView,
+//   Linking,
+//   StyleSheet,
+// } from "react-native";
+// import {
+//   ArrowRight2,
+//   Call,
+//   Sms,
+//   Instagram,
+//   Facebook,
+//   Global,
+//   Clock,
+//   Whatsapp,
+// } from "iconsax-react-nativejs";
+// import { getFontFamily, normalize } from "../constants/settings";
+// import { COLORS } from "../constants/colors";
+// import { AppText } from "../components/AppText";
+
+// interface SectionProps {
+//   title: string;
+//   children: React.ReactNode;
+//   style?: any;
+// }
+
+// interface MenuItemProps {
+//   title: string;
+//   subtitle?: string | string[];
+//   onPress?: () => void;
+//   showArrow?: boolean;
+//   showSwitch?: boolean;
+//   switchValue?: boolean;
+//   onSwitchChange?: (value: boolean) => void;
+//   isDangerous?: boolean;
+//   color?: string;
+//   IconComponent?: React.ComponentType<any>;
+// }
+
+// const Section: React.FC<SectionProps> = ({ title, children, style }) => (
+//   <View style={[styles.section, style]}>
+//     <AppText style={styles.sectionTitle}>{title}</AppText>
+//     {children}
+//   </View>
+// );
+
+// const MenuItem: React.FC<MenuItemProps> = ({
+//   title,
+//   subtitle,
+//   onPress,
+//   showSwitch = false,
+//   isDangerous = false,
+//   color = "#000",
+//   IconComponent = ArrowRight2,
+//   showArrow = true,
+// }) => {
+//   return (
+//     <TouchableOpacity
+//       activeOpacity={0.7}
+//       style={styles.menuItem}
+//       onPress={onPress}
+//       disabled={showSwitch}
+//     >
+//       <View style={[styles.iconContainer]}>
+//         <IconComponent
+//           variant="Outline"
+//           size={18}
+//           color={isDangerous ? "#DC2626" : COLORS.primary}
+//         />
+//       </View>
+//       <View style={styles.menuItemContent}>
+//         <AppText
+//           style={[
+//             styles.menuItemTitle,
+//             { color: isDangerous ? "#DC2626" : color },
+//           ]}
+//         >
+//           {title}
+//         </AppText>
+//         {/* Subtitle handling: string or array */}
+//         {typeof subtitle === "string" ? (
+//           <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
+//         ) : Array.isArray(subtitle) ? (
+//           <View style={styles.listContainer}>
+//             {subtitle.map((item, index) => (
+//               <View key={index} style={styles.listItem}>
+//                 <AppText style={styles.listText}>{item}</AppText>
+//               </View>
+//             ))}
+//           </View>
+//         ) : null}
+//       </View>
+//       <View style={{ alignSelf: "center" }}>
+//         {showArrow && !showSwitch && <ArrowRight2 size={16} color={color} />}
+//         {/* {showSwitch && (
+//           <Switch
+//             value={switchValue}
+//             onValueChange={onSwitchChange}
+//             trackColor={{ false: "#D1D5DB", true: "#10B981" }}
+//             style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] }}
+//           />
+//         )} */}
+//       </View>
+//     </TouchableOpacity>
+//   );
+// };
+
+// const HelpSupportScreen: React.FC = () => {
+//   const handleWhatsApp = () => {
+//     Linking.openURL("https://wa.me/07012345678");
+//   };
+
+//   const handleCall = () => {
+//     Linking.openURL("tel:07012345678");
+//   };
+
+//   const handleEmail = () => {
+//     Linking.openURL("mailto:support@whykay.net");
+//   };
+
+//   const handleInstagram = () => {
+//     Linking.openURL("https://instagram.com/whykay");
+//   };
+
+//   const handleFacebook = () => {
+//     Linking.openURL("https://facebook.com/whykays");
+//   };
+
+//   const handleWebsite = () => {
+//     Linking.openURL("https://www.whykay.net");
+//   };
+
+//   return (
+//     <ScrollView style={styles.container}>
+//       <Section title="">
+//         <MenuItem
+//           title="Available Hours"
+//           subtitle={[
+//             "Monday - Friday: 9am - 6pm",
+//             "Saturday: 9am - 6pm",
+//             "Sunday: Closed",
+//           ]}
+//           onPress={handleInstagram}
+//           IconComponent={Clock}
+//           showArrow={false}
+//         />
+//       </Section>
+
+//       <Section title="INSTANT SUPPORT">
+//         <MenuItem
+//           title="WhatsApp"
+//           subtitle={["Chat with a support agent", "Response time: 1-5 mins"]}
+//           onPress={handleWhatsApp}
+//           IconComponent={Whatsapp}
+//         />
+//         <MenuItem
+//           title="Call Us (070 1234 5678)"
+//           subtitle="Speak directly with our support agent"
+//           onPress={handleCall}
+//           IconComponent={Call}
+//         />
+//         <MenuItem
+//           title="Email"
+//           subtitle="support@whykay.net"
+//           onPress={handleEmail}
+//           IconComponent={Sms}
+//         />
+//       </Section>
+
+//       <Section title="CONNECT WITH US">
+//         <MenuItem
+//           title="Instagram"
+//           subtitle="@whykay"
+//           onPress={handleInstagram}
+//           IconComponent={Instagram}
+//         />
+//         <MenuItem
+//           title="Facebook"
+//           subtitle="@whykay"
+//           onPress={handleFacebook}
+//           IconComponent={Facebook}
+//         />
+//         <MenuItem
+//           title="Website"
+//           subtitle="www.whykay.net"
+//           onPress={handleWebsite}
+//           IconComponent={Global}
+//         />
+//       </Section>
+
+//       <TouchableOpacity
+//         activeOpacity={0.8}
+//         style={styles.contactButton}
+//         onPress={handleWhatsApp}
+//       >
+//         <AppText style={styles.contactButtonText}>Contact Support Now</AppText>
+//       </TouchableOpacity>
+//     </ScrollView>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#fff",
+//   },
+//   section: {
+//     paddingHorizontal: 20,
+//     marginBottom: 24,
+//   },
+//   sectionTitle: {
+//     fontSize: normalize(18),
+//     fontFamily: getFontFamily("800"),
+//     color: "#000",
+//     marginBottom: 16,
+//   },
+//   hoursSection: {
+//     marginTop: 16,
+//   },
+//   hoursContainer: {
+//     backgroundColor: "#F8F9FA",
+//     padding: 16,
+//     borderRadius: 12,
+//     flex: 1,
+//     gap: 12,
+//     alignItems: "flex-start",
+//     flexDirection: "row",
+//   },
+//   menuItem: {
+//     flexDirection: "row",
+//     alignItems: "flex-start",
+//     padding: 12,
+//     marginBottom: 8,
+//     backgroundColor: "#F9FAFB",
+//     gap: 14,
+//     borderWidth: 1,
+//     borderColor: "#e7e7e7",
+//     borderRadius: 10,
+//   },
+//   iconContainer: {
+//     borderRadius: 100,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   menuItemContent: {
+//     flex: 1,
+//   },
+//   menuItemTitle: {
+//     fontSize: normalize(17),
+//     fontFamily: getFontFamily("800"),
+//   },
+//   menuItemSubtitle: {
+//     fontSize: normalize(17),
+//     fontFamily: getFontFamily("400"),
+//     color: COLORS.gray,
+//     marginTop: 2,
+//   },
+//   listContainer: {
+//     marginTop: 4,
+//   },
+//   listItem: {
+//     flexDirection: "row",
+//     alignItems: "flex-start",
+//     fontSize: normalize(17),
+//     fontFamily: getFontFamily("400"),
+//     marginTop: 2,
+//   },
+//   bullet: {
+//     fontSize: normalize(16),
+//     marginRight: 6,
+//     color: "#6B7280",
+//   },
+//   listText: {
+//     fontSize: normalize(17),
+//     color: "#000",
+//     flexShrink: 1,
+//     fontFamily: getFontFamily("400"),
+//   },
+//   contactButton: {
+//     backgroundColor: COLORS.primary,
+//     marginHorizontal: 20,
+//     marginTop: 20,
+//     paddingVertical: 16,
+//     borderRadius: 120,
+//     alignItems: "center",
+//     marginBottom: 40,
+//   },
+//   contactButtonText: {
+//     color: "#fff",
+//     fontSize: normalize(18),
+//     fontFamily: getFontFamily("800"),
+//   },
+// });
+
+// export default HelpSupportScreen;
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -16,10 +314,16 @@ import {
   Global,
   Clock,
   Whatsapp,
+  Message,
 } from "iconsax-react-nativejs";
+
+import ChatWootWidget from "@chatwoot/react-native-widget";
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { AppText } from "../components/AppText";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { CHATWOOT_INSTALLATION_URL, CHATWOOT_WEBTOKEN } from "../config";
+import { useAuthStore } from "../stores/authSlice";
 
 interface SectionProps {
   title: string;
@@ -95,20 +399,33 @@ const MenuItem: React.FC<MenuItemProps> = ({
       </View>
       <View style={{ alignSelf: "center" }}>
         {showArrow && !showSwitch && <ArrowRight2 size={16} color={color} />}
-        {/* {showSwitch && (
-          <Switch
-            value={switchValue}
-            onValueChange={onSwitchChange}
-            trackColor={{ false: "#D1D5DB", true: "#10B981" }}
-            style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] }}
-          />
-        )} */}
       </View>
     </TouchableOpacity>
   );
 };
 
 const HelpSupportScreen: React.FC = () => {
+  const [showChatWidget, setShowChatWidget] = useState(false);
+  const user = useAuthStore(s => s.user);
+
+  const chatUser = {
+    identifier: user?.email,
+    name: user?.username,
+    avatar_url: user?.selfie_url ?? "",
+    email: user?.email,
+    identifier_hash: "",
+  };
+
+  const chatCustomAttributes = {
+    accountId: 1,
+    pricingPlan: "paid",
+    status: "active",
+  };
+
+  const websiteToken = CHATWOOT_WEBTOKEN;
+  const baseUrl = CHATWOOT_INSTALLATION_URL;
+  const locale = "en";
+
   const handleWhatsApp = () => {
     Linking.openURL("https://wa.me/07012345678");
   };
@@ -119,6 +436,10 @@ const HelpSupportScreen: React.FC = () => {
 
   const handleEmail = () => {
     Linking.openURL("mailto:support@whykay.net");
+  };
+
+  const handleLiveChat = () => {
+    setShowChatWidget(true);
   };
 
   const handleInstagram = () => {
@@ -134,71 +455,92 @@ const HelpSupportScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Section title="">
-        <MenuItem
-          title="Available Hours"
-          subtitle={[
-            "Monday - Friday: 9am - 6pm",
-            "Saturday: 9am - 6pm",
-            "Sunday: Closed",
-          ]}
-          onPress={handleInstagram}
-          IconComponent={Clock}
-          showArrow={false}
-        />
-      </Section>
+    <SafeAreaView edges={["right", "left", "bottom"]} style={{ flex: 1 }}>
+      <ScrollView style={styles.container}>
+        <Section title="">
+          <MenuItem
+            title="Available Hours"
+            subtitle={[
+              "Monday - Friday: 9am - 6pm",
+              "Saturday: 9am - 6pm",
+              "Sunday: Closed",
+            ]}
+            onPress={handleInstagram}
+            IconComponent={Clock}
+            showArrow={false}
+          />
+        </Section>
 
-      <Section title="INSTANT SUPPORT">
-        <MenuItem
-          title="WhatsApp"
-          subtitle={["Chat with a support agent", "Response time: 1-5 mins"]}
-          onPress={handleWhatsApp}
-          IconComponent={Whatsapp}
-        />
-        <MenuItem
-          title="Call Us (070 1234 5678)"
-          subtitle="Speak directly with our support agent"
-          onPress={handleCall}
-          IconComponent={Call}
-        />
-        <MenuItem
-          title="Email"
-          subtitle="support@whykay.net"
-          onPress={handleEmail}
-          IconComponent={Sms}
-        />
-      </Section>
+        <Section title="INSTANT SUPPORT">
+          <MenuItem
+            title="Live Chat"
+            subtitle={["Chat with a support agent", "Response time: 1-5 mins"]}
+            onPress={handleLiveChat}
+            IconComponent={Message}
+          />
+          <MenuItem
+            title="WhatsApp"
+            subtitle={["Chat with a support agent", "Response time: 1-5 mins"]}
+            onPress={handleWhatsApp}
+            IconComponent={Whatsapp}
+          />
+          <MenuItem
+            title="Call Us (070 1234 5678)"
+            subtitle="Speak directly with our support agent"
+            onPress={handleCall}
+            IconComponent={Call}
+          />
+          <MenuItem
+            title="Email"
+            subtitle="support@whykay.net"
+            onPress={handleEmail}
+            IconComponent={Sms}
+          />
+        </Section>
 
-      <Section title="CONNECT WITH US">
-        <MenuItem
-          title="Instagram"
-          subtitle="@whykay"
-          onPress={handleInstagram}
-          IconComponent={Instagram}
-        />
-        <MenuItem
-          title="Facebook"
-          subtitle="@whykay"
-          onPress={handleFacebook}
-          IconComponent={Facebook}
-        />
-        <MenuItem
-          title="Website"
-          subtitle="www.whykay.net"
-          onPress={handleWebsite}
-          IconComponent={Global}
-        />
-      </Section>
+        <Section title="CONNECT WITH US">
+          <MenuItem
+            title="Instagram"
+            subtitle="@whykay"
+            onPress={handleInstagram}
+            IconComponent={Instagram}
+          />
+          <MenuItem
+            title="Facebook"
+            subtitle="@whykay"
+            onPress={handleFacebook}
+            IconComponent={Facebook}
+          />
+          <MenuItem
+            title="Website"
+            subtitle="www.whykay.net"
+            onPress={handleWebsite}
+            IconComponent={Global}
+          />
+        </Section>
 
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={styles.contactButton}
-        onPress={handleWhatsApp}
-      >
-        <AppText style={styles.contactButtonText}>Contact Support Now</AppText>
-      </TouchableOpacity>
-    </ScrollView>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.contactButton}
+          onPress={handleLiveChat}
+        >
+          <AppText style={styles.contactButtonText}>Live Chat</AppText>
+        </TouchableOpacity>
+      </ScrollView>
+
+      {showChatWidget && (
+        <ChatWootWidget
+          websiteToken={websiteToken}
+          locale={locale}
+          baseUrl={baseUrl}
+          colorScheme="auto"
+          closeModal={() => setShowChatWidget(false)}
+          isModalVisible={showChatWidget}
+          user={chatUser}
+          customAttributes={chatCustomAttributes}
+        />
+      )}
+    </SafeAreaView>
   );
 };
 
