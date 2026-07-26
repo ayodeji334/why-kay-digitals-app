@@ -37,6 +37,8 @@ import { TradeIntent } from "../libs/types";
 import { showError } from "../utlis/toast";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { buildCryptoAmountSchema } from "./BuyCryptoScreen";
+import { useCryptoLimits } from "../hooks/useCryptoLimits";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -130,8 +132,16 @@ export default function CryptoSellScreen() {
   const route = useRoute<RouteProp<CryptoSellScreenParams, "CryptoSell">>();
   const { apiGet } = useAxios();
   const { intent } = route.params;
+  const { minSellAmount } = useCryptoLimits();
+
+  console.log(minSellAmount);
 
   const selectedAssetUuid = intent.assetId ?? "";
+
+  const schema = useMemo(
+    () => buildCryptoAmountSchema(minSellAmount),
+    [minSellAmount],
+  );
 
   const [displayAmount, setDisplayAmount] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -491,7 +501,12 @@ export default function CryptoSellScreen() {
                   control={control}
                   name="amount"
                   render={({ field: { onChange, onBlur } }) => (
-                    <View style={styles.inputContainer}>
+                    <View
+                      style={[
+                        styles.inputContainer,
+                        errors.amount && styles.errorBorder,
+                      ]}
+                    >
                       <AppText style={styles.dollarSign}>$</AppText>
                       <TextInput
                         style={styles.input}
@@ -766,6 +781,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       paddingHorizontal: normalize(16),
       marginBottom: normalize(10),
       gap: 5,
+    },
+    errorBorder: {
+      borderColor: colors.error,
+      borderWidth: 1,
     },
     dollarSign: {
       fontSize: normalize(26),

@@ -38,6 +38,7 @@ import { resolveRateFromCategories } from "./SellCrytpoScreen";
 import CustomLoading from "../components/CustomLoading";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useCryptoLimits } from "../hooks/useCryptoLimits";
 
 type CryptoBuyScreenParams = {
   CryptoBuy: {
@@ -54,6 +55,16 @@ function relativeChangeExceeded(
   const diff = Math.abs(current - used);
   const relativePercent = (diff / used) * 100;
   return relativePercent > tolerancePercent;
+}
+
+export function buildCryptoAmountSchema(minAmount: number) {
+  return Yup.object().shape({
+    amount: Yup.number()
+      .typeError("Enter a valid amount")
+      .required("Amount is required")
+      .min(minAmount, `Minimum amount is $${minAmount}`),
+    asset_id: Yup.string().required(),
+  });
 }
 
 const schema = Yup.object().shape({
@@ -103,8 +114,15 @@ export default function CryptoBuyScreen() {
   const { intent } = route.params;
   const navigation: any = useNavigation();
   const selectedAssetUuid = intent.assetId ?? "";
-
   const { fiatBalance } = useFiatBalance();
+  const { minBuyAmount } = useCryptoLimits();
+
+  console.log(minBuyAmount);
+
+  const schema = useMemo(
+    () => buildCryptoAmountSchema(minBuyAmount),
+    [minBuyAmount],
+  );
 
   // Local state
   const [displayAmount, setDisplayAmount] = useState("");
@@ -113,7 +131,6 @@ export default function CryptoBuyScreen() {
   const [assetValueEquivalent, setAssetValueEquivalent] = useState<any>(0);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Refs
   const acknowledgedBuyRateRef = useRef<number>(0);
   const acknowledgedMarketPriceRef = useRef<number>(0);
   const rateOverriddenRef = useRef(false);
@@ -121,7 +138,6 @@ export default function CryptoBuyScreen() {
   const colors = useColors();
   const styles = makeStyles(colors);
 
-  // Form
   const {
     control,
     handleSubmit,
@@ -131,7 +147,7 @@ export default function CryptoBuyScreen() {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { amount: 0, asset_id: intent?.assetId ?? "" },
+    defaultValues: { amount: undefined, asset_id: intent?.assetId ?? "" },
     mode: "onChange",
   });
 
@@ -1434,7 +1450,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       marginBottom: normalize(10),
     },
     ngn: {
-      color: colors.text,
+      color: "white",
       fontSize: normalize(22),
       fontFamily: getFontFamily("900"),
     },
