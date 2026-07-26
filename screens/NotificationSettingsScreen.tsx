@@ -25,12 +25,16 @@ import { COLORS } from "../constants/colors";
 // }
 
 import { OneSignal } from "react-native-onesignal";
+import { useColors } from "../hooks/useTheme";
 
 export default function NotificationSettingsScreen() {
   const { patch } = useAxios();
   const { user: userData, setUser } = useAuthStore(state => state);
   const [isPushLoading, setIsPushLoading] = useState(false);
   const [isEmailLoading, setIsEmailLoading] = useState(false);
+
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const isPushNotificationEnabled =
     userData?.is_push_notification_enabled ?? false;
@@ -98,8 +102,7 @@ export default function NotificationSettingsScreen() {
   };
 
   return (
-    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -313,39 +316,40 @@ export default function NotificationSettingsScreen() {
 //   );
 // }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  menuItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 13,
-    paddingHorizontal: 10,
-    borderWidth: 0.5,
-    borderColor: "#D2D2D2",
-    marginVertical: 5,
-    borderRadius: 8,
-    backgroundColor: "#F9FAFB",
-    gap: 10,
-  },
-  menuItemContent: {
-    flex: 1,
-  },
-  menuItemTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-  menuItemSubtitle: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("400"),
-    color: "#000",
-    marginTop: 2,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContainer: {
+      flexGrow: 1,
+      paddingHorizontal: 20,
+    },
+    menuItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 13,
+      paddingHorizontal: 10,
+      borderWidth: 0.5,
+      borderColor: "#D2D2D2",
+      marginVertical: 5,
+      borderRadius: 8,
+      backgroundColor: colors.inputBackground,
+      gap: 10,
+    },
+    menuItemContent: {
+      flex: 1,
+    },
+    menuItemTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+    },
+    menuItemSubtitle: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("400"),
+      color: "#000",
+      marginTop: 2,
+    },
+  });

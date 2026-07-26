@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from "react";
 import {
   ScrollView,
   RefreshControl,
-  StatusBar,
   TouchableOpacity,
   StyleSheet,
   View,
@@ -29,6 +28,7 @@ import { formatAmount } from "../libs/formatNumber";
 import InfoCard from "../components/InfoCard";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 export default function WithdrawScreen() {
   const { apiGet } = useAxios();
@@ -41,6 +41,8 @@ export default function WithdrawScreen() {
   const [pendingPayload, setPendingPayload] = useState<any>(null);
   const [accountDetails, setAccountDetails] = useState<any>(null);
   const [amountFormated, setAmount] = useState("");
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const {
     isLoading,
@@ -69,9 +71,6 @@ export default function WithdrawScreen() {
     gcTime: 0,
   });
 
-  console.log("Data Config:", withdrawalChargeData);
-
-  // Resolve the flat fee — fallback to 100 if not configured or inactive
   const withdrawalFeeConfig = useMemo(() => {
     if (!withdrawalChargeData)
       return { fee: 100, label: "Withdrawal Fee", isDefault: true };
@@ -248,10 +247,12 @@ export default function WithdrawScreen() {
   return (
     <SafeAreaView
       edges={["right", "bottom"]}
-      style={{ flex: 1, backgroundColor: "#fff", paddingHorizontal: 16 }}
+      style={{
+        flex: 1,
+        backgroundColor: colors.background,
+        paddingHorizontal: 16,
+      }}
     >
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -386,7 +387,7 @@ export default function WithdrawScreen() {
           <AppText
             style={{
               paddingVertical: 10,
-              color: "red",
+              color: colors.text,
               fontFamily: getFontFamily("800"),
               fontSize: 12,
             }}
@@ -405,10 +406,11 @@ export default function WithdrawScreen() {
           activeOpacity={0.9}
           onPress={handleSubmit(onSubmit)}
           style={{
-            backgroundColor: !isDisabled ? COLORS.secondary : "#ccc",
+            backgroundColor: COLORS.secondary,
             borderRadius: 100,
             paddingVertical: 14,
             marginVertical: 30,
+            opacity: isDisabled ? 0.5 : 1,
           }}
           disabled={isDisabled}
         >
@@ -810,105 +812,106 @@ export default function WithdrawScreen() {
 //   );
 // }
 
-const styles = StyleSheet.create({
-  warningContainer: {
-    marginTop: 12,
-    padding: 10,
-    backgroundColor: "rgba(255, 0, 0, 0.03)",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 0, 0, 0.3)",
-  },
-  errorBorder: {
-    borderColor: "red",
-    borderWidth: 1,
-  },
-  feeBreakdownContainer: {
-    backgroundColor: "#5AB2431A",
-    borderRadius: 12,
-    padding: 16,
-    gap: 10,
-    marginTop: 10,
-  },
-  feeBreakdownTitle: {
-    color: "#000",
-    fontFamily: getFontFamily("800"),
-    fontSize: 13,
-    marginBottom: 4,
-  },
-  feeRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  feeLabel: {
-    color: "#000",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(17),
-    flex: 1,
-  },
-  feeValue: {
-    color: "#000",
-    fontFamily: getFontFamily("900"),
-    fontSize: normalize(17),
-    textAlign: "right",
-    flex: 1,
-  },
-  feeDivider: {
-    height: 1,
-    backgroundColor: "#b1b1b1",
-  },
-  feeWarning: {
-    backgroundColor: "#3a1a1a",
-    borderRadius: 8,
-    padding: 10,
-    marginTop: 4,
-  },
-  feeWarningText: {
-    color: "#ff6b6b",
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(16),
-  },
-  warningText: {
-    color: "#db0b0bff",
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    textAlign: "left",
-  },
-  amountBox: { marginTop: 24 },
-  amountNote: {
-    color: "#000",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-    marginBottom: 9,
-    marginTop: 3,
-  },
-  label: {
-    marginBottom: 6,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000000ff",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    gap: 5,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: normalize(12),
-    fontSize: normalize(23),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  dollarSign: {
-    fontSize: normalize(23),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    paddingLeft: 15,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    warningContainer: {
+      marginTop: 12,
+      padding: 10,
+      backgroundColor: "rgba(255, 0, 0, 0)",
+      borderRadius: 6,
+      borderWidth: 0.5,
+      borderColor: colors.error,
+    },
+    errorBorder: {
+      borderColor: "red",
+      borderWidth: 1,
+    },
+    feeBreakdownContainer: {
+      backgroundColor: colors.inputBackground,
+      borderRadius: 12,
+      padding: 16,
+      gap: 10,
+      marginTop: 10,
+    },
+    feeBreakdownTitle: {
+      color: colors.text,
+      fontFamily: getFontFamily("800"),
+      fontSize: 13,
+      marginBottom: 4,
+    },
+    feeRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    feeLabel: {
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(17),
+      flex: 1,
+    },
+    feeValue: {
+      color: colors.text,
+      fontFamily: getFontFamily("900"),
+      fontSize: normalize(17),
+      textAlign: "right",
+      flex: 1,
+    },
+    feeDivider: {
+      height: 1,
+      backgroundColor: colors.border,
+    },
+    feeWarning: {
+      backgroundColor: "#3a1a1a",
+      borderRadius: 8,
+      padding: 10,
+      marginTop: 4,
+    },
+    feeWarningText: {
+      color: colors.error,
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(16),
+    },
+    warningText: {
+      color: colors.error,
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      textAlign: "left",
+    },
+    amountBox: { marginTop: 24 },
+    amountNote: {
+      color: "#000",
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("700"),
+      marginBottom: 9,
+      marginTop: 3,
+    },
+    label: {
+      marginBottom: 6,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    inputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: colors.inputBackground,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      gap: 5,
+    },
+    input: {
+      flex: 1,
+      paddingVertical: normalize(12),
+      fontSize: normalize(23),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    dollarSign: {
+      fontSize: normalize(21),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      paddingLeft: 15,
+    },
+  });

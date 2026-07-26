@@ -192,6 +192,8 @@ import { COLORS } from "../constants/colors";
 import CryptoWalletSection from "../components/wallet/CryptoWalletSection";
 import FiatWalletSection from "../components/wallet/FiatWalletSection";
 import TabSwitcher, { TabOption } from "../components/TabSwitcher";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { normalize } from "../constants/settings";
 
 type WalletTab = "crypto" | "fiat";
 
@@ -202,19 +204,19 @@ const tabOptions: TabOption[] = [
 
 export default function WalletScreen() {
   const [activeTab, setActiveTab] = useState<WalletTab>("crypto");
+  const colors = useColors();
+  const resolvedTheme = useResolvedTheme();
+  const styles = makeStyles(colors);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab as WalletTab);
   };
 
   return (
-    <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <StatusBar
-        barStyle="dark-content"
-        {...(Platform.OS === "android" && {
-          backgroundColor: "#FFFFFF",
-          translucent: false,
-        })}
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
       />
 
       <View style={styles.tabContainer}>
@@ -239,26 +241,28 @@ export default function WalletScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  tabContainer: {
-    paddingHorizontal: 20,
-  },
-  tabSwitcher: {
-    backgroundColor: "#F3F3F3",
-    marginVertical: 10,
-  },
-  activeTab: {
-    backgroundColor: COLORS.primary,
-  },
-  activeTabText: {
-    color: "#fff",
-  },
-  scrollContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    tabContainer: {
+      paddingHorizontal: normalize(20),
+    },
+    tabSwitcher: {
+      backgroundColor: colors.inputBackground,
+      marginVertical: 10,
+    },
+    activeTab: {
+      backgroundColor: COLORS.primary,
+      color: colors.text,
+    },
+    activeTabText: {
+      color: "white",
+    },
+    scrollContainer: {
+      paddingHorizontal: normalize(20),
+      paddingTop: 20,
+    },
+  });

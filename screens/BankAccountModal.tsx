@@ -1,14 +1,11 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   View,
-  Text,
   TouchableOpacity,
   TextInput,
   ScrollView,
   StyleSheet,
-  Platform,
-  StatusBar,
 } from "react-native";
 import { ArrowLeft2 } from "iconsax-react-nativejs";
 import { SelectInput } from "../components/SelectInputField";
@@ -19,8 +16,7 @@ import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppText } from "../components/AppText";
-const STATUS_BAR_PADDING =
-  Platform.OS === "android" ? StatusBar.currentHeight ?? 0 : 0;
+import { useColors } from "../hooks/useTheme";
 
 export default function BankAccountModal({
   visible,
@@ -39,6 +35,8 @@ export default function BankAccountModal({
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<string | null>(
     null,
   );
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   // Fetch beneficiaries
   const { data, isLoading, isError, refetch, isRefetching } = useQuery({
@@ -232,7 +230,7 @@ export default function BankAccountModal({
       >
         <View style={styles.header}>
           <TouchableOpacity hitSlop={10} activeOpacity={0.9} onPress={onClose}>
-            <ArrowLeft2 size={normalize(23)} color="#000" />
+            <ArrowLeft2 size={normalize(23)} color={colors.text} />
           </TouchableOpacity>
           <AppText style={styles.title}>Add Bank Account</AppText>
         </View>
@@ -283,7 +281,7 @@ export default function BankAccountModal({
                 accountNumber.length !== 10 ||
                 validating ||
                 !!error) && {
-                backgroundColor: "#ccc",
+                opacity: 0.5,
               },
             ]}
             onPress={handleSave}
@@ -294,7 +292,9 @@ export default function BankAccountModal({
               !!error
             }
           >
-            <AppText style={styles.buttonText}>Save Recipient</AppText>
+            <AppText style={styles.buttonText}>
+              {validating ? "Please wait..." : "Save Recipient"}
+            </AppText>
           </TouchableOpacity>
           <View style={{ marginVertical: 10 }}>
             <SavedBeneficiaries
@@ -319,83 +319,85 @@ export default function BankAccountModal({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    marginBottom: 26,
-    paddingVertical: 10,
-  },
-  title: {
-    flex: 1,
-    textAlign: "center",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginRight: 24,
-  },
-  inputContainer: {
-    marginTop: 20,
-  },
-  label: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    marginBottom: 3,
-  },
-  // input: {
-  //   borderWidth: 1,
-  //   borderColor: "#e0e0e0",
-  //   borderRadius: 8,
-  //   padding: 14,
-  //   fontSize: normalize(16),
-  //   fontFamily: getFontFamily("400"),
-  // },
-  input: {
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    color: "#1A1A1A",
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(18),
-    // backgroundColor: "#FFFFFF",
-  },
-  errorBorder: {
-    borderColor: "#FF3B30",
-    borderWidth: 1.5,
-  },
-  errorText: {
-    color: "#FF3B30",
-    marginTop: 6,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    marginLeft: 4,
-  },
-  button: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    marginTop: 30,
-  },
-  buttonText: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-  text: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
-    marginTop: 5,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      marginBottom: 26,
+      paddingVertical: 10,
+    },
+    title: {
+      flex: 1,
+      textAlign: "center",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginRight: 24,
+    },
+    inputContainer: {
+      marginTop: 20,
+    },
+    label: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      marginBottom: 3,
+      color: colors.text,
+    },
+    // input: {
+    //   borderWidth: 1,
+    //   borderColor: "#e0e0e0",
+    //   borderRadius: 8,
+    //   padding: 14,
+    //   fontSize: normalize(16),
+    //   fontFamily: getFontFamily("400"),
+    // },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      color: colors.text,
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(19),
+      // backgroundColor: "#FFFFFF",
+    },
+    errorBorder: {
+      borderColor: "#FF3B30",
+      borderWidth: 1.5,
+    },
+    errorText: {
+      color: "#FF3B30",
+      marginTop: 6,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      marginLeft: 4,
+    },
+    button: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      marginTop: 30,
+    },
+    buttonText: {
+      color: "#fff",
+      textAlign: "center",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+    },
+    text: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      marginTop: 5,
+    },
+  });

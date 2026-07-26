@@ -12,9 +12,9 @@ import CustomLoading from "../CustomLoading";
 import { showError, showSuccess } from "../../utlis/toast";
 import { AxiosError } from "axios";
 import useAxios from "../../hooks/useAxios";
-import { useAuthStore } from "../../stores/authSlice";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppText } from "../AppText";
+import { useColors } from "../../hooks/useTheme";
 
 const otpSchema = yup.object().shape({
   otp: yup
@@ -38,6 +38,8 @@ const VerificationForm = ({ email }: { email: string }) => {
   const queryClient = useQueryClient();
   const { countdown, reset, isActive } = useCountdown(20);
   const otp = watch("otp");
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const handleVerify = async (values: FormData) => {
     try {
@@ -128,45 +130,46 @@ const VerificationForm = ({ email }: { email: string }) => {
 
 export default VerificationForm;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingVertical: 20,
-  },
-  resendWrapper: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginVertical: 10,
-    paddingVertical: 30,
-  },
-  infoText: {
-    fontFamily: getFontFamily(700),
-    fontSize: normalize(19),
-    marginTop: 2,
-    marginLeft: 1,
-    color: COLORS.darkBackground,
-  },
-  resendText: {
-    fontFamily: getFontFamily(700),
-    fontSize: normalize(20),
-    marginTop: 2,
-    marginLeft: 1,
-    color: COLORS.secondary,
-  },
-  disabledResend: {
-    color: "#999",
-  },
-  button: {
-    backgroundColor: COLORS.secondary,
-    padding: 14,
-    borderRadius: 80,
-    marginTop: 40,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: COLORS.whiteBackground,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(700),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      paddingVertical: 20,
+    },
+    resendWrapper: {
+      flexDirection: "row",
+      justifyContent: "center",
+      marginVertical: 10,
+      paddingVertical: 30,
+    },
+    infoText: {
+      fontFamily: getFontFamily(700),
+      fontSize: normalize(19),
+      marginTop: 2,
+      marginLeft: 1,
+      color: colors.text,
+    },
+    resendText: {
+      fontFamily: getFontFamily(700),
+      fontSize: normalize(19),
+      marginTop: 2,
+      marginLeft: 1,
+      color: colors.primary,
+    },
+    disabledResend: {
+      color: "#999",
+    },
+    button: {
+      backgroundColor: COLORS.secondary,
+      padding: 14,
+      borderRadius: 80,
+      marginTop: 40,
+      alignItems: "center",
+    },
+    buttonText: {
+      color: COLORS.whiteBackground,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(700),
+    },
+  });

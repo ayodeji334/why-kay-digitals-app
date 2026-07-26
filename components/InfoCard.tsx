@@ -1,7 +1,6 @@
 import React from "react";
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   DimensionValue,
@@ -11,6 +10,7 @@ import {
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface InfoCardProps {
   title: string;
@@ -30,17 +30,18 @@ const InfoCard: React.FC<InfoCardProps> = ({
   buttonText,
   onButtonPress,
   IconComponent,
-  // iconColor = "#0a611fff",
-  // iconSize = 18,
   buttonWidth = "40%",
   style,
 }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   return (
     <View
       style={[
         {
           marginVertical: normalize(20),
-          backgroundColor: "#5AB2431A",
+          backgroundColor: colors.infoCardBackgroundColor,
           borderRadius: 10,
           padding: 15,
           height: "auto",
@@ -94,43 +95,45 @@ const InfoCard: React.FC<InfoCardProps> = ({
 
 export default InfoCard;
 
-const styles = StyleSheet.create({
-  title: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-  },
-  description: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    color: "#000",
-    lineHeight: 15,
-  },
-  listText: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    color: "#000",
-    flexShrink: 1,
-  },
-  editButton: {
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  listContainer: {
-    marginTop: 1,
-    gap: 3,
-  },
-  listItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginTop: 2,
-  },
-  editButtonText: {
-    color: "#fff",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    textAlign: "center",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    title: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    description: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      lineHeight: 15,
+    },
+    listText: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      flexShrink: 1,
+    },
+    editButton: {
+      backgroundColor: COLORS.primary,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 6,
+      alignItems: "center",
+    },
+    listContainer: {
+      marginTop: 1,
+      gap: 3,
+    },
+    listItem: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      marginTop: 2,
+    },
+    editButtonText: {
+      color: "#fff",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      textAlign: "center",
+    },
+  });

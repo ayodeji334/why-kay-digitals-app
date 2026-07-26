@@ -14,26 +14,38 @@ import RatesScreen from "../screens/Rates";
 import WalletScreen from "../screens/WalletScreen";
 import CustomHeader from "../components/CustomHeader";
 import { getFontFamily, normalize } from "../constants/settings";
+import { useColors } from "../hooks/useTheme";
 
 const Tab = createBottomTabNavigator();
 
 export default function AppTabs() {
+  const colors = useColors();
+
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: "#000000",
-        tabBarInactiveTintColor: "#6c6c6c",
-        tabBarStyle: { height: 78, paddingTop: 4 },
+        tabBarActiveTintColor: colors?.text,
+        tabBarInactiveTintColor: colors?.textMuted,
+        tabBarStyle: {
+          height: 78,
+          paddingTop: 4,
+          backgroundColor: colors.background,
+        },
         headerTitleAllowFontScaling: false,
         tabBarAllowFontScaling: false,
+        headerBackgroundContainerStyle: {
+          backgroundColor: colors.background,
+        },
         headerTitleStyle: {
           fontFamily: getFontFamily(700),
           fontSize: normalize(18),
           padding: 20,
+          color: colors.text,
         },
         tabBarLabelStyle: {
           fontFamily: getFontFamily(700),
           fontSize: normalize(17),
+          color: colors.text,
         },
       }}
     >
@@ -48,7 +60,13 @@ export default function AppTabs() {
               color={color}
             />
           ),
-          headerShown: false,
+          header: () => (
+            <CustomHeader
+              showBack={false}
+              showTitle={false}
+              title="My Wallets"
+            />
+          ),
           headerTitleAllowFontScaling: false,
         }}
       />

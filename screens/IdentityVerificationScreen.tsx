@@ -1,7 +1,116 @@
+// import React from "react";
+// import {
+//   View,
+//   Text,
+//   StyleSheet,
+//   ScrollView,
+//   // TouchableOpacity,
+// } from "react-native";
+// import { SafeAreaView } from "react-native-safe-area-context";
+// import { getFontFamily, normalize } from "../constants/settings";
+// import NINVerificationForm from "../components/forms/NINVerificationForm";
+// // import { useUser } from "../stores/authSlice";
+// // import { useNavigation } from "@react-navigation/native";
+// import { COLORS } from "../constants/colors";
+// import { AppText } from "../components/AppText";
+
+// export default function IdentityVerificationScreen() {
+//   // const user = useUser();
+//   // const navigation = useNavigation();
+
+//   // const isProfileComplete = !!user?.first_name && !!user?.last_name;
+
+//   return (
+//     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
+//       <ScrollView
+//         style={styles.scrollView}
+//         showsVerticalScrollIndicator={false}
+//       >
+//         {/* {!isProfileComplete ? (
+//           <View style={styles.infoSection}>
+//             <AppText style={styles.subtitle}>
+//               To verify your NIN, please update your profile with the same first
+//               name and last name used for your NIN or BVN.
+//             </AppText>
+//             <AppText style={styles.bulletText}>
+//               Go to the Edit Profile screen to complete your details.
+//             </AppText>
+
+//             <TouchableOpacity
+//               activeOpacity={0.89}
+//               style={styles.editButton}
+//               onPress={() => navigation.navigate("EditProfile" as never)}
+//             >
+//               <AppText style={styles.editButtonText}>Go to Edit Profile</AppText>
+//             </TouchableOpacity>
+//           </View>
+//         ) : ( */}
+//         <>
+//           <AppText style={styles.subtitle}>
+//             We'll authenticate your National Identification Number (NIN) by
+//             matching it with a live selfie for secure identity verification.
+//             This process ensures regulatory compliance and account security.
+//           </AppText>
+
+//           <View style={styles.formSection}>
+//             <NINVerificationForm />
+//           </View>
+//         </>
+//         {/* )} */}
+//       </ScrollView>
+//     </SafeAreaView>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "white",
+//   },
+//   scrollView: {
+//     flex: 1,
+//     paddingHorizontal: 20,
+//     backgroundColor: "white",
+//   },
+//   subtitle: {
+//     fontSize: normalize(18),
+//     color: "black",
+//     fontFamily: getFontFamily(400),
+//     paddingBottom: 20,
+//   },
+//   formSection: {
+//     marginBottom: 32,
+//   },
+//   infoSection: {
+//     backgroundColor: "#fff",
+//     borderRadius: 12,
+//     paddingVertical: 20,
+//     paddingHorizontal: 16,
+//     marginBottom: 20,
+//   },
+//   bulletText: {
+//     fontSize: normalize(18),
+//     fontFamily: getFontFamily("400"),
+//     color: "#666",
+//     lineHeight: 20,
+//     marginBottom: 16,
+//   },
+//   editButton: {
+//     backgroundColor: COLORS.primary,
+//     paddingVertical: 12,
+//     borderRadius: 80,
+//     alignItems: "center",
+//     marginTop: 30,
+//   },
+//   editButtonText: {
+//     color: "#FFF",
+//     fontSize: normalize(16),
+//     fontFamily: getFontFamily(700),
+//   },
+// });
 import React from "react";
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   // TouchableOpacity,
@@ -11,12 +120,14 @@ import { getFontFamily, normalize } from "../constants/settings";
 import NINVerificationForm from "../components/forms/NINVerificationForm";
 // import { useUser } from "../stores/authSlice";
 // import { useNavigation } from "@react-navigation/native";
-import { COLORS } from "../constants/colors";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 export default function IdentityVerificationScreen() {
   // const user = useUser();
   // const navigation = useNavigation();
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   // const isProfileComplete = !!user?.first_name && !!user?.last_name;
 
@@ -62,49 +173,50 @@ export default function IdentityVerificationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  scrollView: {
-    flex: 1,
-    paddingHorizontal: 20,
-    backgroundColor: "white",
-  },
-  subtitle: {
-    fontSize: normalize(18),
-    color: "black",
-    fontFamily: getFontFamily(400),
-    paddingBottom: 20,
-  },
-  formSection: {
-    marginBottom: 32,
-  },
-  infoSection: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    marginBottom: 20,
-  },
-  bulletText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: "#666",
-    lineHeight: 20,
-    marginBottom: 16,
-  },
-  editButton: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 12,
-    borderRadius: 80,
-    alignItems: "center",
-    marginTop: 30,
-  },
-  editButtonText: {
-    color: "#FFF",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily(700),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollView: {
+      flex: 1,
+      paddingHorizontal: 20,
+      backgroundColor: colors.background,
+    },
+    subtitle: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily(400),
+      paddingBottom: 20,
+    },
+    formSection: {
+      marginBottom: 32,
+    },
+    infoSection: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      paddingVertical: 20,
+      paddingHorizontal: 16,
+      marginBottom: 20,
+    },
+    bulletText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.textMuted,
+      lineHeight: 20,
+      marginBottom: 16,
+    },
+    editButton: {
+      backgroundColor: colors.primary,
+      paddingVertical: 12,
+      borderRadius: 80,
+      alignItems: "center",
+      marginTop: 30,
+    },
+    editButtonText: {
+      color: "#FFF",
+      fontSize: normalize(16),
+      fontFamily: getFontFamily(700),
+    },
+  });

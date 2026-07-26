@@ -4,6 +4,8 @@ import { TextInput, View, StyleSheet, TouchableOpacity } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { Eye, EyeSlash } from "iconsax-react-nativejs";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
+import { COLORS } from "../constants/colors";
 
 interface Props {
   control: any;
@@ -27,6 +29,8 @@ const PasswordInputField: React.FC<Props> = ({
   placeholderTextColor = "#aeaeaeff",
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const passwordValidations = [
     { label: "At least 8 characters", test: (val: string) => val.length >= 8 },
@@ -79,9 +83,9 @@ const PasswordInputField: React.FC<Props> = ({
               onPress={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <Eye size={normalize(22)} />
+                <Eye size={normalize(22)} color={colors.text} />
               ) : (
-                <EyeSlash size={normalize(22)} />
+                <EyeSlash size={normalize(22)} color={colors.text} />
               )}
             </TouchableOpacity>
           </View>
@@ -111,67 +115,71 @@ const PasswordInputField: React.FC<Props> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 10,
-  },
-  label: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-    marginBottom: 2,
-  },
-  placeholderStyle: {
-    color: "#000000ff",
-    fontSize: normalize(18),
-  },
-  inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-  },
-  input: {
-    flex: 1,
-    paddingHorizontal: 5,
-    paddingVertical: normalize(18),
-    color: "#000",
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(18),
-    backgroundColor: "#FFFFFF",
-  },
-  errorBorder: {
-    borderColor: "#FF3B30",
-    borderWidth: 1.5,
-  },
-  errorText: {
-    color: "red",
-    marginVertical: 4,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-  },
-  hintsWrapper: {
-    marginTop: 6,
-    flexDirection: "row",
-    gap: 9,
-    flexWrap: "wrap",
-  },
-  hint: {
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(16),
-    marginVertical: 2,
-  },
-  hintValid: {
-    color: "green",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(16),
-  },
-  hintInvalid: {
-    color: "red",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(16),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: 10,
+    },
+    label: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      marginBottom: 2,
+      color: colors.text,
+    },
+    placeholderStyle: {
+      color: colors.textMuted,
+      fontSize: normalize(18),
+    },
+    inputWrapper: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      paddingHorizontal: 8,
+      backgroundColor: colors.background,
+    },
+    input: {
+      flex: 1,
+      paddingHorizontal: 5,
+      paddingVertical: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(18),
+      backgroundColor: colors.background,
+    },
+    errorBorder: {
+      borderColor: colors.error,
+      borderWidth: 1,
+    },
+    errorText: {
+      color: colors.error,
+      marginVertical: 4,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+    },
+    hintsWrapper: {
+      marginTop: 6,
+      flexDirection: "row",
+      gap: 9,
+      flexWrap: "wrap",
+    },
+    hint: {
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(16),
+      marginVertical: 2,
+      color: colors.text,
+    },
+    hintValid: {
+      color: COLORS.primary,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(16),
+    },
+    hintInvalid: {
+      color: "red",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(16),
+    },
+  });
 
 export default PasswordInputField;

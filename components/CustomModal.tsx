@@ -14,6 +14,7 @@ import { COLORS } from "../constants/colors";
 import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface CustomModalProps {
   visible: boolean;
@@ -34,6 +35,8 @@ const CustomModal: React.FC<CustomModalProps> = ({
   showCloseButton = true,
   height = 600,
 }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
   // RN's <Modal onDismiss> only fires on iOS. On Android there's no native
   // presentation queue to wait out, so we call the same callback ourselves
   // right after the visible -> false transition commits.
@@ -75,7 +78,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
 
           <View style={{ flex: 1 }}>{children}</View>
 
-          {showCloseButton && (
+          {/* {showCloseButton && (
             <TouchableOpacity
               activeOpacity={0.9}
               style={[styles.closeButton, { marginTop: 20 }]}
@@ -83,46 +86,48 @@ const CustomModal: React.FC<CustomModalProps> = ({
             >
               <AppText style={styles.closeButtonText}>Close</AppText>
             </TouchableOpacity>
-          )}
+          )} */}
         </View>
       </View>
     </Modal>
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-  },
-  modalContainer: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 24,
-  },
-  modalTitle: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
-    marginBottom: 16,
-  },
-  closeButton: {
-    position: "absolute",
-    top: 16,
-    right: 16,
-    zIndex: 10,
-    borderRadius: 50,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    marginBottom: 20,
-  },
-  closeButtonText: {
-    textAlign: "center",
-    color: "#fff",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      justifyContent: "flex-end",
+      backgroundColor: "rgba(0, 0, 0, 0.4)",
+    },
+    modalContainer: {
+      backgroundColor: colors.inputBackground,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      padding: 24,
+    },
+    modalTitle: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("800"),
+      marginBottom: 16,
+      color: colors.text,
+    },
+    closeButton: {
+      position: "absolute",
+      top: 16,
+      right: 16,
+      zIndex: 10,
+      borderRadius: 50,
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      marginBottom: 20,
+    },
+    closeButtonText: {
+      textAlign: "center",
+      color: "#fff",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+    },
+  });
 
 export default CustomModal;

@@ -670,6 +670,7 @@ import { useShouldPromptBiometric } from "../hooks/useShouldPromptBiometric";
 import LandingScreen from "../screens/LandingScreen";
 import { useBiometricPromptStore } from "../stores/biometricPromptSlice";
 import { refreshBiometricState } from "../stores/biometricSlice";
+import { ThemeScreen } from "../screens/ThemeScreen";
 
 const useIsSignedOut = () => !useIsAuthenticated();
 
@@ -729,7 +730,7 @@ const RootStack = createNativeStackNavigator({
           screen: ForgetPasswordScreen,
           options: {
             headerBackTitle: ".",
-            header: () => <CustomHeader title="Forgot Password" />,
+            header: () => <CustomHeader showTitle title="Forgot Password" />,
           },
         },
         SetNewPassword: {
@@ -861,6 +862,14 @@ const RootStack = createNativeStackNavigator({
                 title="Conversion Quote Detail"
               />
             ),
+          },
+        },
+        Theme: {
+          screen: ThemeScreen,
+          options: {
+            gestureEnabled: true,
+            headerShown: true,
+            header: () => <CustomHeader showTitle showBack title="Theme" />,
           },
         },
         PayElectricityBills: {
@@ -1003,7 +1012,7 @@ const RootStack = createNativeStackNavigator({
           screen: BankTransferScreen,
           options: {
             headerShown: true,
-            header: () => <CustomHeader showTitle title="Deposit Fiat" />,
+            header: () => <CustomHeader showTitle title="Deposit" />,
           },
         },
         BVNVerification: {

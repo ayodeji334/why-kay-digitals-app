@@ -14,7 +14,6 @@ const AnimatedBootSplash = ({ onAnimationEnd }: Props) => {
     logo: require("../assets/bootsplash/logo.png"),
     statusBarTranslucent: true,
     navigationBarTranslucent: false,
-
     animate: () => {
       Animated.timing(opacity, {
         useNativeDriver: true,

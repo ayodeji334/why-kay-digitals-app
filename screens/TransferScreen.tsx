@@ -33,6 +33,7 @@ import { useSummaryDetail } from "../hooks/useSummaryDetail";
 import useAxios from "../hooks/useAxios";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface ValidationState {
   isChecking: boolean;
@@ -152,6 +153,8 @@ export default function TransferScreen() {
   const [pendingPayload, setPendingPayload] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [displayAmount, setDisplayAmount] = useState("");
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const { data: { wallets = [], totalAssetValueBalance = 0 } = {} } =
     useWallets();
@@ -311,17 +314,19 @@ export default function TransferScreen() {
   return (
     <SafeAreaView
       edges={["right", "bottom"]}
-      style={{ flex: 1, backgroundColor: "#fff", paddingHorizontal: 16 }}
+      style={{
+        flex: 1,
+        backgroundColor: colors.background,
+        paddingHorizontal: 16,
+      }}
     >
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
       <TabSwitcher
         tabs={tabOptions}
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        containerStyle={{ backgroundColor: "#f3f3f3ff", marginVertical: 10 }}
-        activeTabStyle={{ backgroundColor: COLORS.primary }}
-        activeTabTextStyle={{ color: "#fff" }}
+        containerStyle={styles.tabSwitcher}
+        activeTabStyle={styles.activeTab}
+        activeTabTextStyle={styles.activeTabText}
       />
 
       <ScrollView
@@ -530,13 +535,23 @@ export default function TransferScreen() {
           </View>
         )}
 
+        {!exceedsDailyLimit && hasInsufficientBalance && !!amount && (
+          <View style={styles.warningContainer}>
+            <AppText style={styles.warningText}>
+              You do not have enough balance to complete this transfer.
+            </AppText>
+          </View>
+        )}
+
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={handleSubmit(onSubmit)}
           disabled={isDisabled}
           hitSlop={10}
           style={{
-            backgroundColor: isDisabled ? COLORS.fadePrimary : COLORS.secondary,
+            backgroundColor: isDisabled
+              ? colors.surfaceSecondary
+              : COLORS.secondary,
             borderRadius: 100,
             paddingVertical: 16,
             marginVertical: 30,
@@ -570,117 +585,131 @@ export default function TransferScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  limitContainer: {
-    marginVertical: 10,
-    backgroundColor: "#EFF7EC",
-    padding: 10,
-    borderRadius: 10,
-  },
-  usernameStatus: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
-    gap: 6,
-  },
-  usernameChecking: {
-    fontSize: 12,
-    color: "#888",
-    fontFamily: getFontFamily("700"),
-  },
-  usernameValid: {
-    fontSize: 12,
-    color: "#077830", // green
-    fontFamily: getFontFamily("700"),
-  },
-  usernameInvalid: {
-    fontSize: 12,
-    color: "#c21414", // red
-    fontFamily: getFontFamily("700"),
-  },
-  warningContainer: {
-    marginVertical: 12,
-    padding: 10,
-    backgroundColor: "rgba(255, 0, 0, 0.03)",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 0, 0, 0.3)",
-  },
-  warningText: {
-    color: "#db0b0bff",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    textAlign: "center",
-  },
-  error: {
-    color: "red",
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
-    marginBottom: normalize(10),
-  },
-  form: { marginVertical: 10 },
-  label: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-    marginBottom: 4,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    paddingHorizontal: normalize(16),
-    marginBottom: normalize(10),
-    gap: 5,
-  },
-  dollarSign: {
-    fontSize: normalize(23),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-    marginRight: normalize(5),
-  },
-  input: {
-    flex: 1,
-    paddingVertical: normalize(14),
-    fontSize: normalize(23),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-    borderRadius: 10,
-  },
-  limitHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  limitLabel: {
-    fontSize: normalize(18),
-    color: "#000",
-    fontFamily: getFontFamily("700"),
-  },
-  upgradeText: {
-    fontSize: normalize(18),
-    color: COLORS.secondary,
-    fontFamily: getFontFamily("700"),
-  },
-  progressBarBackground: {
-    height: 6,
-    backgroundColor: "#E5E7EB",
-    borderRadius: 3,
-    marginTop: 18,
-  },
-  progressBarFill: {
-    height: 6,
-    backgroundColor: COLORS.secondary,
-    borderRadius: 3,
-  },
-  limitRange: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 4,
-  },
-  limitValue: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    limitContainer: {
+      marginVertical: 10,
+      backgroundColor: colors.infoCardBackgroundColor,
+      padding: 10,
+      borderRadius: 10,
+    },
+    tabSwitcher: {
+      backgroundColor: colors.inputBackground,
+      marginVertical: 10,
+    },
+    activeTab: {
+      backgroundColor: COLORS.primary,
+      color: colors.text,
+    },
+    activeTabText: {
+      color: "white",
+    },
+    usernameStatus: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 4,
+      gap: 6,
+    },
+    usernameChecking: {
+      fontSize: normalize(18),
+      color: colors.textMuted,
+      fontFamily: getFontFamily("700"),
+    },
+    usernameValid: {
+      fontSize: normalize(18),
+      color: "#077830", // green
+      fontFamily: getFontFamily("700"),
+    },
+    usernameInvalid: {
+      fontSize: normalize(18),
+      color: colors.error, // red
+      fontFamily: getFontFamily("700"),
+    },
+    warningContainer: {
+      marginVertical: 12,
+      padding: 10,
+      backgroundColor: "rgba(255, 0, 0, 0.03)",
+      borderRadius: 6,
+      borderWidth: 1,
+      borderColor: "rgba(255, 0, 0, 0.3)",
+    },
+    warningText: {
+      color: colors.error,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      textAlign: "center",
+    },
+    error: {
+      color: colors.error,
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("800"),
+      marginBottom: normalize(10),
+    },
+    form: { marginVertical: 10 },
+    label: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      marginBottom: 4,
+      color: colors.text,
+    },
+    inputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 10,
+      paddingHorizontal: normalize(16),
+      marginBottom: normalize(10),
+      gap: 5,
+    },
+    dollarSign: {
+      fontSize: normalize(23),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      marginRight: normalize(5),
+    },
+    input: {
+      flex: 1,
+      paddingVertical: normalize(14),
+      fontSize: normalize(23),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      borderRadius: 10,
+    },
+    limitHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    limitLabel: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+    },
+    upgradeText: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+    },
+    progressBarBackground: {
+      height: 4,
+      backgroundColor: "#E5E7EB",
+      borderRadius: 3,
+      marginTop: 18,
+    },
+    progressBarFill: {
+      height: 6,
+      backgroundColor: COLORS.secondary,
+      borderRadius: 3,
+    },
+    limitRange: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 4,
+    },
+    limitValue: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      color: colors.text,
+    },
+  });

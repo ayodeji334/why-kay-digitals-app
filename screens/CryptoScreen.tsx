@@ -12,14 +12,15 @@ import {
   RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import CustomLoading from "../components/CustomLoading";
 import { COLORS } from "../constants/colors";
 import { useAssets } from "../hooks/useAssets";
-import { formatAmount, formatNumber } from "../libs/formatNumber";
+import { formatAmount } from "../libs/formatNumber";
 import { useWallets } from "../hooks/useWallet";
 import { TradeIntent } from "../libs/types";
 import { AppText } from "../components/AppText";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 type CryptoWalletScreenRoute = {
   CryptoWallets: {
@@ -34,6 +35,10 @@ const CryptoWalletScreen = () => {
   const { action: currentAction = "buy" } = route.params ?? {};
   const { assets, isLoading, isRefetching, refetch } = useAssets();
   const { data: { wallets = [] } = {}, refetch: refetchWallets } = useWallets();
+
+  const colors = useColors();
+  const styles = makeStyles(colors);
+  const resolvedTheme = useResolvedTheme();
 
   // const mergedList = useMemo(() => {
   //   const walletAssetIds = new Set((wallets ?? []).map((w: any) => w.asset_id));
@@ -225,8 +230,7 @@ const CryptoWalletScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -237,6 +241,26 @@ const CryptoWalletScreen = () => {
           allowFontScaling={false}
           placeholderTextColor="#6b6b6b"
         />
+        <Text
+          style={{
+            fontSize: normalize(20),
+            fontFamily: getFontFamily("700"),
+            marginTop: 10,
+            paddingVertical: 5,
+            color: colors.text,
+          }}
+        >
+          Below are the supported coins. If the coin (or asset) you to{" "}
+          {currentAction} is not listed here. Kindly reach out to us through our
+          support channel.
+          <Text
+            onPress={() => navigation.navigate("ContactUs")}
+            style={{ color: COLORS.primary, paddingHorizontal: 8 }}
+          >
+            {" "}
+            Contact us here
+          </Text>
+        </Text>
       </View>
 
       <FlatList
@@ -261,46 +285,55 @@ const CryptoWalletScreen = () => {
 
 export default CryptoWalletScreen;
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  searchContainer: { paddingHorizontal: 16, paddingVertical: 12 },
-  searchInput: {
-    backgroundColor: "#fff",
-    padding: 12,
-    paddingHorizontal: 14,
-    borderRadius: 100,
-    fontSize: 14,
-    fontFamily: getFontFamily("700"),
-    borderColor: "#E8E8E8",
-    borderWidth: 1,
-  },
-  listContent: { paddingHorizontal: 16 },
-  cryptoItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#dcdcdcff",
-  },
-  cryptoLeft: { flexDirection: "row", alignItems: "center" },
-  assetIcon: { width: 30, height: 30, borderRadius: 20, marginRight: 12 },
-  cryptoInfo: { flexDirection: "column" },
-  cryptoName: { fontSize: 13, fontFamily: getFontFamily(800) },
-  cryptoSymbol: { fontSize: 12, fontFamily: getFontFamily(700), color: "#000" },
-  cryptoRight: {
-    alignItems: "flex-end",
-    gap: 3,
-  },
-  cryptoBalance: {
-    fontSize: 13,
-    fontFamily: getFontFamily(900),
-    fontWeight: "600",
-    color: "#000",
-  },
-  cryptoValue: {
-    fontFamily: getFontFamily(900),
-    fontSize: 13,
-    color: "#000",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    searchContainer: { paddingHorizontal: 16, paddingVertical: 12 },
+    searchInput: {
+      backgroundColor: colors.inputBackground,
+      padding: 12,
+      paddingHorizontal: 14,
+      borderRadius: 100,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      borderColor: colors.border,
+      borderWidth: 1,
+    },
+    listContent: { paddingHorizontal: 16 },
+    cryptoItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    cryptoLeft: { flexDirection: "row", alignItems: "center" },
+    assetIcon: { width: 30, height: 30, borderRadius: 20, marginRight: 12 },
+    cryptoInfo: { flexDirection: "column" },
+    cryptoName: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily(800),
+    },
+    cryptoSymbol: {
+      fontSize: 12,
+      fontFamily: getFontFamily(700),
+      color: colors.text,
+    },
+    cryptoRight: {
+      alignItems: "flex-end",
+      gap: 3,
+    },
+    cryptoBalance: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily(900),
+      color: colors.text,
+    },
+    cryptoValue: {
+      fontFamily: getFontFamily(900),
+      fontSize: normalize(17),
+      color: colors.text,
+    },
+  });

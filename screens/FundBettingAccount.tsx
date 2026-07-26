@@ -1,11 +1,9 @@
 import React, { useState, useCallback, useMemo, memo } from "react";
 import {
   View,
-  Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  StatusBar,
   TextInput,
   ActivityIndicator,
 } from "react-native";
@@ -26,6 +24,7 @@ import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { AppText } from "../components/AppText";
 import { useFiatBalance } from "../hooks/useFiatBalance";
 import { formatAmount } from "../libs/formatNumber";
+import { useColors } from "../hooks/useTheme";
 
 interface BettingProvider {
   biller_id: string;
@@ -64,6 +63,9 @@ interface CustomerValidationStatusProps {
 
 const CustomerValidationStatus = memo(
   ({ validating, userDetail, hasInput }: CustomerValidationStatusProps) => {
+    const colors = useColors();
+    const styles = makeStyles(colors);
+
     if (!hasInput) return null;
 
     if (validating) {
@@ -113,7 +115,8 @@ export default function FundBettingAccountScreen() {
   const [userDetail, setUserDetail] = useState<any>(null);
   const [hasFiredValidation, setHasFiredValidation] = useState(false);
   const { fiatBalance } = useFiatBalance();
-
+  const colors = useColors();
+  const styles = makeStyles(colors);
   const {
     control,
     handleSubmit,
@@ -348,9 +351,7 @@ export default function FundBettingAccountScreen() {
     !isValid || !customerValid || validatingCustomer || isSubmitting;
 
   return (
-    <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}
@@ -467,6 +468,7 @@ export default function FundBettingAccountScreen() {
         />
 
         <TouchableOpacity
+          activeOpacity={0.89}
           style={[styles.button, isDisabled && { opacity: 0.5 }]}
           onPress={handleSubmit(onSubmit)}
           disabled={isDisabled}
@@ -486,112 +488,113 @@ export default function FundBettingAccountScreen() {
 
 // Styles
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  scrollView: { flex: 1 },
-  content: { paddingHorizontal: 16, paddingVertical: 20 },
-  label: {
-    marginBottom: 6,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000000ff",
-  },
-  errorText: {
-    color: "red",
-    fontSize: normalize(14),
-    marginTop: 4,
-    fontFamily: getFontFamily("600"),
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    gap: 5,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: normalize(18),
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: "#000",
-  },
-  currencySign: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    paddingLeft: 15,
-  },
-  detailsContainer: {
-    marginVertical: 10,
-    paddingHorizontal: 17,
-    paddingVertical: 10,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    flexDirection: "column",
-    gap: 5,
-  },
-  warningContainer: {
-    marginVertical: 12,
-    padding: 10,
-    backgroundColor: "rgba(255, 0, 0, 0.03)",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 0, 0, 0.3)",
-  },
-  warningText: {
-    color: "#db0b0b",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("800"),
-    textAlign: "center",
-  },
-  detailsLabel: {
-    fontSize: 12,
-    fontFamily: getFontFamily("900"),
-    color: "#000",
-  },
-  detailsValue: {
-    fontSize: 13,
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-  },
-  balanceCard: {
-    // backgroundColor: COLORS.secondary + "15",
-    // borderRadius: 12,
-    paddingHorizontal: normalize(10),
-    paddingVertical: normalize(9),
-  },
-  balanceLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000000",
-    marginBottom: 4,
-  },
-  balanceValue: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("900"),
-  },
-  button: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    marginTop: 10,
-    justifyContent: "center",
-    alignContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    textAlign: "center",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    scrollView: { flexGrow: 1 },
+    content: { paddingHorizontal: 16, paddingVertical: 20 },
+    label: {
+      marginBottom: 6,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    errorText: {
+      color: colors.error,
+      fontSize: normalize(14),
+      marginTop: 4,
+      fontFamily: getFontFamily("600"),
+    },
+    inputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      gap: 5,
+    },
+    input: {
+      flex: 1,
+      paddingVertical: normalize(18),
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+    },
+    currencySign: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      paddingLeft: 15,
+    },
+    detailsContainer: {
+      marginVertical: 10,
+      paddingHorizontal: 17,
+      paddingVertical: 10,
+      backgroundColor: colors.infoCardBackgroundColor,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      flexDirection: "column",
+      gap: 5,
+    },
+    warningContainer: {
+      marginVertical: 12,
+      padding: 10,
+      backgroundColor: "rgba(255, 0, 0, 0.03)",
+      borderRadius: 6,
+      borderWidth: 1,
+      borderColor: "rgba(255, 0, 0, 0.3)",
+    },
+    warningText: {
+      color: colors.error,
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("800"),
+      textAlign: "center",
+    },
+    detailsLabel: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("900"),
+      color: colors.text,
+    },
+    detailsValue: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    balanceCard: {
+      // backgroundColor: COLORS.secondary + "15",
+      // borderRadius: 12,
+      paddingHorizontal: normalize(10),
+      paddingVertical: normalize(9),
+    },
+    balanceLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: "#000000",
+      marginBottom: 4,
+    },
+    balanceValue: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("900"),
+    },
+    button: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      marginTop: 10,
+      justifyContent: "center",
+      alignContent: "center",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 3,
+      elevation: 3,
+    },
+    buttonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      textAlign: "center",
+    },
+  });

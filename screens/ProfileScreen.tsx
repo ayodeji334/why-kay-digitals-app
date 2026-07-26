@@ -19,10 +19,13 @@ import { CopyIcon, DeleteIcon } from "../assets";
 import { AppText } from "../components/AppText";
 import { DEFAULT_IMAGE } from "./SettingsScreen";
 import { capitalizeFirst } from "../libs/helpers";
+import { useColors } from "../hooks/useTheme";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
   const userData = useAuthStore(state => state.user);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const handleEditProfile = () => {
     navigation.navigate("EditProfile" as unknown as never);
@@ -77,8 +80,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -131,137 +133,146 @@ export default function ProfileScreen() {
           />
         </View>
 
-        <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
+        <TouchableOpacity
+          activeOpacity={0.89}
+          style={styles.editButton}
+          onPress={handleEditProfile}
+        >
           <AppText style={styles.editButtonText}>Edit Details</AppText>
         </TouchableOpacity>
         <TouchableOpacity
+          activeOpacity={0.89}
           style={styles.deleteButton}
           onPress={handleDeleteAccount}
         >
           <AppText style={styles.deleteButtonText}>Delete account</AppText>
-          <CustomIcon source={DeleteIcon} color={COLORS.error} size={16} />
+          <CustomIcon
+            source={DeleteIcon}
+            overrideColor
+            color={colors.error}
+            size={16}
+          />
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  copyButton: {
-    marginLeft: 10,
-    padding: 6,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.lightGray,
-  },
-  headerTitle: {
-    fontSize: normalize(13),
-    fontFamily: getFontFamily("700"),
-    textAlign: "center",
-    color: COLORS.dark,
-  },
-  scrollView: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  profileHeader: {
-    alignItems: "center",
-    padding: 20,
-    marginBottom: 20,
-  },
-  imageWrapper: {
-    width: 90,
-    height: 90,
-    borderRadius: 2500,
-    marginRight: 12,
-    overflow: "hidden",
-    backgroundColor: "#f0f0f0",
-    marginBottom: 6,
-  },
-  profileImage: {
-    width: "100%",
-    height: "100%",
-  },
-  profileInfo: {
-    alignItems: "center",
-  },
-  userName: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("800"),
-    color: COLORS.dark,
-  },
-  userEmail: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: COLORS.dark,
-  },
-  detailsSection: {
-    backgroundColor: "#F9FAFB",
-    borderRadius: 10,
-    borderWidth: 0.5,
-    borderColor: COLORS.lightGray,
-    marginBottom: 20,
-  },
-  fieldContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.lightGray,
-    gap: 10,
-  },
-  fieldLabel: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    color: COLORS.dark,
-  },
-  fieldWithOutSeparator: {
-    borderBottomWidth: 0,
-    borderBottomColor: COLORS.lightGray,
-  },
-  fieldValue: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: COLORS.dark,
-  },
-  editButton: {
-    backgroundColor: COLORS.secondary,
-    marginHorizontal: 20,
-    marginTop: 20,
-    paddingVertical: 14,
-    borderRadius: 38,
-    alignItems: "center",
-  },
-  editButtonText: {
-    color: "white",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-  deleteButton: {
-    marginHorizontal: 20,
-    marginTop: 12,
-    marginBottom: 30,
-    paddingVertical: 14,
-    borderRadius: 38,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: COLORS.error,
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 8,
-  },
-  deleteButtonText: {
-    color: COLORS.error,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    copyButton: {
+      marginLeft: 10,
+      padding: 6,
+    },
+    header: {
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: COLORS.lightGray,
+    },
+    headerTitle: {
+      fontSize: normalize(13),
+      fontFamily: getFontFamily("700"),
+      textAlign: "center",
+      color: colors.text,
+    },
+    scrollView: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+    profileHeader: {
+      alignItems: "center",
+      padding: 20,
+      marginBottom: 20,
+    },
+    imageWrapper: {
+      width: 90,
+      height: 90,
+      borderRadius: 2500,
+      marginRight: 12,
+      overflow: "hidden",
+      backgroundColor: "#f0f0f0",
+      marginBottom: 6,
+    },
+    profileImage: {
+      width: "100%",
+      height: "100%",
+    },
+    profileInfo: {
+      alignItems: "center",
+    },
+    userName: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    userEmail: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+    },
+    detailsSection: {
+      backgroundColor: colors.infoCardBackgroundColor,
+      borderRadius: 10,
+      borderWidth: 0.5,
+      borderColor: colors.border,
+      marginBottom: 20,
+    },
+    fieldContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 16,
+      paddingHorizontal: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      gap: 10,
+    },
+    fieldLabel: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+    },
+    fieldWithOutSeparator: {
+      borderBottomWidth: 0,
+      borderBottomColor: COLORS.lightGray,
+    },
+    fieldValue: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    editButton: {
+      backgroundColor: COLORS.secondary,
+      marginTop: 20,
+      paddingVertical: 14,
+      borderRadius: 38,
+      alignItems: "center",
+    },
+    editButtonText: {
+      color: "white",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+    },
+    deleteButton: {
+      marginTop: 12,
+      marginBottom: 30,
+      paddingVertical: 14,
+      borderRadius: 38,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.error,
+      flexDirection: "row",
+      justifyContent: "center",
+      gap: 8,
+    },
+    deleteButtonText: {
+      color: colors.error,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+    },
+  });

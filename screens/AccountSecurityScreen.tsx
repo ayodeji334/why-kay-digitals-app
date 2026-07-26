@@ -2,7 +2,6 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   Switch,
@@ -22,7 +21,7 @@ import {
 } from "../assets";
 import CustomIcon from "../components/CustomIcon";
 import { AppText } from "../components/AppText";
-import { useBiometricLogin } from "../hooks/useBiometricLogin";
+import { useColors } from "../hooks/useTheme";
 
 interface MenuItemProps {
   title: string;
@@ -46,11 +45,13 @@ export const MenuItem = ({
   showSwitch = false,
   switchValue,
   isDangerous = false,
-  color = "#000",
   IconComponent = <ArrowRight2 />,
   onSwitchChange,
   disable = false,
 }: MenuItemProps) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -74,7 +75,7 @@ export const MenuItem = ({
         <AppText
           style={[
             styles.menuItemTitle,
-            { color: isDangerous ? "#DC2626" : color },
+            { color: isDangerous ? "#DC2626" : colors?.text },
           ]}
         >
           {title}
@@ -83,7 +84,9 @@ export const MenuItem = ({
           <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
         )}
       </View>
-      {showArrow && !showSwitch && <ArrowRight2 size={15} color={color} />}
+      {showArrow && !showSwitch && (
+        <ArrowRight2 size={15} color={colors?.text} />
+      )}
       {showSwitch && (
         <Switch
           onChange={onSwitchChange}
@@ -102,17 +105,15 @@ export default function AccountSecurityScreen() {
     state => state?.isGoogleAuthenticatorEnabled,
   );
 
-  // const { isReady } = useBiometricLogin();
-
+  const colors = useColors();
+  const styles = makeStyles(colors);
   const navigation = useNavigation();
   const setIsShowBalance = useAuthStore(state => state.setIsShowBalance);
   const isShowBalance = useAuthStore(state => state.isShowBalance);
-  // const isBiometricEnabled = userData?.biometric_enabled;
   const is2FAEnabled = userData?.two_factor_enabled || false;
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -136,6 +137,7 @@ export default function AccountSecurityScreen() {
             onPress={() =>
               navigation.navigate("TwoFactorAuthentication" as never)
             }
+            showSwitch={false}
             IconComponent={
               <CustomIcon
                 source={ShieldCheckIcon}
@@ -143,7 +145,6 @@ export default function AccountSecurityScreen() {
                 overrideColor={false}
               />
             }
-            showSwitch={true}
             switchValue={is2FAEnabled || isGoogleAuthenticatorEnabled}
           />
           <MenuItem
@@ -178,39 +179,41 @@ export default function AccountSecurityScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  menuItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 13,
-    paddingHorizontal: 10,
-    borderWidth: 0.5,
-    borderColor: "#D2D2D2",
-    marginVertical: 5,
-    borderRadius: 8,
-    backgroundColor: "#F9FAFB",
-    gap: 10,
-  },
-  menuItemContent: {
-    flex: 1,
-  },
-  menuItemTitle: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-  },
-  menuItemSubtitle: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("400"),
-    color: "#000",
-    marginTop: 2,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContainer: {
+      flexGrow: 1,
+      paddingHorizontal: 20,
+    },
+    menuItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 13,
+      paddingHorizontal: 10,
+      borderWidth: 0.5,
+      borderColor: colors.border,
+      marginVertical: 5,
+      borderRadius: 8,
+      backgroundColor: colors.inputBackground,
+      gap: 10,
+    },
+    menuItemContent: {
+      flex: 1,
+    },
+    menuItemTitle: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    menuItemSubtitle: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      marginTop: 2,
+    },
+  });

@@ -206,7 +206,7 @@
 //     paddingVertical: 13,
 //     paddingHorizontal: 10,
 //     borderWidth: 0.5,
-//     borderColor: "#D2D2D2",
+//     borderColor: colors.border,
 //     marginVertical: 5,
 //     borderRadius: 8,
 //     backgroundColor: "#F9FAFB",
@@ -232,7 +232,7 @@
 //   },
 //   divider: {
 //     height: 1,
-//     backgroundColor: "#D2D2D2",
+//     backgroundColor: colors.border,
 //     marginVertical: 16,
 //   },
 // });
@@ -258,6 +258,7 @@ import {
 } from "../assets";
 import { AppText } from "../components/AppText";
 import { showError } from "../utlis/toast";
+import { useColors } from "../hooks/useTheme";
 
 interface MenuItemProps {
   title: string;
@@ -278,12 +279,15 @@ const MenuItem = ({
   onPress,
   showArrow = true,
   isDangerous = false,
-  color = "#000",
+  color,
   IconComponent = <ArrowRight2 />,
   isVerified = false,
   isLocked = false,
   lockedMessage,
 }: MenuItemProps) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   const handlePress = () => {
     if (isLocked) {
       if (lockedMessage) showError(lockedMessage);
@@ -295,7 +299,7 @@ const MenuItem = ({
   return (
     <TouchableOpacity
       disabled={isVerified}
-      activeOpacity={0.5}
+      activeOpacity={0.8}
       style={[styles.menuItem, isLocked && styles.menuItemLocked]}
       onPress={handlePress}
     >
@@ -317,12 +321,13 @@ const MenuItem = ({
         <AppText
           style={[
             styles.menuItemTitle,
-            { color: isDangerous ? "#DC2626" : color },
+            { color: isDangerous ? colors.error : colors?.text },
             isLocked && styles.menuItemTitleLocked,
           ]}
         >
           {title}
         </AppText>
+
         {subtitle && (
           <AppText
             style={[
@@ -346,7 +351,7 @@ const MenuItem = ({
         >
           <AppText
             style={{
-              color: COLORS.primary,
+              color: colors.primaryLight,
               fontSize: normalize(15),
               fontFamily: getFontFamily(800),
             }}
@@ -358,7 +363,7 @@ const MenuItem = ({
         showArrow && (
           <ArrowRight2
             size={normalize(18)}
-            color={isLocked ? "#B0B0B0" : color}
+            color={isLocked ? "#B0B0B0" : colors.text}
           />
         )
       )}
@@ -373,25 +378,23 @@ export default function KYCVerificationScreen() {
   const isBvnVerified = user?.bvn_verification_status === "VERIFIED";
   const isNinVerified = user?.nin_verification_status === "VERIFIED";
 
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   // Sequential gating: NIN requires BVN done first; Selfie requires both
   // BVN and NIN done first.
   const isNinLocked = !isBvnVerified;
-  const isSelfieLocked = !isBvnVerified || !isNinVerified;
+  // const isSelfieLocked = !isBvnVerified || !isNinVerified;
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
         <InfoCard
           IconComponent={
-            <CustomIcon
-              source={UserIdCardIcon}
-              size={17}
-              color={COLORS.primary}
-            />
+            <CustomIcon source={UserIdCardIcon} size={17} color={colors.text} />
           }
           title="Complete Your KYC!"
           description={
@@ -424,8 +427,8 @@ export default function KYCVerificationScreen() {
                 fill={COLORS.primary}
               />
             }
-            isVerified={isNinVerified}
-            isLocked={isNinLocked}
+            isVerified={false}
+            isLocked={false}
             lockedMessage="Complete BVN verification first"
           />
           <MenuItem
@@ -449,65 +452,66 @@ export default function KYCVerificationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  versionText: {
-    textAlign: "center",
-    color: "#888",
-    fontSize: 14,
-    marginVertical: 10,
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  menuItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 13,
-    paddingHorizontal: 10,
-    borderWidth: 0.5,
-    borderColor: "#D2D2D2",
-    marginVertical: 5,
-    borderRadius: 8,
-    backgroundColor: "#F9FAFB",
-  },
-  menuItemLocked: {
-    backgroundColor: "#F3F4F6",
-    borderColor: "#E5E7EB",
-  },
-  menuItemContent: {
-    flex: 1,
-  },
-  menuItemTitle: {
-    fontSize: normalize(18),
-    color: COLORS.darkBackground,
-    fontFamily: getFontFamily("800"),
-  },
-  menuItemTitleLocked: {
-    color: "#9CA3AF",
-  },
-  menuItemSubtitle: {
-    fontSize: normalize(17),
-    color: COLORS.primary,
-    fontFamily: getFontFamily("400"),
-    marginTop: 2,
-  },
-  menuItemSubtitleLocked: {
-    color: "#B0B0B0",
-  },
-  arrow: {
-    fontSize: normalize(13),
-    color: COLORS.gray,
-    fontFamily: getFontFamily("900"),
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#D2D2D2",
-    marginVertical: 16,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    versionText: {
+      textAlign: "center",
+      color: "#888",
+      fontSize: 14,
+      marginVertical: 10,
+    },
+    scrollContainer: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+    menuItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 13,
+      paddingHorizontal: 10,
+      borderWidth: 0.5,
+      borderColor: colors.border,
+      marginVertical: 5,
+      borderRadius: 8,
+      backgroundColor: colors.inputBackground,
+    },
+    menuItemLocked: {
+      backgroundColor: colors.inputBackground,
+      borderColor: colors.border,
+    },
+    menuItemContent: {
+      flex: 1,
+    },
+    menuItemTitle: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("800"),
+    },
+    menuItemTitleLocked: {
+      color: colors.text,
+    },
+    menuItemSubtitle: {
+      fontSize: normalize(17),
+      color: colors.textMuted,
+      fontFamily: getFontFamily("400"),
+      marginTop: 2,
+    },
+    menuItemSubtitleLocked: {
+      color: colors.text,
+    },
+    arrow: {
+      fontSize: normalize(13),
+      color: colors.text,
+      fontFamily: getFontFamily("900"),
+    },
+    divider: {
+      height: 1,
+      backgroundColor: colors.border,
+      marginVertical: 16,
+    },
+  });

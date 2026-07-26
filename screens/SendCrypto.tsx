@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
@@ -39,6 +38,7 @@ import { showError } from "../utlis/toast";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import NumberInputField from "../components/NumberInputField";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -104,6 +104,8 @@ export default function SendScreen() {
   const [displayAmount, setDisplayAmount] = useState("");
   const [showScanner, setShowScanner] = useState(false);
   const device = useCameraDevice("back");
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const { data: livePrice } = useMarketPrice(selectedAssetUuid);
 
@@ -334,6 +336,7 @@ export default function SendScreen() {
           },
         )} (amount + fees) but your balance is ${formatAmount(balanceUsd, {
           currency: "USD",
+          decimalPlace: 2,
         })}.`,
       };
     }
@@ -499,8 +502,8 @@ export default function SendScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: "#fff" }}
-      edges={["bottom", "right", "left"]}
+      style={{ flex: 1, backgroundColor: colors.background }}
+      edges={["right", "left"]}
     >
       <ScrollView
         style={styles.scrollContainer}
@@ -571,7 +574,7 @@ export default function SendScreen() {
                   {" ≈ "}
                   {formatAmount(balanceInUsd, {
                     currency: "USD",
-                    decimalPlace: 5,
+                    decimalPlace: 2,
                   })}
                 </AppText>
               </View>
@@ -616,6 +619,14 @@ export default function SendScreen() {
                   placeholder="Enter tag or memo (optional)"
                 />
               </View>
+
+              {withdrawalStatus.hasIssue && (
+                <View style={styles.warningContainer}>
+                  <AppText style={styles.warningText}>
+                    {withdrawalStatus.message}
+                  </AppText>
+                </View>
+              )}
 
               {feeBreakdown && (
                 <View style={styles.feeBreakdownContainer}>
@@ -681,14 +692,6 @@ export default function SendScreen() {
                 </View>
               )}
 
-              {withdrawalStatus.hasIssue && (
-                <View style={styles.warningContainer}>
-                  <AppText style={styles.warningText}>
-                    {withdrawalStatus.message}
-                  </AppText>
-                </View>
-              )}
-
               <InfoCard
                 IconComponent={<InfoCircle size={15} color={COLORS.primary} />}
                 title="Important Notice!"
@@ -730,182 +733,186 @@ export default function SendScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: normalize(20),
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingTop: 20,
-  },
-  linkContainer: {
-    marginBottom: 20,
-    padding: 12,
-    backgroundColor: "#eef4fc",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#DBEAFE",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  text: {
-    fontSize: normalize(18),
-    color: "#374151",
-    fontFamily: getFontFamily("700"),
-  },
-  bold: {
-    fontFamily: getFontFamily("900"),
-  },
-  link: {
-    color: COLORS.primary,
-    fontFamily: getFontFamily("700"),
-    alignContent: "center",
-    justifyContent: "center",
-  },
-  label: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    marginBottom: 3,
-  },
-  error: {
-    color: "red",
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
-    marginBottom: 10,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    paddingHorizontal: normalize(16),
-    marginBottom: 10,
-    gap: 5,
-  },
-  feeBreakdownContainer: {
-    backgroundColor: "#5AB2431A",
-    borderRadius: 12,
-    padding: 16,
-    gap: 10,
-  },
-  feeBreakdownTitle: {
-    color: "#000",
-    fontFamily: getFontFamily("800"),
-    fontSize: 13,
-    marginBottom: 4,
-  },
-  feeRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  feeLabel: {
-    color: "#000",
-    fontFamily: getFontFamily("700"),
-    fontSize: 12,
-    flex: 1,
-  },
-  feeValue: {
-    color: "#000",
-    fontFamily: getFontFamily("900"),
-    fontSize: 12,
-    textAlign: "right",
-    flex: 1,
-  },
-  feeDivider: {
-    height: 1,
-    backgroundColor: "#b1b1b1",
-  },
-  feeWarning: {
-    backgroundColor: "#3a1a1a",
-    borderRadius: 8,
-    padding: 10,
-    marginTop: 4,
-  },
-  feeWarningText: {
-    color: "#ff6b6b",
-    fontFamily: getFontFamily("400"),
-    fontSize: 18,
-  },
-  dollarSign: {
-    fontSize: normalize(23),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-    marginRight: normalize(5),
-  },
-  input: {
-    flex: 1,
-    paddingVertical: normalize(14),
-    fontSize: normalize(26),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  approx: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    marginBottom: normalize(6),
-    color: COLORS.primary,
-  },
-  walletBalance: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-    marginBottom: 4,
-    paddingBottom: 1,
-  },
-  walletAddressRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    // marginTop: 30,
-  },
-  scanButton: {
-    padding: 9,
-    borderRadius: 10,
-    backgroundColor: COLORS.primary,
-    marginTop: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  warningContainer: {
-    // marginVertical: 12,
-    padding: 10,
-    backgroundColor: "rgba(255, 0, 0, 0.03)",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 0, 0, 0.3)",
-  },
-  warningText: {
-    color: "#db0b0b",
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    textAlign: "center",
-  },
-  button: {
-    paddingVertical: 14,
-    borderRadius: 100,
-    alignItems: "center",
-    marginTop: 30,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-  closeScannerButton: {
-    position: "absolute",
-    top: 50,
-    right: 20,
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 7,
-    borderRadius: 20,
-  },
-  closeScannerText: {
-    color: "#fff",
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("700"),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingHorizontal: normalize(20),
+      backgroundColor: colors.background,
+    },
+    scrollContainer: {
+      flex: 1,
+      paddingVertical: 20,
+      backgroundColor: colors.background,
+    },
+    linkContainer: {
+      marginBottom: 20,
+      padding: 12,
+      backgroundColor: colors.inputBackground,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    text: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+    },
+    bold: {
+      fontFamily: getFontFamily("900"),
+    },
+    link: {
+      color: colors.primaryLight,
+      fontFamily: getFontFamily("700"),
+      alignContent: "center",
+      justifyContent: "center",
+    },
+    label: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      marginBottom: 3,
+      color: colors.text,
+    },
+    error: {
+      color: "red",
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      marginBottom: 10,
+    },
+    inputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 10,
+      paddingHorizontal: normalize(16),
+      marginBottom: 10,
+      gap: 5,
+    },
+    feeBreakdownContainer: {
+      backgroundColor: colors.inputBackground,
+      borderRadius: 12,
+      padding: 16,
+      gap: 10,
+    },
+    feeBreakdownTitle: {
+      color: colors.text,
+      fontFamily: getFontFamily("800"),
+      fontSize: 13,
+      marginBottom: 4,
+    },
+    feeRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    feeLabel: {
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+      fontSize: 12,
+      flex: 1,
+    },
+    feeValue: {
+      color: colors.text,
+      fontFamily: getFontFamily("900"),
+      fontSize: 12,
+      textAlign: "right",
+      flex: 1,
+    },
+    feeDivider: {
+      height: 1,
+      backgroundColor: colors.border,
+    },
+    feeWarning: {
+      backgroundColor: "#3a1a1a",
+      borderRadius: 8,
+      padding: 10,
+      marginTop: 4,
+    },
+    feeWarningText: {
+      color: colors.error,
+      fontFamily: getFontFamily("400"),
+      fontSize: 18,
+    },
+    dollarSign: {
+      fontSize: normalize(24),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      marginRight: normalize(5),
+    },
+    input: {
+      flex: 1,
+      paddingVertical: normalize(14),
+      fontSize: normalize(24),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    approx: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      marginBottom: normalize(6),
+      color: COLORS.primary,
+    },
+    walletBalance: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      marginBottom: 4,
+      paddingBottom: 1,
+    },
+    walletAddressRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      // marginTop: 30,
+    },
+    scanButton: {
+      padding: 9,
+      borderRadius: 10,
+      backgroundColor: COLORS.primary,
+      marginTop: 10,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    warningContainer: {
+      marginVertical: 12,
+      padding: 10,
+      backgroundColor: "rgba(255, 0, 0, 0.03)",
+      borderRadius: 6,
+      borderWidth: 1,
+      borderColor: "rgba(255, 0, 0, 0.3)",
+    },
+    warningText: {
+      color: colors.error,
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      textAlign: "center",
+    },
+    button: {
+      paddingVertical: 14,
+      borderRadius: 100,
+      alignItems: "center",
+      marginTop: 30,
+    },
+    buttonText: {
+      color: "#fff",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+    },
+    closeScannerButton: {
+      position: "absolute",
+      top: 50,
+      right: 20,
+      backgroundColor: COLORS.primary,
+      paddingHorizontal: 20,
+      paddingVertical: 7,
+      borderRadius: 20,
+    },
+    closeScannerText: {
+      color: "#fff",
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("700"),
+    },
+  });

@@ -7,15 +7,22 @@ import HalfScreenModal from "../components/HalfScreenModal";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 export default function SetNewPasswordScreen({ route }: any) {
   const { email } = route.params;
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const navigation = useNavigation();
+  const colors = useColors();
+  const resolvedTheme = useResolvedTheme();
+  const styles = makeStyles(colors);
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
           <AppText style={styles.title}>Set A New Password</AppText>
@@ -54,23 +61,25 @@ export default function SetNewPasswordScreen({ route }: any) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  header: {
-    marginBottom: 23,
-  },
-  title: {
-    fontSize: normalize(23),
-    fontFamily: getFontFamily("800"),
-  },
-  highlight: {
-    color: COLORS.primary,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContainer: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+    header: {
+      marginBottom: 23,
+    },
+    title: {
+      fontSize: normalize(23),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    highlight: {
+      color: COLORS.primary,
+    },
+  });

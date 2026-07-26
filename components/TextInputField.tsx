@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface Props {
   control: any;
@@ -50,6 +51,9 @@ const TextInputField: React.FC<Props> = ({
   containerStyle,
   isEditable = true,
 }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   return (
     <Controller
       control={control}
@@ -89,41 +93,42 @@ const TextInputField: React.FC<Props> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 10,
-  },
-  disabled: {
-    opacity: 0.6,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: normalize(16),
-    paddingVertical: normalize(18),
-    color: "#1A1A1A",
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(18),
-    backgroundColor: "#FFFFFF",
-  },
-  errorBorder: {
-    borderColor: "#FF3B30",
-    borderWidth: 1.5,
-  },
-  errorText: {
-    color: "#FF3B30",
-    marginTop: 6,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    marginLeft: 4,
-  },
-  label: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-    marginBottom: 2,
-    color: "#000",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: 10,
+    },
+    disabled: {
+      opacity: 0.6,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      paddingHorizontal: normalize(16),
+      paddingVertical: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(18),
+      backgroundColor: colors.background,
+    },
+    errorBorder: {
+      borderColor: "#FF3B30",
+      borderWidth: 1.5,
+    },
+    errorText: {
+      color: "#FF3B30",
+      marginTop: 6,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      marginLeft: 4,
+    },
+    label: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      marginBottom: 2,
+      color: colors.text,
+    },
+  });
 
 export default TextInputField;

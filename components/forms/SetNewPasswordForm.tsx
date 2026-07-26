@@ -12,9 +12,10 @@ import { AxiosError } from "axios";
 import { showError } from "../../utlis/toast";
 import useAxios from "../../hooks/useAxios";
 import { AppText } from "../AppText";
+import { useColors } from "../../hooks/useTheme";
 
 const loginSchema = yup.object().shape({
-  token: yup.string().max(6, "Invalid code").required("Email is required"),
+  token: yup.string().max(6, "Invalid code").required("Token is required"),
   password: yup
     .string()
     .min(6, "Password must be at least 6 characters")
@@ -31,7 +32,6 @@ type SetNewPasswordFormInputs = {
   token: string;
 };
 
-// 45123082112
 const SetNewPasswordForm: React.FC<{
   email: string;
   onSuccess: () => void;
@@ -45,6 +45,8 @@ const SetNewPasswordForm: React.FC<{
   } = useForm<SetNewPasswordFormInputs>({
     resolver: yupResolver(loginSchema),
   });
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const onSubmit = async (data: SetNewPasswordFormInputs) => {
     try {
@@ -105,20 +107,21 @@ const SetNewPasswordForm: React.FC<{
 
 export default SetNewPasswordForm;
 
-const styles = StyleSheet.create({
-  container: {
-    paddingVertical: 20,
-  },
-  button: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    marginTop: 30,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#00",
-    fontFamily: getFontFamily(700),
-    fontSize: normalize(18),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      paddingVertical: 20,
+    },
+    button: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      marginTop: 30,
+      alignItems: "center",
+    },
+    buttonText: {
+      color: "white",
+      fontFamily: getFontFamily(700),
+      fontSize: normalize(18),
+    },
+  });

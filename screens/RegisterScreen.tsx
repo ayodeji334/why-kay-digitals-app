@@ -5,8 +5,12 @@ import { getFontFamily, normalize, width } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 import RegisterForm from "../components/forms/RegisterForm";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 export default function RegisterScreen() {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   const navigation = useNavigation();
 
   const handleNavigate = () => {
@@ -14,8 +18,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
@@ -29,6 +32,7 @@ export default function RegisterScreen() {
               {
                 fontFamily: getFontFamily(400),
                 fontSize: normalize(20),
+                color: colors.text,
               },
             ]}
           >
@@ -49,6 +53,7 @@ export default function RegisterScreen() {
             style={{
               fontSize: normalize(18),
               fontFamily: getFontFamily(700),
+              color: colors.text,
             }}
           >
             Already have an account?
@@ -59,8 +64,8 @@ export default function RegisterScreen() {
               {
                 fontSize: normalize(18),
                 fontFamily: getFontFamily(700),
+                color: colors.primary,
               },
-              { color: "blue" },
             ]}
           >
             Sign in here
@@ -70,24 +75,25 @@ export default function RegisterScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  header: {
-    marginVertical: 10,
-  },
-  title: {
-    fontSize: normalize(23),
-    fontFamily: getFontFamily("800"),
-  },
-  highlight: {
-    color: COLORS.primary,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContainer: {
+      flexGrow: 1,
+      paddingHorizontal: 20,
+    },
+    header: {
+      marginVertical: 10,
+    },
+    title: {
+      fontSize: normalize(23),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    highlight: {
+      color: COLORS.primary,
+    },
+  });

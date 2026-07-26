@@ -13,6 +13,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface OtpInputFieldProps {
   control: any;
@@ -36,6 +37,8 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
   boxStyle,
 }) => {
   const inputs = useRef<TextInput[]>([]);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   return (
     <Controller
@@ -173,77 +176,78 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  wrapper: {
-    marginBottom: 15,
-  },
-  container: {
-    flexDirection: "row",
-    gap: 10,
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
-  },
-  box: {
-    width: normalize(48),
-    height: normalize(48),
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    alignContent: "center",
-    alignSelf: "center",
-    backgroundColor: "white",
-  },
-  hiddenInput: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1,
-    color: "transparent",
-    backgroundColor: "transparent",
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    textAlign: "center",
-    textAlignVertical: "center",
-    justifyContent: "center",
-    alignContent: "center",
-    alignItems: "center",
-    paddingTop: 0,
-    paddingBottom: 0,
-    lineHeight: 40,
-  },
-  boxText: {
-    position: "absolute",
-    fontSize: normalize(28),
-    fontFamily: getFontFamily("800"),
-    color: "black",
-    textAlign: "center",
-    textAlignVertical: "center",
-    zIndex: 0,
-    pointerEvents: "none",
-  },
-  placeholder: {
-    fontSize: normalize(28),
-    color: "#ccc",
-    fontFamily: getFontFamily("800"),
-    alignContent: "center",
-  },
-  label: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(19),
-    marginBottom: 6,
-    color: "#000",
-  },
-  errorBorder: {
-    borderColor: "#FF3B30",
-  },
-  errorText: {
-    color: "#FF3B30",
-    marginTop: 6,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(16),
-    marginLeft: 4,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    wrapper: {
+      marginBottom: 15,
+    },
+    container: {
+      flexDirection: "row",
+      gap: 10,
+      alignItems: "flex-start",
+      justifyContent: "flex-start",
+    },
+    box: {
+      width: normalize(48),
+      height: normalize(48),
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      justifyContent: "center",
+      alignItems: "center",
+      alignContent: "center",
+      alignSelf: "center",
+      backgroundColor: colors.background,
+    },
+    hiddenInput: {
+      ...StyleSheet.absoluteFillObject,
+      zIndex: 1,
+      color: "transparent",
+      backgroundColor: "transparent",
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      textAlign: "center",
+      textAlignVertical: "center",
+      justifyContent: "center",
+      alignContent: "center",
+      alignItems: "center",
+      paddingTop: 0,
+      paddingBottom: 0,
+      lineHeight: 40,
+    },
+    boxText: {
+      position: "absolute",
+      fontSize: normalize(28),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      textAlign: "center",
+      textAlignVertical: "center",
+      zIndex: 0,
+      pointerEvents: "none",
+    },
+    placeholder: {
+      fontSize: normalize(28),
+      color: colors.inputBackground,
+      fontFamily: getFontFamily("800"),
+      alignContent: "center",
+    },
+    label: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(19),
+      marginBottom: 6,
+      color: colors.text,
+    },
+    errorBorder: {
+      borderColor: colors.error,
+    },
+    errorText: {
+      color: colors.error,
+      marginTop: 6,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      marginLeft: 4,
+    },
+  });
 
 export default OtpInputField;

@@ -22,6 +22,7 @@ import { formatDate } from "../libs/formatDate";
 import { AppText } from "../components/AppText";
 import TabSwitcher from "../components/TabSwitcher";
 import { showError } from "../utlis/toast";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 export default function NotificationsScreen() {
   const { apiGet } = useAxios();
@@ -29,6 +30,9 @@ export default function NotificationsScreen() {
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
   const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
   const queryClient = useQueryClient();
+  const colors = useColors();
+  const resolvedTheme = useResolvedTheme();
+  const styles = makeStyles(colors);
 
   const fetchNotifications = async ({ pageParam = 1 }) => {
     const res = await apiGet("/notifications/user", {
@@ -137,6 +141,7 @@ export default function NotificationsScreen() {
                 style={{
                   fontSize: normalize(16),
                   fontFamily: getFontFamily("800"),
+                  color: colors.text,
                 }}
               >
                 {formatDate(item?.created_at, { dateFormat: "relative" })}
@@ -164,8 +169,10 @@ export default function NotificationsScreen() {
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={"#fff"} />
-
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <View style={styles.headerRow}>
         {/* <AppText style={styles.headerTitle}>Your notifications</AppText> */}
         <TouchableOpacity
@@ -199,9 +206,9 @@ export default function NotificationsScreen() {
             { label: "Read", value: "read" },
           ]}
           onTabChange={value => setActiveTab(value)}
-          containerStyle={{ backgroundColor: "#f3f3f3ff", marginVertical: 10 }}
-          activeTabStyle={{ backgroundColor: COLORS.primary }}
-          activeTabTextStyle={{ color: "#fff" }}
+          containerStyle={styles.tabSwitcher}
+          activeTabStyle={styles.activeTab}
+          activeTabTextStyle={styles.activeTabText}
         />
       </View>
 
@@ -254,202 +261,191 @@ export default function NotificationsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "white" },
-  scrollContainer: { flex: 1, paddingVertical: 20 },
-  actionsContainer: {
-    flexWrap: "wrap",
-    flexDirection: "row",
-    gap: 10,
-    margin: "auto",
-  },
-  headerRow: {
-    marginTop: -10,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    paddingHorizontal: 20,
-    paddingBottom: 4,
-  },
-  headerTitle: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  notificationCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 16,
-    marginHorizontal: 20,
-    marginBottom: 12,
-    borderRadius: 9,
-    borderWidth: 1,
-    borderColor: "#BBBBBB",
-    backgroundColor: "#fff",
-  },
-  unreadBackground: {
-    backgroundColor: "#EFF7EC",
-    borderColor: "#00BD53",
-  },
-  timeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  unreadDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 4,
-    backgroundColor: "#27A15E",
-    marginRight: 3,
-  },
-  assetIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#F0F0F0",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  assetName: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginBottom: 4,
-  },
-  assetSymbol: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    color: "#4b4a4aff",
-    width: "85%",
-  },
-  assetPrice: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    color: "#666",
-  },
-  // Modal Styles
-  modalContent: {
-    paddingVertical: 20,
-  },
-  modalTitle: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginBottom: 8,
-  },
-  modalMessage: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("400"),
-    color: "#333",
-    lineHeight: 22,
-  },
-  tabContainer: {
-    paddingHorizontal: 15,
-  },
-  tabButton: {
-    flex: 1,
-    paddingVertical: 5,
-    alignItems: "center",
-  },
-  tabText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    width: "auto",
-    color: "#000",
-    textTransform: "capitalize",
-  },
-  activeTab: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 120,
-  },
-  activeTabText: {
-    color: "#fff",
-  },
-  actionCard: {
-    backgroundColor: "#F8F9FA",
-    padding: 7,
-    borderRadius: 10,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#F3F4F6",
-    minWidth: 62,
-  },
-  actionIcon: { marginBottom: 10 },
-  actionTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-  },
-  assetsSection: { paddingVertical: 30 },
-  sectionTitle: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginBottom: 16,
-  },
-  assetsList: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  assetItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e1e1e1ff",
-  },
-  assetLeft: { flex: 1 },
-  assetIconText: {
-    fontSize: normalize(13),
-    fontFamily: getFontFamily("400"),
-    color: "#128b48ff",
-  },
-  assetInfo: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  //   assetName: {
-  //     fontSize: normalize(20),
-  //     fontFamily: getFontFamily("800"),
-  //     color: "#000",
-  //   },
-  //   assetSymbol: { fontSize: normalize(16), color: "#6B7280" },
-  assetRight: { alignItems: "flex-end" },
-  //   assetPrice: {
-  //     fontSize: normalize(18),
-  //     fontFamily: getFontFamily("400"),
-  //     color: "#000",
-  //   },
-  emptyState: {
-    alignItems: "center",
-    paddingVertical: 40,
-    flex: 1,
-    justifyContent: "center",
-  },
-  emptyStateText: { fontSize: normalize(20), fontFamily: getFontFamily("800") },
-  emptyStateSubtext: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    color: "#000000",
-  },
-  markAllButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 6,
-  },
-  markAllButtonText: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    color: COLORS.primary,
-  },
-  markAllButtonTextDisabled: {
-    color: "#BBBBBB",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    scrollContainer: { flex: 1, paddingVertical: 20 },
+    actionsContainer: {
+      flexWrap: "wrap",
+      flexDirection: "row",
+      gap: 10,
+      margin: "auto",
+    },
+    tabSwitcher: {
+      backgroundColor: colors.inputBackground,
+      marginVertical: 10,
+    },
+    activeTab: {
+      backgroundColor: COLORS.primary,
+      color: colors.text,
+    },
+    activeTabText: {
+      color: "white",
+    },
+    headerRow: {
+      marginTop: -10,
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      paddingHorizontal: 20,
+      paddingBottom: 4,
+    },
+    headerTitle: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    notificationCard: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: 16,
+      marginHorizontal: 20,
+      marginBottom: 12,
+      borderRadius: 9,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.background,
+    },
+    unreadBackground: {
+      backgroundColor: colors.infoCardBackgroundColor,
+      borderColor: colors.border,
+    },
+    timeContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    unreadDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 4,
+      backgroundColor: "#27A15E",
+      marginRight: 3,
+    },
+    assetIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: "#F0F0F0",
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: 12,
+    },
+    assetName: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 4,
+    },
+    assetSymbol: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      width: "85%",
+    },
+    assetPrice: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+    },
+    modalContent: {
+      paddingVertical: 20,
+    },
+    modalTitle: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 8,
+    },
+    modalMessage: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      lineHeight: 22,
+    },
+    tabContainer: {
+      paddingHorizontal: 15,
+    },
+    tabButton: {
+      flex: 1,
+      paddingVertical: 5,
+      alignItems: "center",
+    },
+    tabText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      width: "auto",
+      color: "#000",
+      textTransform: "capitalize",
+    },
+    // activeTab: {
+    //   backgroundColor: COLORS.primary,
+    //   borderRadius: 120,
+    // },
+    // activeTabText: {
+    //   color: "#fff",
+    // },
+    // assetsSection: { paddingVertical: 30 },
+    // sectionTitle: {
+    //   fontSize: normalize(22),
+    //   fontFamily: getFontFamily("800"),
+    //   color: colors.text,
+    //   marginBottom: 16,
+    // },
+    // assetsList: {
+    //   backgroundColor: "#fff",
+    //   borderRadius: 12,
+    //   overflow: "hidden",
+    // },
+    assetItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    assetLeft: { flex: 1 },
+    assetIconText: {
+      fontSize: normalize(13),
+      fontFamily: getFontFamily("400"),
+      color: "#128b48ff",
+    },
+    assetInfo: {
+      flex: 1,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    assetRight: { alignItems: "flex-end" },
+    emptyState: {
+      alignItems: "center",
+      paddingVertical: 40,
+      flex: 1,
+      justifyContent: "center",
+    },
+    emptyStateText: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    emptyStateSubtext: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+    },
+    markAllButton: {
+      paddingVertical: 6,
+      paddingHorizontal: 6,
+    },
+    markAllButtonText: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    markAllButtonTextDisabled: {
+      color: colors.text,
+    },
+  });
 
 // import React, { useMemo, useState } from "react";
 // import {

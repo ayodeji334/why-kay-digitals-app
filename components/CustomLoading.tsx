@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Modal, ActivityIndicator, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
+import { useColors } from "../hooks/useTheme";
 
 type CustomLoadingProps = {
   loading: boolean;
@@ -11,6 +12,9 @@ export default function CustomLoading({
   loading,
   color = COLORS.secondary,
 }: CustomLoadingProps) {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   return (
     <Modal
       visible={loading}
@@ -27,17 +31,18 @@ export default function CustomLoading({
   );
 }
 
-const styles = StyleSheet.create({
-  modalBackground: {
-    flex: 1,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loaderContainer: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    modalBackground: {
+      flex: 1,
+      backgroundColor: colors.overlay,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    loaderContainer: {
+      backgroundColor: colors.overlay,
+      padding: 20,
+      borderRadius: 10,
+      alignItems: "center",
+    },
+  });

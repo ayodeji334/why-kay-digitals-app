@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import {
   View,
-  Text,
   ScrollView,
   TouchableOpacity,
   Image,
@@ -34,6 +33,7 @@ import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
 import { useFiatBalance } from "../hooks/useFiatBalance";
+import { useColors } from "../hooks/useTheme";
 
 // Validation Schema
 const schema = yup.object({
@@ -58,6 +58,9 @@ interface cardValidationStatusProps {
 
 const SmartCardValidationStatus = memo(
   ({ validating, cardDetail, hasInput }: cardValidationStatusProps) => {
+    const colors = useColors();
+    const styles = makeStyles(colors);
+
     if (!hasInput) return null;
 
     // in-flight
@@ -108,7 +111,8 @@ export default function PayCableTVSubscriptionScreen() {
   const navigation: any = useNavigation();
   const [cardValid, setCardValid] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const colors = useColors();
+  const styles = makeStyles(colors);
   const {
     control,
     handleSubmit,
@@ -368,8 +372,7 @@ export default function PayCableTVSubscriptionScreen() {
   useResetFormOnMount(reset, { network: "", smartcard_number: "", plan: "" });
 
   return (
-    <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}
@@ -404,6 +407,7 @@ export default function PayCableTVSubscriptionScreen() {
             deleting={deleting}
           />
         </View>
+
         <View style={{ marginBottom: 20 }}>
           <AppText style={styles.subHeader}>Select Cable TV Provider</AppText>
           <View style={styles.networkRow}>
@@ -429,6 +433,7 @@ export default function PayCableTVSubscriptionScreen() {
             <AppText style={styles.errorText}>{errors.network.message}</AppText>
           )}
         </View>
+
         <SelectInput
           control={control}
           name="plan"
@@ -471,6 +476,7 @@ export default function PayCableTVSubscriptionScreen() {
         />
         <View style={styles.buttonWrapper}>
           <TouchableOpacity
+            activeOpacity={0.89}
             style={[
               styles.button,
               (validatingCard ||
@@ -497,210 +503,212 @@ export default function PayCableTVSubscriptionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  validationRow: {
-    marginVertical: 10,
-    paddingHorizontal: 17,
-    paddingVertical: 10,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    gap: 10,
-  },
-  validatingText: {
-    color: "black",
-    fontFamily: getFontFamily("800"),
-  },
-  cardSuccessRow: {
-    marginVertical: 10,
-    paddingHorizontal: 17,
-    paddingVertical: 10,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignContent: "center",
-    alignItems: "center",
-    gap: 5,
-  },
-  cardSuccessText: {
-    fontSize: 13,
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-  },
-  scrollView: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  subHeader: {
-    marginTop: 20,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    marginBottom: 8,
-    color: "#1A1A1A",
-  },
-  networkRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  networkButton: {
-    borderWidth: 1,
-    borderColor: "#fbfbfbff",
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    width: 75,
-    height: 75,
-  },
-  balanceLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000000",
-    marginBottom: 4,
-  },
-  balanceValue: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("900"),
-    color: "#000",
-  },
-  balanceCard: {
-    paddingHorizontal: normalize(10),
-    paddingVertical: normalize(9),
-  },
-  loader: {
-    marginTop: 12,
-  },
-  buttonWrapper: {
-    marginTop: 32,
-  },
-  warningContainer: {
-    marginVertical: 12,
-    padding: 10,
-    backgroundColor: "rgba(255, 0, 0, 0.03)",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 0, 0, 0.3)",
-  },
-  warningText: {
-    color: "#db0b0b",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("800"),
-    textAlign: "center",
-  },
-  networkButtonActive: {
-    borderColor: "#FBBF24",
-  },
-  networkLogo: {
-    width: 73,
-    height: 73,
-    borderRadius: 8,
-    resizeMode: "cover",
-  },
-  checkIconContainer: {
-    position: "absolute",
-    top: 4,
-    left: 4,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: "red",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1,
-  },
-  checkIcon: {
-    color: "#fff",
-    fontSize: 12,
-    fontFamily: getFontFamily("900"),
-  },
-  beneficiaryContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 4,
-    marginRight: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkboxChecked: {
-    borderColor: COLORS.secondary,
-    backgroundColor: COLORS.secondary,
-  },
-  checkmark: {
-    color: "#FFFFFF",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("900"),
-  },
-  beneficiaryText: {
-    fontSize: normalize(18),
-    color: "#374151",
-    fontFamily: getFontFamily("700"),
-  },
-  errorText: {
-    color: "#EF4444",
-    marginTop: 4,
-    marginBottom: 10,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-  // buttonWrapper: {
-  //   marginTop: 32,
-  // },
-  button: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    marginTop: 30,
-    justifyContent: "center",
-    alignContent: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    textAlign: "center",
-  },
-  detailsContainer: {
-    marginVertical: 10,
-    paddingHorizontal: 17,
-    paddingVertical: 10,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    gap: 5,
-  },
-  detailsLabel: {
-    fontSize: 12,
-    fontFamily: getFontFamily("900"),
-    color: "#000",
-  },
-  detailsValue: {
-    fontSize: 13,
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    validationRow: {
+      marginVertical: 10,
+      paddingHorizontal: 17,
+      paddingVertical: 10,
+      backgroundColor: colors.background,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      flexDirection: "column",
+      justifyContent: "flex-start",
+      gap: 10,
+    },
+    validatingText: {
+      color: colors.text,
+      fontFamily: getFontFamily("800"),
+    },
+    cardSuccessRow: {
+      marginVertical: 10,
+      paddingHorizontal: 17,
+      paddingVertical: 10,
+      backgroundColor: "#f9f9f9",
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      flexDirection: "column",
+      justifyContent: "center",
+      alignContent: "center",
+      alignItems: "center",
+      gap: 5,
+    },
+    cardSuccessText: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    scrollView: {
+      flex: 1,
+      flexGrow: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      flexGrow: 1,
+      paddingHorizontal: 16,
+      paddingVertical: 30,
+    },
+    subHeader: {
+      marginTop: 20,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      marginBottom: 8,
+      color: colors.text,
+    },
+    networkRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 8,
+    },
+    networkButton: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      alignItems: "center",
+      justifyContent: "center",
+      width: 75,
+      height: 75,
+    },
+    balanceLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 4,
+    },
+    balanceValue: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("900"),
+      color: colors.text,
+    },
+    balanceCard: {
+      paddingHorizontal: normalize(10),
+      paddingVertical: normalize(9),
+    },
+    loader: {
+      marginTop: 12,
+    },
+    buttonWrapper: {
+      marginTop: 32,
+    },
+    warningContainer: {
+      marginVertical: 12,
+      padding: 10,
+      backgroundColor: "rgba(255, 0, 0, 0.03)",
+      borderRadius: 6,
+      borderWidth: 1,
+      borderColor: "rgba(255, 0, 0, 0.3)",
+    },
+    warningText: {
+      color: colors.error,
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("800"),
+      textAlign: "center",
+    },
+    networkButtonActive: {
+      borderColor: "#FBBF24",
+    },
+    networkLogo: {
+      width: 73,
+      height: 73,
+      borderRadius: 8,
+      resizeMode: "cover",
+    },
+    checkIconContainer: {
+      position: "absolute",
+      top: 4,
+      left: 4,
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      backgroundColor: colors.background,
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1,
+    },
+    checkIcon: {
+      color: colors.text,
+      fontSize: 12,
+      fontFamily: getFontFamily("900"),
+    },
+    beneficiaryContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 24,
+    },
+    checkbox: {
+      width: 20,
+      height: 20,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 4,
+      marginRight: 12,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    checkboxChecked: {
+      borderColor: COLORS.secondary,
+      backgroundColor: COLORS.secondary,
+    },
+    checkmark: {
+      color: "#FFFFFF",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("900"),
+    },
+    beneficiaryText: {
+      fontSize: normalize(18),
+      color: "#374151",
+      fontFamily: getFontFamily("700"),
+    },
+    errorText: {
+      color: colors.error,
+      marginTop: 4,
+      marginBottom: 10,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+    },
+    // buttonWrapper: {
+    //   marginTop: 32,
+    // },
+    button: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      marginTop: 30,
+      justifyContent: "center",
+      alignContent: "center",
+    },
+    buttonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      textAlign: "center",
+    },
+    detailsContainer: {
+      marginVertical: 10,
+      paddingHorizontal: 17,
+      paddingVertical: 10,
+      backgroundColor: "#f9f9f9",
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      flexDirection: "column",
+      justifyContent: "flex-start",
+      gap: 5,
+    },
+    detailsLabel: {
+      fontSize: 12,
+      fontFamily: getFontFamily("900"),
+      color: colors.text,
+    },
+    detailsValue: {
+      fontSize: 13,
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+  });

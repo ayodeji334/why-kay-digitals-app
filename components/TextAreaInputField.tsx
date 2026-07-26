@@ -10,6 +10,7 @@ import { Controller, Control, FieldValues } from "react-hook-form";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize, width } from "../constants/settings";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface TextAreaInputProps extends TextInputProps {
   name: string;
@@ -26,6 +27,9 @@ const TextAreaInput = ({
   placeholder = "",
   ...rest
 }: TextAreaInputProps) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   return (
     <View style={{ marginVertical: 8 }}>
       {label && <AppText style={styles.label}>{label}</AppText>}
@@ -61,30 +65,31 @@ const TextAreaInput = ({
   );
 };
 
-const styles = StyleSheet.create({
-  label: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
-    marginBottom: 4,
-    color: COLORS.darkBackground,
-  },
-  textArea: {
-    borderWidth: 1,
-    borderColor: COLORS.gray,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: width * 0.032,
-    backgroundColor: "#F9FAFB",
-    minHeight: 120,
-  },
-  errorBorder: {
-    borderColor: COLORS.error,
-  },
-  errorText: {
-    color: COLORS.error,
-    fontSize: width * 0.028,
-    marginTop: 4,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    label: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("800"),
+      marginBottom: 4,
+      color: colors.background,
+    },
+    textArea: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      padding: 12,
+      fontSize: width * 0.032,
+      backgroundColor: colors.inputBackground,
+      minHeight: 120,
+    },
+    errorBorder: {
+      borderColor: COLORS.error,
+    },
+    errorText: {
+      color: COLORS.error,
+      fontSize: width * 0.028,
+      marginTop: 4,
+    },
+  });
 
 export default TextAreaInput;

@@ -1,11 +1,9 @@
 import React from "react";
 import {
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  StatusBar,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -14,13 +12,13 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { showError, showSuccess } from "../utlis/toast";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 const schema = yup.object({
   description: yup
@@ -34,8 +32,8 @@ type FormValues = yup.InferType<typeof schema>;
 
 const SuggestionScreen = () => {
   const { post } = useAxios();
-
-  const navigation = useNavigation();
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const {
     control,
@@ -75,9 +73,7 @@ const SuggestionScreen = () => {
   const isLoading = isSubmitting || isPending;
 
   return (
-    <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="white" />
-
+    <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -164,110 +160,111 @@ const SuggestionScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-  submitBtn: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 16,
-    borderRadius: 120,
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  upgradeButtonText: {
-    color: "white",
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 8,
-    flexGrow: 1,
-  },
-  header: {
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: normalize(20),
-    color: "#111827",
-    marginBottom: 3,
-    fontFamily: getFontFamily("800"),
-  },
-  subtitle: {
-    fontSize: normalize(18),
-    color: "#6B7280",
-    fontFamily: getFontFamily("700"),
-    lineHeight: 18,
-  },
-  form: {
-    gap: 20,
-    marginTop: 10,
-  },
-  fieldWrapper: {
-    gap: 6,
-  },
-  label: {
-    fontSize: normalize(18),
-    color: "#000",
-    marginBottom: 2,
-    fontFamily: getFontFamily("800"),
-  },
-  textarea: {
-    borderWidth: 1,
-    borderColor: "#bababa",
-    borderRadius: 10,
-    padding: 14,
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(18),
-    color: "#111827",
-    minHeight: 180,
-    backgroundColor: "#fff",
-  },
-  inputError: {
-    borderColor: "#e10c0c",
-    backgroundColor: "#FFF9F9",
-  },
-  fieldFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 4,
-  },
-  errorText: {
-    fontSize: normalize(17),
-    color: "#f40707",
-    flex: 1,
-    fontFamily: getFontFamily("700"),
-  },
-  charCount: {
-    fontSize: 12,
-    color: "#9CA3AF",
-    fontFamily: getFontFamily("900"),
-  },
-  charCountWarn: {
-    color: "#545454",
-  },
-  footer: {
-    padding: 20,
-    paddingBottom: Platform.OS === "ios" ? 8 : 20,
-  },
-  //   submitBtn: {
-  //     backgroundColor: COLORS.primary,
-  //     paddingVertical: 15,
-  //     borderRadius: 12,
-  //     alignItems: "center",
-  //   },
-  submitBtnDisabled: {
-    opacity: 0.6,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    flex: {
+      flex: 1,
+    },
+    submitBtn: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 16,
+      borderRadius: 120,
+      alignItems: "center",
+      marginBottom: 24,
+    },
+    upgradeButtonText: {
+      color: "white",
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+    },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingHorizontal: 20,
+      paddingBottom: 8,
+      flexGrow: 1,
+    },
+    header: {
+      marginBottom: 20,
+    },
+    title: {
+      fontSize: normalize(20),
+      color: colors.text,
+      marginBottom: 3,
+      fontFamily: getFontFamily("800"),
+    },
+    subtitle: {
+      fontSize: normalize(18),
+      color: colors.textMuted,
+      fontFamily: getFontFamily("700"),
+      lineHeight: 18,
+    },
+    form: {
+      gap: 20,
+      marginTop: 10,
+    },
+    fieldWrapper: {
+      gap: 6,
+    },
+    label: {
+      fontSize: normalize(18),
+      color: colors.text,
+      marginBottom: 2,
+      fontFamily: getFontFamily("800"),
+    },
+    textarea: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 10,
+      padding: 14,
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(18),
+      color: colors.text,
+      minHeight: 180,
+      backgroundColor: colors.background,
+    },
+    inputError: {
+      borderColor: colors.error,
+      backgroundColor: colors.background,
+    },
+    fieldFooter: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginTop: 4,
+    },
+    errorText: {
+      fontSize: normalize(17),
+      color: colors.error,
+      flex: 1,
+      fontFamily: getFontFamily("700"),
+    },
+    charCount: {
+      fontSize: 12,
+      color: "#9CA3AF",
+      fontFamily: getFontFamily("900"),
+    },
+    charCountWarn: {
+      color: "#545454",
+    },
+    footer: {
+      padding: 20,
+      paddingBottom: Platform.OS === "ios" ? 8 : 20,
+    },
+    //   submitBtn: {
+    //     backgroundColor: COLORS.primary,
+    //     paddingVertical: 15,
+    //     borderRadius: 12,
+    //     alignItems: "center",
+    //   },
+    submitBtnDisabled: {
+      opacity: 0.6,
+    },
+  });
 
 export default SuggestionScreen;

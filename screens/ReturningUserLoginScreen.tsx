@@ -1,4 +1,4 @@
-import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
@@ -9,11 +9,14 @@ import { AppText } from "../components/AppText";
 import BiometricLoginButton from "../components/BiometricLoginBtn";
 import { useBiometricLogin } from "../hooks/useBiometricLogin";
 import { capitalizeFirst } from "../libs/helpers";
+import { useColors } from "../hooks/useTheme";
 
 export default function ReturningUserLoginScreen() {
   const navigation = useNavigation();
   const user = useAuthStore(state => state.user);
   const { isReady } = useBiometricLogin();
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const handleNavigate = () => {
     navigation.navigate("SignIn" as never);
@@ -21,7 +24,6 @@ export default function ReturningUserLoginScreen() {
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
           <AppText style={styles.title}>
@@ -55,6 +57,7 @@ export default function ReturningUserLoginScreen() {
             style={{
               fontSize: normalize(18),
               fontFamily: getFontFamily(700),
+              color: colors.text,
             }}
           >
             Want to switch an account?
@@ -66,7 +69,7 @@ export default function ReturningUserLoginScreen() {
                 fontSize: normalize(18),
                 fontFamily: getFontFamily(700),
               },
-              { color: "blue" },
+              { color: colors.primaryDark },
             ]}
           >
             Switch Account
@@ -77,23 +80,25 @@ export default function ReturningUserLoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  header: {
-    marginVertical: 10,
-  },
-  title: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("800"),
-  },
-  highlight: {
-    color: COLORS.primary,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContainer: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+    header: {
+      marginVertical: 10,
+    },
+    title: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    highlight: {
+      color: COLORS.primary,
+    },
+  });

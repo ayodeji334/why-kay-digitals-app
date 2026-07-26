@@ -23,12 +23,16 @@ import { useFiatBalance } from "../hooks/useFiatBalance";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppText } from "../components/AppText";
 import { DEFAULT_IMAGE } from "./SettingsScreen";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 const HomeScreen = () => {
+  const colors = useColors();
+  const resolvedTheme = useResolvedTheme();
   const user = useUser();
   const navigation = useNavigation();
   const { refetch, isRefetching } = useFiatBalance();
   const queryClient = useQueryClient();
+  const styles = makeStyles(colors);
 
   const hasCompleteVerification = useMemo(
     () =>
@@ -59,9 +63,7 @@ const HomeScreen = () => {
   });
 
   return (
-    <SafeAreaView edges={["left", "right", "top"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
+    <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -133,192 +135,124 @@ const HomeScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "white" },
-  scrollContainer: { flex: 1, paddingHorizontal: 20, paddingBottom: 30 },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 20,
-  },
-  headerLeft: { flexDirection: "row", alignItems: "center" },
-  imageWrapper: {
-    width: 40,
-    height: 40,
-    borderRadius: 25,
-    marginRight: 12,
-    overflow: "hidden",
-    backgroundColor: "#f0f0f0",
-  },
-  profileImage: {
-    width: "100%",
-    height: "100%",
-  },
-  welcomeText: { justifyContent: "center" },
-  welcomeBack: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: "#353535ff",
-  },
-  userName: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("800"),
-    color: "#333",
-  },
-  cryptoSection: { marginBottom: 30 },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  sectionTitle: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("700"),
-    color: "#333",
-  },
-  sellAllButton: {
-    borderWidth: 1,
-    borderColor: "#FFA726",
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  sellAllText: {
-    color: "#FFA726",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(700),
-  },
-  cryptoList: { gap: 12 },
-  cryptoCard: {
-    backgroundColor: "#EFF7EC",
-    borderRadius: 12,
-    padding: 16,
-    marginRight: 12,
-    minWidth: 200,
-  },
-  cryptoHeader: { flexDirection: "row", alignItems: "center" },
-  cryptoIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  cryptoSymbol: {
-    color: "#fff",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("900"),
-  },
-  cryptoInfo: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  cryptoName: {
-    fontSize: normalize(15),
-    fontFamily: getFontFamily(700),
-    color: "#000",
-    marginBottom: 4,
-  },
-  cryptoBalance: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily(700),
-    color: "#333",
-  },
-  cryptoAmount: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
-  rateSection: {
-    flexDirection: "column",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-  },
-  rateLabel: {
-    fontSize: normalize(11),
-    color: "#666",
-    fontFamily: getFontFamily(400),
-  },
-  rateValue: {
-    fontSize: normalize(11),
-    fontFamily: getFontFamily(700),
-    color: "#333",
-  },
-  verificationBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.primary,
-    borderRadius: 16,
-    padding: 18,
-    gap: 12,
-    marginBottom: 20,
-  },
-  verificationIcon: {
-    borderRadius: 20,
-    borderColor: "#fff",
-    borderWidth: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 4,
-  },
-  verificationText: {
-    flex: 1,
-    flexDirection: "row",
-    gap: 5,
-  },
-  verificationTitle: {
-    color: "#fff",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    lineHeight: 19,
-  },
-  emptyState: {
-    borderRadius: 12,
-    paddingHorizontal: 24,
-    alignItems: "center",
-  },
-  emptyIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#6c757d",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  emptyIconText: {
-    color: "#fff",
-    fontSize: normalize(20),
-    fontFamily: getFontFamily(700),
-  },
-  emptyTitle: {
-    fontSize: normalize(15),
-    fontFamily: getFontFamily(700),
-    color: "#333",
-    textAlign: "center",
-  },
-  emptyDescription: {
-    fontSize: normalize(12),
-    fontFamily: getFontFamily(400),
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 16,
-    lineHeight: 16,
-  },
-  emptyButton: {
-    backgroundColor: "#FFA726",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-  },
-  emptyButtonText: {
-    color: "#fff",
-    fontSize: normalize(12),
-    fontFamily: getFontFamily(600),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    scrollContainer: { flex: 1, paddingHorizontal: 20, paddingBottom: 30 },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 20,
+    },
+    headerLeft: { flexDirection: "row", alignItems: "center" },
+    imageWrapper: {
+      width: 40,
+      height: 40,
+      borderRadius: 25,
+      marginRight: 12,
+      overflow: "hidden",
+      backgroundColor: colors.inputBackground,
+    },
+    profileImage: {
+      width: "100%",
+      height: "100%",
+    },
+    welcomeText: { justifyContent: "center" },
+    welcomeBack: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+    },
+    userName: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    cryptoSection: { marginBottom: 30 },
+    sectionHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 30,
+    },
+    sectionTitle: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("700"),
+      color: "#333",
+    },
+    verificationBanner: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: COLORS.primary,
+      borderRadius: 16,
+      padding: 18,
+      gap: 12,
+      marginBottom: 20,
+    },
+    verificationIcon: {
+      borderRadius: 20,
+      borderColor: "#fff",
+      borderWidth: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 4,
+    },
+    verificationText: {
+      flex: 1,
+      flexDirection: "row",
+      gap: 5,
+    },
+    verificationTitle: {
+      color: "#fff",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      lineHeight: 19,
+    },
+    emptyState: {
+      borderRadius: 12,
+      paddingHorizontal: 24,
+      alignItems: "center",
+    },
+    emptyIcon: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      backgroundColor: "#6c757d",
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 12,
+    },
+    emptyIconText: {
+      color: "#fff",
+      fontSize: normalize(20),
+      fontFamily: getFontFamily(700),
+    },
+    emptyTitle: {
+      fontSize: normalize(15),
+      fontFamily: getFontFamily(700),
+      color: "#333",
+      textAlign: "center",
+    },
+    emptyDescription: {
+      fontSize: normalize(12),
+      fontFamily: getFontFamily(400),
+      color: "#666",
+      textAlign: "center",
+      marginBottom: 16,
+      lineHeight: 16,
+    },
+    emptyButton: {
+      backgroundColor: "#FFA726",
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      borderRadius: 20,
+    },
+    emptyButtonText: {
+      color: "#fff",
+      fontSize: normalize(12),
+      fontFamily: getFontFamily(600),
+    },
+  });
 
 export default HomeScreen;

@@ -4,6 +4,7 @@ import { COLORS } from "../constants/colors";
 import VerificationForm from "../components/forms/VerificationForm";
 import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 // Utility function to mask email
 const maskEmail = (email: string) => {
@@ -22,10 +23,11 @@ const maskEmail = (email: string) => {
 
 export default function VerificationCodeScreen({ route }: any) {
   const { email } = route.params;
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   return (
-    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={"white"} />
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
           <AppText style={styles.title}>Verify your email address</AppText>
@@ -33,9 +35,10 @@ export default function VerificationCodeScreen({ route }: any) {
             style={[
               {
                 fontFamily: getFontFamily(400),
-                fontSize: normalize(20),
+                fontSize: normalize(18),
                 marginTop: 2,
                 marginLeft: 1,
+                color: colors.text,
               },
             ]}
           >
@@ -44,6 +47,7 @@ export default function VerificationCodeScreen({ route }: any) {
               style={{
                 fontFamily: getFontFamily("800"),
                 paddingHorizontal: 10,
+                color: colors.text,
               }}
             >
               {" "}
@@ -60,23 +64,25 @@ export default function VerificationCodeScreen({ route }: any) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  header: {
-    marginBottom: 23,
-  },
-  title: {
-    fontSize: normalize(21),
-    fontFamily: getFontFamily("800"),
-  },
-  highlight: {
-    color: COLORS.primary,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContainer: {
+      flexGrow: 1,
+      paddingHorizontal: 20,
+    },
+    header: {
+      marginBottom: 23,
+    },
+    title: {
+      fontSize: normalize(21),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    highlight: {
+      color: COLORS.primary,
+    },
+  });

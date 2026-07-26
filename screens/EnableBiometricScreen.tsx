@@ -290,7 +290,6 @@ import {
   Linking,
   Platform,
   ScrollView,
-  StatusBar,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -309,6 +308,7 @@ import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
 import { removeItem, setItem, STORAGE_KEYS } from "../utlis/storage";
 import { useBiometricLogin } from "../hooks/useBiometricLogin";
+import { useColors } from "../hooks/useTheme";
 
 const BiometricsScreen = () => {
   const navigation = useNavigation();
@@ -316,6 +316,9 @@ const BiometricsScreen = () => {
   const { setUser, enableBiometric, disableBiometric } = useAuthStore(
     state => state,
   );
+
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const { isReady, refreshAvailability } = useBiometricLogin();
   const isBiometricEnabled = isReady;
@@ -487,8 +490,7 @@ const BiometricsScreen = () => {
   }, [navigation]);
 
   return (
-    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
@@ -498,7 +500,7 @@ const BiometricsScreen = () => {
           <View style={styles.textContainer}>
             <AppText style={styles.description}>
               {isBiometricEnabled
-                ? "Biometric authentication is currently enabled. You can disable it here."
+                ? "Biometric authentication is currently enabled. You can disable it by clicking the button below."
                 : "Secure your account with biometrics for quick, easy sign-in."}
             </AppText>
           </View>
@@ -551,85 +553,86 @@ const BiometricsScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  scrollContainer: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-  },
-  textContainer: {
-    width: "100%",
-    alignItems: "center",
-  },
-  iconContainer: {
-    borderRadius: 30,
-    backgroundColor: "#F5F5F5",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 29,
-    position: "relative",
-  },
-  enabledBadge: {
-    position: "absolute",
-    top: 5,
-    right: -5,
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
-  },
-  enabledBadgeText: {
-    color: "#FFFFFF",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(15),
-  },
-  buttonContainer: {
-    width: "100%",
-    paddingBottom: 30,
-  },
-  description: {
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(18),
-    color: "#666666",
-    textAlign: "center",
-    lineHeight: 22,
-  },
-  primaryButton: {
-    width: "100%",
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 16,
-    borderRadius: 92,
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  primaryButtonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-  },
-  secondaryButton: {
-    width: "100%",
-    paddingVertical: 16,
-    borderRadius: 120,
-    alignItems: "center",
-    backgroundColor: COLORS.lightGray,
-  },
-  secondaryButtonText: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-    color: "#666666",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContainer: {
+      flexGrow: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    content: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 20,
+    },
+    textContainer: {
+      width: "100%",
+      alignItems: "center",
+    },
+    iconContainer: {
+      borderRadius: 30,
+      backgroundColor: "#F5F5F5",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 29,
+      position: "relative",
+    },
+    enabledBadge: {
+      position: "absolute",
+      top: 5,
+      right: -5,
+      backgroundColor: COLORS.primary,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 10,
+    },
+    enabledBadgeText: {
+      color: "#FFFFFF",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(15),
+    },
+    buttonContainer: {
+      width: "100%",
+      paddingBottom: 30,
+    },
+    description: {
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(18),
+      color: colors.text,
+      textAlign: "center",
+      lineHeight: 22,
+    },
+    primaryButton: {
+      width: "100%",
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 16,
+      borderRadius: 92,
+      alignItems: "center",
+      marginBottom: 12,
+    },
+    primaryButtonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+    },
+    secondaryButton: {
+      width: "100%",
+      paddingVertical: 16,
+      borderRadius: 120,
+      alignItems: "center",
+      backgroundColor: COLORS.lightGray,
+    },
+    secondaryButtonText: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      color: "#666666",
+    },
+  });
 
 export default BiometricsScreen;

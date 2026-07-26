@@ -19,6 +19,7 @@ import CountryPicker from "../components/CountryPicker";
 import useAxios from "../hooks/useAxios";
 import { Country } from "../libs/types";
 import { useCountries } from "../hooks/useCountries";
+import { useColors } from "../hooks/useTheme";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -32,14 +33,9 @@ export default function BrandsScreen() {
   const [selectedCountry, setSelectedCountry] = useState<Country | undefined>();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-
-  const {
-    data: countries = [],
-    isPending: countriesLoading,
-    isError: countriesError,
-  } = useCountries();
-
-  console.log(countries);
+  const { data: countries = [] } = useCountries();
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   useEffect(() => {
     if (!selectedCountry && countries.length) {
@@ -240,85 +236,87 @@ export default function BrandsScreen() {
 
 const CARD_GAP = 12;
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#fff" },
-  container: { flex: 1, paddingHorizontal: normalize(16) },
-  filterRow: {
-    marginTop: normalize(12),
-    marginBottom: normalize(10),
-  },
-  countryPickerWrap: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
-    borderRadius: normalize(12),
-    overflow: "hidden",
-    marginBottom: normalize(12),
-  },
-  searchBox: {
-    borderWidth: 1,
-    borderColor: "#d4d5d7",
-    borderRadius: normalize(12),
-    paddingHorizontal: normalize(15),
-    marginBottom: normalize(14),
-  },
-  searchInput: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("400"),
-    color: "#1A1A1A",
-    paddingVertical: normalize(15),
-  },
-  listContent: {
-    paddingBottom: normalize(32),
-  },
-  row: {
-    gap: CARD_GAP,
-    marginBottom: CARD_GAP,
-  },
-  brandCard: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: normalize(12),
-    padding: normalize(12),
-    alignItems: "center",
-    backgroundColor: "#fff",
-    gap: 8,
-  },
-  brandLogo: {
-    width: "100%",
-    height: normalize(70),
-    borderRadius: 8,
-  },
-  brandLogoPlaceholder: {
-    width: "100%",
-    height: normalize(70),
-    borderRadius: 8,
-    backgroundColor: `${COLORS.primary}18`,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  brandLogoInitial: {
-    fontSize: normalize(28),
-    fontFamily: getFontFamily("800"),
-    color: COLORS.primary,
-  },
-  brandName: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
-    color: "#1A1A1A",
-    textAlign: "center",
-    textTransform: "uppercase",
-  },
-  emptyState: {
-    paddingTop: 60,
-    alignItems: "center",
-    paddingHorizontal: 24,
-  },
-  emptyText: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("400"),
-    color: "#6B7280",
-    textAlign: "center",
-    lineHeight: 22,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    safe: { flex: 1, backgroundColor: colors.background },
+    container: { flex: 1, paddingHorizontal: normalize(16) },
+    filterRow: {
+      marginTop: normalize(12),
+      marginBottom: normalize(10),
+    },
+    countryPickerWrap: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      borderRadius: normalize(12),
+      overflow: "hidden",
+      marginBottom: normalize(12),
+    },
+    searchBox: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: normalize(12),
+      paddingHorizontal: normalize(15),
+      marginBottom: normalize(14),
+    },
+    searchInput: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      paddingVertical: normalize(15),
+    },
+    listContent: {
+      paddingBottom: normalize(32),
+      paddingVertical: 22,
+    },
+    row: {
+      gap: CARD_GAP,
+      marginBottom: CARD_GAP,
+    },
+    brandCard: {
+      flex: 1,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: normalize(12),
+      padding: normalize(12),
+      alignItems: "center",
+      backgroundColor: "#fff",
+      gap: 8,
+    },
+    brandLogo: {
+      width: "100%",
+      height: normalize(70),
+      borderRadius: 8,
+    },
+    brandLogoPlaceholder: {
+      width: "100%",
+      height: normalize(70),
+      borderRadius: 8,
+      backgroundColor: `${COLORS.primary}18`,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    brandLogoInitial: {
+      fontSize: normalize(28),
+      fontFamily: getFontFamily("800"),
+      color: COLORS.primary,
+    },
+    brandName: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("800"),
+      color: "#1A1A1A",
+      textAlign: "center",
+      textTransform: "uppercase",
+    },
+    emptyState: {
+      paddingTop: 60,
+      alignItems: "center",
+      paddingHorizontal: 24,
+    },
+    emptyText: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      textAlign: "center",
+      lineHeight: 22,
+    },
+  });

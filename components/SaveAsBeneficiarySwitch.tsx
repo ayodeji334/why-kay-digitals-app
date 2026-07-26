@@ -3,6 +3,7 @@ import { View, Switch, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface SaveAsBeneficiarySwitchProps {
   label?: string;
@@ -17,6 +18,9 @@ const SaveAsBeneficiarySwitch: React.FC<SaveAsBeneficiarySwitchProps> = ({
   onValueChange,
   disabled = false,
 }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   return (
     <View style={styles.switchContainer}>
       <AppText style={styles.switchLabel}>{label}</AppText>
@@ -32,22 +36,23 @@ const SaveAsBeneficiarySwitch: React.FC<SaveAsBeneficiarySwitchProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  switchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 15,
-    marginBottom: 20,
-    paddingHorizontal: 4,
-    paddingVertical: 5,
-  },
-  switchLabel: {
-    fontSize: normalize(18),
-    color: "#1A1A1A",
-    fontFamily: getFontFamily("800"),
-    marginBottom: 6,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    switchContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginTop: 15,
+      marginBottom: 20,
+      paddingHorizontal: 4,
+      paddingVertical: 5,
+    },
+    switchLabel: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("800"),
+      marginBottom: 6,
+    },
+  });
 
 export default SaveAsBeneficiarySwitch;

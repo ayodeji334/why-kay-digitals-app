@@ -16,6 +16,7 @@ import { Refresh2, Trash } from "iconsax-react-nativejs";
 import { CloseIcon } from "../../assets";
 import CustomIcon from "../CustomIcon";
 import { AppText } from "../AppText";
+import { useColors } from "../../hooks/useTheme";
 
 const PREVIEW_COUNT = 2;
 
@@ -42,7 +43,8 @@ export default function SavedBeneficiaries({
 }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [search, setSearch] = useState("");
-
+  const colors = useColors();
+  const styles = makeStyles(colors);
   // const previewData = useMemo(
   //   () => data?.slice(0, PREVIEW_COUNT) ?? [],
   //   [data],
@@ -259,8 +261,8 @@ export default function SavedBeneficiaries({
                 hitSlop={10}
                 style={[styles.actionButton, { borderColor: "gray" }]}
               >
-                <Refresh2 size={10} color="black" />
-                <AppText style={[styles.actionText, { color: "black" }]}>
+                <Refresh2 size={10} color={colors.text} />
+                <AppText style={[styles.actionText, { color: colors.text }]}>
                   {isRefetching ? "Refreshing..." : "Refresh"}
                 </AppText>
               </TouchableOpacity>
@@ -273,7 +275,7 @@ export default function SavedBeneficiaries({
                   hitSlop={10}
                   style={styles.actionButton}
                 >
-                  <Trash size={12} color="red" />
+                  <Trash size={12} color={colors.error} />
                   <AppText style={styles.actionText}>
                     {deleting ? "Deleting..." : "Delete All"}
                   </AppText>
@@ -287,206 +289,208 @@ export default function SavedBeneficiaries({
   );
 }
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    width: "100%",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    padding: 20,
-    maxHeight: "80%",
-    paddingBottom: 40,
-  },
-  modalTitle: {
-    fontFamily: getFontFamily("900"),
-    fontSize: normalize(20),
-    color: "#374151",
-  },
-  rowSelected: {
-    borderColor: "#16a34a",
-    borderWidth: 2,
-    backgroundColor: "#f0fdf4",
-  },
-  search: {
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    color: "#374151",
-    backgroundColor: "#F9FAFB",
-  },
-  option: { borderBottomWidth: 2, borderBottomColor: "#ecececff" },
-  optionContent: { padding: 10, width: "100%" },
-  cryptoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
-    flex: 1,
-  },
-  cryptoInfo: { flex: 1 },
-  optionName: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  optionPrice: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#343435",
-  },
-  list: {
-    paddingVertical: 8,
-    marginVertical: 10,
-    gap: 10,
-  },
-  header: {
-    marginTop: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  headerTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-  },
-  itemSelected: {
-    backgroundColor: "#f0fdf4",
-  },
-  card: {
-    width: "100%",
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  cardDefault: {
-    borderColor: "#154bb7",
-    backgroundColor: "#fff",
-  },
-  cardSelected: {
-    borderColor: "#16a34a",
-    backgroundColor: "#f0fdf4",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderColor: COLORS.primary,
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-  },
-  rowBetween: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4,
-  },
-  deleteButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "red",
-    borderRadius: 1200,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    gap: 5,
-  },
-  deleteText: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("900"),
-    color: "red",
-  },
-  viewAllText: {
-    fontSize: normalize(16),
-    color: COLORS.primary,
-    fontFamily: getFontFamily("800"),
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  modalActions: {
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 12,
-  },
-  actionButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    borderWidth: 1,
-    borderColor: "red",
-    borderRadius: 600,
-    paddingVertical: 5,
-    paddingHorizontal: 20,
-  },
-  actionText: {
-    fontSize: normalize(16),
-    color: "red",
-    fontFamily: getFontFamily("800"),
-  },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    marginBottom: 12,
-    fontSize: normalize(18),
-    color: "#111",
-    fontFamily: getFontFamily("700"),
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#dcfce7", // green-100
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-  },
-  info: {
-    flex: 1,
-    minWidth: 0,
-  },
-  lastUsed: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    color: "#9ca3af", // gray-400
-  },
-  item: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    marginVertical: 1,
-  },
-  name: {
-    fontSize: normalize(16),
-    color: "#000",
-    fontFamily: getFontFamily("900"),
-    textTransform: "uppercase",
-  },
-  details: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-    marginTop: 2,
-  },
-  emptyContainer: {
-    padding: normalize(16),
-    alignItems: "center",
-  },
-  emptyText: {
-    fontSize: normalize(16),
-    color: "#838383",
-    fontFamily: getFontFamily("700"),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      justifyContent: "flex-end",
+    },
+    modalContent: {
+      backgroundColor: colors.inputBackground,
+      width: "100%",
+      borderTopLeftRadius: 16,
+      borderTopRightRadius: 16,
+      padding: 20,
+      maxHeight: "80%",
+      paddingBottom: 40,
+    },
+    modalTitle: {
+      fontFamily: getFontFamily("900"),
+      fontSize: normalize(20),
+      color: colors.text,
+    },
+    rowSelected: {
+      borderColor: "#16a34a",
+      borderWidth: 2,
+      backgroundColor: "#f0fdf4",
+    },
+    search: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      padding: 12,
+      marginBottom: 16,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      color: "#374151",
+      backgroundColor: colors.inputBackground,
+    },
+    option: { borderBottomWidth: 0 },
+    optionContent: { padding: 10, width: "100%" },
+    cryptoRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 8,
+      flex: 1,
+    },
+    cryptoInfo: { flex: 1 },
+    optionName: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    optionPrice: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    list: {
+      paddingVertical: 8,
+      marginVertical: 10,
+      gap: 10,
+    },
+    header: {
+      marginTop: 10,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    headerTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    itemSelected: {
+      backgroundColor: colors.inputBackground,
+    },
+    card: {
+      width: "100%",
+      padding: 12,
+      borderRadius: 8,
+      borderWidth: 1,
+    },
+    cardDefault: {
+      borderColor: "#154bb7",
+      backgroundColor: colors.inputBackground,
+    },
+    cardSelected: {
+      borderColor: "#16a34a",
+      backgroundColor: colors.inputBackground,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderColor: COLORS.primary,
+      borderWidth: 1,
+      borderRadius: 8,
+      padding: 10,
+    },
+    rowBetween: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 4,
+    },
+    deleteButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: "red",
+      borderRadius: 1200,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      gap: 5,
+    },
+    deleteText: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("900"),
+      color: colors.error,
+    },
+    viewAllText: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("800"),
+    },
+    modalHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 12,
+    },
+    modalActions: {
+      flexDirection: "row",
+      gap: 8,
+      marginBottom: 12,
+    },
+    actionButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      borderWidth: 1,
+      borderColor: colors.error,
+      borderRadius: 600,
+      paddingVertical: 5,
+      paddingHorizontal: 20,
+    },
+    actionText: {
+      fontSize: normalize(16),
+      color: colors.error,
+      fontFamily: getFontFamily("800"),
+    },
+    searchInput: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      paddingVertical: 10,
+      paddingHorizontal: 12,
+      marginBottom: 12,
+      fontSize: normalize(18),
+      color: "#111",
+      fontFamily: getFontFamily("700"),
+    },
+    avatar: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: "#dcfce7", // green-100
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: 12,
+    },
+    info: {
+      flex: 1,
+      minWidth: 0,
+    },
+    lastUsed: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    item: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      marginVertical: 1,
+    },
+    name: {
+      fontSize: normalize(16),
+      color: colors.text,
+      fontFamily: getFontFamily("900"),
+      textTransform: "uppercase",
+    },
+    details: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      marginTop: 2,
+    },
+    emptyContainer: {
+      padding: normalize(16),
+      alignItems: "center",
+    },
+    emptyText: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+    },
+  });

@@ -10,11 +10,14 @@ import {
 } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
 import { Activity } from "iconsax-react-nativejs";
+import { useColors } from "../hooks/useTheme";
 
 const PendingGiftCardScreen = () => {
   const navigation: any = useNavigation();
   const route = useRoute();
   const { transaction }: any = route.params;
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const handleContinue = () => {
     try {
@@ -38,7 +41,6 @@ const PendingGiftCardScreen = () => {
 
   return (
     <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <View style={styles.content}>
         <View style={{ alignItems: "center", paddingTop: 40 }}>
           <Activity size={48} color={COLORS.primary} variant="Bold" />
@@ -72,41 +74,42 @@ const PendingGiftCardScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  content: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 20,
-  },
-  title: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("900"),
-    color: COLORS.dark,
-    marginVertical: 12,
-  },
-  message: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-    textAlign: "center",
-    paddingHorizontal: 20,
-  },
-  button: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    borderRadius: 25,
-    marginVertical: 12,
-    width: "100%",
-  },
-  buttonText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#fff",
-    textAlign: "center",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    content: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: 20,
+    },
+    title: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("900"),
+      color: colors.text,
+      marginVertical: 12,
+    },
+    message: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      textAlign: "center",
+      paddingHorizontal: 20,
+    },
+    button: {
+      backgroundColor: COLORS.primary,
+      paddingVertical: 14,
+      paddingHorizontal: 40,
+      borderRadius: 25,
+      marginVertical: 12,
+      width: "100%",
+    },
+    buttonText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: "#fff",
+      textAlign: "center",
+    },
+  });
 
 export default PendingGiftCardScreen;

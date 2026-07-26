@@ -5,7 +5,6 @@ import {
   RefreshControl,
   View,
   TouchableOpacity,
-  Text,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
@@ -19,11 +18,14 @@ import { RefreshIcon } from "../assets";
 import { AxiosError } from "axios";
 import { showError } from "../utlis/toast";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 const CryptoWalletDepositScreen = () => {
   const route: any = useRoute();
   const navigation = useNavigation<any>();
   const [refreshing, setRefreshing] = useState(false);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const {
     data: { wallets },
@@ -115,7 +117,7 @@ const CryptoWalletDepositScreen = () => {
   ];
 
   return (
-    <SafeAreaView edges={["bottom", "left", "right"]} style={styles.screen}>
+    <SafeAreaView edges={["left", "right"]} style={styles.screen}>
       <ScrollView
         style={{ flex: 1 }}
         refreshControl={
@@ -155,84 +157,86 @@ const CryptoWalletDepositScreen = () => {
 
 export default CryptoWalletDepositScreen;
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-  },
-  actionsRow: {
-    flexDirection: "row",
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    backgroundColor: "#fff",
-    columnGap: 17,
-    borderTopWidth: 1,
-    borderTopColor: "#e7e7e7",
-  },
-  actionButton: {
-    alignItems: "center",
-    backgroundColor: COLORS.primary,
-    gap: 6,
-    opacity: 1,
-    paddingHorizontal: normalize(14),
-    paddingVertical: normalize(12),
-    borderRadius: 340,
-    flex: 1,
-  },
-  actionIconWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.fadePrimary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  actionLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(800),
-    color: COLORS.whiteBackground,
-    fontWeight: "500",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 18,
-    borderBottomWidth: 1,
-    borderColor: "#d6d6db",
-  },
-  centerContainer: {
-    alignItems: "center",
-    paddingVertical: 20,
-    paddingHorizontal: 18,
-    minHeight: "100%",
-    justifyContent: "space-between",
-    gap: 10,
-  },
-  section: {
-    alignItems: "center",
-    paddingTop: 20,
-    paddingHorizontal: 18,
-  },
-  qrContainer: {
-    width: 250,
-    height: 250,
-    marginBottom: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    borderColor: "#470505ff",
-    borderWidth: 1,
-    borderRadius: 12,
-  },
-  qrBox: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  qrText: {
-    fontFamily: getFontFamily(700),
-    fontSize: 16,
-    color: "#0a0a2a",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    actionsRow: {
+      flexDirection: "row",
+      paddingHorizontal: 20,
+      paddingTop: 14,
+      paddingBottom: 30,
+      backgroundColor: colors.inputBackground,
+      columnGap: 17,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    actionButton: {
+      alignItems: "center",
+      backgroundColor: COLORS.primary,
+      gap: 6,
+      opacity: 1,
+      paddingHorizontal: normalize(14),
+      paddingVertical: normalize(12),
+      borderRadius: 340,
+      flex: 1,
+    },
+    actionIconWrap: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: COLORS.fadePrimary,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    actionLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(800),
+      color: COLORS.whiteBackground,
+      fontWeight: "500",
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      padding: 18,
+      borderBottomWidth: 1,
+      borderColor: "#d6d6db",
+    },
+    centerContainer: {
+      alignItems: "center",
+      paddingVertical: 20,
+      paddingHorizontal: 18,
+      minHeight: "100%",
+      justifyContent: "space-between",
+      gap: 10,
+    },
+    section: {
+      alignItems: "center",
+      paddingTop: 20,
+      paddingHorizontal: 18,
+    },
+    qrContainer: {
+      width: 250,
+      height: 250,
+      marginBottom: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      borderColor: "#470505ff",
+      borderWidth: 1,
+      borderRadius: 12,
+    },
+    qrBox: {
+      width: "100%",
+      height: "100%",
+      borderRadius: 12,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    qrText: {
+      fontFamily: getFontFamily(700),
+      fontSize: 16,
+      color: "#0a0a2a",
+    },
+  });

@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Linking,
@@ -21,6 +20,7 @@ import { FaceIdIcon } from "../assets";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { Image } from "react-native-compressor";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 const MAX_BASE64_SIZE = 900 * 1024; // 900 KB
 
@@ -94,6 +94,8 @@ export default function SelfieVerificationScreen() {
   const navigation: any = useNavigation();
   const [showCamera, setShowCamera] = useState(false);
   const [loading, setLoading] = useState(false);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   // Request permission logic
   const handleVerifyClick = async () => {
@@ -186,6 +188,7 @@ export default function SelfieVerificationScreen() {
     <SafeAreaView style={styles.container}>
       <View
         style={{
+          backgroundColor: colors.background,
           position: "absolute",
           top: height * 0.16,
           left: width * 0.18,
@@ -232,99 +235,101 @@ export default function SelfieVerificationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontFamily: getFontFamily("700"),
-    marginLeft: 15,
-    color: "#000",
-  },
-  content: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 40,
-  },
-  iconContainer: {
-    marginBottom: 40,
-    borderRadius: 200,
-    backgroundColor: COLORS.fadeBackgroundPrimary,
-    padding: 20,
-    marginTop: normalize(-100),
-  },
-  faceIcon: {
-    width: 50,
-    height: 50,
-    tintColor: COLORS.primary,
-  },
-  infoTitle: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  infoSubtitle: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("400"),
-    color: "#4b4b4bff",
-    textAlign: "center",
-    lineHeight: 15,
-  },
-  footer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  primaryButton: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 16,
-    borderRadius: 25,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  primaryButtonText: {
-    color: "#fff",
-    fontSize: 14,
-    fontFamily: getFontFamily("700"),
-  },
-  loader: {
-    flex: 1,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  cameraInstructions: {
-    position: "absolute",
-    bottom: 140,
-    width: "100%",
-    alignItems: "center",
-  },
-  title: {
-    color: "#fff",
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("700"),
-    marginBottom: 6,
-  },
-  subtitle: {
-    color: "#000",
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("700"),
-    textAlign: "center",
-  },
-  captureWrapper: {
-    position: "absolute",
-    bottom: 40,
-    width: "100%",
-    alignItems: "center",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 20,
+      paddingVertical: 15,
+    },
+    headerTitle: {
+      fontSize: 18,
+      fontFamily: getFontFamily("700"),
+      marginLeft: 15,
+      color: colors.text,
+    },
+    content: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: 40,
+    },
+    iconContainer: {
+      marginBottom: 40,
+      borderRadius: 200,
+      backgroundColor: COLORS.fadeBackgroundPrimary,
+      padding: 20,
+      marginTop: normalize(-100),
+    },
+    faceIcon: {
+      width: 50,
+      height: 50,
+      tintColor: COLORS.primary,
+    },
+    infoTitle: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 8,
+      textAlign: "center",
+    },
+    infoSubtitle: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("400"),
+      color: colors.textMuted,
+      textAlign: "center",
+      lineHeight: 15,
+    },
+    footer: {
+      paddingHorizontal: 20,
+      paddingBottom: 20,
+    },
+    primaryButton: {
+      backgroundColor: COLORS.primary,
+      paddingVertical: 16,
+      borderRadius: 25,
+      alignItems: "center",
+      marginBottom: 20,
+    },
+    primaryButtonText: {
+      color: "#fff",
+      fontSize: 14,
+      fontFamily: getFontFamily("700"),
+    },
+    loader: {
+      flex: 1,
+      backgroundColor: colors.overlay,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    cameraInstructions: {
+      position: "absolute",
+      bottom: 140,
+      width: "100%",
+      alignItems: "center",
+      backgroundColor: colors.background,
+    },
+    title: {
+      color: colors.text,
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("700"),
+      marginBottom: 6,
+    },
+    subtitle: {
+      color: colors.text,
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("700"),
+      textAlign: "center",
+    },
+    captureWrapper: {
+      position: "absolute",
+      bottom: 40,
+      width: "100%",
+      alignItems: "center",
+    },
+  });

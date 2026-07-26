@@ -1,18 +1,15 @@
 import React, { useState } from "react";
 import {
   FlatList,
-  Text,
   View,
   TouchableOpacity,
   StyleSheet,
-  StatusBar,
   TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize, width } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import HalfScreenModal from "../components/HalfScreenModal";
-import { useNavigation } from "@react-navigation/native";
 import { removeItem } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 import CustomLoading from "../components/CustomLoading";
@@ -21,6 +18,7 @@ import CustomIcon from "../components/CustomIcon";
 import { AccountDeleteIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 const deleteReasons = [
   "I no longer need the account",
@@ -40,9 +38,10 @@ export default function DeleteAccountScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const [otherReasonText, setOtherReasonText] = useState("");
-  const navigation = useNavigation();
   const { setIsAuthenticated } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const handleDeletePress = () => setModalVisible(true);
 
@@ -87,35 +86,36 @@ export default function DeleteAccountScreen() {
     }
   };
 
-  const renderReason = ({ item }: { item: string }) => (
-    <TouchableOpacity
-      style={[
-        styles.reasonItem,
-        selectedReason === item && {
-          borderColor: COLORS.primary,
-          backgroundColor: "#f0f9ff",
-        },
-      ]}
-      onPress={() => setSelectedReason(item)}
-      activeOpacity={0.7}
-    >
-      <AppText
+  const renderReason = ({ item }: { item: string }) => {
+    return (
+      <TouchableOpacity
         style={[
-          styles.reasonText,
+          styles.reasonItem,
           selectedReason === item && {
-            color: COLORS.primary,
-            fontFamily: getFontFamily("700"),
+            borderColor: COLORS.primary,
+            backgroundColor: colors.inputBackground,
           },
         ]}
+        onPress={() => setSelectedReason(item)}
+        activeOpacity={0.7}
       >
-        {item}
-      </AppText>
-    </TouchableOpacity>
-  );
+        <AppText
+          style={[
+            styles.reasonText,
+            selectedReason === item && {
+              color: COLORS.primary,
+              fontFamily: getFontFamily("700"),
+            },
+          ]}
+        >
+          {item}
+        </AppText>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
       <FlatList
         data={deleteReasons}
         keyExtractor={item => item}
@@ -195,57 +195,58 @@ export default function DeleteAccountScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  contentContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
-  subtitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: COLORS.dark,
-    lineHeight: 20,
-  },
-  reasonItem: {
-    borderWidth: 1,
-    borderColor: "#D2D2D2",
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    backgroundColor: "#F9FAFB",
-  },
-  reasonText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.dark,
-  },
-  textArea: {
-    borderWidth: 1,
-    borderColor: "#D2D2D2",
-    borderRadius: 8,
-    padding: 12,
-    backgroundColor: "#F9FAFB",
-    marginTop: 10,
-    textAlignVertical: "top",
-    fontSize: normalize(11),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.dark,
-    minHeight: 100,
-  },
-  deleteButton: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
-    borderRadius: 38,
-    alignItems: "center",
-    marginTop: 40,
-  },
-  deleteButtonText: {
-    color: "white",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    contentContainer: {
+      paddingHorizontal: 20,
+      paddingBottom: 40,
+    },
+    subtitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      lineHeight: 20,
+    },
+    reasonItem: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      paddingVertical: 12,
+      paddingHorizontal: 15,
+      backgroundColor: colors.inputBackground,
+    },
+    reasonText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    textArea: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      padding: 12,
+      backgroundColor: colors.inputBackground,
+      marginTop: 10,
+      textAlignVertical: "top",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      minHeight: 100,
+    },
+    deleteButton: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 14,
+      borderRadius: 38,
+      alignItems: "center",
+      marginTop: 40,
+    },
+    deleteButtonText: {
+      color: "white",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+    },
+  });

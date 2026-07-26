@@ -1,614 +1,3 @@
-// import React, {
-//   useState,
-//   useEffect,
-//   memo,
-//   useCallback,
-//   useMemo,
-//   useRef,
-// } from "react";
-// import {
-//   View,
-//   Text,
-//   ScrollView,
-//   TouchableOpacity,
-//   StyleSheet,
-//   StatusBar,
-//   TextInput,
-//   ActivityIndicator,
-// } from "react-native";
-// import { useForm, useWatch } from "react-hook-form";
-// import { yupResolver } from "@hookform/resolvers/yup";
-// import * as yup from "yup";
-// import { SelectInput } from "../components/SelectInputField";
-// import { getFontFamily, normalize } from "../constants/settings";
-// import { COLORS } from "../constants/colors";
-// import { SafeAreaView } from "react-native-safe-area-context";
-// import { useNavigation } from "@react-navigation/native";
-// import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
-// import NumberInputField from "../components/NumberInputField";
-// import useAxios from "../hooks/useAxios";
-// import { formatWithCommas } from "./SwapCryptoScreen";
-// import { useQuery } from "@tanstack/react-query";
-// import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
-
-// const schema = yup.object({
-//   provider: yup.string().required("Please select an electricity provider"),
-//   meter_number: yup
-//     .string()
-//     .required("Meter number is required")
-//     .matches(/^[0-9]{6,13}$/, "Invalid meter number"),
-//   amount: yup
-//     .number()
-//     .typeError("Amount must be a number")
-//     .positive("Amount is required")
-//     .required("Amount is required"),
-// });
-
-// // Types
-// interface ElectricityProvider {
-//   biller_code: string;
-//   name: string;
-//   logo: string;
-//   code: string;
-//   status: boolean;
-//   short_name: string;
-// }
-
-// interface ElectricityProvider {
-//   biller_code: string;
-//   name: string;
-//   logo: string;
-//   code: string;
-//   status: boolean;
-//   short_name: string;
-//   items?: any[];
-// }
-
-// interface MeterValidationStatusProps {
-//   validating: boolean;
-//   userDetail: any;
-// }
-
-// interface MeterValidationStatusProps {
-//   validating: boolean;
-//   userDetail: any;
-//   hasInput: boolean;
-// }
-
-// const MeterValidationStatus = memo(
-//   ({ validating, userDetail, hasInput }: MeterValidationStatusProps) => {
-//     if (!hasInput) return null;
-
-//     // in-flight
-//     if (validating) {
-//       return (
-//         <View style={styles.detailsContainer}>
-//           <ActivityIndicator size="small" color={COLORS.primary} />
-//           <AppText style={[styles.detailsLabel, { textAlign: "center" }]}>
-//             Validating meter number…
-//           </AppText>
-//         </View>
-//       );
-//     }
-
-//     // validated but not found
-//     if (!userDetail) {
-//       return (
-//         <View style={styles.warningContainer}>
-//           <AppText style={styles.warningText}>
-//             User detail not found. Please check the provider and meter number
-//             and try again.
-//           </AppText>
-//         </View>
-//       );
-//     }
-
-//     // found
-//     return (
-//       <View style={styles.detailsContainer}>
-//         <View style={{ paddingVertical: 5 }}>
-//           <AppText style={styles.detailsLabel}>Name</AppText>
-//           <AppText style={styles.detailsValue}>{userDetail.name}</AppText>
-//         </View>
-//         <View style={{ paddingVertical: 5 }}>
-//           <AppText style={styles.detailsLabel}>Address</AppText>
-//           <AppText style={styles.detailsValue}>{userDetail.address}</AppText>
-//         </View>
-//       </View>
-//     );
-//   },
-// );
-
-// interface PaymentTypeSelectorProps {
-//   isPrepaid: boolean;
-//   hasPrepaid: boolean;
-//   hasPostpaid: boolean;
-//   disabled: boolean;
-//   onSelect: (value: boolean) => void;
-// }
-
-// const PaymentTypeSelector = memo(
-//   ({
-//     isPrepaid,
-//     hasPrepaid,
-//     hasPostpaid,
-//     disabled,
-//     onSelect,
-//   }: PaymentTypeSelectorProps) => (
-//     <View style={styles.paymentTypeContainer}>
-//       <TouchableOpacity
-//         style={[
-//           styles.paymentTypeButton,
-//           isPrepaid && styles.paymentTypeButtonActive,
-//           (!hasPrepaid || disabled) && { opacity: 0.5 },
-//         ]}
-//         onPress={() => onSelect(true)}
-//         disabled={!hasPrepaid || disabled}
-//       >
-//         <Text
-//           style={[
-//             styles.paymentTypeText,
-//             isPrepaid && styles.paymentTypeTextActive,
-//           ]}
-//         >
-//           Pre Paid
-//         </Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity
-//         style={[
-//           styles.paymentTypeButton,
-//           !isPrepaid && styles.paymentTypeButtonActive,
-//           (!hasPostpaid || disabled) && { opacity: 0.5 },
-//         ]}
-//         onPress={() => onSelect(false)}
-//         disabled={!hasPostpaid || disabled}
-//       >
-//         <Text
-//           style={[
-//             styles.paymentTypeText,
-//             !isPrepaid && styles.paymentTypeTextActive,
-//           ]}
-//         >
-//           Post Paid
-//         </Text>
-//       </TouchableOpacity>
-//     </View>
-//   ),
-// );
-
-// export default function PayElectricityBillsScreen() {
-//   const { post, apiGet } = useAxios();
-//   const navigation: any = useNavigation();
-//   const [isPrepaid, setIsPrepaid] = useState(true);
-//   const [saveBeneficiary, setSaveBeneficiary] = useState(true);
-//   const [displayAmount, setDisplayAmount] = useState("");
-//   const [validatingMeter, setValidatingMeter] = useState(false);
-//   const [meterValid, setMeterValid] = useState(false);
-//   const [userDetail, setUserDetail] = useState<any>(null);
-//   const [selectedProviderItems, setSelectedProviderItems] = useState<any[]>([]);
-//   const [hasFiredValidation, setHasFiredValidation] = useState(false);
-
-//   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-//   const {
-//     control,
-//     handleSubmit,
-//     setValue,
-//     reset,
-//     formState: { errors, isValid, isSubmitting },
-//   } = useForm({
-//     resolver: yupResolver(schema),
-//     mode: "onChange",
-//     defaultValues: { provider: "", meter_number: "", amount: 0 },
-//   });
-
-//   const meterNumber = useWatch({ control, name: "meter_number" });
-//   const providerCode = useWatch({ control, name: "provider" });
-
-//   const { data: providers = [], isLoading: isLoadingProviders } = useQuery({
-//     queryKey: ["electricityProviders"],
-//     queryFn: async () => {
-//       const res = await apiGet("/bills/electricity-bills-providers");
-//       return res.data?.data || [];
-//     },
-//     refetchOnWindowFocus: false,
-//   });
-
-//   const providerOptions = useMemo(
-//     () =>
-//       providers
-//         .filter((p: any) => p.name.toLowerCase().includes("bills"))
-//         .map((p: ElectricityProvider) => ({
-//           label: p.name,
-//           value: p.code || p.biller_code,
-//           icon: p.logo,
-//           name: p.short_name,
-//         })),
-//     [providers],
-//   );
-
-//   const { hasPrepaid, hasPostpaid } = useMemo(
-//     () => ({
-//       hasPrepaid: selectedProviderItems.some(i =>
-//         i.biller_name?.toLowerCase().includes("prepaid"),
-//       ),
-//       hasPostpaid: selectedProviderItems.some(i =>
-//         i.biller_name?.toLowerCase().includes("postpaid"),
-//       ),
-//     }),
-//     [selectedProviderItems],
-//   );
-
-//   const handleProviderChange = useCallback(
-//     (value: string) => {
-//       const provider = providers.find(
-//         (p: any) => p.biller_code === value || p.code === value,
-//       );
-
-//       setSelectedProviderItems(provider?.items || []);
-//       setMeterValid(false);
-//       setUserDetail(null);
-//     },
-//     [providers],
-//   );
-
-//   const validateMeter = useCallback(
-//     async (meter: string, itemCode: string, provider: string) => {
-//       if (!/^[0-9]{6,13}$/.test(meter)) return;
-
-//       // setValidatingMeter(true);
-//       setMeterValid(false);
-//       setUserDetail(null);
-
-//       try {
-//         const res = await post("/bills/validate", {
-//           item_code: itemCode,
-//           code: provider,
-//           customer: meter,
-//         });
-
-//         if (res.data?.success) {
-//           setMeterValid(true);
-//           setUserDetail(res.data.data);
-//         } else {
-//           setMeterValid(false);
-//           setUserDetail(null);
-//         }
-//       } catch {
-//         setMeterValid(false);
-//         setUserDetail(null);
-//       } finally {
-//         setValidatingMeter(false);
-//       }
-//     },
-//     [post],
-//   );
-
-//   useEffect(() => {
-//     if (debounceRef.current) clearTimeout(debounceRef.current);
-
-//     // Reset immediately when inputs are incomplete or meter too short
-//     if (
-//       !meterNumber ||
-//       !providerCode ||
-//       selectedProviderItems.length === 0 ||
-//       meterNumber.length <= 8
-//     ) {
-//       setMeterValid(false);
-//       setUserDetail(null);
-//       setHasFiredValidation(false);
-//       setValidatingMeter(false);
-//       return;
-//     }
-
-//     const selectedItem = selectedProviderItems.find((item: any) => {
-//       const searchIn = [
-//         item.biller_name?.toLowerCase(),
-//         item.name?.toLowerCase(),
-//         item.short_name?.toLowerCase(),
-//       ]
-//         .filter(Boolean)
-//         .join(" ");
-
-//       return searchIn.includes(isPrepaid ? "prepaid" : "postpaid");
-//     });
-
-//     if (!selectedItem?.item_code) return;
-
-//     setHasFiredValidation(true);
-//     setValidatingMeter(true);
-
-//     debounceRef.current = setTimeout(() => {
-//       validateMeter(meterNumber, selectedItem.item_code, providerCode);
-//     }, 2000);
-
-//     return () => {
-//       if (debounceRef.current) clearTimeout(debounceRef.current);
-//     };
-//   }, [meterNumber, providerCode, isPrepaid, selectedProviderItems]);
-
-//   const handleAmountChange = useCallback(
-//     (text: string) => {
-//       const numeric = text.replace(/,/g, "");
-//       const parsed = parseFloat(numeric);
-//       const formatted = formatWithCommas(numeric);
-//       setValue("amount", isNaN(parsed) ? 0 : parsed, { shouldValidate: true });
-//       setDisplayAmount(formatted);
-//     },
-//     [setValue],
-//   );
-
-//   const onSubmit = useCallback(
-//     async (data: any) => {
-//       const selectedOption = providerOptions.find(
-//         (p: any) => p.value === data.provider,
-//       );
-
-//       const selectedItem = selectedProviderItems.find((item: any) =>
-//         item.biller_name
-//           ?.toLowerCase()
-//           .includes(isPrepaid ? "prepaid" : "postpaid"),
-//       );
-
-//       navigation.navigate("ConfirmTransaction", {
-//         payload: {
-//           customer: data.meter_number,
-//           amount: parseFloat(data.amount),
-//           biller_name: selectedOption?.value,
-//           item_code: selectedItem?.item_code || "",
-//           provider_short_name: selectedOption?.name,
-//           save_as_beneficiary: saveBeneficiary,
-//           type: isPrepaid ? "Prepaid" : "Postpaid",
-//           url: "/bills/buy-electricity",
-//         },
-//       });
-//     },
-//     [
-//       providerOptions,
-//       selectedProviderItems,
-//       isPrepaid,
-//       saveBeneficiary,
-//       navigation,
-//     ],
-//   );
-
-//   const isDisabled = !isValid || !meterValid || validatingMeter || isSubmitting;
-
-//   useResetFormOnMount(reset, { provider: "", meter_number: "", amount: 0 });
-
-//   return (
-//     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
-//       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
-//       <ScrollView
-//         style={styles.scrollView}
-//         contentContainerStyle={styles.content}
-//         showsVerticalScrollIndicator={false}
-//       >
-//         <SelectInput
-//           control={control}
-//           name="provider"
-//           label="Select Provider"
-//           placeholder={
-//             isLoadingProviders
-//               ? "Loading providers..."
-//               : "Select electricity provider"
-//           }
-//           options={providerOptions}
-//           onChange={handleProviderChange}
-//         />
-
-//         <View style={{ marginTop: 10 }}>
-//           <NumberInputField
-//             placeholder="Enter Meter Number"
-//             label="Meter Number"
-//             name="meter_number"
-//             control={control}
-//           />
-//         </View>
-
-//         <MeterValidationStatus
-//           validating={validatingMeter}
-//           userDetail={userDetail}
-//           hasInput={hasFiredValidation}
-//         />
-
-//         <PaymentTypeSelector
-//           isPrepaid={isPrepaid}
-//           hasPrepaid={hasPrepaid}
-//           hasPostpaid={hasPostpaid}
-//           disabled={isSubmitting}
-//           onSelect={setIsPrepaid}
-//         />
-
-//         <View style={{ marginBottom: 2, marginTop: 10 }}>
-//           <AppText style={styles.label}>Amount</AppText>
-//           <View style={styles.inputContainer}>
-//             <AppText style={styles.dollarSign}>₦</AppText>
-//             <TextInput
-//               style={styles.input}
-//               keyboardType="numeric"
-//               placeholderTextColor="#aeaeaeff"
-//               placeholder="0.00"
-//               value={displayAmount}
-//               onChangeText={handleAmountChange}
-//             />
-//           </View>
-//           {errors.amount && (
-//             <AppText style={styles.errorText}>
-//               {errors.amount.message as string}
-//             </AppText>
-//           )}
-//         </View>
-
-//         <SaveAsBeneficiarySwitch
-//           value={saveBeneficiary}
-//           onValueChange={setSaveBeneficiary}
-//           disabled={isSubmitting}
-//         />
-
-//         <TouchableOpacity
-//           style={[styles.button, isDisabled && { opacity: 0.5 }]}
-//           onPress={handleSubmit(onSubmit)}
-//           disabled={isDisabled}
-//         >
-//           <AppText style={styles.buttonText}>
-//             {isSubmitting
-//               ? "Processing..."
-//               : validatingMeter
-//               ? "Validating..."
-//               : "Continue"}
-//           </AppText>
-//         </TouchableOpacity>
-//       </ScrollView>
-//     </SafeAreaView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#fff",
-//   },
-//   scrollView: {
-//     flex: 1,
-//   },
-//   label: {
-//     marginBottom: 6,
-//     fontSize: normalize(18),
-//     fontFamily: getFontFamily("700"),
-//     color: "#000000ff",
-//   },
-//   errorText: {
-//     color: "red",
-//     fontSize: normalize(14),
-//     marginTop: 4,
-//     fontFamily: getFontFamily("600"),
-//   },
-//   inputContainer: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     backgroundColor: "#fff",
-//     borderWidth: 1,
-//     borderColor: "#D1D5DB",
-//     borderRadius: 8,
-//     gap: 5,
-//   },
-//   input: {
-//     flex: 1,
-//     paddingVertical: normalize(16),
-//     fontSize: normalize(26),
-//     fontFamily: getFontFamily("800"),
-//     color: "#000",
-//   },
-//   dollarSign: {
-//     fontSize: normalize(26),
-//     fontFamily: getFontFamily("800"),
-//     color: "#000",
-//     paddingLeft: 15,
-//   },
-//   content: {
-//     paddingHorizontal: 16,
-//     paddingVertical: 20,
-//   },
-//   header: {
-//     fontSize: normalize(23),
-//     fontFamily: getFontFamily("700"),
-//     color: "#000",
-//     marginBottom: 24,
-//     textAlign: "center",
-//   },
-//   paymentTypeContainer: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     marginTop: 16,
-//     marginBottom: 20,
-//     gap: 12,
-//   },
-//   paymentTypeButton: {
-//     flex: 1,
-//     borderWidth: 1,
-//     borderColor: "#c1c1c1ff",
-//     borderRadius: 10,
-//     paddingVertical: 14,
-//     alignItems: "center",
-//     backgroundColor: "#fff",
-//   },
-//   paymentTypeButtonActive: {
-//     borderColor: COLORS.secondary,
-//     backgroundColor: "#fff",
-//   },
-//   paymentTypeText: {
-//     fontSize: normalize(18),
-//     color: "#000",
-//     fontFamily: getFontFamily("800"),
-//   },
-//   paymentTypeTextActive: {
-//     color: COLORS.secondary,
-//     fontFamily: getFontFamily("700"),
-//   },
-//   detailsContainer: {
-//     marginVertical: 10,
-//     paddingHorizontal: 17,
-//     paddingVertical: 10,
-//     backgroundColor: "#f9f9f9",
-//     borderRadius: 8,
-//     borderWidth: 1,
-//     borderColor: "#ddd",
-//     flexDirection: "column",
-//     justifyContent: "flex-start",
-//     // alignContent: "center",
-//     // alignItems: "center",
-//     gap: 5,
-//   },
-//   warningContainer: {
-//     marginVertical: 12,
-//     padding: 10,
-//     backgroundColor: "rgba(255, 0, 0, 0.03)",
-//     borderRadius: 6,
-//     borderWidth: 1,
-//     borderColor: "rgba(255, 0, 0, 0.3)",
-//   },
-//   warningText: {
-//     color: "#db0b0b",
-//     fontSize: normalize(16),
-//     fontFamily: getFontFamily("800"),
-//     textAlign: "center",
-//   },
-//   detailsLabel: {
-//     fontSize: 12,
-//     fontFamily: getFontFamily("900"),
-//     color: "#000",
-//   },
-//   detailsValue: {
-//     fontSize: 13,
-//     fontFamily: getFontFamily("700"),
-//     color: "#000",
-//   },
-//   button: {
-//     backgroundColor: COLORS.secondary,
-//     paddingVertical: 14,
-//     borderRadius: 100,
-//     marginTop: 10,
-//     justifyContent: "center",
-//     alignContent: "center",
-//     shadowColor: "#000",
-//     shadowOffset: {
-//       width: 0,
-//       height: 2,
-//     },
-//     shadowOpacity: 0.1,
-//     shadowRadius: 3,
-//     elevation: 3,
-//   },
-//   buttonText: {
-//     color: "#fff",
-//     fontFamily: getFontFamily("700"),
-//     fontSize: normalize(18),
-//     textAlign: "center",
-//   },
-// });
 import React, {
   useState,
   useEffect,
@@ -644,6 +33,7 @@ import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { AppText } from "../components/AppText";
 import { useFiatBalance } from "../hooks/useFiatBalance";
 import { formatAmount } from "../libs/formatNumber";
+import { useColors } from "../hooks/useTheme";
 
 interface ElectricityProvider {
   biller_code: string;
@@ -676,6 +66,9 @@ interface MeterValidationStatusProps {
 
 const MeterValidationStatus = memo(
   ({ validating, userDetail, hasInput }: MeterValidationStatusProps) => {
+    const colors = useColors();
+    const styles = makeStyles(colors);
+
     if (!hasInput) return null;
 
     if (validating) {
@@ -730,47 +123,53 @@ const PaymentTypeSelector = memo(
     hasPostpaid,
     disabled,
     onSelect,
-  }: PaymentTypeSelectorProps) => (
-    <View style={styles.paymentTypeContainer}>
-      <TouchableOpacity
-        style={[
-          styles.paymentTypeButton,
-          isPrepaid && styles.paymentTypeButtonActive,
-          (!hasPrepaid || disabled) && { opacity: 0.5 },
-        ]}
-        onPress={() => onSelect(true)}
-        disabled={!hasPrepaid || disabled}
-      >
-        <AppText
-          style={[
-            styles.paymentTypeText,
-            isPrepaid && styles.paymentTypeTextActive,
-          ]}
-        >
-          Pre Paid
-        </AppText>
-      </TouchableOpacity>
+  }: PaymentTypeSelectorProps) => {
+    const colors = useColors();
+    const styles = makeStyles(colors);
 
-      <TouchableOpacity
-        style={[
-          styles.paymentTypeButton,
-          !isPrepaid && styles.paymentTypeButtonActive,
-          (!hasPostpaid || disabled) && { opacity: 0.5 },
-        ]}
-        onPress={() => onSelect(false)}
-        disabled={!hasPostpaid || disabled}
-      >
-        <AppText
+    return (
+      <View style={styles.paymentTypeContainer}>
+        <TouchableOpacity
+          activeOpacity={0.89}
           style={[
-            styles.paymentTypeText,
-            !isPrepaid && styles.paymentTypeTextActive,
+            styles.paymentTypeButton,
+            isPrepaid && styles.paymentTypeButtonActive,
+            (!hasPrepaid || disabled) && { opacity: 0.5 },
           ]}
+          onPress={() => onSelect(true)}
+          disabled={!hasPrepaid || disabled}
         >
-          Post Paid
-        </AppText>
-      </TouchableOpacity>
-    </View>
-  ),
+          <AppText
+            style={[
+              styles.paymentTypeText,
+              isPrepaid && styles.paymentTypeTextActive,
+            ]}
+          >
+            Pre Paid
+          </AppText>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.paymentTypeButton,
+            !isPrepaid && styles.paymentTypeButtonActive,
+            (!hasPostpaid || disabled) && { opacity: 0.5 },
+          ]}
+          onPress={() => onSelect(false)}
+          disabled={!hasPostpaid || disabled}
+        >
+          <AppText
+            style={[
+              styles.paymentTypeText,
+              !isPrepaid && styles.paymentTypeTextActive,
+            ]}
+          >
+            Post Paid
+          </AppText>
+        </TouchableOpacity>
+      </View>
+    );
+  },
 );
 
 export default function PayElectricityBillsScreen() {
@@ -787,6 +186,9 @@ export default function PayElectricityBillsScreen() {
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<string | null>(
     null,
   );
+
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -1062,9 +464,7 @@ export default function PayElectricityBillsScreen() {
   );
 
   return (
-    <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}
@@ -1187,142 +587,138 @@ export default function PayElectricityBillsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  scrollView: { flex: 1 },
-  content: { paddingHorizontal: 16, paddingVertical: 20 },
-  label: {
-    marginBottom: 6,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000000ff",
-  },
-  errorText: {
-    color: "red",
-    fontSize: normalize(14),
-    marginTop: 4,
-    fontFamily: getFontFamily("600"),
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    gap: 5,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: normalize(14),
-    fontSize: normalize(26),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  dollarSign: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    paddingLeft: 15,
-  },
-  paymentTypeContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 16,
-    marginBottom: 20,
-    gap: 12,
-  },
-  paymentTypeButton: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#c1c1c1ff",
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  paymentTypeButtonActive: {
-    borderColor: COLORS.secondary,
-    backgroundColor: "#fff",
-  },
-  paymentTypeText: {
-    fontSize: normalize(18),
-    color: "#000",
-    fontFamily: getFontFamily("800"),
-  },
-  paymentTypeTextActive: {
-    color: COLORS.primary,
-    fontFamily: getFontFamily("800"),
-  },
-  detailsContainer: {
-    marginVertical: 10,
-    paddingHorizontal: 17,
-    paddingVertical: 10,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    gap: 5,
-  },
-  balanceCard: {
-    // backgroundColor: COLORS.secondary + "15",
-    // borderRadius: 12,
-    paddingHorizontal: normalize(10),
-    paddingVertical: normalize(9),
-  },
-  balanceLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000000",
-    marginBottom: 4,
-  },
-  balanceValue: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("900"),
-  },
-  warningContainer: {
-    marginVertical: 12,
-    padding: 10,
-    backgroundColor: "rgba(255, 0, 0, 0.03)",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 0, 0, 0.3)",
-  },
-  warningText: {
-    color: "#db0b0b",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("800"),
-    textAlign: "center",
-  },
-  detailsLabel: {
-    fontSize: 12,
-    fontFamily: getFontFamily("900"),
-    color: "#000",
-  },
-  detailsValue: {
-    fontSize: 13,
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-  },
-  button: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    marginTop: 10,
-    justifyContent: "center",
-    alignContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    textAlign: "center",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    scrollView: { flexGrow: 1 },
+    content: { paddingHorizontal: 16, paddingVertical: 20 },
+    label: {
+      marginBottom: 6,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    errorText: {
+      color: colors.error,
+      fontSize: normalize(14),
+      marginTop: 4,
+      fontFamily: getFontFamily("600"),
+    },
+    inputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      gap: 5,
+    },
+    input: {
+      flex: 1,
+      paddingVertical: normalize(14),
+      fontSize: normalize(26),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    dollarSign: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      paddingLeft: 15,
+    },
+    paymentTypeContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 16,
+      marginBottom: 20,
+      gap: 12,
+    },
+    paymentTypeButton: {
+      flex: 1,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 10,
+      paddingVertical: 14,
+      alignItems: "center",
+      backgroundColor: colors.background,
+    },
+    paymentTypeButtonActive: {
+      borderColor: colors.border,
+      backgroundColor: colors.text,
+    },
+    paymentTypeText: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("800"),
+    },
+    paymentTypeTextActive: {
+      color: colors.background,
+      fontFamily: getFontFamily("800"),
+    },
+    detailsContainer: {
+      marginVertical: 10,
+      paddingHorizontal: 17,
+      paddingVertical: 10,
+      backgroundColor: colors.infoCardBackgroundColor,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      flexDirection: "column",
+      justifyContent: "flex-start",
+      gap: 5,
+    },
+    balanceCard: {
+      // backgroundColor: COLORS.secondary + "15",
+      // borderRadius: 12,
+      paddingHorizontal: normalize(10),
+      paddingVertical: normalize(9),
+    },
+    balanceLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: "#000000",
+      marginBottom: 4,
+    },
+    balanceValue: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("900"),
+    },
+    warningContainer: {
+      marginVertical: 12,
+      padding: 10,
+      backgroundColor: "rgba(255, 0, 0, 0.03)",
+      borderRadius: 6,
+      borderWidth: 1,
+      borderColor: "rgba(255, 0, 0, 0.3)",
+    },
+    warningText: {
+      color: colors.error,
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("800"),
+      textAlign: "center",
+    },
+    detailsLabel: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("900"),
+      color: colors.text,
+    },
+    detailsValue: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    button: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      marginTop: 10,
+      justifyContent: "center",
+      alignContent: "center",
+    },
+    buttonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      textAlign: "center",
+    },
+  });

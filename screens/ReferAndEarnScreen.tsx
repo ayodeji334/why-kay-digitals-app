@@ -1,7 +1,6 @@
 import React from "react";
 import {
   View,
-  Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
@@ -26,6 +25,7 @@ import { COLORS } from "../constants/colors";
 import CustomIcon from "../components/CustomIcon";
 import { ShareIcon } from "../assets";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface StepCardProps {
   step: number;
@@ -34,23 +34,30 @@ interface StepCardProps {
   IconComponent: React.ComponentType<any>;
 }
 
-const StepCard: React.FC<StepCardProps> = ({ title, description }) => (
-  <View style={styles.stepCard}>
-    {/* <View style={styles.stepHeader}>
+const StepCard: React.FC<StepCardProps> = ({ title, description }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
+  return (
+    <View style={styles.stepCard}>
+      {/* <View style={styles.stepHeader}>
       <View style={styles.stepNumber}>
         <AppText style={styles.stepNumberText}>{step}</AppText>
       </View>
       <IconComponent variant="Outline" size={18} color="#E89E00" />
     </View> */}
-    <AppText style={styles.stepTitle}>{title}</AppText>
-    <AppText style={styles.stepDescription}>{description}</AppText>
-  </View>
-);
+      <AppText style={styles.stepTitle}>{title}</AppText>
+      <AppText style={styles.stepDescription}>{description}</AppText>
+    </View>
+  );
+};
 
 const ReferralAndEarnScreen: React.FC = () => {
   const navigation = useNavigation();
   const [isCopied, setIsCopied] = React.useState(false);
   const user = useAuthStore(state => state.user);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const handleCopyCode = () => {
     Clipboard.setString(user?.referral_code);
@@ -85,9 +92,8 @@ const ReferralAndEarnScreen: React.FC = () => {
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <ImageBackground
+        {/* <ImageBackground
           source={require("../assets/wallet-banner.png")}
           style={styles.balanceCard}
         >
@@ -97,7 +103,7 @@ const ReferralAndEarnScreen: React.FC = () => {
             </AppText>
             <AppText style={styles.balanceAmount}>₦0.00</AppText>
           </View>
-        </ImageBackground>
+        </ImageBackground> */}
 
         <View style={styles.referralCodeContainer}>
           <View
@@ -183,196 +189,154 @@ const ReferralAndEarnScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  section: {
-    padding: 0,
-  },
-  sectionTitle: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("400"),
-    color: "#000",
-    marginBottom: 13,
-  },
-  balanceSection: {
-    padding: 20,
-    backgroundColor: "#F8F9FA",
-    marginBottom: 8,
-  },
-  balanceHeader: {
-    marginBottom: 16,
-  },
-  balanceCard: {
-    borderRadius: 20,
-    padding: 20,
-    marginVertical: 20,
-    overflow: "hidden",
-    gap: 10,
-  },
-  balanceAmountContainer: {
-    marginTop: 8,
-    borderRadius: 20,
-  },
-  balanceAmount: {
-    fontSize: normalize(26),
-    fontFamily: getFontFamily("800"),
-    color: "#fff",
-  },
-  balanceActions: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
-  },
-  menuItemLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  menuItemContent: {
-    flex: 1,
-  },
-  menuItemTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  menuItemSubtitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#6B7280",
-    marginTop: 2,
-  },
-  referralCard: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#F3F4F6",
-    padding: 16,
-  },
-  referralCodeContainer: {
-    borderWidth: 1,
-    borderColor: "#4A9237",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderRadius: 10,
-    paddingVertical: 20,
-    backgroundColor: "#EFF7EC",
-  },
-  referralCodeInfo: {
-    flex: 1,
-    alignItems: "center",
-  },
-  referralCodeName: {
-    fontSize: normalize(28),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginBottom: 4,
-  },
-  referralCode: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#6B7280",
-  },
-  referralActions: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  referralButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    gap: 6,
-    marginTop: 10,
-  },
-  referralButtonText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.primary,
-  },
-  stepsContainer: {
-    gap: 1,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#373737ff",
-    backgroundColor: "#F9FAFB",
-    padding: 5,
-  },
-  stepCard: {
-    padding: 10,
-  },
-  stepHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  stepNumber: {
-    width: 25,
-    height: 25,
-    borderRadius: 16,
-    backgroundColor: "#E89E00",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  stepNumberText: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("700"),
-    color: "#fff",
-  },
-  stepTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginBottom: 8,
-  },
-  stepDescription: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: "#565466",
-    lineHeight: 20,
-  },
-  historyButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.secondary,
-    marginVertical: 20,
-    paddingVertical: 16,
-    borderRadius: 40,
-    gap: 8,
-  },
-  historyButtonText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#fff",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      flex: 1,
+      padding: 20,
+    },
+    section: {
+      padding: 0,
+    },
+    sectionTitle: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      marginBottom: 13,
+    },
+    balanceSection: {
+      padding: 20,
+      backgroundColor: colors.inputBackground,
+      marginBottom: 8,
+    },
+    balanceHeader: {
+      marginBottom: 16,
+    },
+    balanceCard: {
+      borderRadius: 20,
+      padding: 20,
+      marginVertical: 20,
+      overflow: "hidden",
+      gap: 10,
+    },
+    balanceAmountContainer: {
+      marginTop: 8,
+      borderRadius: 20,
+    },
+    balanceAmount: {
+      fontSize: normalize(26),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    balanceActions: {
+      backgroundColor: colors.text,
+      borderRadius: 12,
+      overflow: "hidden",
+    },
+    referralCodeContainer: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      borderRadius: 10,
+      paddingVertical: 20,
+      backgroundColor: colors.inputBackground,
+    },
+    referralCodeInfo: {
+      flex: 1,
+      alignItems: "center",
+    },
+    referralCodeName: {
+      fontSize: normalize(28),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 4,
+    },
+    referralCode: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: "#6B7280",
+    },
+    referralActions: {
+      flexDirection: "row",
+      gap: 12,
+    },
+    referralButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 8,
+      gap: 6,
+      marginTop: 10,
+    },
+    referralButtonText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    stepsContainer: {
+      gap: 1,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.inputBackground,
+      padding: 5,
+    },
+    stepCard: {
+      padding: 10,
+    },
+    stepHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 12,
+    },
+    stepNumber: {
+      width: 25,
+      height: 25,
+      borderRadius: 16,
+      backgroundColor: "#E89E00",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    stepNumberText: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("700"),
+      color: colors.background,
+    },
+    stepTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 8,
+    },
+    stepDescription: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.textMuted,
+      lineHeight: 20,
+    },
+    historyButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: COLORS.secondary,
+      marginVertical: 20,
+      paddingVertical: 16,
+      borderRadius: 40,
+      gap: 8,
+    },
+    historyButtonText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: "#fff",
+    },
+  });
 
 export default ReferralAndEarnScreen;

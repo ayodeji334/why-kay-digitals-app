@@ -25,6 +25,7 @@ import { AxiosError } from "axios";
 import { showError } from "../utlis/toast";
 import NumberInputField from "../components/NumberInputField";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 const schema = yup.object().shape({
   token: yup
@@ -52,7 +53,8 @@ export default function ConfirmCryptoWithdrawScreen() {
   const navigation: any = useNavigation();
   const route: any = useRoute();
   const [isLoading, setIsLoading] = useState(false);
-
+  const colors = useColors();
+  const styles = makeStyles(colors);
   const { payload, email } = route.params;
 
   const { control, handleSubmit } = useForm<FormData>({
@@ -120,7 +122,6 @@ export default function ConfirmCryptoWithdrawScreen() {
 
   return (
     <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={{
@@ -178,44 +179,46 @@ export default function ConfirmCryptoWithdrawScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  header: {
-    marginBottom: 23,
-  },
-  title: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("800"),
-  },
-  description: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    marginTop: 6,
-    marginBottom: 26,
-    color: COLORS.darkBackground,
-  },
-  errorText: {
-    color: "red",
-    fontSize: normalize(14),
-    marginTop: 4,
-  },
-  button: {
-    marginTop: 30,
-    backgroundColor: COLORS.secondary,
-    padding: 14,
-    borderRadius: 80,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContainer: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+    header: {
+      marginBottom: 23,
+    },
+    title: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    description: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      marginTop: 6,
+      marginBottom: 26,
+      color: colors.text,
+    },
+    errorText: {
+      color: colors.error,
+      fontSize: normalize(14),
+      marginTop: 4,
+    },
+    button: {
+      marginTop: 30,
+      backgroundColor: COLORS.secondary,
+      padding: 14,
+      borderRadius: 80,
+      alignItems: "center",
+    },
+    buttonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+    },
+  });

@@ -21,6 +21,7 @@ import { AppText } from "./AppText";
 import { Country } from "../libs/types";
 import { TranslationLanguageCodeMap } from "react-native-country-picker-modal";
 import { allCountries, useCountries } from "../hooks/useCountries";
+import { useColors } from "../hooks/useTheme";
 
 interface Props {
   control: Control<any>;
@@ -61,7 +62,8 @@ const PhoneNumberInputField: React.FC<Props> = ({
   const [countries, setCountries] = useState<any[]>(allCountries ?? []);
   const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
 
-  console.log();
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const getCountryName = (country: Country): string => {
     if (typeof country.name === "string") return country.name;
@@ -293,104 +295,105 @@ const PhoneNumberInputField: React.FC<Props> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: { marginBottom: 10 },
-  row: { flexDirection: "row", alignItems: "center", gap: 10 },
-  countryBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: normalize(18),
-    backgroundColor: "#fff",
-  },
-  countryCode: {
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    color: "#000",
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: normalize(18),
-    color: "#1A1A1A",
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(18),
-    backgroundColor: "#FFFFFF",
-  },
-  errorBorder: { borderColor: "#FF3B30", borderWidth: 1.5 },
-  errorText: {
-    color: "#FF3B30",
-    marginTop: 6,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    marginLeft: 4,
-  },
-  label: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-    marginBottom: 1,
-    color: "#000",
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-    justifyContent: "flex-end",
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingVertical: 26,
-    paddingHorizontal: 18,
-    marginTop: 40,
-    maxHeight: "80%",
-    borderTopRightRadius: 12,
-    borderTopLeftRadius: 12,
-  },
-  modalHeader: {
-    marginBottom: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontFamily: getFontFamily("900"),
-    fontSize: normalize(20),
-    color: "#374151",
-  },
-  searchInput: {
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(17),
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  countryRow: {
-    paddingVertical: 14,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#e5e5e5ff",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 10,
-  },
-  countryLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
-  countryName: {
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(17),
-  },
-  callingCode: {
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(17),
-    color: "#666",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { marginBottom: 10 },
+    row: { flexDirection: "row", alignItems: "center", gap: 10 },
+    countryBox: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 10,
+      paddingHorizontal: 10,
+      paddingVertical: normalize(18),
+      backgroundColor: colors.background,
+    },
+    countryCode: {
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      color: colors.text,
+    },
+    input: {
+      flex: 1,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 10,
+      paddingHorizontal: 16,
+      paddingVertical: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(18),
+      backgroundColor: colors.background,
+    },
+    errorBorder: { borderColor: "#FF3B30", borderWidth: 1.5 },
+    errorText: {
+      color: "#FF3B30",
+      marginTop: 6,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      marginLeft: 4,
+    },
+    label: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      marginBottom: 1,
+      color: colors.text,
+    },
+    overlay: {
+      flex: 1,
+      backgroundColor: "rgba(0, 0, 0, 0.4)",
+      justifyContent: "flex-end",
+    },
+    modalContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+      paddingVertical: 26,
+      paddingHorizontal: 18,
+      marginTop: 40,
+      maxHeight: "80%",
+      borderTopRightRadius: 12,
+      borderTopLeftRadius: 12,
+    },
+    modalHeader: {
+      marginBottom: 16,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    modalTitle: {
+      fontFamily: getFontFamily("900"),
+      fontSize: normalize(20),
+      color: colors.text,
+    },
+    searchInput: {
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(17),
+      borderWidth: 1,
+      borderColor: "#ccc",
+      padding: 10,
+      borderRadius: 8,
+      marginBottom: 10,
+    },
+    countryRow: {
+      paddingVertical: 14,
+      borderBottomWidth: 0.5,
+      borderBottomColor: "#e5e5e5ff",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      gap: 10,
+    },
+    countryLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
+    countryName: {
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(17),
+    },
+    callingCode: {
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(17),
+      color: "#666",
+    },
+  });
 
 export default PhoneNumberInputField;

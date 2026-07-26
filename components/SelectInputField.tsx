@@ -18,6 +18,7 @@ import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface Option {
   label: string;
@@ -73,6 +74,9 @@ export function SelectInput({
     externalValue ?? null,
   );
 
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   useEffect(() => {
     setInternalValue(externalValue ?? null);
   }, [externalValue]);
@@ -122,7 +126,7 @@ export function SelectInput({
               <AppText
                 style={[
                   styles.selectedCryptoName,
-                  (!selectedOption || loading) && { color: "#838383" },
+                  (!selectedOption || loading) && { color: colors.text },
                 ]}
               >
                 {loading
@@ -157,7 +161,7 @@ export function SelectInput({
             {loading ? (
               <ActivityIndicator size="small" color={COLORS.primary} />
             ) : (
-              <ArrowDown2 size={normalize(20)} color="#374151" />
+              <ArrowDown2 size={normalize(20)} color={colors.text} />
             )}
           </View>
         </TouchableOpacity>
@@ -200,9 +204,6 @@ export function SelectInput({
               )}
 
               <FlatList
-                // data={options.filter(opt =>
-                //   opt.label?.toLowerCase().includes(search?.toLowerCase()),
-                // )}
                 data={
                   loading
                     ? []
@@ -272,7 +273,9 @@ export function SelectInput({
                                   decimalPlace: 6,
                                 })}{" "}
                                 {item?.symbol}{" "}
-                                <AppText style={{ paddingLeft: 3 }}>
+                                <AppText
+                                  style={{ paddingLeft: 3, color: colors.text }}
+                                >
                                   (≈{" "}
                                   {formatAmount(
                                     item?.network_charges_in_usd ?? 0,
@@ -375,7 +378,7 @@ export function SelectInput({
                           style={{
                             marginTop: 8,
                             fontSize: normalize(14),
-                            color: "#838383",
+                            color: colors.text,
                           }}
                         >
                           {loadingText}
@@ -386,6 +389,7 @@ export function SelectInput({
                         style={{
                           fontSize: normalize(18),
                           fontFamily: getFontFamily("700"),
+                          color: colors.text,
                         }}
                       >
                         {emptyText}
@@ -417,102 +421,105 @@ export function SelectInput({
   return renderSelectView(internalValue, externalOnChange);
 }
 
-const styles = StyleSheet.create({
-  label: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    paddingVertical: normalize(12),
-    paddingHorizontal: normalize(14),
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    marginBottom: 5,
-    minHeight: normalize(50),
-  },
-  selectedCryptoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    flex: 1,
-  },
-  selectedCryptoInfo: { flex: 1, marginLeft: 4 },
-  selectedCryptoName: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-  cryptoLogo: {
-    width: 26,
-    height: 26,
-    borderRadius: 160,
-    backgroundColor: "#F3F4F6",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    width: "100%",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    padding: 20,
-    maxHeight: "80%",
-    paddingBottom: 40,
-  },
-  modalTitle: {
-    fontFamily: getFontFamily("900"),
-    fontSize: normalize(20),
-    color: "#374151",
-  },
-  search: {
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(18),
-    color: "#374151",
-    backgroundColor: "#F9FAFB",
-  },
-  option: { borderBottomWidth: 2, borderBottomColor: "#ecececff" },
-  optionContent: { padding: 10, width: "100%" },
-  cryptoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
-    flex: 1,
-  },
-  cryptoInfo: { flex: 1 },
-  optionName: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  optionPrice: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("700"),
-    color: "#343435",
-  },
-  error: {
-    color: "#FF3B30",
-    marginBottom: 9,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-  },
-  errorBorder: { borderColor: "#FF3B30", borderWidth: 1.5 },
-  optionLogo: {
-    width: 30,
-    height: 30,
-    borderRadius: 120,
-    borderWidth: 1,
-    borderColor: "#cdcdcdff",
-    backgroundColor: "#fff",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    label: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      color: colors.text,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      paddingVertical: normalize(12),
+      paddingHorizontal: normalize(14),
+      // backgroundColor: colors.background,
+      justifyContent: "center",
+      marginBottom: 5,
+      minHeight: normalize(50),
+    },
+    selectedCryptoContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      flex: 1,
+    },
+    selectedCryptoInfo: { flex: 1, marginLeft: 4 },
+    selectedCryptoName: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    cryptoLogo: {
+      width: 26,
+      height: 26,
+      borderRadius: 160,
+      backgroundColor: "#F3F4F6",
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      justifyContent: "flex-end",
+    },
+    modalContent: {
+      backgroundColor: colors.inputBackground,
+      width: "100%",
+      borderTopLeftRadius: 16,
+      borderTopRightRadius: 16,
+      padding: 20,
+      maxHeight: "80%",
+      paddingBottom: 40,
+    },
+    modalTitle: {
+      fontFamily: getFontFamily("900"),
+      fontSize: normalize(20),
+      color: colors.text,
+    },
+    search: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      padding: 12,
+      marginBottom: 16,
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(18),
+      color: colors.text,
+      backgroundColor: colors.inputBackground,
+    },
+    option: { borderBottomWidth: 1, borderBottomColor: colors.border },
+    optionContent: { padding: normalize(17), width: "100%" },
+    cryptoRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 8,
+      flex: 1,
+    },
+    cryptoInfo: { flex: 1 },
+    optionName: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    optionPrice: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    error: {
+      color: "#FF3B30",
+      marginBottom: 9,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+    },
+    errorBorder: { borderColor: "#FF3B30", borderWidth: 1.5 },
+    optionLogo: {
+      width: 30,
+      height: 30,
+      borderRadius: 120,
+      borderWidth: 1,
+      borderColor: "#cdcdcdff",
+      backgroundColor: "#fff",
+    },
+  });

@@ -9,6 +9,7 @@ import TransactionSectionList from "../TransactionList";
 import CustomLoading from "../CustomLoading";
 import FiatWalletBalanceCard from "./FiatWalletBalanceCard";
 import { AppText } from "../AppText";
+import { useColors } from "../../hooks/useTheme";
 
 const FiatWalletSection = () => {
   const { apiGet } = useAxios();
@@ -47,6 +48,9 @@ const FiatWalletSection = () => {
         : undefined,
     refetchOnWindowFocus: true,
   });
+
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const transactions = useMemo(() => {
     return data?.pages.flatMap(page => page.data) ?? [];
@@ -88,34 +92,39 @@ const FiatWalletSection = () => {
 
 export default FiatWalletSection;
 
-const styles = StyleSheet.create({
-  sectionHeader: {
-    paddingVertical: 8,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#353348",
-  },
-  txItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
-  },
-  txText: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("400"),
-  },
-  txAmount: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.primary,
-  },
-  emptyState: { alignItems: "center", paddingVertical: 40 },
-  emptyStateText: { fontSize: normalize(22), fontFamily: getFontFamily("800") },
-  groupTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    marginBottom: 8,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    sectionHeader: {
+      paddingVertical: 8,
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 6,
+    },
+    txItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    txText: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("400"),
+    },
+    txAmount: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("700"),
+      color: COLORS.primary,
+    },
+    emptyState: { alignItems: "center", paddingVertical: 40 },
+    emptyStateText: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("800"),
+    },
+    groupTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      marginBottom: 8,
+    },
+  });

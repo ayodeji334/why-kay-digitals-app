@@ -25,16 +25,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { showError } from "../utlis/toast";
 import { AxiosError } from "axios";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 type FormData = {
   pin: string;
 };
 
 const schema = yup.object().shape({
-  pin: yup
-    .string()
-    .length(4, "PIN must be 4 digits")
-    .required("PIN is required"),
+  pin: yup.string().length(4, "PIN is required").required("PIN is required"),
 });
 
 export default function ConfirmTransactionScreen() {
@@ -48,6 +46,8 @@ export default function ConfirmTransactionScreen() {
     resolver: yupResolver(schema),
     defaultValues: { pin: "" },
   });
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const handleContinue = async (values: FormData) => {
     try {
@@ -125,7 +125,6 @@ export default function ConfirmTransactionScreen() {
 
   return (
     <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
           <AppText style={styles.title}>Enter Transaction PIN</AppText>
@@ -134,8 +133,7 @@ export default function ConfirmTransactionScreen() {
               {
                 fontFamily: getFontFamily("400"),
                 fontSize: normalize(18),
-                marginTop: 6,
-                marginLeft: 1,
+                color: colors.text,
               },
             ]}
           >
@@ -143,12 +141,20 @@ export default function ConfirmTransactionScreen() {
           </AppText>
         </View>
 
-        <OtpInputField
-          control={control}
-          name="pin"
-          boxes={4}
-          isSecuredText={true}
-        />
+        <View
+          style={{
+            paddingTop: 20,
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
+        >
+          <OtpInputField
+            control={control}
+            name="pin"
+            boxes={4}
+            isSecuredText={true}
+          />
+        </View>
 
         <TouchableOpacity
           activeOpacity={0.8}
@@ -173,35 +179,37 @@ export default function ConfirmTransactionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  button: {
-    marginTop: 30,
-    backgroundColor: COLORS.secondary,
-    padding: 14,
-    borderRadius: 80,
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    textAlign: "center",
-    fontSize: normalize(18),
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  header: {
-    marginBottom: 23,
-  },
-  title: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
-  },
-  highlight: {
-    color: COLORS.primary,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    button: {
+      marginTop: 30,
+      backgroundColor: COLORS.secondary,
+      padding: 14,
+      borderRadius: 80,
+    },
+    buttonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("700"),
+      textAlign: "center",
+      fontSize: normalize(18),
+    },
+    scrollContainer: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+    header: {
+      marginBottom: 23,
+    },
+    title: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    highlight: {
+      color: COLORS.primary,
+    },
+  });

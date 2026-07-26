@@ -23,6 +23,7 @@ import { AccountTier, useAccountTiers } from "../hooks/useAccountTiers";
 import CustomLoading from "../components/CustomLoading";
 import ErrorState from "../components/ErrorState";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 if (
   Platform.OS === "android" &&
@@ -87,6 +88,8 @@ const AccountLimitsScreen = () => {
   const navigation = useNavigation();
   const [expandedTiers, setExpandedTiers] = useState<string[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const { data: rawTiers, isLoading, isError, refetch } = useAccountTiers();
 
@@ -153,9 +156,7 @@ const AccountLimitsScreen = () => {
   }
 
   return (
-    <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={"white"} />
-
+    <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <ScrollView
         style={styles.content}
         refreshControl={
@@ -195,9 +196,9 @@ const AccountLimitsScreen = () => {
                     )}
                     <AppText style={styles.accordionIconText}>
                       {isTierExpanded(tier.id) ? (
-                        <ArrowDown2 size={12} />
+                        <ArrowDown2 size={12} color={colors.text} />
                       ) : (
-                        <ArrowUp2 size={12} />
+                        <ArrowUp2 size={12} color={colors.text} />
                       )}
                     </AppText>
                   </View>
@@ -237,156 +238,157 @@ const AccountLimitsScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffffff",
-    paddingBottom: 20,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  accordionContainer: {
-    borderRadius: 12,
-    overflow: "hidden",
-    // backgroundColor: "red",
-    gap: 20,
-  },
-  accordionItem: {
-    borderRadius: 8,
-    overflow: "hidden",
-    backgroundColor: "#F9FAFB",
-  },
-  accordionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-  },
-  accordionIcon: {
-    flexDirection: "row",
-    borderRadius: 12,
-    gap: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  accordionIconText: {
-    fontSize: normalize(12),
-    fontFamily: getFontFamily("700"),
-  },
-  accordionContent: {
-    borderRadius: 0,
-  },
-  accordionHeaderExpanded: {
-    backgroundColor: "#F9FAFB",
-  },
-  accordionHeaderContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    flex: 1,
-  },
-  accordionTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#333",
-    marginRight: 12,
-  },
-  accordionTitleExpanded: {
-    color: "#000000ff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-  },
-  tierSelection: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  tierButton: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginVertical: 2,
-  },
-  currentBadge: {
-    fontSize: normalize(15),
-    fontFamily: getFontFamily("900"),
-    color: COLORS.primary,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    backgroundColor: COLORS.primary + "10",
-  },
-  upgradeButton: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 16,
-    borderRadius: 120,
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  upgradeButtonText: {
-    color: "white",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-  },
-  limitsContainer: {
-    backgroundColor: "#F9FAFB",
-    borderRadius: 0,
-    paddingTop: 20,
-    paddingHorizontal: 20,
-    elevation: 2,
-  },
-  limitGroup: {
-    marginBottom: 24,
-  },
-  limitCategory: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
-    color: "#333",
-    marginBottom: 16,
-  },
-  limitItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  limitName: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    color: "#666",
-    flex: 1,
-  },
-  limitValue: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
-    color: "#000000",
-  },
-  infoSection: {
-    backgroundColor: "#e6f2ff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-  },
-  infoText: {
-    fontSize: normalize(13),
-    fontFamily: getFontFamily("700"),
-    color: "#007AFF",
-    marginBottom: 8,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      flexGrow: 1,
+      padding: 20,
+    },
+    accordionContainer: {
+      borderRadius: 12,
+      overflow: "hidden",
+      // backgroundColor: "red",
+      gap: 20,
+    },
+    accordionItem: {
+      borderRadius: 8,
+      overflow: "hidden",
+      backgroundColor: colors.inputBackground,
+    },
+    accordionHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 16,
+      paddingHorizontal: 20,
+    },
+    accordionIcon: {
+      flexDirection: "row",
+      borderRadius: 12,
+      gap: 10,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    accordionIconText: {
+      fontSize: normalize(12),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    accordionContent: {
+      borderRadius: 0,
+    },
+    accordionHeaderExpanded: {
+      backgroundColor: colors.inputBackground,
+    },
+    accordionHeaderContent: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      flex: 1,
+    },
+    accordionTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginRight: 12,
+    },
+    accordionTitleExpanded: {
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+    },
+    tierSelection: {
+      backgroundColor: colors.inputBackground,
+      borderRadius: 12,
+      padding: 4,
+      marginBottom: 20,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    tierButton: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 16,
+      paddingHorizontal: 20,
+      borderRadius: 8,
+      marginVertical: 2,
+    },
+    currentBadge: {
+      fontSize: normalize(15),
+      fontFamily: getFontFamily("900"),
+      color: colors.text,
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: 12,
+      backgroundColor: colors.infoCardBackgroundColor,
+    },
+    upgradeButton: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 16,
+      borderRadius: 120,
+      alignItems: "center",
+      marginBottom: 24,
+    },
+    upgradeButtonText: {
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+    },
+    limitsContainer: {
+      backgroundColor: colors.inputBackground,
+      borderRadius: 0,
+      paddingTop: 20,
+      paddingHorizontal: 20,
+      elevation: 2,
+    },
+    limitGroup: {
+      marginBottom: 24,
+    },
+    limitCategory: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: colors.textMuted,
+      marginBottom: 16,
+    },
+    limitItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    limitName: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      flex: 1,
+    },
+    limitValue: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    infoSection: {
+      backgroundColor: colors.inputBackground,
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 20,
+    },
+    infoText: {
+      fontSize: normalize(13),
+      fontFamily: getFontFamily("700"),
+      color: "#007AFF",
+      marginBottom: 8,
+    },
+  });
 
 export default AccountLimitsScreen;

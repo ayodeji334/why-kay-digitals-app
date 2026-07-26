@@ -22,6 +22,9 @@ import useAxios from "../hooks/useAxios";
 import { AxiosError } from "axios";
 import { showError } from "../utlis/toast";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
+import TabSwitcher from "../components/TabSwitcher";
+import { TradeTab } from "../libs/types";
 
 // Types
 interface ReferralItem {
@@ -41,22 +44,29 @@ interface TabProps {
   onPress: () => void;
 }
 
-const Tab: React.FC<TabProps> = ({ active, title, count, onPress }) => (
-  <TouchableOpacity
-    style={[styles.tab, active && styles.activeTab]}
-    onPress={onPress}
-  >
-    <AppText style={[styles.tabTitle, active && styles.activeTabTitle]}>
-      {title}
-    </AppText>
-    <AppText style={[styles.countText, active && styles.activeCountText]}>
-      ({count})
-    </AppText>
-  </TouchableOpacity>
-);
+const Tab: React.FC<TabProps> = ({ active, title, count, onPress }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
+  return (
+    <TouchableOpacity
+      style={[styles.tab, active && styles.activeTab]}
+      onPress={onPress}
+    >
+      <AppText style={[styles.tabTitle, active && styles.activeTabTitle]}>
+        {title}
+      </AppText>
+      <AppText style={[styles.countText, active && styles.activeCountText]}>
+        ({count})
+      </AppText>
+    </TouchableOpacity>
+  );
+};
 
 const EmptyState: React.FC<{ type: "signedUp" | "pending" }> = ({ type }) => {
   const user = useAuthStore(state => state.user);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const handleShareCode = async () => {
     try {
@@ -101,79 +111,88 @@ const EmptyState: React.FC<{ type: "signedUp" | "pending" }> = ({ type }) => {
 const capitalizeWords = (str: string) =>
   str.replace(/\b\w/g, char => char.toUpperCase());
 
-const ReferralCard: React.FC<{ item: ReferralItem }> = ({ item }) => (
-  <View style={styles.referralCard}>
-    <View style={styles.referralHeader}>
-      <View style={styles.userInfo}>
-        <AppText style={styles.userName}>
-          {item?.username || item?.name}
-        </AppText>
-        <AppText style={styles.userEmail}>
-          {item?.email && `${item.email}`}
+const ReferralCard: React.FC<{ item: ReferralItem }> = ({ item }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
+  return (
+    <View style={styles.referralCard}>
+      <View style={styles.referralHeader}>
+        <View style={styles.userInfo}>
+          <AppText style={styles.userName}>
+            {item?.username || item?.name}
+          </AppText>
+          <AppText style={styles.userEmail}>
+            {item?.email && `${item.email}`}
+          </AppText>
+        </View>
+        <AppText style={styles.amount}>
+          {formatAmount(parseFloat(item.amount))}
         </AppText>
       </View>
-      <AppText style={styles.amount}>
-        {formatAmount(parseFloat(item.amount))}
-      </AppText>
-    </View>
-    <View style={styles.referralFooter}>
-      <AppText style={styles.date}>{formatDate(item.created_at)}</AppText>
-      <View
-        style={[
-          styles.statusBadge,
-          item.status === "completed"
-            ? { backgroundColor: "#EFF7EC" }
-            : { backgroundColor: "#FFF7E6" },
-        ]}
-      >
-        <AppText
+      <View style={styles.referralFooter}>
+        <AppText style={styles.date}>{formatDate(item.created_at)}</AppText>
+        <View
           style={[
-            styles.statusText,
+            styles.statusBadge,
             item.status === "completed"
-              ? styles.completedText
-              : styles.pendingText,
+              ? { backgroundColor: "#EFF7EC" }
+              : { backgroundColor: "#FFF7E6" },
           ]}
         >
-          {item.status === "completed" ? "Completed" : "Pending"}
-        </AppText>
+          <AppText
+            style={[
+              styles.statusText,
+              item.status === "completed"
+                ? styles.completedText
+                : styles.pendingText,
+            ]}
+          >
+            {item.status === "completed" ? "Completed" : "Pending"}
+          </AppText>
+        </View>
       </View>
     </View>
-  </View>
-);
+  );
+};
 
 const StatCard: React.FC<{
   title: string;
   value: string;
   direction?: "right" | "left";
-}> = ({ title, value, direction = "left" }) => (
-  <View
-    style={[
-      styles.statCard,
-      { alignItems: direction === "right" ? "flex-end" : "flex-start" },
-    ]}
-  >
-    <AppText
+}> = ({ title, value, direction = "left" }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+  return (
+    <View
       style={[
-        styles.statTitle,
-        { textAlign: direction, fontSize: normalize(18) },
+        styles.statCard,
+        { alignItems: direction === "right" ? "flex-end" : "flex-start" },
       ]}
     >
-      {title}
-    </AppText>
-    <AppText
-      style={[
-        styles.statTitle,
-        {
-          textAlign: direction,
-          fontSize: normalize(28),
-          fontFamily: getFontFamily("800"),
-        },
-      ]}
-    >
-      {value}
-    </AppText>
-  </View>
-);
+      <AppText
+        style={[
+          styles.statTitle,
+          { textAlign: direction, fontSize: normalize(18) },
+        ]}
+      >
+        {title}
+      </AppText>
+      <AppText
+        style={[
+          styles.statTitle,
+          {
+            textAlign: direction,
+            fontSize: normalize(28),
+            fontFamily: getFontFamily("800"),
+          },
+        ]}
+      >
+        {value}
+      </AppText>
+    </View>
+  );
+};
 
 interface Referral {
   uuid: string;
@@ -201,6 +220,9 @@ const ReferralHistoryScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"signedUp" | "pending">(
     "signedUp",
   );
+
+  const colors = useColors();
+  const styles = makeStyles(colors);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { data, isLoading, refetch } = useQuery<ReferralResponse>({
@@ -252,9 +274,7 @@ const ReferralHistoryScreen: React.FC = () => {
   const hasReferrals = currentReferrals.length > 0;
 
   return (
-    <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
@@ -275,7 +295,19 @@ const ReferralHistoryScreen: React.FC = () => {
           />
         </View>
 
-        <View style={styles.tabsContainer}>
+        <TabSwitcher
+          tabs={[
+            { label: "Completed", value: "signedUp" },
+            { label: "Pending", value: "pending" },
+          ]}
+          activeTab={activeTab}
+          onTabChange={value => setActiveTab(value as any)}
+          containerStyle={styles.tabSwitcher}
+          activeTabStyle={styles.activeTab}
+          activeTabTextStyle={styles.activeTabText}
+        />
+
+        {/* <View style={styles.tabsContainer}>
           <Tab
             active={activeTab === "signedUp"}
             title="Completed"
@@ -288,7 +320,7 @@ const ReferralHistoryScreen: React.FC = () => {
             count={pendingReferrals.length}
             onPress={() => setActiveTab("pending")}
           />
-        </View>
+        </View> */}
 
         <View style={styles.referralsList}>
           {hasReferrals ? (
@@ -419,198 +451,212 @@ const ReferralHistoryScreen: React.FC = () => {
 //   );
 // };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  emptyState: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 60,
-    paddingHorizontal: 40,
-  },
-  emptyStateImage: {
-    width: 120,
-    height: 120,
-    marginBottom: 24,
-  },
-  emptyStateTitle: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("800"),
-    color: "#374151",
-    textAlign: "center",
-    marginBottom: 4,
-  },
-  emptyStateDescription: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#6B7280",
-    textAlign: "center",
-    lineHeight: normalize(22),
-    marginBottom: 20,
-  },
-  inviteButton: {
-    backgroundColor: COLORS.secondary,
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 38,
-  },
-  inviteButtonText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#fff",
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
-  },
-  headerTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(800),
-    color: "#000",
-    textAlign: "center",
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-    marginTop: 20,
-  },
-  statsSection: {
-    flexDirection: "row",
-    padding: 16,
-    backgroundColor: "#16A34A",
-    borderWidth: 1,
-    borderColor: "#e7e7e7",
-    gap: 12,
-    marginBottom: 30,
-    borderRadius: 5,
-  },
-  statCard: {
-    flex: 1,
-    borderRadius: 12,
-    justifyContent: "space-between",
-  },
-  statTitle: {
-    fontSize: normalize(15),
-    fontFamily: getFontFamily(400),
-    marginBottom: 8,
-    textAlign: "right",
-    color: "#fff",
-  },
-  statValue: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily(800),
-    color: "#fff",
-    textAlign: "right",
-  },
-  tabsContainer: {
-    flexDirection: "row",
-    padding: 7,
-    marginTop: 10,
-    marginBottom: 16,
-    gap: 8,
-    backgroundColor: "#F3F4F6",
-    borderRadius: 1000,
-  },
-  tab: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: "#F3F4F6",
-    borderRadius: 800,
-    gap: 8,
-  },
-  activeTab: {
-    backgroundColor: COLORS.primary,
-  },
-  tabTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-  },
-  activeTabTitle: {
-    color: "#fff",
-  },
-  countBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-  },
-  activeCountBadge: {},
-  countText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    textAlign: "center",
-  },
-  activeCountText: {
-    color: "#fff",
-  },
-  referralsList: {
-    gap: 12,
-  },
-  referralCard: {
-    backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E8E8E8",
-    elevation: 2,
-  },
-  referralHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 12,
-  },
-  userInfo: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily(900),
-    color: "#000",
-    marginBottom: 4,
-    textTransform: "uppercase",
-  },
-  userEmail: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-  },
-  amount: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(900),
-  },
-  referralFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  date: {
-    fontSize: normalize(15),
-    fontFamily: getFontFamily(700),
-    color: "rgb(63, 63, 63)",
-  },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily(800),
-  },
-  completedText: {
-    color: "#176105",
-  },
-  pendingText: {
-    color: "#c46b06",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    emptyState: {
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 60,
+      paddingHorizontal: 40,
+    },
+    emptyStateImage: {
+      width: 120,
+      height: 120,
+      marginBottom: 24,
+    },
+    emptyStateTitle: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      textAlign: "center",
+      marginBottom: 4,
+    },
+    emptyStateDescription: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.textMuted,
+      textAlign: "center",
+      lineHeight: normalize(22),
+      marginBottom: 20,
+    },
+    inviteButton: {
+      backgroundColor: COLORS.secondary,
+      paddingHorizontal: 20,
+      paddingVertical: 8,
+      borderRadius: 38,
+    },
+    inviteButtonText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: "#fff",
+    },
+    tabSwitcher: {
+      backgroundColor: colors.inputBackground,
+      marginVertical: 10,
+    },
+    activeTab: {
+      backgroundColor: COLORS.primary,
+      color: colors.text,
+    },
+    activeTabText: {
+      color: "white",
+    },
+    header: {
+      paddingHorizontal: 20,
+      paddingTop: 16,
+      paddingBottom: 8,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    headerTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(800),
+      color: colors.text,
+      textAlign: "center",
+    },
+    content: {
+      flexGrow: 1,
+      paddingHorizontal: 20,
+      marginTop: 20,
+    },
+    statsSection: {
+      flexDirection: "row",
+      padding: 16,
+      backgroundColor: colors.primary,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: 12,
+      marginBottom: 30,
+      borderRadius: 10,
+    },
+    statCard: {
+      flex: 1,
+      borderRadius: 12,
+      justifyContent: "space-between",
+    },
+    statTitle: {
+      fontSize: normalize(15),
+      fontFamily: getFontFamily(400),
+      marginBottom: 8,
+      textAlign: "right",
+      color: "#fff",
+    },
+    statValue: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily(800),
+      color: "#fff",
+      textAlign: "right",
+    },
+    tabsContainer: {
+      flexDirection: "row",
+      padding: 7,
+      marginTop: 10,
+      marginBottom: 16,
+      gap: 8,
+      backgroundColor: "#F3F4F6",
+      borderRadius: 1000,
+    },
+    tab: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      backgroundColor: "#F3F4F6",
+      borderRadius: 800,
+      gap: 8,
+    },
+    // activeTab: {
+    //   backgroundColor: COLORS.primary,
+    // },
+    tabTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+    },
+    activeTabTitle: {
+      color: "#fff",
+    },
+    countBadge: {
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 12,
+    },
+    activeCountBadge: {},
+    countText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      textAlign: "center",
+    },
+    activeCountText: {
+      color: "#fff",
+    },
+    referralsList: {
+      gap: 12,
+    },
+    referralCard: {
+      backgroundColor: colors.inputBackground,
+      padding: 10,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      elevation: 2,
+    },
+    referralHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: 12,
+    },
+    userInfo: {
+      flex: 1,
+    },
+    userName: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily(900),
+      color: colors.text,
+      marginBottom: 4,
+      textTransform: "uppercase",
+    },
+    userEmail: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+    },
+    amount: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(900),
+      color: colors.text,
+    },
+    referralFooter: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    date: {
+      fontSize: normalize(15),
+      fontFamily: getFontFamily(700),
+      color: colors.textMuted,
+    },
+    statusBadge: {
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: 12,
+    },
+    statusText: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily(800),
+    },
+    completedText: {
+      color: "#176105",
+    },
+    pendingText: {
+      color: "#c46b06",
+    },
+  });
 
 export default ReferralHistoryScreen;

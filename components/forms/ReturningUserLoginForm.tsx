@@ -16,6 +16,7 @@ import { OneSignal } from "react-native-onesignal";
 import { AppText } from "../AppText";
 import { useBiometricPromptStore } from "../../stores/biometricPromptSlice";
 import { refreshBiometricState } from "../../stores/biometricSlice";
+import { useColors } from "../../hooks/useTheme";
 
 const loginSchema = yup.object().shape({
   password: yup.string().required("Password is required"),
@@ -33,6 +34,8 @@ const ReturningUserLoginForm: React.FC = () => {
   const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
   const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const { control, handleSubmit } = useForm<ReturningUserLoginFormInputs>({
     resolver: yupResolver(loginSchema),
@@ -109,36 +112,37 @@ const ReturningUserLoginForm: React.FC = () => {
 
 export default ReturningUserLoginForm;
 
-const styles = StyleSheet.create({
-  container: {
-    paddingVertical: 20,
-  },
-  button: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    marginTop: 30,
-    justifyContent: "center",
-    alignContent: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    textAlign: "center",
-  },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  link: {
-    paddingVertical: 10,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    color: "blue",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      paddingVertical: 20,
+    },
+    button: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      marginTop: 30,
+      justifyContent: "center",
+      alignContent: "center",
+    },
+    buttonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      textAlign: "center",
+    },
+    modalBackground: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.4)",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    link: {
+      paddingVertical: 10,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      color: colors.primaryDark,
+    },
+  });
 
 // 9f602fb0be2b2f09baeeb8946cb006cb

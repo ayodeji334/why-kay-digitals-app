@@ -1,18 +1,17 @@
 import {
   ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   Switch,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize, width } from "../constants/settings";
+import { getFontFamily, normalize } from "../constants/settings";
 import { ArrowRight2, DocumentText, ReceiptEdit } from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface MenuItemProps {
   title: string;
@@ -39,6 +38,8 @@ const MenuItem = ({
   color = "#000",
   IconComponent = ArrowRight2,
 }: MenuItemProps) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
   const bgColor = isDangerous ? "#DC262611" : "#EFF7EC";
 
   return (
@@ -69,7 +70,7 @@ const MenuItem = ({
         <AppText
           style={[
             styles.menuItemTitle,
-            { color: isDangerous ? "#DC2626" : color },
+            { color: isDangerous ? "#DC2626" : colors?.text },
           ]}
         >
           {title}
@@ -78,7 +79,9 @@ const MenuItem = ({
           <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
         )}
       </View>
-      {showArrow && !showSwitch && <ArrowRight2 size={15} color={color} />}
+      {showArrow && !showSwitch && (
+        <ArrowRight2 size={15} color={colors?.text} />
+      )}
       {showSwitch && (
         <Switch
           value={switchValue}
@@ -93,15 +96,15 @@ const MenuItem = ({
 
 export default function LegalScreen() {
   const navigation: any = useNavigation();
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   return (
-    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Screen Description */}
         <AppText style={styles.screenDescription}>
           Stay informed about our terms, policies, and how we handle your data.
           You can review the Privacy Policy and Terms & Conditions here.
@@ -142,51 +145,53 @@ export default function LegalScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  screenTitle: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.darkBackground,
-    marginBottom: 8,
-  },
-  screenDescription: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: COLORS.dark,
-    lineHeight: 20,
-  },
-  menuItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 11,
-    paddingHorizontal: 10,
-    borderWidth: 0.5,
-    borderColor: "#D2D2D2",
-    marginVertical: 5,
-    borderRadius: 8,
-    backgroundColor: "#F9FAFB",
-    gap: 2,
-  },
-  menuItemContent: {
-    flex: 1,
-  },
-  menuItemTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-  menuItemSubtitle: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.gray,
-    marginTop: 2,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContainer: {
+      flexGrow: 1,
+      padding: 20,
+    },
+    screenTitle: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: COLORS.darkBackground,
+      marginBottom: 8,
+    },
+    screenDescription: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      lineHeight: 20,
+    },
+    menuItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 11,
+      paddingHorizontal: 10,
+      borderWidth: 0.5,
+      borderColor: colors.border,
+      marginVertical: 5,
+      borderRadius: 8,
+      backgroundColor: colors.infoCardBackgroundColor,
+      gap: 2,
+    },
+    menuItemContent: {
+      flex: 1,
+    },
+    menuItemTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    menuItemSubtitle: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("700"),
+      color: colors.textMuted,
+      marginTop: 2,
+    },
+  });

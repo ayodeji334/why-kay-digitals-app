@@ -521,6 +521,8 @@ import { AppText } from "../components/AppText";
 import Svg, { Defs, Pattern, Circle, Rect } from "react-native-svg";
 import { captureRef } from "react-native-view-shot";
 import ShareLib from "react-native-share";
+import { useColors } from "../hooks/useTheme";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const APP_NAME = "WHYKAY";
 const SHARE_CARD_WIDTH = 340;
@@ -577,6 +579,8 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
   const [selectedNetwork, setSelectedNetwork] = useState<string>(
     wallet?.chains?.[0]?.chain ?? "",
   );
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const handleGenerateWallet = async () => {
     setIsGenerating(true);
@@ -699,7 +703,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["left"]}>
       <ScrollView
         style={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -787,7 +791,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
                   style={styles.copyButton}
                   onPress={() => copyToClipboard(walletDetail.address)}
                 >
-                  <Copy size={15} color={COLORS.primary} />
+                  <Copy size={15} color={colors.primary} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -806,7 +810,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
                     copyToClipboard(walletDetail.tag, "Tag/Memo Code copied")
                   }
                 >
-                  <Copy size={15} color={COLORS.primary} />
+                  <Copy size={15} color={colors.primary} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -841,7 +845,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
               onPress={handleShare}
               disabled={isSharing}
             >
-              <AppText style={styles.actionButtonText}>
+              <AppText style={[styles.actionButtonText, { color: "white" }]}>
                 {isSharing ? "Preparing..." : "Share Address"}
               </AppText>
             </TouchableOpacity>
@@ -850,11 +854,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
               style={styles.viewRatesButton}
               onPress={handleNavigation}
             >
-              <AppText
-                style={[styles.actionButtonText, { color: COLORS.primary }]}
-              >
-                View Rates
-              </AppText>
+              <AppText style={[styles.actionButtonText]}>View Rates</AppText>
             </TouchableOpacity>
           </View>
         )}
@@ -951,312 +951,316 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
           </View>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default WalletDetails;
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    paddingBottom: 20,
-  },
-  header: { alignItems: "center", marginBottom: 0 },
-  logo: { width: 40, height: 40, marginRight: 10 },
-  title: {
-    fontFamily: getFontFamily(800),
-    fontSize: normalize(19),
-    color: "black",
-  },
-  section: {
-    marginVertical: 15,
-  },
-  label: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(800),
-    color: "black",
-    marginBottom: 8,
-  },
-  note: {
-    marginTop: 10,
-    textAlign: "center",
-    fontSize: normalize(13),
-    fontFamily: getFontFamily(400),
-    color: "#363737",
-    lineHeight: 18,
-  },
-  generateButton: {
-    width: "100%",
-    paddingVertical: 14,
-    borderRadius: 30,
-    backgroundColor: COLORS.primary,
-    alignItems: "center",
-  },
-  generateButtonText: {
-    color: "white",
-    fontFamily: getFontFamily(800),
-    fontSize: normalize(18),
-  },
-  qrContainer: {
-    alignSelf: "center",
-    marginBottom: 10,
-    borderColor: COLORS.primary,
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 10,
-  },
-  walletCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 35,
-    backgroundColor: "#F3F4F6",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  networkSection: { marginBottom: 20 },
-  sectionLabel: {
-    fontFamily: getFontFamily(700),
-    fontSize: normalize(16),
-    marginBottom: 10,
-    color: "black",
-  },
-  networkButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 10,
-    backgroundColor: "#F3F4F6",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-  },
-  networkButtonActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  networkButtonText: {
-    fontFamily: getFontFamily(500),
-    fontSize: normalize(18),
-    color: "#374151",
-  },
-  networkButtonTextActive: { color: "#FFFFFF" },
-  sectionBox: {
-    backgroundColor: "white",
-    padding: 14,
-    borderRadius: 10,
-    borderColor: "#CACACA",
-    borderWidth: 1,
-    marginBottom: 15,
-  },
-  modalLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("900"),
-    color: "black",
-    marginBottom: 6,
-  },
-  notesSection: {
-    width: "100%",
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 6,
-  },
-  notesText: {
-    fontFamily: getFontFamily(400),
-    fontSize: normalize(18),
-    lineHeight: 18,
-    textAlign: "center",
-  },
-  subtitle: {
-    textAlign: "center",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(400),
-    color: "#4B5563",
-    lineHeight: 20,
-    maxWidth: 260,
-  },
-  addressRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  addressText: {
-    fontFamily: getFontFamily(700),
-    fontSize: normalize(18),
-    maxWidth: "80%",
-    color: "black",
-  },
-  copyButton: {
-    padding: 7,
-    backgroundColor: "rgba(0,200,83,0.2)",
-    borderRadius: 8,
-  },
-  infoSection: {
-    borderColor: "#CFCFCF",
-    paddingHorizontal: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-  },
-  infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 13,
-  },
-  infoLabel: {
-    fontFamily: getFontFamily(800),
-    fontSize: normalize(18),
-    color: "black",
-  },
-  infoValue: {
-    fontFamily: getFontFamily(800),
-    fontSize: normalize(18),
-    color: "black",
-  },
-  actionsContainer: { marginTop: 30 },
-  shareButton: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: COLORS.primary,
-    paddingVertical: 14,
-    borderRadius: 30,
-    marginVertical: 12,
-  },
-  viewRatesButton: {
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    paddingVertical: 14,
-    borderRadius: 30,
-    alignItems: "center",
-  },
-  actionButtonText: {
-    fontFamily: getFontFamily(800),
-    fontSize: normalize(18),
-    marginLeft: 6,
-    color: "white",
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-  },
-  bottomActions: {
-    paddingHorizontal: 20,
-  },
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+    },
+    container: {
+      flex: 1,
+      paddingBottom: 20,
+      backgroundColor: colors.background,
+    },
+    header: { alignItems: "center", marginBottom: 0 },
+    logo: { width: 40, height: 40, marginRight: 10 },
+    title: {
+      fontFamily: getFontFamily(800),
+      fontSize: normalize(19),
+      color: colors.text,
+    },
+    section: {
+      marginVertical: 15,
+    },
+    label: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(800),
+      color: colors.text,
+      marginBottom: 8,
+    },
+    note: {
+      marginTop: 10,
+      textAlign: "center",
+      fontSize: normalize(13),
+      fontFamily: getFontFamily(400),
+      color: colors.text,
+      lineHeight: 18,
+    },
+    generateButton: {
+      width: "100%",
+      paddingVertical: 14,
+      borderRadius: 30,
+      backgroundColor: COLORS.primary,
+      alignItems: "center",
+    },
+    generateButtonText: {
+      color: "white",
+      fontFamily: getFontFamily(800),
+      fontSize: normalize(18),
+    },
+    qrContainer: {
+      alignSelf: "center",
+      marginBottom: 10,
+      borderColor: COLORS.primary,
+      borderWidth: 1,
+      borderRadius: 12,
+      padding: 10,
+    },
+    walletCircle: {
+      width: 50,
+      height: 50,
+      borderRadius: 35,
+      backgroundColor: "#F3F4F6",
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 15,
+    },
+    networkSection: { marginBottom: 20 },
+    sectionLabel: {
+      fontFamily: getFontFamily(700),
+      fontSize: normalize(16),
+      marginBottom: 10,
+      color: colors.text,
+    },
+    networkButton: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      marginRight: 10,
+      backgroundColor: "#F3F4F6",
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: "#E5E7EB",
+    },
+    networkButtonActive: {
+      backgroundColor: COLORS.primary,
+      borderColor: COLORS.primary,
+    },
+    networkButtonText: {
+      fontFamily: getFontFamily(500),
+      fontSize: normalize(18),
+      color: colors.text,
+    },
+    networkButtonTextActive: { color: colors.text },
+    sectionBox: {
+      backgroundColor: colors.inputBackground,
+      padding: 14,
+      borderRadius: 10,
+      borderColor: colors.border,
+      borderWidth: 1,
+      marginBottom: 15,
+    },
+    modalLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("900"),
+      color: "black",
+      marginBottom: 6,
+    },
+    notesSection: {
+      width: "100%",
+      padding: 14,
+      borderRadius: 10,
+      marginBottom: 6,
+    },
+    notesText: {
+      fontFamily: getFontFamily(400),
+      fontSize: normalize(18),
+      lineHeight: 18,
+      textAlign: "center",
+      color: colors.text,
+    },
+    subtitle: {
+      textAlign: "center",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(400),
+      color: "#4B5563",
+      lineHeight: 20,
+      maxWidth: 260,
+    },
+    addressRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    addressText: {
+      fontFamily: getFontFamily(700),
+      fontSize: normalize(18),
+      maxWidth: "80%",
+      color: colors.text,
+    },
+    copyButton: {
+      padding: 7,
+      backgroundColor: colors.background,
+      borderRadius: 8,
+    },
+    infoSection: {
+      borderColor: colors.border,
+      paddingHorizontal: 14,
+      borderRadius: 10,
+      borderWidth: 1,
+      backgroundColor: colors.inputBackground,
+    },
+    infoRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingVertical: 13,
+    },
+    infoLabel: {
+      fontFamily: getFontFamily(800),
+      fontSize: normalize(18),
+      color: colors.text,
+    },
+    infoValue: {
+      fontFamily: getFontFamily(800),
+      fontSize: normalize(18),
+      color: colors.text,
+    },
+    actionsContainer: { marginTop: 30 },
+    shareButton: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: COLORS.primary,
+      paddingVertical: 14,
+      borderRadius: 30,
+      marginVertical: 12,
+    },
+    viewRatesButton: {
+      borderWidth: 1,
+      borderColor: colors.text,
+      paddingVertical: 14,
+      borderRadius: 30,
+      alignItems: "center",
+    },
+    actionButtonText: {
+      fontFamily: getFontFamily(800),
+      fontSize: normalize(18),
+      marginLeft: 6,
+      color: colors.text,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingHorizontal: 20,
+    },
+    bottomActions: {
+      paddingHorizontal: 20,
+    },
 
-  shareCardOffscreen: {
-    position: "absolute",
-    top: -10000,
-    left: 0,
-  },
-  shareCard: {
-    width: SHARE_CARD_WIDTH,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 0,
-    overflow: "hidden",
-  },
-  shareHeader: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    alignItems: "center",
-  },
-  shareAppName: {
-    fontFamily: getFontFamily(900),
-    fontSize: normalize(18),
-    color: "#FFFFFF",
-    letterSpacing: 0.5,
-  },
-  shareHeaderSub: {
-    fontFamily: getFontFamily(500),
-    fontSize: normalize(12),
-    color: "rgba(255,255,255,0.85)",
-    marginTop: 2,
-  },
-  shareBody: {
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-    alignItems: "center",
-  },
-  shareAssetName: {
-    fontFamily: getFontFamily(800),
-    fontSize: normalize(18),
-    color: "#0A0A2A",
-  },
-  shareNetworkPill: {
-    backgroundColor: "rgba(188, 191, 189, 0.12)",
-    borderRadius: 20,
-    paddingHorizontal: 19,
-    paddingVertical: 3,
-    marginTop: 6,
-  },
-  shareNetworkText: {
-    fontFamily: getFontFamily(800),
-    fontSize: normalize(14),
-    color: "black",
-    letterSpacing: 0.5,
-  },
-  shareQrBox: {
-    marginTop: 14,
-    marginBottom: 14,
-    padding: 6,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    borderRadius: 12,
-    backgroundColor: "#FFFFFF",
-  },
-  shareField: {
-    width: "100%",
-    backgroundColor: "#F7F7F7",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  shareMemoField: {
-    backgroundColor: "#FFF7E6",
-    borderWidth: 1,
-    borderColor: "#F0C36D",
-  },
-  shareFieldLabel: {
-    fontFamily: getFontFamily(400),
-    fontSize: normalize(14),
-    color: "#181819",
-    letterSpacing: 0.6,
-    marginBottom: 4,
-    textAlign: "center",
-  },
-  shareMemoLabel: {
-    color: "#9A6B00",
-  },
-  shareFieldValue: {
-    fontFamily: getFontFamily(800),
-    fontSize: normalize(16),
-    lineHeight: 18,
-    color: "#0A0A2A",
-    textAlign: "center",
-  },
-  shareDescription: {
-    fontFamily: getFontFamily(400),
-    fontSize: normalize(15),
-    lineHeight: 14,
-    color: "#000000",
-    textAlign: "center",
-    marginTop: 2,
-  },
-  shareFooter: {
-    borderTopWidth: 1,
-    borderTopColor: "#EFEFEF",
-    paddingVertical: 10,
-    alignItems: "center",
-    backgroundColor: "#FAFAFA",
-  },
-  shareFooterText: {
-    fontFamily: getFontFamily(700),
-    fontSize: normalize(15),
-    color: "#101318",
-  },
-});
+    shareCardOffscreen: {
+      position: "absolute",
+      top: -10000,
+      left: 0,
+    },
+    shareCard: {
+      width: SHARE_CARD_WIDTH,
+      backgroundColor: "#FFFFFF",
+      borderRadius: 0,
+      overflow: "hidden",
+    },
+    shareHeader: {
+      backgroundColor: COLORS.primary,
+      paddingVertical: 16,
+      paddingHorizontal: 20,
+      alignItems: "center",
+    },
+    shareAppName: {
+      fontFamily: getFontFamily(900),
+      fontSize: normalize(18),
+      color: "#FFFFFF",
+      letterSpacing: 0.5,
+    },
+    shareHeaderSub: {
+      fontFamily: getFontFamily(500),
+      fontSize: normalize(12),
+      color: "rgba(255,255,255,0.85)",
+      marginTop: 2,
+    },
+    shareBody: {
+      paddingVertical: 18,
+      paddingHorizontal: 20,
+      alignItems: "center",
+    },
+    shareAssetName: {
+      fontFamily: getFontFamily(800),
+      fontSize: normalize(18),
+      color: "#0A0A2A",
+    },
+    shareNetworkPill: {
+      backgroundColor: "rgba(188, 191, 189, 0.12)",
+      borderRadius: 20,
+      paddingHorizontal: 19,
+      paddingVertical: 3,
+      marginTop: 6,
+    },
+    shareNetworkText: {
+      fontFamily: getFontFamily(800),
+      fontSize: normalize(14),
+      color: "black",
+      letterSpacing: 0.5,
+    },
+    shareQrBox: {
+      marginTop: 14,
+      marginBottom: 14,
+      padding: 6,
+      borderWidth: 1,
+      borderColor: COLORS.primary,
+      borderRadius: 12,
+      backgroundColor: "#FFFFFF",
+    },
+    shareField: {
+      width: "100%",
+      backgroundColor: "#F7F7F7",
+      borderRadius: 10,
+      paddingVertical: 10,
+      paddingHorizontal: 12,
+      marginBottom: 10,
+      textAlign: "center",
+    },
+    shareMemoField: {
+      backgroundColor: "#FFF7E6",
+      borderWidth: 1,
+      borderColor: "#F0C36D",
+    },
+    shareFieldLabel: {
+      fontFamily: getFontFamily(400),
+      fontSize: normalize(14),
+      color: "#181819",
+      letterSpacing: 0.6,
+      marginBottom: 4,
+      textAlign: "center",
+    },
+    shareMemoLabel: {
+      color: "#9A6B00",
+    },
+    shareFieldValue: {
+      fontFamily: getFontFamily(800),
+      fontSize: normalize(16),
+      lineHeight: 18,
+      color: "#0A0A2A",
+      textAlign: "center",
+    },
+    shareDescription: {
+      fontFamily: getFontFamily(400),
+      fontSize: normalize(15),
+      lineHeight: 14,
+      color: "#000000",
+      textAlign: "center",
+      marginTop: 2,
+    },
+    shareFooter: {
+      borderTopWidth: 1,
+      borderTopColor: "#EFEFEF",
+      paddingVertical: 10,
+      alignItems: "center",
+      backgroundColor: "#FAFAFA",
+    },
+    shareFooterText: {
+      fontFamily: getFontFamily(700),
+      fontSize: normalize(15),
+      color: "#101318",
+    },
+  });

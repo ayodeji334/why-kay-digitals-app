@@ -378,7 +378,7 @@
 //     resizeMode: "contain",
 //   },
 //   errorText: {
-//     color: "#EF4444",
+//     color: colors.error,
 //     marginTop: 4,
 //     marginBottom: 10,
 //     fontSize: 13,
@@ -450,6 +450,7 @@ import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
 import { useFiatBalance } from "../hooks/useFiatBalance";
+import { useColors } from "../hooks/useTheme";
 
 const schema = yup.object({
   phone: yup
@@ -498,6 +499,9 @@ export default function BuyDataScreen() {
     },
     mode: "onChange",
   });
+
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const selectedNetwork = watch("network");
   const selectedPlanCode = watch("plan");
@@ -628,8 +632,7 @@ export default function BuyDataScreen() {
   useResetFormOnMount(reset, { network: "", phone: "", plan: "" });
 
   return (
-    <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}
@@ -648,12 +651,6 @@ export default function BuyDataScreen() {
           name="phone"
           control={control}
         />
-
-        {errors.phone && (
-          <AppText style={styles.errorText}>
-            {errors.phone.message as string}
-          </AppText>
-        )}
 
         <View style={{ marginBottom: 10 }}>
           <SavedBeneficiaries
@@ -749,6 +746,7 @@ export default function BuyDataScreen() {
 
         <View style={styles.buttonWrapper}>
           <TouchableOpacity
+            activeOpacity={0.89}
             style={[
               styles.button,
               (loading || hasInsufficientBalance) && styles.buttonDisabled,
@@ -766,129 +764,130 @@ export default function BuyDataScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  scrollView: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  content: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  header: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-    marginBottom: 16,
-  },
-  subHeader: {
-    marginTop: 20,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    marginBottom: 8,
-    color: "#1A1A1A",
-  },
-  networkRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  networkButton: {
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    width: 75,
-    height: 75,
-  },
-  networkButtonActive: {
-    borderColor: "#181817ff",
-  },
-  checkIconContainer: {
-    position: "absolute",
-    top: 4,
-    left: 4,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: "black",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1,
-  },
-  checkIcon: {
-    color: "#fff",
-    fontSize: normalize(20),
-    fontFamily: getFontFamily(900),
-  },
-  networkLogo: {
-    width: 70,
-    height: 70,
-    borderRadius: 10,
-    resizeMode: "contain",
-  },
-  errorText: {
-    color: "#EF4444",
-    marginTop: 4,
-    marginBottom: 10,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-  },
-  balanceLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000000",
-    marginBottom: 4,
-  },
-  balanceValue: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("900"),
-    color: "#000",
-  },
-  balanceCard: {
-    paddingHorizontal: normalize(10),
-    paddingVertical: normalize(9),
-  },
-  loader: {
-    marginTop: 12,
-  },
-  buttonWrapper: {
-    marginTop: 32,
-  },
-  warningContainer: {
-    marginVertical: 12,
-    padding: 10,
-    backgroundColor: "rgba(255, 0, 0, 0.03)",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 0, 0, 0.3)",
-  },
-  warningText: {
-    color: "#db0b0b",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("800"),
-    textAlign: "center",
-  },
-  button: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    marginTop: 30,
-    justifyContent: "center",
-    alignContent: "center",
-  },
-  buttonDisabled: {
-    backgroundColor: "#9CA3AF",
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(20),
-    textAlign: "center",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollView: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+    },
+    header: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      marginBottom: 16,
+    },
+    subHeader: {
+      marginTop: 20,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      marginBottom: 8,
+      color: colors.text,
+    },
+    networkRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 8,
+    },
+    networkButton: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 10,
+      alignItems: "center",
+      justifyContent: "center",
+      width: 75,
+      height: 75,
+    },
+    networkButtonActive: {
+      borderColor: "#181817ff",
+    },
+    checkIconContainer: {
+      position: "absolute",
+      top: 4,
+      left: 4,
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      backgroundColor: colors.text,
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1,
+    },
+    checkIcon: {
+      color: colors.background,
+      fontSize: normalize(20),
+      fontFamily: getFontFamily(900),
+    },
+    networkLogo: {
+      width: 70,
+      height: 70,
+      borderRadius: 10,
+      resizeMode: "contain",
+    },
+    errorText: {
+      color: colors.error,
+      marginTop: 4,
+      marginBottom: 10,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+    },
+    balanceLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: "#000000",
+      marginBottom: 4,
+    },
+    balanceValue: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("900"),
+      color: "#000",
+    },
+    balanceCard: {
+      paddingHorizontal: normalize(10),
+      paddingVertical: normalize(9),
+    },
+    loader: {
+      marginTop: 12,
+    },
+    buttonWrapper: {
+      marginTop: 32,
+    },
+    warningContainer: {
+      marginVertical: 12,
+      padding: 10,
+      backgroundColor: "rgba(255, 0, 0, 0.03)",
+      borderRadius: 6,
+      borderWidth: 1,
+      borderColor: "rgba(255, 0, 0, 0.3)",
+    },
+    warningText: {
+      color: colors.error,
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("800"),
+      textAlign: "center",
+    },
+    button: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      marginTop: 30,
+      justifyContent: "center",
+      alignContent: "center",
+    },
+    buttonDisabled: {
+      backgroundColor: "#9CA3AF",
+    },
+    buttonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(20),
+      textAlign: "center",
+    },
+  });

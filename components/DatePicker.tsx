@@ -10,6 +10,7 @@ import {
 import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface DatePickerFieldProps {
   label: string;
@@ -47,6 +48,8 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
         })()
       : today,
   );
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const toggle = () => setVisible(!visible);
 
@@ -72,7 +75,7 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
   );
 
   return (
-    <View>
+    <View style={{ marginVertical: normalize(8) }}>
       <AppText style={styles.label}>{label}</AppText>
       <TouchableOpacity
         style={styles.dateField}
@@ -85,8 +88,14 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
       <Modal visible={visible} transparent animationType="slide">
         <View style={styles.overlay}>
           <View style={styles.modal}>
-            <AppText style={styles.modalTitle}>{label}</AppText>
-
+            <View style={{ paddingBottom: 20 }}>
+              <AppText style={styles.modalTitle}>Select {label}</AppText>
+              <AppText
+                style={{ color: colors.text, fontFamily: getFontFamily(400) }}
+              >
+                Kindly scroll the date
+              </AppText>
+            </View>
             <View style={styles.scrollPickerRow}>
               <View style={styles.highlightBar} />
 
@@ -157,7 +166,6 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
                 )}
               />
 
-              {/* Year Picker */}
               <FlatList
                 data={Array.from({ length: 100 }, (_, i) => 1970 + i)}
                 keyExtractor={item => item.toString()}
@@ -194,7 +202,7 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
 
             <View style={styles.buttonRow}>
               <TouchableOpacity style={styles.cancelBtn} onPress={toggle}>
-                <AppText style={[styles.btnText, { color: "#000" }]}>
+                <AppText style={[styles.btnText, { color: colors.background }]}>
                   Cancel
                 </AppText>
               </TouchableOpacity>
@@ -212,104 +220,105 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  label: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginTop: 6,
-  },
-  highlightBar: {
-    position: "absolute",
-    top: "50%",
-    left: 0,
-    right: 0,
-    height: 40,
-    marginTop: -20,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "#D1D5DB",
-    pointerEvents: "none",
-  },
-  dateField: {
-    backgroundColor: "#fff",
-    paddingVertical: 15,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-  },
-  dateText: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
-    color: "#111827",
-  },
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.4)",
-  },
-  modal: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 24,
-  },
-  modalTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    marginBottom: 16,
-    textAlign: "left",
-  },
-  scrollPickerRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    marginBottom: 16,
-    height: 120,
-  },
-  scrollContent: {
-    paddingVertical: 40,
-  },
-  scrollItem: {
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  scrollText: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("400"),
-    color: "#6B7280",
-  },
-  selectedText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#111827",
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 10,
-    marginBottom: 10,
-  },
-  cancelBtn: {
-    flex: 1,
-    backgroundColor: "#E5E7EB",
-    paddingVertical: 10,
-    borderRadius: 48,
-  },
-  confirmBtn: {
-    flex: 1,
-    backgroundColor: COLORS.primary,
-    paddingVertical: 10,
-    borderRadius: 48,
-  },
-  btnText: {
-    textAlign: "center",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-    color: "#fff",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    label: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      color: colors.text,
+      marginTop: 6,
+    },
+    highlightBar: {
+      position: "absolute",
+      top: "50%",
+      left: 0,
+      right: 0,
+      height: 50,
+      marginTop: -25,
+      borderTopWidth: 1,
+      borderBottomWidth: 1,
+      borderColor: colors.border,
+      pointerEvents: "none",
+    },
+    dateField: {
+      backgroundColor: "inherit",
+      paddingVertical: 18,
+      paddingHorizontal: 14,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    dateText: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    overlay: {
+      flex: 1,
+      justifyContent: "flex-end",
+      backgroundColor: "rgba(0,0,0,0.4)",
+    },
+    modal: {
+      backgroundColor: colors.inputBackground,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      padding: 24,
+    },
+    modalTitle: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("800"),
+      textAlign: "left",
+      color: colors.text,
+    },
+    scrollPickerRow: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      alignItems: "center",
+      marginBottom: 16,
+      height: 120,
+    },
+    scrollContent: {
+      paddingVertical: 40,
+    },
+    scrollItem: {
+      height: 40,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    scrollText: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("700"),
+      color: colors.textMuted,
+    },
+    selectedText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    buttonRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      gap: 10,
+      marginBottom: 10,
+    },
+    cancelBtn: {
+      flex: 1,
+      backgroundColor: colors.text,
+      paddingVertical: 10,
+      borderRadius: 48,
+    },
+    confirmBtn: {
+      flex: 1,
+      backgroundColor: COLORS.primary,
+      paddingVertical: 10,
+      borderRadius: 48,
+    },
+    btnText: {
+      textAlign: "center",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: "white",
+    },
+  });
 
 export default DatePicker;

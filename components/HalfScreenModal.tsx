@@ -2,7 +2,6 @@ import React from "react";
 import {
   Modal,
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   Pressable,
@@ -12,6 +11,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface HalfScreenModalProps {
   isVisible: boolean;
@@ -41,11 +41,11 @@ const HalfScreenModal = ({
   secondaryAction,
   IconComponent,
   iconBackgroundColor = "#E0F7FA",
-  // iconColor = COLORS.primary,
-  // iconSize = normalize(22),
   isDangerous = false,
   showCloseButton = false,
 }: HalfScreenModalProps) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
   return (
     <Modal visible={isVisible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -125,83 +125,84 @@ const HalfScreenModal = ({
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-    justifyContent: "flex-end",
-  },
-  modalContainer: {
-    width: "100%",
-    backgroundColor: "white",
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
-    padding: 24,
-    paddingBottom: 50,
-    alignItems: "center",
-    position: "relative",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 16,
-    right: 16,
-    zIndex: 10,
-    borderRadius: 50,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    marginBottom: 20,
-  },
-  modalContent: {
-    alignItems: "center",
-    width: "100%",
-    paddingBottom: 20,
-    marginTop: 30,
-  },
-  iconContainer: {
-    borderRadius: 45,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
-    padding: 10,
-  },
-  title: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("900"),
-    color: "#333",
-    paddingBottom: 18,
-    textAlign: "center",
-  },
-  description: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("400"),
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 24,
-    lineHeight: 22,
-  },
-  button: {
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 100,
-    width: "100%",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: COLORS.whiteBackground,
-  },
-  secondaryButton: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: COLORS.darkBackground,
-  },
-  secondaryButtonText: {
-    color: COLORS.dark,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: "rgba(0, 0, 0, 0.3)",
+      justifyContent: "flex-end",
+    },
+    modalContainer: {
+      width: "100%",
+      backgroundColor: colors.inputBackground,
+      borderTopRightRadius: 20,
+      borderTopLeftRadius: 20,
+      padding: 24,
+      paddingBottom: 50,
+      alignItems: "center",
+      position: "relative",
+    },
+    closeButton: {
+      position: "absolute",
+      top: 16,
+      right: 16,
+      zIndex: 10,
+      borderRadius: 50,
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      marginBottom: 20,
+    },
+    modalContent: {
+      alignItems: "center",
+      width: "100%",
+      paddingBottom: 20,
+      marginTop: 30,
+    },
+    iconContainer: {
+      borderRadius: 45,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 20,
+      padding: 10,
+    },
+    title: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("900"),
+      color: colors.text,
+      paddingBottom: 18,
+      textAlign: "center",
+    },
+    description: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      textAlign: "center",
+      marginBottom: 24,
+      lineHeight: 22,
+    },
+    button: {
+      paddingVertical: 14,
+      paddingHorizontal: 30,
+      borderRadius: 100,
+      width: "100%",
+      alignItems: "center",
+      marginTop: 10,
+    },
+    buttonText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: COLORS.whiteBackground,
+    },
+    secondaryButton: {
+      backgroundColor: colors.inputBackground,
+      borderWidth: 1,
+      borderColor: colors.text,
+    },
+    secondaryButtonText: {
+      color: colors.text,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+    },
+  });
 
 export default HalfScreenModal;

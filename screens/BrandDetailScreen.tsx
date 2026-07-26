@@ -32,6 +32,7 @@ import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import { useFiatBalance } from "../hooks/useFiatBalance";
 import { showError } from "../utlis/toast";
 import { SelectInput } from "../components/SelectInputField";
+import { useColors } from "../hooks/useTheme";
 
 interface GiftCardOffer {
   offerId: string;
@@ -156,14 +157,19 @@ const FieldBlock = ({
   hint?: string;
   error?: string;
   children: React.ReactNode;
-}) => (
-  <View style={styles.fieldBlock}>
-    <AppText style={styles.fieldLabel}>{label}</AppText>
-    {hint && <AppText style={styles.fieldHint}>{hint}</AppText>}
-    {children}
-    {!!error && <AppText style={styles.errorText}>{error}</AppText>}
-  </View>
-);
+}) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
+  return (
+    <View style={styles.fieldBlock}>
+      <AppText style={styles.fieldLabel}>{label}</AppText>
+      {hint && <AppText style={styles.fieldHint}>{hint}</AppText>}
+      {children}
+      {!!error && <AppText style={styles.errorText}>{error}</AppText>}
+    </View>
+  );
+};
 
 const BreakdownRow = ({
   label,
@@ -173,16 +179,21 @@ const BreakdownRow = ({
   label: string;
   value: string;
   bold?: boolean;
-}) => (
-  <View style={styles.breakdownRow}>
-    <AppText style={[styles.breakdownLabel, bold && styles.breakdownBold]}>
-      {label}
-    </AppText>
-    <AppText style={[styles.breakdownValue, bold && styles.breakdownBold]}>
-      {value}
-    </AppText>
-  </View>
-);
+}) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
+  return (
+    <View style={styles.breakdownRow}>
+      <AppText style={[styles.breakdownLabel, bold && styles.breakdownBold]}>
+        {label}
+      </AppText>
+      <AppText style={[styles.breakdownValue, bold && styles.breakdownBold]}>
+        {value}
+      </AppText>
+    </View>
+  );
+};
 
 function PurchaseSection({
   offer,
@@ -195,6 +206,8 @@ function PurchaseSection({
   setExchangeRate: (rate: number) => void;
   loadingRate: boolean;
 }) {
+  const colors = useColors();
+  const styles = makeStyles(colors);
   const axios = useAxios();
   const navigation = useNavigation<any>();
   const { fiatBalance } = useFiatBalance();
@@ -326,7 +339,6 @@ function PurchaseSection({
 
   return (
     <View>
-      {/* ── Amount ── */}
       {offer.priceType === "RANGE" ? (
         <FieldBlock
           label="Amount"
@@ -548,9 +560,8 @@ function PurchaseSection({
         </>
       )}
 
-      {/* ── CTA ── */}
       <TouchableOpacity
-        activeOpacity={0.7}
+        activeOpacity={0.8}
         style={[
           styles.ctaButton,
           (insufficientBalance || !breakdown) && styles.ctaDisabled,
@@ -571,6 +582,8 @@ export default function BrandDetailScreen() {
   const route = useRoute<any>();
   const { brand, country } = route.params as { brand: any; country: string };
   const { apiGet } = useAxios();
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const [selectedOffer, setSelectedOffer] = useState<GiftCardOffer | null>(
     null,
@@ -628,7 +641,7 @@ export default function BrandDetailScreen() {
   }, [navigation, brand]);
 
   return (
-    <SafeAreaView style={styles.safe} edges={["bottom", "left", "right"]}>
+    <SafeAreaView style={styles.safe} edges={["left", "right"]}>
       {isLoading ? (
         <View style={styles.loadingWrap}>
           <ActivityIndicator color={COLORS.primary} size={40} />
@@ -688,244 +701,249 @@ export default function BrandDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#fff" },
-  loadingWrap: { flex: 1, alignItems: "center", justifyContent: "center" },
-  scrollContent: {
-    paddingHorizontal: normalize(24),
-    paddingTop: normalize(16),
-    paddingBottom: normalize(40),
-  },
-  brandLogo: {
-    width: "100%",
-    height: normalize(120),
-    maxHeight: normalize(120),
-  },
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    safe: { flex: 1, backgroundColor: colors.background },
+    loadingWrap: { flex: 1, alignItems: "center", justifyContent: "center" },
+    scrollContent: {
+      paddingHorizontal: normalize(24),
+      paddingTop: normalize(16),
+      paddingBottom: normalize(40),
+      flexGrow: 1,
+    },
+    brandLogo: {
+      width: "100%",
+      height: normalize(120),
+      maxHeight: normalize(120),
+    },
 
-  friendToggleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: normalize(12),
-    padding: normalize(14),
-    marginVertical: normalize(20),
-    gap: 12,
-    rowGap: 12,
-    paddingRight: 10,
-  },
-  friendToggleText: { flex: 1 },
-  friendToggleLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#1A1A1A",
-    marginBottom: 2,
-  },
-  friendToggleHint: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("400"),
-    color: "#33353a",
-    lineHeight: 18,
-  },
-  recipientSection: {
-    borderWidth: 1,
-    borderColor: `${COLORS.primary}30`,
-    borderRadius: normalize(16),
-    padding: normalize(14),
-    marginBottom: normalize(14),
-    backgroundColor: `${COLORS.primary}08`,
-  },
-  recipientSectionTitle: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    color: COLORS.primary,
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
-    marginBottom: normalize(12),
-  },
-  textField: {
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: normalize(10),
-    paddingHorizontal: normalize(14),
-    paddingVertical: normalize(16),
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("700"),
-    color: "#1A1A1A",
-    backgroundColor: "#fff",
-  },
-  textFieldError: { borderColor: "#FF3B30" },
-  fieldBlock: { marginBottom: normalize(18) },
-  fieldLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginBottom: 2,
-    textTransform: "capitalize",
-  },
-  fieldHint: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: "#444951",
-    marginBottom: 6,
-  },
-  errorText: {
-    color: "#FF3B30",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    marginTop: 3,
-  },
-  amountBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: normalize(12),
-    paddingHorizontal: normalize(14),
-  },
-  currencySymbol: {
-    fontSize: normalize(24),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  amountInput: {
-    flex: 1,
-    paddingVertical: normalize(18),
-    fontSize: normalize(24),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
+    friendToggleRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: normalize(12),
+      padding: normalize(14),
+      marginVertical: normalize(20),
+      gap: 12,
+      rowGap: 12,
+      paddingRight: 10,
+    },
+    friendToggleText: { flex: 1 },
+    friendToggleLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 2,
+    },
+    friendToggleHint: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("400"),
+      color: colors.textMuted,
+      lineHeight: 18,
+    },
+    recipientSection: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: normalize(16),
+      padding: normalize(14),
+      marginBottom: normalize(14),
+      backgroundColor: colors.infoCardBackgroundColor,
+    },
+    recipientSectionTitle: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      color: COLORS.primary,
+      textTransform: "uppercase",
+      letterSpacing: 0.6,
+      marginBottom: normalize(12),
+    },
+    textField: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: normalize(10),
+      paddingHorizontal: normalize(14),
+      paddingVertical: normalize(16),
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      backgroundColor: colors.background,
+    },
+    textFieldError: { borderColor: colors.error },
+    fieldBlock: { marginBottom: normalize(18) },
+    fieldLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 2,
+      textTransform: "capitalize",
+    },
+    fieldHint: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.textMuted,
+      marginBottom: 6,
+    },
+    errorText: {
+      color: colors.error,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      marginTop: 3,
+    },
+    amountBox: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: normalize(12),
+      paddingHorizontal: normalize(14),
+    },
+    currencySymbol: {
+      fontSize: normalize(24),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    amountInput: {
+      flex: 1,
+      paddingVertical: normalize(18),
+      fontSize: normalize(24),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
 
-  lockedValueBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: normalize(12),
-    paddingHorizontal: normalize(14),
-    paddingVertical: normalize(14),
-    backgroundColor: "#F9FAFB",
-  },
-  lockedValue: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("800"),
-    color: "#1A1A1A",
-  },
-  lockedBadge: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.primary,
-    backgroundColor: `${COLORS.primary}18`,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 20,
-  },
+    lockedValueBox: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: normalize(12),
+      paddingHorizontal: normalize(14),
+      paddingVertical: normalize(14),
+      backgroundColor: colors.background,
+    },
+    lockedValue: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    lockedBadge: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: "white",
+      backgroundColor: colors.infoCardBackgroundColor,
+      paddingHorizontal: 10,
+      paddingVertical: 3,
+      borderRadius: 20,
+    },
 
-  quantityRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginTop: 10,
-  },
-  qtyButton: {
-    width: 37,
-    height: 37,
-    borderRadius: 6,
-    backgroundColor: COLORS.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  qtyButtonText: {
-    fontSize: normalize(28),
-    fontFamily: getFontFamily("700"),
-    color: "#fff",
-  },
-  qtyInput: {
-    flex: 1,
-    textAlign: "center",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 10,
-    paddingVertical: normalize(12),
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("800"),
-    color: "#1A1A1A",
-  },
+    quantityRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      marginTop: 10,
+    },
+    qtyButton: {
+      width: 37,
+      height: 37,
+      borderRadius: 6,
+      backgroundColor: COLORS.primary,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    qtyButtonText: {
+      fontSize: normalize(28),
+      fontFamily: getFontFamily("700"),
+      color: "#fff",
+    },
+    qtyInput: {
+      flex: 1,
+      textAlign: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 10,
+      paddingVertical: normalize(12),
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
 
-  breakdownCard: {
-    backgroundColor: "#EFF7EC",
-    borderRadius: 12,
-    padding: 14,
-    gap: 4,
-    marginBottom: 14,
-    marginTop: 8,
-  },
-  breakdownRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 4,
-  },
-  breakdownLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    flex: 1,
-    flexWrap: "wrap",
-  },
-  breakdownValue: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    textAlign: "right",
-  },
-  breakdownBold: { fontFamily: getFontFamily("900"), fontSize: normalize(18) },
+    breakdownCard: {
+      backgroundColor: colors.infoCardBackgroundColor,
+      borderRadius: 12,
+      padding: 14,
+      gap: 4,
+      marginBottom: 14,
+      marginTop: 8,
+    },
+    breakdownRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingVertical: 4,
+    },
+    breakdownLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      flex: 1,
+      flexWrap: "wrap",
+    },
+    breakdownValue: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      textAlign: "right",
+    },
+    breakdownBold: {
+      fontFamily: getFontFamily("900"),
+      fontSize: normalize(18),
+    },
 
-  warningBox: {
-    backgroundColor: "#FEF2F2",
-    borderWidth: 1,
-    borderColor: "#FECACA",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 12,
-  },
-  warningText: {
-    color: "#DC2626",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    lineHeight: 20,
-  },
+    warningBox: {
+      backgroundColor: "#FEF2F2",
+      borderWidth: 1,
+      borderColor: "#FECACA",
+      borderRadius: 10,
+      padding: 12,
+      marginBottom: 12,
+    },
+    warningText: {
+      color: "#DC2626",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      lineHeight: 20,
+    },
 
-  summaryPill: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 10,
-    padding: 14,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  summaryLabel: {
-    color: "#fff",
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("900"),
-  },
-  summaryAmount: {
-    color: "#fff",
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("900"),
-  },
-  ctaButton: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 16,
-    borderRadius: normalize(208),
-    alignItems: "center",
-  },
-  ctaDisabled: { backgroundColor: "#9CA3AF", opacity: 0.6 },
-  ctaText: {
-    color: "#fff",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-  },
-});
+    summaryPill: {
+      backgroundColor: COLORS.primary,
+      borderRadius: 10,
+      padding: 14,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 16,
+    },
+    summaryLabel: {
+      color: "#fff",
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("900"),
+    },
+    summaryAmount: {
+      color: "#fff",
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("900"),
+    },
+    ctaButton: {
+      backgroundColor: COLORS.primary,
+      paddingVertical: 16,
+      borderRadius: normalize(208),
+      alignItems: "center",
+    },
+    ctaDisabled: { backgroundColor: "#9CA3AF", opacity: 0.6 },
+    ctaText: {
+      color: "#fff",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+    },
+  });

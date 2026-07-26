@@ -68,14 +68,14 @@
 //         <IconComponent
 //           variant="Outline"
 //           size={18}
-//           color={isDangerous ? "#DC2626" : COLORS.primary}
+//           color={isDangerous ? colors.error : COLORS.primary}
 //         />
 //       </View>
 //       <View style={styles.menuItemContent}>
 //         <AppText
 //           style={[
 //             styles.menuItemTitle,
-//             { color: isDangerous ? "#DC2626" : color },
+//             { color: isDangerous ? colors.error : color },
 //           ]}
 //         >
 //           {title}
@@ -324,6 +324,7 @@ import { AppText } from "../components/AppText";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CHATWOOT_INSTALLATION_URL, CHATWOOT_WEBTOKEN } from "../config";
 import { useAuthStore } from "../stores/authSlice";
+import { useColors } from "../hooks/useTheme";
 
 interface SectionProps {
   title: string;
@@ -344,12 +345,17 @@ interface MenuItemProps {
   IconComponent?: React.ComponentType<any>;
 }
 
-const Section: React.FC<SectionProps> = ({ title, children, style }) => (
-  <View style={[styles.section, style]}>
-    <AppText style={styles.sectionTitle}>{title}</AppText>
-    {children}
-  </View>
-);
+const Section: React.FC<SectionProps> = ({ title, children, style }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
+  return (
+    <View style={[styles.section, style]}>
+      <AppText style={styles.sectionTitle}>{title}</AppText>
+      {children}
+    </View>
+  );
+};
 
 const MenuItem: React.FC<MenuItemProps> = ({
   title,
@@ -361,6 +367,8 @@ const MenuItem: React.FC<MenuItemProps> = ({
   IconComponent = ArrowRight2,
   showArrow = true,
 }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -372,14 +380,14 @@ const MenuItem: React.FC<MenuItemProps> = ({
         <IconComponent
           variant="Outline"
           size={18}
-          color={isDangerous ? "#DC2626" : COLORS.primary}
+          color={isDangerous ? colors.error : COLORS.primary}
         />
       </View>
       <View style={styles.menuItemContent}>
         <AppText
           style={[
             styles.menuItemTitle,
-            { color: isDangerous ? "#DC2626" : color },
+            { color: isDangerous ? colors.error : colors?.text },
           ]}
         >
           {title}
@@ -398,7 +406,9 @@ const MenuItem: React.FC<MenuItemProps> = ({
         ) : null}
       </View>
       <View style={{ alignSelf: "center" }}>
-        {showArrow && !showSwitch && <ArrowRight2 size={16} color={color} />}
+        {showArrow && !showSwitch && (
+          <ArrowRight2 size={13} color={colors?.text} />
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -407,6 +417,8 @@ const MenuItem: React.FC<MenuItemProps> = ({
 const HelpSupportScreen: React.FC = () => {
   const [showChatWidget, setShowChatWidget] = useState(false);
   const user = useAuthStore(s => s.user);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const chatUser = {
     identifier: user?.email,
@@ -455,7 +467,7 @@ const HelpSupportScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView edges={["right", "left", "bottom"]} style={{ flex: 1 }}>
+    <SafeAreaView edges={["right", "left"]} style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
         <Section title="">
           <MenuItem
@@ -544,97 +556,101 @@ const HelpSupportScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  section: {
-    paddingHorizontal: 20,
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginBottom: 16,
-  },
-  hoursSection: {
-    marginTop: 16,
-  },
-  hoursContainer: {
-    backgroundColor: "#F8F9FA",
-    padding: 16,
-    borderRadius: 12,
-    flex: 1,
-    gap: 12,
-    alignItems: "flex-start",
-    flexDirection: "row",
-  },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    padding: 12,
-    marginBottom: 8,
-    backgroundColor: "#F9FAFB",
-    gap: 14,
-    borderWidth: 1,
-    borderColor: "#e7e7e7",
-    borderRadius: 10,
-  },
-  iconContainer: {
-    borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  menuItemContent: {
-    flex: 1,
-  },
-  menuItemTitle: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-  },
-  menuItemSubtitle: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    color: COLORS.gray,
-    marginTop: 2,
-  },
-  listContainer: {
-    marginTop: 4,
-  },
-  listItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    marginTop: 2,
-  },
-  bullet: {
-    fontSize: normalize(16),
-    marginRight: 6,
-    color: "#6B7280",
-  },
-  listText: {
-    fontSize: normalize(17),
-    color: "#000",
-    flexShrink: 1,
-    fontFamily: getFontFamily("400"),
-  },
-  contactButton: {
-    backgroundColor: COLORS.primary,
-    marginHorizontal: 20,
-    marginTop: 20,
-    paddingVertical: 16,
-    borderRadius: 120,
-    alignItems: "center",
-    marginBottom: 40,
-  },
-  contactButtonText: {
-    color: "#fff",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      backgroundColor: colors.background,
+      paddingBottom: 10,
+    },
+    section: {
+      paddingHorizontal: 20,
+      marginBottom: 24,
+    },
+    sectionTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 16,
+    },
+    hoursSection: {
+      marginTop: 16,
+    },
+    hoursContainer: {
+      backgroundColor: colors.inputBackground,
+      padding: 16,
+      borderRadius: 12,
+      flex: 1,
+      gap: 12,
+      alignItems: "flex-start",
+      flexDirection: "row",
+    },
+    menuItem: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      padding: 12,
+      marginBottom: 8,
+      backgroundColor: colors.inputBackground,
+      gap: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 10,
+    },
+    iconContainer: {
+      borderRadius: 100,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    menuItemContent: {
+      flex: 1,
+    },
+    menuItemTitle: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    menuItemSubtitle: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      marginTop: 2,
+    },
+    listContainer: {
+      marginTop: 4,
+    },
+    listItem: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      marginTop: 2,
+      color: colors.text,
+    },
+    bullet: {
+      fontSize: normalize(16),
+      marginRight: 6,
+      color: "#6B7280",
+    },
+    listText: {
+      fontSize: normalize(17),
+      color: colors.text,
+      flexShrink: 1,
+      fontFamily: getFontFamily("400"),
+    },
+    contactButton: {
+      backgroundColor: COLORS.primary,
+      marginHorizontal: 20,
+      marginTop: 20,
+      paddingVertical: 16,
+      borderRadius: 120,
+      alignItems: "center",
+      marginBottom: 40,
+    },
+    contactButtonText: {
+      color: "#fff",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+    },
+  });
 
 export default HelpSupportScreen;

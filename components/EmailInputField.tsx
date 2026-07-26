@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface Props {
   control: any;
@@ -48,6 +49,8 @@ const EmailInputField: React.FC<Props> = ({
   textContentType = "emailAddress",
   showSuggestions = true,
 }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
   const [isFocused, setIsFocused] = useState(false);
   const commonDomains = [
     "gmail.com",
@@ -117,6 +120,8 @@ const EmailInputField: React.FC<Props> = ({
                 {suggestions.map((suggestion, index) => (
                   <TouchableOpacity
                     key={index}
+                    activeOpacity={0.89}
+                    hitSlop={3}
                     style={styles.suggestionItem}
                     onPress={() => {
                       onChange(suggestion);
@@ -140,65 +145,67 @@ const EmailInputField: React.FC<Props> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: normalize(16),
-    paddingVertical: normalize(18),
-    color: "#1A1A1A",
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(18),
-    backgroundColor: "#FFFFFF",
-  },
-  focusedBorder: {
-    borderColor: "#007AFF",
-    borderWidth: 1.5,
-  },
-  errorBorder: {
-    borderColor: "#FF3B30",
-    borderWidth: 1.5,
-  },
-  errorText: {
-    color: "#FF3B30",
-    marginTop: 6,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    marginLeft: 4,
-  },
-  label: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-    marginBottom: 1,
-    color: "#000",
-  },
-  suggestionsContainer: {
-    marginTop: 4,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#E5E5E5",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  suggestionItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
-  },
-  suggestionText: {
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(16),
-    color: "#007AFF",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: 10,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      paddingHorizontal: normalize(16),
+      paddingVertical: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(18),
+      backgroundColor: colors.background,
+    },
+    focusedBorder: {
+      borderColor: "#007AFF",
+      borderWidth: 1.5,
+      color: colors.text,
+    },
+    errorBorder: {
+      borderColor: "#FF3B30",
+      borderWidth: 1.5,
+    },
+    errorText: {
+      color: "#FF3B30",
+      marginTop: 6,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      marginLeft: 4,
+    },
+    label: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      marginBottom: 1,
+      color: colors.text,
+    },
+    suggestionsContainer: {
+      marginTop: 4,
+      backgroundColor: "#FFFFFF",
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: "#E5E5E5",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    suggestionItem: {
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    suggestionText: {
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(16),
+      color: colors.primary,
+    },
+  });
 
 export default EmailInputField;

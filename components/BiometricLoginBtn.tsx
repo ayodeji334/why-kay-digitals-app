@@ -15,10 +15,12 @@ import { useBiometricLogin } from "../hooks/useBiometricLogin";
 import { useAuthStore } from "../stores/authSlice";
 // import { storage, STORAGE_KEYS } from "../utlis/storage";
 import { showError } from "../utlis/toast";
+import { useColors } from "../hooks/useTheme";
 
 const BiometricLoginButton = () => {
   const queryClient = useQueryClient();
-
+  const colors = useColors();
+  const styles = makeStyles(colors);
   const user = useAuthStore(state => state.user);
   const setUser = useAuthStore(state => state.setUser);
   const setToken = useAuthStore(state => state.setToken);
@@ -121,9 +123,9 @@ const BiometricLoginButton = () => {
         style={[styles.button, isBusy && { opacity: 0.6 }]}
       >
         {isBusy ? (
-          <ActivityIndicator size={normalize(12)} />
+          <ActivityIndicator size={normalize(12)} color="#fff" />
         ) : (
-          <Icon size={22} color={COLORS.whiteBackground} />
+          <Icon size={22} color="#fff" />
         )}
 
         <AppText style={styles.buttonLabel}>
@@ -136,40 +138,41 @@ const BiometricLoginButton = () => {
 
 export default BiometricLoginButton;
 
-const styles = StyleSheet.create({
-  wrapper: {
-    marginBottom: 40,
-    gap: 14,
-  },
-  dividerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#E5E7EB",
-  },
-  dividerText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(400),
-    color: "#6B7280",
-  },
-  button: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-    paddingVertical: 13,
-    borderRadius: 30,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    backgroundColor: `${COLORS.primary}`,
-  },
-  buttonLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(700),
-    color: COLORS.whiteBackground,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    wrapper: {
+      marginBottom: 40,
+      gap: 14,
+    },
+    dividerRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: colors.border,
+    },
+    dividerText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(400),
+      color: colors.textMuted,
+    },
+    button: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 8,
+      paddingVertical: 13,
+      borderRadius: 30,
+      borderWidth: 1,
+      borderColor: colors.primary,
+      backgroundColor: colors.primary,
+    },
+    buttonLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(700),
+      color: "#fff",
+    },
+  });

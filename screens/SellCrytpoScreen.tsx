@@ -35,8 +35,8 @@ import NoWallet from "../components/NoWallet";
 import CustomLoading from "../components/CustomLoading";
 import { TradeIntent } from "../libs/types";
 import { showError } from "../utlis/toast";
-import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -73,7 +73,7 @@ const STABLECOINS = ["USDT"];
 const schema = Yup.object().shape({
   asset_id: Yup.string().required("Select the crypto you want to sell"),
   amount: Yup.number()
-    .min(1, "The amount should not be less than $1")
+    .min(20, "The amount should not be less than $20")
     .typeError("Enter a valid amount")
     .required("Amount is required"),
 });
@@ -143,6 +143,9 @@ export default function CryptoSellScreen() {
   const acknowledgedMarketPriceRef = useRef<number>(0);
   const rateOverriddenRef = useRef(false);
 
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   const {
     control,
     watch,
@@ -174,8 +177,6 @@ export default function CryptoSellScreen() {
     },
     enabled: !!selectedAssetUuid,
   });
-
-  console.log(assetDetails);
 
   const symbol = assetDetails?.symbol ?? "";
 
@@ -440,7 +441,10 @@ export default function CryptoSellScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["bottom", "right", "left"]}>
+    <SafeAreaView
+      style={{ flex: 1, paddingBottom: 10, backgroundColor: colors.background }}
+      edges={["right", "left"]}
+    >
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -530,13 +534,13 @@ export default function CryptoSellScreen() {
                 <View
                   style={{
                     marginVertical: 10,
-                    backgroundColor: "#EFF7EC",
+                    backgroundColor: colors.inputBackground,
                     padding: 13,
                     borderRadius: 10,
                     gap: 8,
                   }}
                 >
-                  <AppText style={[styles.note, { color: "black" }]}>
+                  <AppText style={[styles.note, { color: colors.text }]}>
                     Wallet Balance, Exchange Rate & Fee Breakdown
                   </AppText>
 
@@ -545,6 +549,7 @@ export default function CryptoSellScreen() {
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
+                      paddingVertical: 2,
                     }}
                   >
                     <AppText style={[styles.balance]}>Wallet Balance:</AppText>
@@ -557,6 +562,7 @@ export default function CryptoSellScreen() {
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
+                      paddingVertical: 2,
                     }}
                   >
                     <AppText style={[styles.balance]}>Balance in USD:</AppText>
@@ -568,13 +574,20 @@ export default function CryptoSellScreen() {
                     </AppText>
                   </View>
 
-                  <View style={{ height: 1, backgroundColor: "#d4edda" }} />
+                  <View
+                    style={{
+                      height: 1,
+                      backgroundColor: colors.border,
+                      marginVertical: 4,
+                    }}
+                  />
 
                   {/* Rate */}
                   <View
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
+                      paddingVertical: 2,
                     }}
                   >
                     <AppText
@@ -594,6 +607,7 @@ export default function CryptoSellScreen() {
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
+                      paddingVertical: 2,
                     }}
                   >
                     <AppText
@@ -615,7 +629,13 @@ export default function CryptoSellScreen() {
                   {/* Fee breakdown — only show when amount is entered */}
                   {feeBreakdown && amount > 0 && (
                     <>
-                      <View style={{ height: 1, backgroundColor: "#d4edda" }} />
+                      <View
+                        style={{
+                          height: 1,
+                          backgroundColor: colors.border,
+                          marginVertical: 4,
+                        }}
+                      />
 
                       <View
                         style={{
@@ -640,7 +660,13 @@ export default function CryptoSellScreen() {
                         </AppText>
                       </View>
 
-                      <View style={{ height: 1, backgroundColor: "#d4edda" }} />
+                      <View
+                        style={{
+                          height: 1,
+                          backgroundColor: colors.border,
+                          marginVertical: 4,
+                        }}
+                      />
 
                       <View
                         style={{
@@ -671,6 +697,7 @@ export default function CryptoSellScreen() {
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
+                      paddingVertical: 2,
                     }}
                   >
                     <AppText style={styles.ngn}>You’ll be paid:</AppText>
@@ -681,6 +708,7 @@ export default function CryptoSellScreen() {
             </View>
 
             <TouchableOpacity
+              activeOpacity={0.89}
               style={[
                 styles.button,
                 hasInsufficientBalance && styles.buttonDisabled,
@@ -697,136 +725,140 @@ export default function CryptoSellScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: normalize(20),
-    backgroundColor: "#fff",
-    justifyContent: "space-between",
-  },
-  buttonDisabled: {
-    backgroundColor: "#cccccc",
-    opacity: 0.6,
-  },
-  warningContainer: {
-    marginTop: 12,
-    padding: 10,
-    backgroundColor: "rgba(255, 0, 0, 0.03)",
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 0, 0, 0.3)",
-  },
-  warningText: {
-    color: "#db0b0bff",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    textAlign: "center",
-  },
-  label: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
-    marginBottom: normalize(8),
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#9f9f9fff",
-    borderRadius: normalize(12),
-    paddingHorizontal: normalize(16),
-    marginBottom: normalize(10),
-    gap: 5,
-  },
-  dollarSign: {
-    fontSize: normalize(26),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-    marginRight: normalize(5),
-  },
-  input: {
-    flex: 1,
-    paddingVertical: normalize(15),
-    fontSize: normalize(26),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  error: {
-    color: "red",
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    marginBottom: normalize(10),
-  },
-  approx: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    marginBottom: normalize(9),
-    color: COLORS.primary,
-  },
-  balance: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    marginBottom: normalize(4),
-  },
-  rate: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    marginBottom: normalize(4),
-  },
-  min: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    marginBottom: normalize(4),
-    color: "black",
-  },
-  note: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#ffffff",
-    marginBottom: normalize(10),
-  },
-  cryptoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    borderWidth: 1,
-    borderColor: "#9f9f9fff",
-    borderRadius: 8,
-    padding: 10,
-  },
-  cryptoInfo: { flex: 1 },
-  optionName: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
-    color: "#374151",
-  },
-  optionLogo: {
-    width: 30,
-    height: 30,
-    borderRadius: 120,
-    borderWidth: 1,
-    borderColor: "#cdcdcdff",
-  },
-  ngn: {
-    color: "#fff",
-    fontSize: normalize(21),
-    fontFamily: getFontFamily("800"),
-  },
-  button: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 14,
-    borderRadius: normalize(208),
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("700"),
-  },
-  paymentContainer: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 9,
-    marginVertical: 20,
-    padding: 14,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingHorizontal: normalize(20),
+      backgroundColor: colors.background,
+      justifyContent: "space-between",
+    },
+    buttonDisabled: {
+      backgroundColor: colors.inputBackground,
+      opacity: 0.6,
+    },
+    warningContainer: {
+      marginTop: 12,
+      padding: 10,
+      backgroundColor: "rgba(255, 0, 0, 0.03)",
+      borderRadius: 6,
+      borderWidth: 1,
+      borderColor: "rgba(255, 0, 0, 0.3)",
+    },
+    warningText: {
+      color: colors.error,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      textAlign: "center",
+    },
+    label: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("800"),
+      marginBottom: normalize(8),
+      color: colors.text,
+    },
+    inputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: normalize(12),
+      paddingHorizontal: normalize(16),
+      marginBottom: normalize(10),
+      gap: 5,
+    },
+    dollarSign: {
+      fontSize: normalize(26),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      marginRight: normalize(5),
+    },
+    input: {
+      flex: 1,
+      paddingVertical: normalize(15),
+      fontSize: normalize(26),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    error: {
+      color: colors.error,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      marginBottom: normalize(10),
+    },
+    approx: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      marginBottom: normalize(9),
+      color: COLORS.primary,
+    },
+    balance: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      marginBottom: normalize(4),
+      color: colors.text,
+    },
+    rate: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      marginBottom: normalize(4),
+      color: colors.text,
+    },
+    min: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      marginBottom: normalize(4),
+      color: colors.text,
+    },
+    note: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: normalize(10),
+    },
+    cryptoRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      padding: 10,
+    },
+    cryptoInfo: { flex: 1 },
+    optionName: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    optionLogo: {
+      width: 30,
+      height: 30,
+      borderRadius: 120,
+      borderWidth: 1,
+      borderColor: "#cdcdcdff",
+    },
+    ngn: {
+      color: "#fff",
+      fontSize: normalize(21),
+      fontFamily: getFontFamily("800"),
+    },
+    button: {
+      backgroundColor: COLORS.primary,
+      paddingVertical: 14,
+      borderRadius: normalize(208),
+      alignItems: "center",
+      marginBottom: 30,
+    },
+    buttonText: {
+      color: "#fff",
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("700"),
+    },
+    paymentContainer: {
+      backgroundColor: COLORS.primary,
+      borderRadius: 9,
+      marginVertical: 20,
+      padding: 14,
+    },
+  });

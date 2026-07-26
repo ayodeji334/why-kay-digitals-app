@@ -4,7 +4,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Filter, DocumentDownload } from "iconsax-react-nativejs";
 import TransactionSectionList from "../components/TransactionList";
-import CustomLoading from "../components/CustomLoading";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 import CustomIcon from "../components/CustomIcon";
@@ -18,16 +17,22 @@ import { AxiosError } from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
 import LoadingState from "../components/LoadingState";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
-export const EmptyTransactionState: React.FC = () => (
-  <View style={styles.emptyState}>
-    <CustomIcon source={NoResultIcon} size={normalize(70)} color="#000" />
-    <AppText style={styles.emptyTitle}>No Transactions Yet!</AppText>
-    <AppText style={styles.emptyDescription}>
-      Any transactions you make will appear here. {"\n"}Let's trade!
-    </AppText>
-  </View>
-);
+export const EmptyTransactionState: React.FC = () => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
+  return (
+    <View style={styles.emptyState}>
+      <CustomIcon source={NoResultIcon} size={normalize(70)} color="#000" />
+      <AppText style={styles.emptyTitle}>No Transactions Yet!</AppText>
+      <AppText style={styles.emptyDescription}>
+        Any transactions you make will appear here. {"\n"}Let's trade!
+      </AppText>
+    </View>
+  );
+};
 
 type FilterType = {
   startDate: { display: string; iso: string };
@@ -48,8 +53,10 @@ const TransactionHistoryScreen: React.FC = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [filters, setFilters] = useState<FilterType>(defaultFilter);
   const [filterQuery, setFilterQuery] = useState<FilterType>(defaultFilter);
+  const colors = useColors();
+  const resolvedTheme = useResolvedTheme();
+  const styles = makeStyles(colors);
 
-  // Read filters from queryKey so the closure is always fresh
   const fetchTransactions = async ({
     pageParam = 1,
     queryKey,
@@ -74,22 +81,6 @@ const TransactionHistoryScreen: React.FC = () => {
     return { data: data?.data.transactions, meta: data?.data?.pagination };
   };
 
-  // const fetchTransactions = async ({ pageParam = 1 }) => {
-  //   const params: any = {
-  //     page: pageParam,
-  //     start_date: filters.startDate.iso,
-  //     end_date: filters.endDate.iso,
-  //     status: filters.status,
-  //     category: filters.category,
-  //   };
-
-  //   const { data }: any = await apiGet("/transactions/user/transactions", {
-  //     params,
-  //   });
-
-  //   return { data: data?.data.transactions, meta: data?.data?.pagination };
-  // };
-
   const {
     data,
     fetchNextPage,
@@ -108,27 +99,8 @@ const TransactionHistoryScreen: React.FC = () => {
         : undefined,
   });
 
-  // const {
-  //   data,
-  //   fetchNextPage,
-  //   hasNextPage,
-  //   isFetchingNextPage,
-  //   isLoading,
-  //   refetch,
-  //   isRefetching,
-  // } = useInfiniteQuery({
-  //   queryKey: ["transactions", JSON.stringify(filters)],
-  //   queryFn: fetchTransactions,
-  //   initialPageParam: 1,
-  //   getNextPageParam: lastPage =>
-  //     lastPage.meta?.current_page < lastPage.meta?.last_page
-  //       ? lastPage.meta.current_page + 1
-  //       : undefined,
-  // });
-
   const transactions = useMemo(
     () => data?.pages.flatMap(page => page.data) ?? [],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [data?.pages.length, data?.pages.at(-1)],
   );
 
@@ -136,18 +108,6 @@ const TransactionHistoryScreen: React.FC = () => {
     setIsFilterVisible(prev => !prev);
     setFilterQuery(filters); // sync draft to committed filters on every open/close
   };
-
-  // const handleApplyFilter = (newFilters: FilterType) => {
-  //   toggleFilterModal();
-  //   InteractionManager.runAfterInteractions(() => {
-  //     setFilters(prev => ({ ...prev, ...newFilters }));
-  //   });
-  // };
-
-  // const handleClearFilter = () => {
-  //   setFilters(defaultFilter);
-  //   toggleFilterModal();
-  // };
 
   const handleApplyFilter = useCallback(
     (newFilters: typeof filterQuery) => {
@@ -184,15 +144,13 @@ const TransactionHistoryScreen: React.FC = () => {
 
   const navigation = useNavigation();
 
-  console.log("Loading");
-
   useEffect(() => {
     const unsubscribe = navigation.addListener("blur", () => {
       setFilters(defaultFilter);
       setFilterQuery(defaultFilter);
     });
 
-    return unsubscribe; // cleans up the listener on unmount too
+    return unsubscribe;
   }, [navigation]);
 
   if (isLoading) {
@@ -200,10 +158,11 @@ const TransactionHistoryScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
-      {/* Top Buttons */}
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <View style={styles.topRow}>
         <TouchableOpacity
           activeOpacity={0.8}
@@ -243,7 +202,6 @@ const TransactionHistoryScreen: React.FC = () => {
         </View>
       )}
 
-      {/* Filter Modal */}
       <CustomModal
         visible={isFilterVisible}
         title="Filter Transactions"
@@ -330,61 +288,62 @@ const TransactionHistoryScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  topRow: {
-    paddingHorizontal: 20,
-    marginTop: 7,
-    marginBottom: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  iconButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 100,
-    borderWidth: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderColor: "#D2D2D2",
-    backgroundColor: COLORS.primary,
-    gap: 5,
-    flex: 1,
-  },
-  modalLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#383838ff",
-    marginBottom: 6,
-  },
-  closeButton: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 12,
-    borderRadius: 48,
-    marginTop: 15,
-  },
-  closeButtonText: {
-    textAlign: "center",
-    color: "#fff",
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
-  },
-  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  emptyState: { alignItems: "center" },
-  emptyTitle: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-    marginVertical: 12,
-  },
-  emptyDescription: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: "#6B7280",
-    textAlign: "center",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    topRow: {
+      paddingHorizontal: 20,
+      marginTop: 7,
+      marginBottom: 20,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: normalize(70),
+    },
+    iconButton: {
+      paddingVertical: 8,
+      paddingHorizontal: 20,
+      borderRadius: 100,
+      borderWidth: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      borderColor: colors.border,
+      backgroundColor: COLORS.primary,
+      gap: 5,
+      flex: 1,
+    },
+    modalLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      marginBottom: 6,
+    },
+    closeButton: {
+      backgroundColor: COLORS.primary,
+      paddingVertical: 12,
+      borderRadius: 48,
+      marginTop: 15,
+    },
+    closeButtonText: {
+      textAlign: "center",
+      color: "#fff",
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+    },
+    emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+    emptyState: { alignItems: "center" },
+    emptyTitle: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      marginVertical: 12,
+    },
+    emptyDescription: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.textMuted,
+      textAlign: "center",
+    },
+  });
 
 export default TransactionHistoryScreen;

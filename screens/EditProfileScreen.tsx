@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
-  StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
@@ -25,6 +24,7 @@ import parsePhoneNumberFromString from "libphonenumber-js";
 import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
 import { DEFAULT_IMAGE } from "./SettingsScreen";
+import { useColors } from "../hooks/useTheme";
 
 const profileSchema = yup.object().shape({
   first_name: yup.string().required("First Name is required"),
@@ -62,6 +62,8 @@ export default function EditProfileScreen() {
   const { user, setUser, token } = useAuthStore(state => state);
   const { patch } = useAxios();
   const [loading, setLoading] = useState(false);
+  const colors = useColors();
+  const styles = makeStyles(colors);
   // const [imageUri, setImageUri] = useState(user?.profile_picture);
 
   const { control, handleSubmit } = useForm({
@@ -184,11 +186,8 @@ export default function EditProfileScreen() {
   //   ]);
   // };
 
-  console.log(user);
-
   return (
-    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -284,54 +283,56 @@ export default function EditProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "white" },
-  scrollView: { flex: 1 },
-  profilePictureSection: { alignItems: "center", padding: 20 },
-  imageWrapper: {
-    width: 70,
-    height: 70,
-    borderRadius: 2500,
-    marginRight: 12,
-    overflow: "hidden",
-    backgroundColor: "#f0f0f0",
-  },
-  profileImage: {
-    width: "100%",
-    height: "100%",
-  },
-  imageOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    borderRadius: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  changePhotoText: {
-    backgroundColor: "#F9FAFB",
-    position: "absolute",
-    borderRadius: 60,
-    right: 0,
-    padding: 6,
-  },
-  formSection: { padding: 20 },
-  updateButton: {
-    backgroundColor: COLORS.secondary,
-    marginHorizontal: 20,
-    marginTop: 20,
-    marginBottom: 30,
-    paddingVertical: 16,
-    borderRadius: 48,
-    alignItems: "center",
-  },
-  updateButtonDisabled: { opacity: 0.6 },
-  updateButtonText: {
-    color: "white",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    scrollView: { flexGrow: 1 },
+    profilePictureSection: { alignItems: "center", padding: 20 },
+    imageWrapper: {
+      width: 70,
+      height: 70,
+      borderRadius: 2500,
+      marginRight: 12,
+      overflow: "hidden",
+      padding: 5,
+      backgroundColor: colors.text,
+    },
+    profileImage: {
+      width: "100%",
+      height: "100%",
+    },
+    imageOverlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      borderRadius: 50,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    changePhotoText: {
+      backgroundColor: "#F9FAFB",
+      position: "absolute",
+      borderRadius: 60,
+      right: 0,
+      padding: 6,
+    },
+    formSection: { padding: 20 },
+    updateButton: {
+      backgroundColor: COLORS.secondary,
+      marginHorizontal: 20,
+      marginTop: 20,
+      marginBottom: 30,
+      paddingVertical: 14,
+      borderRadius: 48,
+      alignItems: "center",
+    },
+    updateButtonDisabled: { opacity: 0.6 },
+    updateButtonText: {
+      color: "white",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+    },
+  });

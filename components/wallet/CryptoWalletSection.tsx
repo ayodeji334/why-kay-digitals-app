@@ -29,10 +29,13 @@ import LoadingBalance from "../LoadingState";
 import { TradeIntent } from "../../libs/types";
 import { AppText } from "../AppText";
 import CustomLoading from "../CustomLoading";
+import { useColors } from "../../hooks/useTheme";
 
 const CryptoWalletSection = () => {
   const [showAddAssetWalletModal, setShowAddAssetWalletModal] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   // The asset the user picked, waiting for the modal to finish dismissing.
   // Using a ref (not state) because it shouldn't trigger a re-render.
@@ -262,7 +265,8 @@ const CryptoWalletSection = () => {
               <TouchableOpacity
                 onPress={() => handleSelectAsset(item.value)}
                 style={styles.assetOption}
-                activeOpacity={0.7}
+                activeOpacity={0.8}
+                hitSlop={1}
               >
                 <View style={styles.cryptoRow}>
                   {item.logo_url && (
@@ -555,271 +559,275 @@ const CryptoWalletSection = () => {
 //   );
 // };
 
-const ActionCard = React.memo(({ title, source, onPress }: any) => (
-  <TouchableOpacity
-    style={styles.actionCard}
-    onPress={onPress}
-    activeOpacity={0.7}
-  >
-    <View style={styles.actionIcon}>{source}</View>
-    <AppText style={styles.actionTitle}>{title}</AppText>
-  </TouchableOpacity>
-));
+const ActionCard = React.memo(({ title, source, onPress }: any) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
-const AssetItem = React.memo(({ asset, onPress }: any) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={styles.assetItem}
-    activeOpacity={0.7}
-  >
-    <View style={styles.assetLeft}>
-      {asset.logo && (
-        <Image
-          source={{ uri: asset.logo }}
-          resizeMode="contain"
-          style={styles.assetIcon}
-        />
-      )}
-      <View style={styles.assetInfo}>
-        <AppText style={styles.assetName}>
-          {asset.name} ({asset.symbol})
-        </AppText>
-        <AppText style={styles.assetSymbol}>
-          {formatAmount(asset.price, { currency: "USD" })}
+  return (
+    <TouchableOpacity
+      style={styles.actionCard}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <View style={styles.actionIcon}>{source}</View>
+      <AppText style={styles.actionTitle}>{title}</AppText>
+    </TouchableOpacity>
+  );
+});
+
+const AssetItem = React.memo(({ asset, onPress }: any) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={styles.assetItem}
+      activeOpacity={0.8}
+      hitSlop={1}
+    >
+      <View style={styles.assetLeft}>
+        {asset.logo && (
+          <Image
+            source={{ uri: asset.logo }}
+            resizeMode="contain"
+            style={styles.assetIcon}
+          />
+        )}
+        <View style={styles.assetInfo}>
+          <AppText style={styles.assetName}>
+            {asset.name} ({asset.symbol})
+          </AppText>
+          <AppText style={styles.assetSymbol}>
+            {formatAmount(asset.price, { currency: "USD" })}
+          </AppText>
+        </View>
+      </View>
+      <View style={styles.assetRight}>
+        <AppText style={styles.assetPrice}>{asset.balance}</AppText>
+        <AppText style={[styles.assetPrice, { fontSize: 15 }]}>
+          {formatAmount(asset.balance * asset.price, {
+            currency: "USD",
+            decimalPlace: 2,
+          })}
         </AppText>
       </View>
-    </View>
-    <View style={styles.assetRight}>
-      <AppText style={styles.assetPrice}>{asset.balance}</AppText>
-      <AppText style={[styles.assetPrice, { fontSize: 15 }]}>
-        {formatAmount(asset.balance * asset.price, {
-          currency: "USD",
-          decimalPlace: 2,
-        })}
-      </AppText>
-    </View>
-  </TouchableOpacity>
-));
+    </TouchableOpacity>
+  );
+});
 
 export default CryptoWalletSection;
 
-const styles = StyleSheet.create({
-  container: { backgroundColor: "white", paddingBottom: 50 },
-  scrollContainer: { flex: 1, paddingBottom: 20 },
-  tabContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    backgroundColor: "#F5F5F5",
-    borderRadius: 12,
-    marginHorizontal: 20,
-    marginTop: 20,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  assetsHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 26,
-    marginBottom: 16,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: "#e1e1e1ff",
-  },
-  emptyModalState: {
-    padding: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  modalContent: {
-    width: "85%",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    marginBottom: 12,
-    color: "#000",
-  },
-  assetOption: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    flexDirection: "column",
-  },
-  cryptoRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  cryptoInfo: { flex: 1 },
-  optionName: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#374151",
-  },
-  optionPrice: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#6B7280",
-  },
-  assetOptionText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-  },
-  tabButton: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  tabText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("600"),
-    color: "#6B7280",
-  },
-  activeTab: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 12,
-  },
-  activeTabText: {
-    color: "#fff",
-  },
-  actionsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 7,
-    justifyContent: "space-between",
-  },
-  actionCard: {
-    flex: 1,
-    backgroundColor: "#F8F9FA",
-    paddingVertical: 10,
-    marginHorizontal: 5,
-    borderRadius: 10,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#F3F4F6",
-  },
-  actionIcon: { marginBottom: 10 },
-  actionTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  assetsSection: { paddingVertical: 30 },
-  sectionTitle: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    textAlign: "center",
-  },
-  assetsList: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  generateButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 30,
-    backgroundColor: COLORS.whiteBackground,
-    alignItems: "center",
-    flexDirection: "row",
-    borderWidth: 1,
-    gap: 4,
-  },
-  generateButtonText: {
-    color: "black",
-    fontFamily: getFontFamily(800),
-    fontSize: 13,
-  },
-  assetItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e1e1e1ff",
-  },
-  assetLeft: { flexDirection: "row", alignItems: "center", flex: 1 },
-  assetIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 20,
-    backgroundColor: "#F3F4F6",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  assetIconText: {
-    fontSize: normalize(13),
-    fontFamily: getFontFamily("700"),
-    color: "#374151",
-  },
-  assetInfo: { flex: 1 },
-  assetName: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000000",
-  },
-  assetSymbol: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    color: "#000000",
-  },
-  assetRight: { alignItems: "flex-end" },
-  assetPrice: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  emptyState: { alignItems: "center", paddingVertical: 40 },
-  emptyStateText: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("800"),
-    textAlign: "center",
-  },
-  emptyStateSubtext: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: "#474748ff",
-    textAlign: "center",
-  },
-  emptyButton: {
-    width: "100%",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 160,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  emptyButtonText: {
-    color: "#fff",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-  },
-  txItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
-  },
-  txText: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("400"),
-  },
-  txAmount: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.primary,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { backgroundColor: colors.background, paddingBottom: 50 },
+    scrollContainer: { flex: 1, paddingBottom: 20 },
+    tabContainer: {
+      flexDirection: "row",
+      justifyContent: "center",
+      backgroundColor: "#F5F5F5",
+      borderRadius: 12,
+      marginHorizontal: 20,
+      marginTop: 20,
+    },
+    modalContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    assetsHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginTop: 26,
+      marginBottom: 16,
+    },
+    separator: {
+      height: 1,
+      backgroundColor: colors.border,
+    },
+    emptyModalState: {
+      padding: 20,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    modalContent: {
+      width: "85%",
+      backgroundColor: "#fff",
+      borderRadius: 12,
+      padding: 20,
+    },
+    modalTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      marginBottom: 12,
+      color: "#000",
+    },
+    assetOption: {
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      flexDirection: "column",
+    },
+    cryptoRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+    cryptoInfo: { flex: 1 },
+    optionName: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    assetOptionText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    tabButton: {
+      flex: 1,
+      paddingVertical: 12,
+      alignItems: "center",
+    },
+    tabText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("600"),
+      color: "#6B7280",
+    },
+    activeTab: {
+      backgroundColor: COLORS.primary,
+      borderRadius: 12,
+    },
+    activeTabText: {
+      color: "#fff",
+    },
+    actionsContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      marginTop: 7,
+      justifyContent: "space-between",
+    },
+    actionCard: {
+      flex: 1,
+      backgroundColor: "#F8F9FA",
+      paddingVertical: 10,
+      marginHorizontal: 5,
+      borderRadius: 10,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: "#F3F4F6",
+    },
+    actionIcon: { marginBottom: 10 },
+    actionTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: "#000",
+    },
+    assetsSection: { paddingVertical: 30 },
+    sectionTitle: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      textAlign: "center",
+    },
+    assetsList: {
+      backgroundColor: "#fff",
+      borderRadius: 12,
+      overflow: "hidden",
+    },
+    generateButton: {
+      paddingVertical: 6,
+      paddingHorizontal: normalize(19),
+      borderRadius: 30,
+      borderColor: colors.border,
+      borderWidth: 1,
+      alignItems: "center",
+      flexDirection: "row",
+      gap: 4,
+    },
+    generateButtonText: {
+      color: colors.text,
+      fontFamily: getFontFamily(800),
+      fontSize: normalize(17),
+    },
+    assetItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: normalize(14),
+      borderBottomWidth: 0.5,
+      borderColor: colors.border,
+    },
+    assetLeft: { flexDirection: "row", alignItems: "center", flex: 1 },
+    assetIcon: {
+      width: 30,
+      height: 30,
+      borderRadius: 20,
+      backgroundColor: colors.background,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: 10,
+    },
+    assetInfo: { flex: 1 },
+    assetName: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    assetSymbol: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+    },
+    assetRight: { alignItems: "flex-end" },
+    assetPrice: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    emptyState: { alignItems: "center", paddingVertical: 40 },
+    emptyStateText: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("800"),
+      textAlign: "center",
+      color: colors.text,
+    },
+    emptyStateSubtext: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.textMuted,
+      textAlign: "center",
+    },
+    emptyButton: {
+      width: "100%",
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 160,
+      alignItems: "center",
+      justifyContent: "center",
+      shadowColor: COLORS.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    emptyButtonText: {
+      color: colors.text,
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("700"),
+    },
+    txItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingVertical: 14,
+      borderBottomWidth: 0.5,
+      borderBottomColor: colors.border,
+    },
+    txText: {
+      color: colors.text,
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("400"),
+    },
+    txAmount: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("700"),
+      color: COLORS.primary,
+    },
+  });

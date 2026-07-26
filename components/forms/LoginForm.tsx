@@ -12,16 +12,14 @@ import CustomLoading from "../CustomLoading";
 import { showError } from "../../utlis/toast";
 import { AxiosError } from "axios";
 import useAxios from "../../hooks/useAxios";
-import { useAuthStore, useIsAuthenticated } from "../../stores/authSlice";
+import { useAuthStore } from "../../stores/authSlice";
 import { OneSignal } from "react-native-onesignal";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppText } from "../AppText";
-import {
-  refreshBiometricState,
-  useBiometricStore,
-} from "../../stores/biometricSlice";
+import { refreshBiometricState } from "../../stores/biometricSlice";
 import { useBiometricPromptStore } from "../../stores/biometricPromptSlice";
 import { useBiometricLogin } from "../../hooks/useBiometricLogin";
+import { useColors } from "../../hooks/useTheme";
 
 const loginSchema = yup.object().shape({
   login: yup.string().required("Email or Username is required"),
@@ -42,6 +40,8 @@ const LoginForm: React.FC = () => {
   const navigation: any = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
   const { clearBiometricsIfDifferentUser } = useBiometricLogin();
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const { control, handleSubmit } = useForm<LoginFormInputs>({
     resolver: yupResolver(loginSchema),
@@ -58,8 +58,6 @@ const LoginForm: React.FC = () => {
         password,
         device_id: userOneSignalID,
       });
-
-      console.log("Login response:", res.data);
 
       if (res?.data?.data?.is_email_verified) {
         showError(
@@ -173,36 +171,37 @@ const LoginForm: React.FC = () => {
 
 export default LoginForm;
 
-const styles = StyleSheet.create({
-  container: {
-    paddingVertical: 20,
-  },
-  button: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    marginTop: 30,
-    justifyContent: "center",
-    alignContent: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    textAlign: "center",
-  },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  link: {
-    paddingVertical: 10,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    color: "blue",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      paddingVertical: 20,
+    },
+    button: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      marginTop: 30,
+      justifyContent: "center",
+      alignContent: "center",
+    },
+    buttonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      textAlign: "center",
+    },
+    modalBackground: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.4)",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    link: {
+      paddingVertical: 10,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      color: colors.primaryDark,
+    },
+  });
 
 // 9f602fb0be2b2f09baeeb8946cb006cb

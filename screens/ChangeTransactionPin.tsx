@@ -20,11 +20,14 @@ import { AxiosError } from "axios";
 import CustomLoading from "../components/CustomLoading";
 import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 export default function ChangeTransactionPinScreen() {
   const [step, setStep] = useState<"password" | "newPin">("password");
   const { post } = useAxios();
   const [loading, setIsLoading] = useState<boolean>(false);
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const loginSchema = yup.object().shape({
     password: yup.string().required("Password is required"),
@@ -55,8 +58,7 @@ export default function ChangeTransactionPinScreen() {
   };
 
   return (
-    <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {step === "password" && (
           <View>
@@ -102,34 +104,35 @@ export default function ChangeTransactionPinScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "white" },
-  scrollContainer: { flexGrow: 1, paddingHorizontal: 20 },
-  subtitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: COLORS.dark,
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    marginBottom: 15,
-    fontSize: normalize(16),
-  },
-  button: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    alignItems: "center",
-    marginTop: 12,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    scrollContainer: { flexGrow: 1, paddingHorizontal: 20 },
+    subtitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      marginBottom: 20,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      paddingHorizontal: 15,
+      paddingVertical: 12,
+      marginBottom: 15,
+      fontSize: normalize(16),
+    },
+    button: {
+      backgroundColor: COLORS.primary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      alignItems: "center",
+      marginTop: 12,
+    },
+    buttonText: {
+      color: "#fff",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+    },
+  });

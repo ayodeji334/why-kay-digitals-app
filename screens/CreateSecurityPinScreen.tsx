@@ -16,6 +16,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import OtpInputField from "../components/OtpInputField";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 type FormData = {
   pin: string;
@@ -35,6 +36,8 @@ export default function CreateSecurityPinScreen() {
     resolver: yupResolver(schema),
     defaultValues: { pin: "" },
   });
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const onSubmit = (data: FormData) => {
     if (data.pin.length !== 4) {
@@ -49,8 +52,7 @@ export default function CreateSecurityPinScreen() {
   };
 
   return (
-    <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
           <AppText style={styles.title}>Create your Security Pin </AppText>
@@ -87,35 +89,37 @@ export default function CreateSecurityPinScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  button: {
-    marginTop: 30,
-    backgroundColor: COLORS.secondary,
-    padding: 14,
-    borderRadius: 80,
-  },
-  buttonText: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  header: {
-    marginBottom: 23,
-  },
-  title: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("800"),
-  },
-  highlight: {
-    color: COLORS.primary,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    button: {
+      marginTop: 30,
+      backgroundColor: COLORS.secondary,
+      padding: 14,
+      borderRadius: 80,
+    },
+    buttonText: {
+      color: "#fff",
+      textAlign: "center",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+    },
+    scrollContainer: {
+      flexGrow: 1,
+      padding: 20,
+    },
+    header: {
+      marginBottom: 23,
+    },
+    title: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    highlight: {
+      color: COLORS.primary,
+    },
+  });

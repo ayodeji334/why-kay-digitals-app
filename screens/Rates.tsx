@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 import {
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
@@ -19,14 +18,18 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
 import { showError } from "../utlis/toast";
 import { formatWithCommas } from "./SwapCryptoScreen";
-import { CryptoOption, Rate, TradeIntent, TradeTab } from "../libs/types";
+import { CryptoOption, TradeIntent, TradeTab } from "../libs/types";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
+import TabSwitcher from "../components/TabSwitcher";
 
 export default function CryptoRatesScreen() {
-  const [activeTab, setActiveTab] = useState<TradeTab>("sell");
+  const [activeTab, setActiveTab] = useState<string>("sell");
   const [selectedCrypto, setSelectedCrypto] = useState<string | null>(null);
   const [rawAmount, setRawAmount] = useState("");
   const [formattedAmount, setFormattedAmount] = useState("");
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const { apiGet } = useAxios();
   const navigation: any = useNavigation();
@@ -118,7 +121,7 @@ export default function CryptoRatesScreen() {
     const intent: TradeIntent = {
       assetId: crypto.value,
       symbol: crypto.symbol,
-      action: activeTab,
+      action: activeTab as any,
       source: "rates",
       amount: rawAmount,
       rate: rateInfo?.totalNgn ?? 0,
@@ -139,7 +142,7 @@ export default function CryptoRatesScreen() {
   useFocusEffect(resetStates);
 
   return (
-    <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         contentContainerStyle={{ padding: 16 }}
         refreshControl={
@@ -151,8 +154,7 @@ export default function CryptoRatesScreen() {
           />
         }
       >
-        <View style={styles.tabs}>
-          {(["sell", "buy"] as TradeTab[]).map(tab => (
+        {/* {(["sell", "buy"] as TradeTab[]).map(tab => (
             <TouchableOpacity
               key={tab}
               style={[styles.tab, activeTab === tab && styles.activeTab]}
@@ -169,7 +171,24 @@ export default function CryptoRatesScreen() {
               </AppText>
             </TouchableOpacity>
           ))}
-        </View>
+           */}
+        <TabSwitcher
+          activeTab={activeTab}
+          tabs={[
+            {
+              label: "Sell Rates",
+              value: "sell",
+            },
+            {
+              label: "Buy Rates",
+              value: "buy",
+            },
+          ]}
+          onTabChange={value => setActiveTab(value as TradeTab)}
+          containerStyle={styles.tabSwitcher}
+          activeTabStyle={styles.activeTab}
+          activeTabTextStyle={styles.activeTabText}
+        />
 
         <View>
           <SelectInput
@@ -277,170 +296,176 @@ export default function CryptoRatesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  tabs: {
-    flexDirection: "row",
-    marginBottom: 16,
-    backgroundColor: "#F3F4F6",
-    padding: 5,
-    borderRadius: 1000,
-    top: -15,
-  },
-  tab: { flex: 1, padding: 9, alignItems: "center" },
-  activeTab: { backgroundColor: COLORS.primary, borderRadius: 800 },
-  activeTabText: {
-    color: "#fff",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("800"),
-  },
-  inactiveTabText: {
-    color: "#000",
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(16),
-  },
-  label: {
-    marginBottom: 6,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: "#000000ff",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    gap: 5,
-  },
-  dollarSign: {
-    fontSize: normalize(26),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    paddingLeft: 15,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: normalize(14),
-    fontSize: normalize(23),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-  },
-  // input: {
-  //   width: "100%",
-  //   paddingVertical: 10,
-  //   color: "#1A1A1A",
-  //   fontFamily: getFontFamily("700"),
-  //   fontSize: normalize(28),
-  //   backgroundColor: "#FFFFFF",
-  // },
-  infoContainer: {
-    backgroundColor: "#5AB2431A",
-    padding: 12,
-    borderRadius: 8,
-    marginVertical: 12,
-    borderWidth: 1,
-    borderColor: "#E9ECEF",
-  },
-  infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  infoLabel: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-  },
-  infoValue: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    color: COLORS.darkBackground,
-  },
-  rateBreakdownRow: {
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#DEE2E6",
-  },
-  rateBreakdownText: {
-    fontSize: normalize(14),
-    fontFamily: getFontFamily("500"),
-    color: "#6C757D",
-    fontStyle: "italic",
-    textAlign: "center",
-  },
-  coinEquivalentContainer: {
-    marginTop: 8,
-    padding: 8,
-    backgroundColor: "rgba(232, 158, 0, 0.1)",
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  coinEquivalentText: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.primary,
-  },
-  dropdownButton: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 12,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-  },
-  dropdownList: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    marginTop: 4,
-  },
-  dropdownItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
-  },
-  rateBox: {
-    backgroundColor: "#fff",
-    paddingVertical: normalize(12),
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#eeeeee",
-    flexDirection: "row",
-  },
-  rateText: {
-    fontSize: normalize(24),
-    fontFamily: getFontFamily("800"),
-    color: "#111827",
-    paddingLeft: 2,
-  },
-  tradeButton: {
-    backgroundColor: COLORS.secondary,
-    padding: 14,
-    borderRadius: 120,
-    alignItems: "center",
-    marginVertical: 16,
-  },
-  tradeButtonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-  },
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
-    backgroundColor: "#fff",
-  },
-  navItem: { alignItems: "center" },
-  navText: { fontSize: normalize(12), color: "#6B7280" },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    center: { flex: 1, justifyContent: "center", alignItems: "center" },
+    tabs: {
+      flexDirection: "row",
+      marginBottom: 16,
+      backgroundColor: "#F3F4F6",
+      padding: 5,
+      borderRadius: 1000,
+      top: -15,
+    },
+    tabSwitcher: {
+      backgroundColor: colors.inputBackground,
+      marginVertical: 10,
+    },
+    activeTab: {
+      backgroundColor: COLORS.primary,
+      color: colors.text,
+    },
+    activeTabText: {
+      color: "white",
+    },
+    tab: { flex: 1, padding: 9, alignItems: "center" },
+    inactiveTabText: {
+      color: "#000",
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(16),
+    },
+    label: {
+      marginBottom: 6,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    inputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      gap: 5,
+    },
+    dollarSign: {
+      fontSize: normalize(25),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      paddingLeft: 15,
+    },
+    input: {
+      flex: 1,
+      paddingVertical: normalize(14),
+      fontSize: normalize(25),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    // input: {
+    //   width: "100%",
+    //   paddingVertical: 10,
+    //   color: "#1A1A1A",
+    //   fontFamily: getFontFamily("700"),
+    //   fontSize: normalize(28),
+    //   backgroundColor: "#FFFFFF",
+    // },
+    infoContainer: {
+      backgroundColor: colors.infoCardBackgroundColor,
+      padding: 12,
+      borderRadius: 8,
+      marginVertical: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    infoRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 8,
+    },
+    infoLabel: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    infoValue: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    rateBreakdownRow: {
+      marginTop: 8,
+      paddingTop: 8,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    rateBreakdownText: {
+      fontSize: normalize(14),
+      fontFamily: getFontFamily("500"),
+      color: "#6C757D",
+      fontStyle: "italic",
+      textAlign: "center",
+    },
+    coinEquivalentContainer: {
+      marginTop: 8,
+      padding: 8,
+      backgroundColor: "rgba(232, 158, 0, 0.1)",
+      borderRadius: 6,
+      alignItems: "center",
+    },
+    coinEquivalentText: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("700"),
+      color: COLORS.primary,
+    },
+    dropdownButton: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: 12,
+      backgroundColor: "#fff",
+      borderWidth: 1,
+      borderColor: "#D1D5DB",
+      borderRadius: 8,
+    },
+    dropdownList: {
+      backgroundColor: "#fff",
+      borderWidth: 1,
+      borderColor: "#D1D5DB",
+      borderRadius: 8,
+      marginTop: 4,
+    },
+    dropdownItem: {
+      padding: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: "#E5E7EB",
+    },
+    rateBox: {
+      backgroundColor: colors.background,
+      paddingVertical: normalize(12),
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      flexDirection: "row",
+    },
+    rateText: {
+      fontSize: normalize(24),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      paddingLeft: 2,
+    },
+    tradeButton: {
+      backgroundColor: COLORS.secondary,
+      padding: 14,
+      borderRadius: 120,
+      alignItems: "center",
+      marginVertical: 16,
+    },
+    tradeButtonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+    },
+    bottomNav: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      paddingVertical: 12,
+      borderTopWidth: 1,
+      borderTopColor: "#E5E7EB",
+      backgroundColor: "#fff",
+    },
+    navItem: { alignItems: "center" },
+    navText: { fontSize: normalize(12), color: "#6B7280" },
+  });

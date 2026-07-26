@@ -476,7 +476,6 @@
 import React, { useState } from "react";
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
@@ -501,6 +500,7 @@ import { useQuery } from "@tanstack/react-query";
 import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 const BANK_NAME = "Boost Microfinance Bank ( Boost MFB )";
 
@@ -510,6 +510,8 @@ const BankTransferScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const user = useAuthStore(state => state.user);
   const navigation: any = useNavigation();
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["userBankAccounts"],
@@ -632,7 +634,7 @@ const BankTransferScreen = () => {
   }
 
   return (
-    <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
+    <SafeAreaView edges={["right", "left"]} style={styles.container}>
       {user?.bvn_verification_status !== "VERIFIED" ? (
         <KYCStatusScreen />
       ) : (
@@ -693,126 +695,127 @@ const BankTransferScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFFFFF" },
-  buttonWrapper: { marginTop: 10, paddingBottom: 20 },
-  button: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    marginTop: 30,
-    justifyContent: "center",
-    alignContent: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    textAlign: "center",
-  },
-  scrollView: { flex: 1, paddingHorizontal: 20 },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 30,
-  },
-  emptyState: { alignItems: "center", paddingVertical: 0, marginTop: -150 },
-  emptyIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 40,
-    backgroundColor: "#F8F9FA",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  emptyTitle: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("900"),
-    color: "#000000",
-    marginBottom: 12,
-    textAlign: "center",
-  },
-  emptyDescription: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: "black",
-    textAlign: "center",
-    marginBottom: 20,
-    lineHeight: 16,
-  },
-  emptyButton: {
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 44,
-    paddingVertical: 10,
-    borderRadius: 800,
-    width: "100%",
-  },
-  emptyButtonText: {
-    color: "#FFFFFF",
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("700"),
-  },
-  section: { marginBottom: 16 },
-  sectionTitle: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
-    color: "#000000",
-    marginBottom: 8,
-    lineHeight: 22,
-  },
-  instructionText: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    color: "#000",
-  },
-  accountSection: {
-    backgroundColor: "#addea11a",
-    borderRadius: 12,
-    marginVertical: 24,
-    borderWidth: 0.5,
-    borderColor: "#c8c8c8ff",
-    overflow: "hidden",
-  },
-  detailItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    borderWidth: 0.5,
-    borderColor: "#c8c8c8ff",
-  },
-  detailLabel: {
-    marginBottom: 2,
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-    color: "#666666",
-  },
-  copyableField: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 4,
-    gap: 10,
-  },
-  rowIconButton: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: COLORS.fadeBackgroundPrimary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  detailValue: {
-    color: "#000000",
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    flex: 1,
-    textTransform: "uppercase",
-  },
-  accountNumber: {
-    fontSize: normalize(20),
-    fontFamily: getFontFamily("800"),
-    letterSpacing: 1,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    buttonWrapper: { marginTop: 10, paddingBottom: 20 },
+    button: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      marginTop: 30,
+      justifyContent: "center",
+      alignContent: "center",
+    },
+    buttonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      textAlign: "center",
+    },
+    scrollView: { flex: 1, paddingHorizontal: 20 },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 30,
+    },
+    emptyState: { alignItems: "center", paddingVertical: 0, marginTop: -150 },
+    emptyIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 40,
+      backgroundColor: "#F8F9FA",
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 20,
+    },
+    emptyTitle: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("900"),
+      color: colors.text,
+      marginBottom: 12,
+      textAlign: "center",
+    },
+    emptyDescription: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      textAlign: "center",
+      marginBottom: 20,
+      lineHeight: 16,
+    },
+    emptyButton: {
+      backgroundColor: COLORS.primary,
+      paddingHorizontal: 44,
+      paddingVertical: 10,
+      borderRadius: 800,
+      width: "100%",
+    },
+    emptyButtonText: {
+      color: "#FFFFFF",
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("700"),
+    },
+    section: { marginBottom: 16 },
+    sectionTitle: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 8,
+      lineHeight: 22,
+    },
+    instructionText: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+    },
+    accountSection: {
+      backgroundColor: colors.infoCardBackgroundColor,
+      borderRadius: 12,
+      marginVertical: 24,
+      borderWidth: 0.5,
+      borderColor: colors.border,
+      overflow: "hidden",
+    },
+    detailItem: {
+      paddingVertical: 12,
+      paddingHorizontal: 15,
+      borderWidth: 0.5,
+      borderColor: colors.border,
+    },
+    detailLabel: {
+      marginBottom: 2,
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    copyableField: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: 4,
+      gap: 10,
+    },
+    rowIconButton: {
+      width: 26,
+      height: 26,
+      borderRadius: 13,
+      backgroundColor: COLORS.fadeBackgroundPrimary,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    detailValue: {
+      color: colors.text,
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      flex: 1,
+      textTransform: "uppercase",
+    },
+    accountNumber: {
+      fontSize: normalize(20),
+      fontFamily: getFontFamily("800"),
+      letterSpacing: 1,
+    },
+  });
 
 export default BankTransferScreen;

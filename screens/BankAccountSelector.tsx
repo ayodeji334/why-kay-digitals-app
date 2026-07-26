@@ -6,6 +6,7 @@ import CustomIcon from "../components/CustomIcon";
 import { CheckCircleIcon } from "../assets";
 import { AddCircle } from "iconsax-react-nativejs";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 export default function BankAccountSelector({
   bankName,
@@ -18,6 +19,9 @@ export default function BankAccountSelector({
   accountNumber: string;
   setShowBankModal: Dispatch<SetStateAction<boolean>>;
 }) {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   return (
     <View style={styles.bankAccountSection}>
       <AppText style={styles.sectionLabel}>Select Bank Account</AppText>
@@ -66,54 +70,56 @@ export default function BankAccountSelector({
   );
 }
 
-const styles = StyleSheet.create({
-  bankAccountSection: { marginTop: 14 },
-  sectionLabel: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("800"),
-    marginBottom: 12,
-    color: "#000",
-  },
-  selectedAccount: {
-    backgroundColor: "#5AB2431A",
-    padding: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "green",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignContent: "center",
-    alignItems: "center",
-  },
-  bankName: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("800"),
-  },
-  accountNumber: {
-    fontSize: normalize(16),
-    gap: 1,
-    color: "#000",
-    flexDirection: "row",
-    fontFamily: getFontFamily("700"),
-  },
-  changeText: {
-    marginTop: 8,
-    color: COLORS.secondary,
-    fontFamily: getFontFamily("700"),
-  },
-  addAccountButton: {
-    borderWidth: 1,
-    borderColor: "green",
-    padding: 14,
-    borderRadius: 200,
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 5,
-  },
-  addAccountText: {
-    color: COLORS.primary,
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    bankAccountSection: { marginTop: 14 },
+    sectionLabel: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("800"),
+      marginBottom: 12,
+      color: colors.text,
+    },
+    selectedAccount: {
+      backgroundColor: colors.background,
+      padding: 16,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: "green",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignContent: "center",
+      alignItems: "center",
+    },
+    bankName: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    accountNumber: {
+      fontSize: normalize(16),
+      gap: 1,
+      color: colors.text,
+      flexDirection: "row",
+      fontFamily: getFontFamily("700"),
+    },
+    changeText: {
+      marginTop: 8,
+      color: COLORS.secondary,
+      fontFamily: getFontFamily("700"),
+    },
+    addAccountButton: {
+      borderWidth: 1,
+      borderColor: "green",
+      padding: 14,
+      borderRadius: 200,
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "center",
+      gap: 5,
+    },
+    addAccountText: {
+      color: COLORS.primary,
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+    },
+  });

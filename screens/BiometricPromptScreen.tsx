@@ -10,12 +10,15 @@ import { FingerScan, TickCircle } from "iconsax-react-nativejs";
 import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "../components/AppText";
 import { useBiometricEnrollment } from "../hooks/useBiometricEnrollment";
+import { useColors } from "../hooks/useTheme";
 
 export default function BiometricPromptScreen() {
   const { enroll, isLoading, biometryType } = useBiometricEnrollment();
   const { markSkipped, markDeclinedForever, markEnrolled, setHoldGate } =
     useBiometricPromptStore(s => s);
   const { isSecondAsk } = useShouldPromptBiometric();
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const [enrolled, setEnrolled] = useState(false);
 
@@ -222,93 +225,94 @@ export default function BiometricPromptScreen() {
 //   );
 // }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: normalize(29),
-    paddingBottom: normalize(24),
-    justifyContent: "space-between",
-  },
-  hero: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: normalize(28),
-  },
-  iconContainer: {
-    width: normalize(80),
-    height: normalize(80),
-    borderRadius: normalize(48),
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: `${COLORS.primary}14`,
-  },
-  iconContainerSuccess: {
-    backgroundColor: `${COLORS.primary ?? "#12A150"}14`,
-  },
-  textContainer: {
-    alignItems: "center",
-    gap: normalize(10),
-  },
-  title: {
-    fontSize: normalize(24),
-    fontFamily: getFontFamily(800),
-    color: COLORS.darkBackground ?? "#111111",
-    textAlign: "center",
-  },
-  description: {
-    fontSize: normalize(20),
-    lineHeight: normalize(24),
-    fontFamily: getFontFamily(400),
-    color: COLORS.darkBackground,
-    textAlign: "center",
-    paddingHorizontal: normalize(8),
-  },
-  buttonContainer: {
-    gap: normalize(12),
-    paddingBottom: 23,
-  },
-  primaryButton: {
-    height: normalize(56),
-    borderRadius: 10000,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.primary,
-  },
-  primaryButtonText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(700),
-    color: "#FFFFFF",
-  },
-  secondaryButton: {
-    height: normalize(56),
-    borderRadius: 10000,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#b7b7b7",
-    backgroundColor: "#FFFFFF",
-  },
-  secondaryButtonText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(700),
-    color: COLORS.darkBackground ?? "#111111",
-  },
-  tertiaryButton: {
-    height: normalize(56),
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  tertiaryButtonText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily(700),
-    color: COLORS.darkBackground,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      flex: 1,
+      paddingHorizontal: normalize(29),
+      paddingBottom: normalize(24),
+      justifyContent: "space-between",
+    },
+    hero: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      gap: normalize(28),
+    },
+    iconContainer: {
+      width: normalize(80),
+      height: normalize(80),
+      borderRadius: normalize(48),
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: `${COLORS.primary}14`,
+    },
+    iconContainerSuccess: {
+      backgroundColor: `${COLORS.primary ?? "#12A150"}14`,
+    },
+    textContainer: {
+      alignItems: "center",
+      gap: normalize(10),
+    },
+    title: {
+      fontSize: normalize(24),
+      fontFamily: getFontFamily(800),
+      color: colors.text,
+      textAlign: "center",
+    },
+    description: {
+      fontSize: normalize(20),
+      lineHeight: normalize(24),
+      fontFamily: getFontFamily(400),
+      color: colors.text,
+      textAlign: "center",
+      paddingHorizontal: normalize(8),
+    },
+    buttonContainer: {
+      gap: normalize(12),
+      paddingBottom: 23,
+    },
+    primaryButton: {
+      height: normalize(56),
+      borderRadius: 10000,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: COLORS.primary,
+    },
+    primaryButtonText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(700),
+      color: "#FFFFFF",
+    },
+    secondaryButton: {
+      height: normalize(56),
+      borderRadius: 10000,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.background,
+    },
+    secondaryButtonText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(700),
+      color: colors.text,
+    },
+    tertiaryButton: {
+      height: normalize(56),
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    tertiaryButtonText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(700),
+      color: colors.text,
+    },
+    buttonDisabled: {
+      opacity: 0.6,
+    },
+  });

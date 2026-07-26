@@ -5,6 +5,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 export default function BalanceLimitCard({ walletSummary }: any) {
   const navigation = useNavigation<any>();
@@ -12,6 +13,9 @@ export default function BalanceLimitCard({ walletSummary }: any) {
     walletSummary && walletSummary.daily_limit
       ? walletSummary.total_fiat_transfer_today / walletSummary.daily_limit
       : 0;
+
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   return (
     <>
@@ -26,7 +30,7 @@ export default function BalanceLimitCard({ walletSummary }: any) {
         style={{
           fontFamily: getFontFamily(700),
           fontSize: normalize(18),
-          color: "black",
+          color: colors.text,
           borderRadius: 10,
         }}
       >
@@ -80,46 +84,48 @@ export default function BalanceLimitCard({ walletSummary }: any) {
   );
 }
 
-const styles = StyleSheet.create({
-  limitContainer: {
-    marginTop: 20,
-    backgroundColor: "#EFF7EC",
-    padding: 10,
-    borderRadius: 10,
-  },
-  limitHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  limitLabel: {
-    fontSize: normalize(18),
-    color: "#000",
-    fontFamily: getFontFamily("700"),
-  },
-  upgradeText: {
-    fontSize: normalize(18),
-    color: COLORS.secondary,
-    fontFamily: getFontFamily("700"),
-  },
-  progressBarBackground: {
-    height: 4,
-    backgroundColor: "#E5E7EB",
-    borderRadius: 3,
-    marginTop: 18,
-  },
-  progressBarFill: {
-    height: 4,
-    backgroundColor: COLORS.secondary,
-    borderRadius: 3,
-  },
-  limitRange: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 4,
-  },
-  limitValue: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    limitContainer: {
+      marginTop: 20,
+      backgroundColor: colors.infoCardBackgroundColor,
+      padding: 10,
+      borderRadius: 10,
+    },
+    limitHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    limitLabel: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+    },
+    upgradeText: {
+      fontSize: normalize(18),
+      color: COLORS.secondary,
+      fontFamily: getFontFamily("700"),
+    },
+    progressBarBackground: {
+      height: 4,
+      backgroundColor: "#E5E7EB",
+      borderRadius: 3,
+      marginTop: 18,
+    },
+    progressBarFill: {
+      height: 4,
+      backgroundColor: COLORS.secondary,
+      borderRadius: 3,
+    },
+    limitRange: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 4,
+    },
+    limitValue: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      color: colors.text,
+    },
+  });

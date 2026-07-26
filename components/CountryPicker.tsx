@@ -18,6 +18,7 @@ import { AppText } from "./AppText";
 import CustomIcon from "./CustomIcon";
 import { ArrowDown2 } from "iconsax-react-nativejs";
 import { Country, CountryPickerProps } from "../libs/types";
+import { useColors } from "../hooks/useTheme";
 
 const defaultGetCountryName = (country: Country): string => {
   if (!country.name) return country.cca2;
@@ -33,33 +34,41 @@ interface CountryRowProps {
 }
 
 const CountryRow = React.memo(
-  ({ item, getCountryName, onPress, isSelected }: CountryRowProps) => (
-    <Pressable
-      style={[styles.countryRow, isSelected && styles.countryRowSelected]}
-      onPress={() => onPress(item)}
-      hitSlop={10}
-    >
-      <View style={styles.countryLeft}>
-        {item.flag && (
-          <Image
-            source={{ uri: item.flag }}
-            style={styles.flagImage}
-            resizeMode="contain"
-          />
-        )}
-        <AppText
-          style={[styles.countryName, isSelected && styles.countryNameSelected]}
-        >
-          {getCountryName(item)}
-        </AppText>
-      </View>
-      <AppText
-        style={[styles.countryCode, isSelected && styles.countryCodeSelected]}
+  ({ item, getCountryName, onPress, isSelected }: CountryRowProps) => {
+    const colors = useColors();
+    const styles = makeStyles(colors);
+
+    return (
+      <Pressable
+        style={[styles.countryRow, isSelected && styles.countryRowSelected]}
+        onPress={() => onPress(item)}
+        hitSlop={10}
       >
-        {item.cca2}
-      </AppText>
-    </Pressable>
-  ),
+        <View style={styles.countryLeft}>
+          {item.flag && (
+            <Image
+              source={{ uri: item.flag }}
+              style={styles.flagImage}
+              resizeMode="contain"
+            />
+          )}
+          <AppText
+            style={[
+              styles.countryName,
+              isSelected && styles.countryNameSelected,
+            ]}
+          >
+            {getCountryName(item)}
+          </AppText>
+        </View>
+        <AppText
+          style={[styles.countryCode, isSelected && styles.countryCodeSelected]}
+        >
+          {item.cca2}
+        </AppText>
+      </Pressable>
+    );
+  },
 );
 
 const CountryPicker: React.FC<CountryPickerProps> = ({
@@ -81,6 +90,8 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const selectedCountry = value ?? defaultCountry;
 
@@ -295,131 +306,136 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
 
 export default CountryPicker;
 
-const styles = StyleSheet.create({
-  container: { marginBottom: 10 },
-  label: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-    marginBottom: 6,
-    color: "#000",
-  },
-  listState: {
-    paddingVertical: 32,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  listStateText: {
-    marginTop: 8,
-    color: "#838383",
-    fontSize: normalize(18),
-  },
-  selectorBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    backgroundColor: "#fff",
-    minHeight: 45,
-  },
-  selectorContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    flex: 1,
-  },
-  selectorText: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-    color: "#1A1A1A",
-    flex: 1,
-    textTransform: "uppercase",
-  },
-  placeholderText: {
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(18),
-    color: "#989898",
-    flex: 1,
-  },
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: { marginBottom: 10 },
+    label: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      marginBottom: 6,
+      color: colors.text,
+    },
+    listState: {
+      paddingVertical: normalize(32),
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    listStateText: {
+      marginTop: 8,
+      color: colors.textMuted,
+      fontSize: normalize(18),
+    },
+    selectorBox: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      backgroundColor: colors.background,
+      minHeight: 45,
+    },
+    selectorContent: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      flex: 1,
+    },
+    selectorText: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+      color: colors.text,
+      flex: 1,
+      textTransform: "uppercase",
+    },
+    placeholderText: {
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(18),
+      color: colors.textMuted,
+      flex: 1,
+    },
 
-  flagImage: { width: 30, height: 20 },
-  disabled: { opacity: 0.5 },
-  errorBorder: { borderColor: "#FF3B30", borderWidth: 1.5 },
-  errorText: {
-    color: "#FF3B30",
-    marginTop: 6,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(14),
-    marginLeft: 4,
-  },
+    flagImage: { width: 30, height: 20 },
+    disabled: { opacity: 0.5 },
+    errorBorder: { borderColor: colors.error, borderWidth: 1.5 },
+    errorText: {
+      color: colors.error,
+      marginTop: 6,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(14),
+      marginLeft: 4,
+    },
 
-  // Modal
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "flex-end",
-  },
-  backdropTap: { flex: 1 },
-  modalContainer: {
-    backgroundColor: "#fff",
-    paddingVertical: 26,
-    paddingHorizontal: 18,
-    maxHeight: "80%",
-    borderTopRightRadius: 12,
-    borderTopLeftRadius: 12,
-  },
-  modalHeader: {
-    marginBottom: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontFamily: getFontFamily("900"),
-    fontSize: normalize(20),
-    color: "#374151",
-  },
-  searchInput: {
-    fontFamily: getFontFamily("400"),
-    fontSize: normalize(17),
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-
-  // Country row
-  countryRow: {
-    paddingVertical: 14,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#e5e5e5",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  countryRowSelected: {
-    backgroundColor: `${COLORS.primary}10`,
-  },
-  countryLeft: { flexDirection: "row", alignItems: "center", gap: 10, flex: 1 },
-  countryName: {
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(19),
-    color: "#1A1A1A",
-    textTransform: "uppercase",
-  },
-  countryNameSelected: {
-    color: COLORS.primary,
-  },
-  countryCode: {
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(19),
-    color: "#666",
-  },
-  countryCodeSelected: {
-    color: COLORS.primary,
-  },
-});
+    // Modal
+    overlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.4)",
+      justifyContent: "flex-end",
+    },
+    backdropTap: { flex: 1 },
+    modalContainer: {
+      backgroundColor: colors.inputBackground,
+      paddingVertical: 26,
+      paddingHorizontal: 18,
+      maxHeight: "80%",
+      borderTopRightRadius: 12,
+      borderTopLeftRadius: 12,
+    },
+    modalHeader: {
+      marginBottom: 16,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    modalTitle: {
+      fontFamily: getFontFamily("900"),
+      fontSize: normalize(20),
+      color: colors.text,
+    },
+    searchInput: {
+      fontFamily: getFontFamily("400"),
+      fontSize: normalize(17),
+      color: colors.text,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: 10,
+      borderRadius: 8,
+      marginBottom: 20,
+    },
+    countryRow: {
+      paddingVertical: 14,
+      borderBottomWidth: 0.5,
+      borderBottomColor: colors.border,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    countryRowSelected: {
+      backgroundColor: `${COLORS.primary}30`,
+    },
+    countryLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      flex: 1,
+    },
+    countryName: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(19),
+      color: colors.text,
+      textTransform: "uppercase",
+    },
+    countryNameSelected: {
+      color: "white",
+    },
+    countryCode: {
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(19),
+      color: colors.textMuted,
+    },
+    countryCodeSelected: {
+      color: COLORS.primary,
+    },
+  });

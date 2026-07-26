@@ -2,12 +2,10 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   Switch,
   Image,
-  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
@@ -36,6 +34,7 @@ import { AppText } from "../components/AppText";
 import { setItem } from "../utlis/storage";
 import { biometricPromptKey } from "../stores/biometricPromptSlice";
 import { useQueryClient } from "@tanstack/react-query";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 export const DEFAULT_IMAGE = require("../assets/avatar.png");
 interface MenuItemProps {
@@ -51,12 +50,17 @@ interface MenuItemProps {
   IconComponent?: React.JSX.Element;
 }
 
-const Section = ({ title, children, style }: any) => (
-  <View style={[styles.section, style]}>
-    <AppText style={styles.sectionTitle}>{title}</AppText>
-    {children}
-  </View>
-);
+const Section = ({ title, children, style }: any) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
+  return (
+    <View style={[styles.section, style]}>
+      <AppText style={styles.sectionTitle}>{title}</AppText>
+      {children}
+    </View>
+  );
+};
 
 const MenuItem = ({
   title,
@@ -67,16 +71,18 @@ const MenuItem = ({
   switchValue,
   onSwitchChange,
   isDangerous = false,
-  color = "#000",
   IconComponent = <ArrowRight2 />,
 }: MenuItemProps) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
   const bgColor = isDangerous ? "#DC262611" : "#EFF7EC";
   return (
     <TouchableOpacity
-      activeOpacity={0.7}
+      activeOpacity={0.8}
       style={[styles.menuItem]}
       onPress={onPress}
       disabled={showSwitch}
+      hitSlop={4}
     >
       <View
         style={{
@@ -95,7 +101,7 @@ const MenuItem = ({
         <AppText
           style={[
             styles.menuItemTitle,
-            { color: isDangerous ? "#DC2626" : color },
+            { color: isDangerous ? "#DC2626" : colors.text },
           ]}
         >
           {title}
@@ -104,7 +110,9 @@ const MenuItem = ({
           <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
         )}
       </View>
-      {showArrow && !showSwitch && <ArrowRight2 size={14} color={color} />}
+      {showArrow && !showSwitch && (
+        <ArrowRight2 size={14} color={colors.text} />
+      )}
       {showSwitch && (
         <Switch
           value={switchValue}
@@ -125,6 +133,9 @@ export default function SettingsScreen() {
   const buildNumber = DeviceInfo.getBuildNumber();
   const logout = useAuthStore(state => state.logout);
   const user = useAuthStore(state => state.user);
+  const colors = useColors();
+  const resolvedTheme = useResolvedTheme();
+  const styles = makeStyles(colors);
 
   const handleEditInfo = () => {
     navigation.navigate("EditProfile" as never);
@@ -156,7 +167,6 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -194,8 +204,9 @@ export default function SettingsScreen() {
               <AppText style={styles.email}>{user?.email}</AppText>
             </View>
           </View>
+
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.89}
             style={styles.editButton}
             onPress={handleEditInfo}
           >
@@ -287,15 +298,10 @@ export default function SettingsScreen() {
             IconComponent={<Message color={COLORS.primary} size={17} />}
           />
           <MenuItem
-            title="Theme (Dark Mode)"
-            showSwitch={true}
+            title="Theme"
+            showSwitch={false}
             switchValue={false}
-            onSwitchChange={() => {
-              Alert.alert(
-                "Coming soon",
-                "The feature is not available for now. Kindly check back later",
-              );
-            }}
+            onPress={() => navigation.navigate("Theme" as never)}
             IconComponent={<CustomIcon source={ThemeIcon} size={14} />}
           />
         </Section>
@@ -363,147 +369,151 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-    paddingBottom: 30,
-  },
-  versionText: {
-    textAlign: "center",
-    color: "#888",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    marginVertical: 10,
-  },
-  scrollContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  imageWrapper: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 12,
-    overflow: "hidden",
-    backgroundColor: "#f0f0f0",
-  },
-  profileImage: {
-    width: "100%",
-    height: "100%",
-  },
-  verificationBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F0FDF4",
-    borderRadius: 16,
-    padding: 18,
-    gap: 12,
-  },
-  verificationIcon: {
-    borderRadius: 20,
-    borderColor: "#fff",
-    borderWidth: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 7,
-  },
-  verificationText: {
-    flex: 1,
-    gap: 1,
-  },
-  verificationTitle: {
-    color: "#000",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("400"),
-  },
-  title: {
-    fontSize: normalize(19),
-    fontFamily: getFontFamily("800"),
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    marginBottom: 12,
-    color: "#565466",
-  },
-  profileSection: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    alignContent: "center",
-  },
-  email: {
-    marginBottom: 12,
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-  },
-  editButton: {
-    backgroundColor: "#F0FDF4",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 600,
-    flexDirection: "row",
-    gap: 1,
-    alignItems: "center",
-  },
-  editButtonText: {
-    color: COLORS.primary,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-    textAlign: "center",
-  },
-  kycSubtitle: {
-    fontSize: normalize(14),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.gray,
-    marginBottom: 8,
-  },
-  kycButton: {
-    backgroundColor: COLORS.whiteBackground,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
-    alignSelf: "flex-start",
-  },
-  kycButtonText: {
-    color: COLORS.darkBackground,
-    fontSize: normalize(14),
-    fontFamily: getFontFamily("700"),
-  },
-  menuItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 4,
-    borderBottomWidth: 0.5,
-    borderColor: "#D2D2D2",
-  },
-  menuItemContent: {
-    flex: 1,
-  },
-  menuItemTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-  },
-  menuItemSubtitle: {
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.gray,
-    marginTop: 2,
-  },
-  arrow: {
-    fontSize: normalize(18),
-    color: COLORS.gray,
-    fontFamily: getFontFamily("800"),
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#D2D2D2",
-    marginVertical: 16,
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      paddingBottom: 30,
+    },
+    versionText: {
+      textAlign: "center",
+      color: "#888",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      marginVertical: 10,
+    },
+    scrollContainer: {
+      flexGrow: 1,
+      paddingHorizontal: 20,
+    },
+    imageWrapper: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      marginRight: 12,
+      overflow: "hidden",
+      backgroundColor: "#f0f0f0",
+    },
+    profileImage: {
+      width: "100%",
+      height: "100%",
+    },
+    verificationBanner: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: colors.infoCardBackgroundColor,
+      borderRadius: 16,
+      padding: 18,
+      gap: 12,
+    },
+    verificationIcon: {
+      borderRadius: 20,
+      borderColor: colors.border,
+      borderWidth: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 7,
+    },
+    verificationText: {
+      flex: 1,
+      gap: 1,
+    },
+    verificationTitle: {
+      color: colors.text,
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("400"),
+    },
+    title: {
+      fontSize: normalize(19),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    section: {
+      marginBottom: 24,
+    },
+    sectionTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      marginBottom: 12,
+      color: colors.textMuted,
+    },
+    profileSection: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      alignContent: "center",
+    },
+    email: {
+      marginBottom: 12,
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+    },
+    editButton: {
+      backgroundColor: "#F0FDF4",
+      paddingHorizontal: 16,
+      paddingVertical: 7,
+      borderRadius: 60,
+      flexDirection: "row",
+      gap: 1,
+      alignItems: "center",
+    },
+    editButtonText: {
+      color: COLORS.primary,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      textAlign: "center",
+    },
+    kycSubtitle: {
+      fontSize: normalize(14),
+      fontFamily: getFontFamily("700"),
+      color: COLORS.gray,
+      marginBottom: 8,
+    },
+    kycButton: {
+      backgroundColor: COLORS.whiteBackground,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 6,
+      alignSelf: "flex-start",
+    },
+    kycButtonText: {
+      color: colors.text,
+      fontSize: normalize(14),
+      fontFamily: getFontFamily("700"),
+    },
+    menuItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 12,
+      paddingHorizontal: 4,
+      borderBottomWidth: 0.5,
+      borderColor: colors.border,
+    },
+    menuItemContent: {
+      flex: 1,
+    },
+    menuItemTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+    },
+    menuItemSubtitle: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      marginTop: 2,
+    },
+    arrow: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("800"),
+    },
+    divider: {
+      height: 1,
+      backgroundColor: "#D2D2D2",
+      marginVertical: 16,
+    },
+  });

@@ -1,13 +1,13 @@
 import React, { useMemo } from "react";
 import {
   View,
-  Text,
   SectionList,
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
   StyleSheet,
   ViewStyle,
+  StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
@@ -16,6 +16,8 @@ import { COLORS } from "../constants/colors";
 import { normalize, getFontFamily } from "../constants/settings";
 import { EmptyTransactionState } from "../screens/TransactionHistory";
 import { AppText } from "./AppText";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface TransactionSectionListProps {
   transactions: any[];
@@ -72,6 +74,8 @@ export const groupTransactionsByDate = (transactions: any[]) => {
 const TransactionItem = ({ item }: any) => {
   const navigation: any = useNavigation();
   const isCredit = item?.direction?.toUpperCase() === "CREDIT";
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   return (
     <TouchableOpacity
@@ -136,6 +140,9 @@ const TransactionSectionList: React.FC<TransactionSectionListProps> = ({
   ListHeaderComponent,
   contentContainerStyle,
 }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   const groupedTransactions = useMemo(
     () => groupTransactionsByDate(transactions),
     [transactions],
@@ -189,49 +196,56 @@ const TransactionSectionList: React.FC<TransactionSectionListProps> = ({
 
 export default TransactionSectionList;
 
-const styles = StyleSheet.create({
-  sectionHeader: {
-    paddingHorizontal: 0,
-    paddingVertical: 4,
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#868686",
-    marginTop: 10,
-    backgroundColor: "white",
-  },
-  sectionTitle: {
-    fontSize: normalize(22),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginVertical: 16,
-  },
-  transactionItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 0,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#dfdfdfff",
-  },
-  transactionContent: { flex: 1 },
-  transactionMain: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 20,
-  },
-  transactionTitle: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#000",
-    maxWidth: "70%",
-  },
-  transactionAmount: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("800"),
-  },
-  transactionTime: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("700"),
-    color: "#7f7f7f",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      paddingBottom: 30,
+    },
+    sectionHeader: {
+      paddingHorizontal: 0,
+      paddingVertical: 4,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: "#868686",
+      marginTop: 10,
+      backgroundColor: colors.background,
+    },
+    sectionTitle: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("800"),
+      color: "#000",
+      marginVertical: 16,
+    },
+    transactionItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 0,
+      paddingVertical: 10,
+      borderBottomWidth: 0.5,
+      borderBottomColor: colors.border,
+    },
+    transactionContent: { flex: 1 },
+    transactionMain: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      gap: 20,
+    },
+    transactionTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      maxWidth: "70%",
+    },
+    transactionAmount: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    transactionTime: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: colors.textMuted,
+    },
+  });

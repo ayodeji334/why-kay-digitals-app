@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import {
   View,
-  Text,
   TouchableOpacity,
   StatusBar,
   StyleSheet,
@@ -22,6 +21,7 @@ import Clipboard from "@react-native-clipboard/clipboard";
 import CustomIcon from "../components/CustomIcon";
 import { CopyIcon } from "../assets";
 import { AppText } from "../components/AppText";
+import { useColors } from "../hooks/useTheme";
 
 const TwoFactorAuthenticationScreen = () => {
   const navigation = useNavigation();
@@ -30,6 +30,9 @@ const TwoFactorAuthenticationScreen = () => {
   const setUser = useAuthStore(state => state.setUser);
   const { setIsGoogleAuthenticatorEnabled, isGoogleAuthenticatorEnabled } =
     useAuthStore();
+
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const [otpauthUrl, setOtpauthUrl] = useState<string | null>(
     () => getItem("2fa_auth_url") ?? null,
@@ -130,8 +133,6 @@ const TwoFactorAuthenticationScreen = () => {
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -248,149 +249,153 @@ const SetupRow = ({
   label: string;
   value: string;
   onCopy: () => void;
-}) => (
-  <View>
-    <AppText style={styles.setupLabel}>{label}:</AppText>
-    <View style={styles.row}>
-      <AppText style={styles.setupValue} selectable>
-        {value}
-      </AppText>
-      <TouchableOpacity activeOpacity={0.8} onPress={onCopy}>
-        <CustomIcon source={CopyIcon} size={14} />
-      </TouchableOpacity>
+}) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
+  return (
+    <View>
+      <AppText style={styles.setupLabel}>{label}:</AppText>
+      <View style={styles.row}>
+        <AppText style={styles.setupValue} selectable>
+          {value}
+        </AppText>
+        <TouchableOpacity activeOpacity={0.8} onPress={onCopy}>
+          <CustomIcon source={CopyIcon} size={14} />
+        </TouchableOpacity>
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-  },
-  content: {
-    flex: 1,
-    justifyContent: "space-between",
-  },
-  introContainer: {
-    alignItems: "center",
-    gap: 20,
-    marginTop: 40,
-  },
-  enabledContainer: {
-    alignItems: "center",
-    gap: 20,
-    marginTop: 40,
-  },
-  iconContainer: {
-    borderRadius: 40,
-    backgroundColor: "#F5F5F5",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 30,
-    position: "relative",
-  },
-  enabledBadge: {
-    position: "absolute",
-    top: -5,
-    right: -5,
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
-  },
-  enabledBadgeText: {
-    color: "#FFF",
-    fontSize: normalize(16),
-    fontFamily: getFontFamily("700"),
-  },
-  description: {
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    color: "#000",
-    textAlign: "center",
-    lineHeight: 24,
-  },
-  qrContainer: {
-    marginVertical: 20,
-    alignItems: "center",
-    gap: 12,
-  },
-  qrText: {
-    textAlign: "center",
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    color: "#000",
-    paddingHorizontal: 10,
-  },
-  manualSetupContainer: {
-    width: "100%",
-    backgroundColor: "#F9F9F9",
-    borderRadius: 12,
-    padding: 16,
-    gap: 4,
-    marginTop: 10,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 12,
-    columnGap: 10,
-  },
-  setupLabel: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("800"),
-    color: "#000",
-    marginBottom: 2,
-  },
-  setupValue: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: "#444",
-    flex: 1,
-  },
-  buttonContainer: {
-    width: "100%",
-    marginTop: 30,
-    gap: 12,
-  },
-  primaryButton: {
-    width: "100%",
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 16,
-    borderRadius: 92,
-    alignItems: "center",
-  },
-  destructiveButton: {
-    backgroundColor: "#FF3B30",
-  },
-  primaryButtonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-  },
-  secondaryButton: {
-    width: "100%",
-    paddingVertical: 14,
-    borderRadius: 120,
-    alignItems: "center",
-    backgroundColor: COLORS.lightGray,
-  },
-  secondaryButtonText: {
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    color: "#000",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollView: {
+      flexGrow: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingHorizontal: 20,
+      paddingBottom: 30,
+    },
+    content: {
+      flex: 1,
+      justifyContent: "space-between",
+    },
+    introContainer: {
+      alignItems: "center",
+      gap: 20,
+      marginTop: 40,
+    },
+    enabledContainer: {
+      alignItems: "center",
+      gap: 20,
+      marginTop: 40,
+    },
+    iconContainer: {
+      borderRadius: 40,
+      backgroundColor: "#F5F5F5",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 30,
+      position: "relative",
+    },
+    enabledBadge: {
+      position: "absolute",
+      top: -5,
+      right: -5,
+      backgroundColor: COLORS.primary,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 10,
+    },
+    enabledBadgeText: {
+      color: colors.text,
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("700"),
+    },
+    description: {
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      color: colors.text,
+      textAlign: "center",
+      lineHeight: 24,
+    },
+    qrContainer: {
+      marginVertical: 20,
+      alignItems: "center",
+      gap: 12,
+    },
+    qrText: {
+      textAlign: "center",
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      color: colors.text,
+      paddingHorizontal: 10,
+    },
+    manualSetupContainer: {
+      width: "100%",
+      backgroundColor: colors.inputBackground,
+      borderRadius: 12,
+      padding: 16,
+      gap: 4,
+      marginTop: 10,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 12,
+      columnGap: 10,
+    },
+    setupLabel: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      marginBottom: 2,
+    },
+    setupValue: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
+      color: colors.text,
+      flex: 1,
+    },
+    buttonContainer: {
+      width: "100%",
+      marginTop: 30,
+      gap: 12,
+    },
+    primaryButton: {
+      width: "100%",
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 16,
+      borderRadius: 92,
+      alignItems: "center",
+    },
+    destructiveButton: {
+      backgroundColor: "red",
+    },
+    primaryButtonText: {
+      color: "white",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+    },
+    secondaryButton: {
+      width: "100%",
+      paddingVertical: 14,
+      borderRadius: 120,
+      alignItems: "center",
+      backgroundColor: COLORS.lightGray,
+    },
+    secondaryButtonText: {
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      color: "black",
+    },
+  });
 
 export default TwoFactorAuthenticationScreen;
