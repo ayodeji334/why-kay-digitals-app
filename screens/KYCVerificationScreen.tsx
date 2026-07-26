@@ -351,7 +351,7 @@ const MenuItem = ({
         >
           <AppText
             style={{
-              color: colors.primaryLight,
+              color: colors.primary,
               fontSize: normalize(15),
               fontFamily: getFontFamily(800),
             }}
@@ -384,7 +384,7 @@ export default function KYCVerificationScreen() {
   // Sequential gating: NIN requires BVN done first; Selfie requires both
   // BVN and NIN done first.
   const isNinLocked = !isBvnVerified;
-  // const isSelfieLocked = !isBvnVerified || !isNinVerified;
+  const isSelfieLocked = !isBvnVerified || !isNinVerified;
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
@@ -427,8 +427,8 @@ export default function KYCVerificationScreen() {
                 fill={COLORS.primary}
               />
             }
-            isVerified={false}
-            isLocked={false}
+            isVerified={isNinVerified}
+            isLocked={isNinLocked}
             lockedMessage="Complete BVN verification first"
           />
           <MenuItem
@@ -442,8 +442,8 @@ export default function KYCVerificationScreen() {
                 fill={COLORS.primary}
               />
             }
-            // isVerified={user?.selfie_verification_status === "VERIFIED"}
-            // isLocked={isSelfieLocked}
+            isVerified={user?.selfie_verification_status === "VERIFIED"}
+            isLocked={isSelfieLocked}
             lockedMessage="Complete BVN and NIN verification first"
           />
         </View>

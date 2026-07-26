@@ -13,6 +13,7 @@ export function useCryptoLimits() {
       return res?.data?.data ?? null;
     },
     staleTime: 0,
+    refetchOnMount: "always",
   });
 
   return {
