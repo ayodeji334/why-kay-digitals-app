@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { normalize, getFontFamily } from "../constants/settings";
-import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
+import { useColors } from "../hooks/useTheme";
 
 interface LoadingProps {
   message?: string;
@@ -11,11 +11,14 @@ interface LoadingProps {
 const LoadingState: React.FC<LoadingProps> = ({
   message = "Loading Data...",
 }) => {
+  const colors = useColors();
+  const styles = makeStyles(colors);
+
   return (
     <View style={styles.loadingContainer}>
       <ActivityIndicator
         size="large"
-        color={COLORS.primary}
+        color={colors.primary}
         style={styles.spinner}
       />
       <AppText style={styles.loadingText}>{message}</AppText>
@@ -23,23 +26,24 @@ const LoadingState: React.FC<LoadingProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  loadingContainer: {
-    backgroundColor: "#f8f9fa",
-    borderRadius: 12,
-    padding: 24,
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 10,
-  },
-  spinner: {
-    marginBottom: 12,
-  },
-  loadingText: {
-    fontSize: normalize(18),
-    color: "#000",
-    fontFamily: getFontFamily("700"),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    loadingContainer: {
+      backgroundColor: colors.surfaceSecondary,
+      borderRadius: 12,
+      padding: 24,
+      alignItems: "center",
+      justifyContent: "center",
+      marginVertical: 10,
+    },
+    spinner: {
+      marginBottom: 12,
+    },
+    loadingText: {
+      fontSize: normalize(18),
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+    },
+  });
 
 export default LoadingState;

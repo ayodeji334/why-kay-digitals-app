@@ -297,7 +297,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       marginBottom: 20,
       flexDirection: "row",
       alignItems: "center",
-      gap: normalize(70),
+      gap: normalize(40),
     },
     iconButton: {
       paddingVertical: 8,

@@ -144,7 +144,7 @@ export default function CryptoRatesScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
-        contentContainerStyle={{ padding: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}

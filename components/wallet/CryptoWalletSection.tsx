@@ -215,7 +215,7 @@ const CryptoWalletSection = () => {
                   activeOpacity={0.78}
                   style={styles.generateButton}
                 >
-                  <Refresh2 color="black" size={12} />
+                  <Refresh2 color={colors.text} size={12} />
                   <AppText style={styles.generateButtonText}>Refresh</AppText>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -223,7 +223,7 @@ const CryptoWalletSection = () => {
                   activeOpacity={0.68}
                   style={styles.generateButton}
                 >
-                  <Add color="black" size={15} />
+                  <Add color={colors.text} size={15} />
                   <AppText style={styles.generateButtonText}>Add</AppText>
                 </TouchableOpacity>
               </View>

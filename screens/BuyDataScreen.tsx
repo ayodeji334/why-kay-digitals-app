@@ -799,6 +799,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     networkButton: {
       borderWidth: 1,
       borderColor: colors.border,
+      backgroundColor: "white",
       borderRadius: 10,
       alignItems: "center",
       justifyContent: "center",
@@ -815,13 +816,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       width: 20,
       height: 20,
       borderRadius: 10,
-      backgroundColor: colors.text,
+      backgroundColor: "black",
       justifyContent: "center",
       alignItems: "center",
       zIndex: 1,
     },
     checkIcon: {
-      color: colors.background,
+      color: "white",
       fontSize: normalize(20),
       fontFamily: getFontFamily(900),
     },

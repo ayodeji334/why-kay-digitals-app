@@ -208,7 +208,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       paddingVertical: 4,
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      color: "#868686",
+      color: colors.textMuted,
       marginTop: 10,
       backgroundColor: colors.background,
     },

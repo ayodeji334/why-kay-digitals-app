@@ -7,7 +7,6 @@ import {
   StatusBar,
   TouchableOpacity,
   Image,
-  Modal,
   LayoutChangeEvent,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,7 +22,7 @@ import { COLORS } from "../constants/colors";
 import CustomIcon from "../components/CustomIcon";
 import { CheckCircleIcon, CopyIcon, ShareIcon } from "../assets";
 import Clipboard from "@react-native-clipboard/clipboard";
-import { showError } from "../utlis/toast";
+import { showError, showSuccess } from "../utlis/toast";
 import { AppText } from "../components/AppText";
 import { captureRef } from "react-native-view-shot";
 import ShareLib from "react-native-share";
@@ -51,6 +50,7 @@ export const DetailRow: React.FC<{
     if (value) {
       Clipboard.setString(String(value));
       setCopied(true);
+      showSuccess("Copied to clipboard");
       setTimeout(() => setCopied(false), 1500);
     }
   };
@@ -1145,12 +1145,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     viewVouchersTitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      color: COLORS.primary,
+      color: colors.primaryDark,
     },
     viewVouchersHint: {
       fontSize: normalize(16),
       fontFamily: getFontFamily("700"),
-      color: colors.textMuted,
+      color: colors.text,
     },
     viewVouchersChevron: {
       fontSize: normalize(26),

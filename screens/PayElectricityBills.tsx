@@ -128,12 +128,51 @@ const PaymentTypeSelector = memo(
     const styles = makeStyles(colors);
 
     return (
+      // <View style={styles.paymentTypeContainer}>
+      //   <TouchableOpacity
+      //     activeOpacity={0.89}
+      //     style={[
+      //       styles.paymentTypeButton,
+      //       isPrepaid && styles.paymentTypeButtonActive,
+      //       (!hasPrepaid || disabled) && { opacity: 0.5 },
+      //     ]}
+      //     onPress={() => onSelect(true)}
+      //     disabled={!hasPrepaid || disabled}
+      //   >
+      //     <AppText
+      //       style={[
+      //         styles.paymentTypeText,
+      //         isPrepaid && styles.paymentTypeTextActive,
+      //       ]}
+      //     >
+      //       Pre Paid
+      //     </AppText>
+      //   </TouchableOpacity>
+
+      //   <TouchableOpacity
+      //     style={[
+      //       styles.paymentTypeButton,
+      //       !isPrepaid && styles.paymentTypeButtonActive,
+      //       (!hasPostpaid || disabled) && { opacity: 0.5 },
+      //     ]}
+      //     onPress={() => onSelect(false)}
+      //     disabled={!hasPostpaid || disabled}
+      //   >
+      //     <AppText
+      //       style={[
+      //         styles.paymentTypeText,
+      //         !isPrepaid && styles.paymentTypeTextActive,
+      //       ]}
+      //     >
+      //       Post Paid
+      //     </AppText>
+      //   </TouchableOpacity>
+      // </View>
       <View style={styles.paymentTypeContainer}>
         <TouchableOpacity
           activeOpacity={0.89}
           style={[
             styles.paymentTypeButton,
-            isPrepaid && styles.paymentTypeButtonActive,
             (!hasPrepaid || disabled) && { opacity: 0.5 },
           ]}
           onPress={() => onSelect(true)}
@@ -147,12 +186,18 @@ const PaymentTypeSelector = memo(
           >
             Pre Paid
           </AppText>
+
+          <View
+            style={[styles.radioOuter, isPrepaid && styles.radioOuterActive]}
+          >
+            {isPrepaid && <View style={styles.radioInner} />}
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity
+          activeOpacity={0.89}
           style={[
             styles.paymentTypeButton,
-            !isPrepaid && styles.paymentTypeButtonActive,
             (!hasPostpaid || disabled) && { opacity: 0.5 },
           ]}
           onPress={() => onSelect(false)}
@@ -166,6 +211,12 @@ const PaymentTypeSelector = memo(
           >
             Post Paid
           </AppText>
+
+          <View
+            style={[styles.radioOuter, !isPrepaid && styles.radioOuterActive]}
+          >
+            {!isPrepaid && <View style={styles.radioInner} />}
+          </View>
         </TouchableOpacity>
       </View>
     );
@@ -633,27 +684,61 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       marginBottom: 20,
       gap: 12,
     },
+    // paymentTypeButton: {
+    //   flex: 1,
+    //   borderWidth: 1,
+    //   borderColor: colors.border,
+    //   borderRadius: 10,
+    //   paddingVertical: 14,
+    //   alignItems: "center",
+    //   backgroundColor: colors.background,
+    // },
+    // paymentTypeContainer: {
+    //   gap: 10,
+    // },
     paymentTypeButton: {
       flex: 1,
-      borderWidth: 1,
-      borderColor: colors.border,
-      borderRadius: 10,
-      paddingVertical: 14,
+      flexDirection: "row",
       alignItems: "center",
-      backgroundColor: colors.background,
-    },
-    paymentTypeButtonActive: {
+      justifyContent: "space-between",
+      paddingVertical: normalize(17),
+      paddingHorizontal: normalize(17),
+      borderWidth: 1,
+      borderRadius: 10,
       borderColor: colors.border,
-      backgroundColor: colors.text,
+      backgroundColor: colors.background,
     },
     paymentTypeText: {
       fontSize: normalize(18),
+      fontFamily: getFontFamily(700),
       color: colors.text,
-      fontFamily: getFontFamily("800"),
+    },
+    // paymentTypeTextActive: {
+    //   color: colors.text,
+    // },
+    radioOuter: {
+      width: 17,
+      height: 17,
+      borderRadius: 11,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    radioOuterActive: {
+      borderColor: colors.text,
+    },
+    radioInner: {
+      width: 11,
+      height: 11,
+      borderRadius: 5.5,
+      backgroundColor: colors.text,
     },
     paymentTypeTextActive: {
-      color: colors.background,
-      fontFamily: getFontFamily("800"),
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+      borderColor: colors.border,
+      fontSize: normalize(18),
     },
     detailsContainer: {
       marginVertical: 10,
