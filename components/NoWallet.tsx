@@ -94,7 +94,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "#B00020",
       marginBottom: 20,
       maxWidth: 260,
-      lineHeight: 18,
+      // lineHeight: 18,
     },
     section: {
       alignItems: "center",

@@ -506,7 +506,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
       textAlign: "center",
       marginBottom: 32,
-      lineHeight: 24,
+      // lineHeight: 24,
     },
     buttonRow: {
       flexDirection: "row",
@@ -547,7 +547,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
       textAlign: "center",
-      lineHeight: 24,
+      // lineHeight: 24,
       marginBottom: 40,
       paddingHorizontal: 10,
     },

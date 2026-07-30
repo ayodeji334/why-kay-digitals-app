@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Image,
   RefreshControl,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
@@ -229,6 +230,10 @@ const CryptoWalletScreen = () => {
     refetchData();
   }, []);
 
+  const handleWhatsApp = () => {
+    Linking.openURL("https://wa.me/07012345678");
+  };
+
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <View style={styles.searchContainer}>
@@ -244,21 +249,20 @@ const CryptoWalletScreen = () => {
         <Text
           style={{
             fontSize: normalize(20),
-            fontFamily: getFontFamily("700"),
-            marginTop: 10,
+            fontFamily: getFontFamily("400"),
+            marginVertical: normalize(7),
             paddingVertical: 5,
             color: colors.text,
           }}
         >
-          Below are the supported coins. If the coin (or asset) you to{" "}
-          {currentAction} is not listed here. Kindly reach out to us through our
-          support channel.
+          Below are the supported coins. If the coin (or asset) is not listed
+          here. Kindly reach out to us through our support channel.
           <Text
-            onPress={() => navigation.navigate("ContactUs")}
+            onPress={handleWhatsApp}
             style={{ color: COLORS.primary, paddingHorizontal: 8 }}
           >
             {" "}
-            Contact us here
+            Contact us on Whatsapp
           </Text>
         </Text>
       </View>
@@ -291,8 +295,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     searchContainer: { paddingHorizontal: 16, paddingVertical: 12 },
     searchInput: {
       backgroundColor: colors.inputBackground,
-      padding: 12,
-      paddingHorizontal: 14,
+      paddingVertical: normalize(12),
+      paddingHorizontal: normalize(18),
       borderRadius: 100,
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
@@ -313,13 +317,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     assetIcon: { width: 30, height: 30, borderRadius: 20, marginRight: 12 },
     cryptoInfo: { flexDirection: "column" },
     cryptoName: {
-      fontSize: normalize(18),
+      fontSize: normalize(16),
       color: colors.text,
       fontFamily: getFontFamily(800),
     },
     cryptoSymbol: {
-      fontSize: 12,
-      fontFamily: getFontFamily(700),
+      fontSize: normalize(16),
+      fontFamily: getFontFamily(400),
       color: colors.text,
     },
     cryptoRight: {

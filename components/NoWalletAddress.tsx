@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: getFontFamily(400),
     color: "#4B5563",
-    lineHeight: 20,
+    // lineHeight: 20,
     maxWidth: 260,
   },
   section: {
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: getFontFamily(400),
     color: "#6B7280",
-    lineHeight: 18,
+    // lineHeight: 18,
   },
 });
 

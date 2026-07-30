@@ -743,7 +743,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
       textAlign: "center",
       marginBottom: 20,
-      lineHeight: 16,
+      // lineHeight: 16,
     },
     emptyButton: {
       backgroundColor: COLORS.primary,
@@ -763,7 +763,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("800"),
       color: colors.text,
       marginBottom: 8,
-      lineHeight: 22,
+      // lineHeight: 22,
     },
     instructionText: {
       fontSize: normalize(17),

@@ -317,6 +317,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.text,
       textAlign: "center",
-      lineHeight: 22,
+      // lineHeight: 22,
     },
   });

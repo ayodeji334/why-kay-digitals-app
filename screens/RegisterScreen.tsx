@@ -5,12 +5,12 @@ import { getFontFamily, normalize, width } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 import RegisterForm from "../components/forms/RegisterForm";
 import { AppText } from "../components/AppText";
-import { useColors } from "../hooks/useTheme";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 export default function RegisterScreen() {
   const colors = useColors();
   const styles = makeStyles(colors);
-
+  const resolvedTheme = useResolvedTheme();
   const navigation = useNavigation();
 
   const handleNavigate = () => {
@@ -19,6 +19,10 @@ export default function RegisterScreen() {
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}

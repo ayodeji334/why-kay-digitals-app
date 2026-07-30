@@ -606,7 +606,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       color: colors.text,
       textAlign: "center",
-      lineHeight: 22,
+      // lineHeight: 22,
     },
     primaryButton: {
       width: "100%",

@@ -266,7 +266,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     description: {
       fontSize: normalize(20),
-      lineHeight: normalize(24),
+      // lineHeight: normalize(24),
       fontFamily: getFontFamily(400),
       color: colors.text,
       textAlign: "center",

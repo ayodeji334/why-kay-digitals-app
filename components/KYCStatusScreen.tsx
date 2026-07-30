@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("400"),
     color: "#2e2f30ff",
     textAlign: "center",
-    lineHeight: 22,
+    // lineHeight: 22,
     paddingHorizontal: 10,
   },
   requirementsCard: {
@@ -267,6 +267,6 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("400"),
     color: "#9CA3AF",
     textAlign: "center",
-    lineHeight: 18,
+    // lineHeight: 18,
   },
 });

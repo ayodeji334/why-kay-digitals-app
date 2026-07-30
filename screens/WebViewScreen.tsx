@@ -125,7 +125,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
       textAlign: "center",
       marginBottom: 20,
-      lineHeight: 22,
+      // lineHeight: 22,
     },
     retryButton: {
       backgroundColor: COLORS.primary,

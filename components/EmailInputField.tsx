@@ -155,7 +155,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderColor: colors.border,
       borderRadius: 8,
       paddingHorizontal: normalize(16),
-      paddingVertical: normalize(18),
+      paddingVertical: normalize(14),
       color: colors.text,
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),
@@ -167,11 +167,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     errorBorder: {
-      borderColor: "#FF3B30",
-      borderWidth: 1.5,
+      borderColor: colors.error,
+      borderWidth: 1,
     },
     errorText: {
-      color: "#FF3B30",
+      color: colors.error,
       marginTop: 6,
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
@@ -179,7 +179,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     label: {
       fontFamily: getFontFamily("800"),
-      fontSize: normalize(18),
+      fontSize: normalize(17),
       marginBottom: 1,
       color: colors.text,
     },

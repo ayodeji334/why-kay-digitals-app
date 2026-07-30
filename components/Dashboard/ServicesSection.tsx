@@ -398,7 +398,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       minWidth: "30%",
       alignItems: "center",
       backgroundColor: colors.infoCardBackgroundColor,
-      padding: 5,
+      paddingVertical: normalize(15),
       borderRadius: 10,
       justifyContent: "space-between",
     },
@@ -411,11 +411,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
     },
     serviceText: {
-      fontSize: normalize(18),
+      fontSize: normalize(17),
       fontFamily: getFontFamily(800),
       textAlign: "center",
       color: colors.text,
-      paddingBottom: 10,
+      // paddingBottom: 10,
     },
   });
 

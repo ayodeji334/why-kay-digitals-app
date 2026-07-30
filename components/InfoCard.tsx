@@ -106,7 +106,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(17),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      lineHeight: 15,
+      // lineHeight: 15,
     },
     listText: {
       fontSize: normalize(17),

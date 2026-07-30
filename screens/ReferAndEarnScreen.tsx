@@ -116,7 +116,7 @@ const ReferralAndEarnScreen: React.FC = () => {
             <AppText style={styles.sectionTitle}>Referral Code</AppText>
             <View style={styles.referralCodeInfo}>
               <AppText style={styles.referralCodeName}>
-                {user?.referral_code}
+                {user?.username}
               </AppText>
             </View>
             <View style={styles.referralActions}>

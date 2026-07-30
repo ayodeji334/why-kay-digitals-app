@@ -93,7 +93,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: "#666",
-      lineHeight: 20,
+      // lineHeight: 20,
       marginBottom: 16,
     },
     editButton: {

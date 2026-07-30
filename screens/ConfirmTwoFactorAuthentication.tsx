@@ -263,7 +263,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       textAlign: "left",
       color: colors.textMuted,
-      lineHeight: 18,
+      // lineHeight: 18,
     },
     scrollContainer: {
       flex: 1,

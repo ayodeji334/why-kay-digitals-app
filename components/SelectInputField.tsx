@@ -425,7 +425,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     label: {
       fontFamily: getFontFamily("800"),
-      fontSize: normalize(18),
+      fontSize: normalize(17),
       color: colors.text,
     },
     input: {
@@ -508,12 +508,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     error: {
-      color: "#FF3B30",
+      color: colors.error,
       marginBottom: 9,
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
     },
-    errorBorder: { borderColor: "#FF3B30", borderWidth: 1.5 },
+    errorBorder: { borderColor: colors.error, borderWidth: 1.5 },
     optionLogo: {
       width: 30,
       height: 30,

@@ -122,7 +122,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     label: {
       fontFamily: getFontFamily("800"),
-      fontSize: normalize(18),
+      fontSize: normalize(17),
       marginBottom: 2,
       color: colors.text,
     },
@@ -142,7 +142,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     input: {
       flex: 1,
       paddingHorizontal: 5,
-      paddingVertical: normalize(18),
+      paddingVertical: normalize(14),
       color: colors.text,
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),

@@ -283,7 +283,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
       textAlign: "center",
-      lineHeight: 15,
+      // lineHeight: 15,
     },
     footer: {
       paddingHorizontal: 20,

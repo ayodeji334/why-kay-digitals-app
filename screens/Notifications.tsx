@@ -360,7 +360,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(19),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      lineHeight: 22,
+      // lineHeight: 22,
     },
     tabContainer: {
       paddingHorizontal: 15,

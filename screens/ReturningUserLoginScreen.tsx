@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
@@ -9,7 +9,7 @@ import { AppText } from "../components/AppText";
 import BiometricLoginButton from "../components/BiometricLoginBtn";
 import { useBiometricLogin } from "../hooks/useBiometricLogin";
 import { capitalizeFirst } from "../libs/helpers";
-import { useColors } from "../hooks/useTheme";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 export default function ReturningUserLoginScreen() {
   const navigation = useNavigation();
@@ -17,6 +17,7 @@ export default function ReturningUserLoginScreen() {
   const { isReady } = useBiometricLogin();
   const colors = useColors();
   const styles = makeStyles(colors);
+  const resolvedTheme = useResolvedTheme();
 
   const handleNavigate = () => {
     navigation.navigate("SignIn" as never);
@@ -24,6 +25,10 @@ export default function ReturningUserLoginScreen() {
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
           <AppText style={styles.title}>

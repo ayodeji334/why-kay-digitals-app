@@ -207,7 +207,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "#fff",
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      lineHeight: 19,
     },
     emptyState: {
       borderRadius: 12,
@@ -240,7 +239,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "#666",
       textAlign: "center",
       marginBottom: 16,
-      lineHeight: 16,
+      // lineHeight: 16,
     },
     emptyButton: {
       backgroundColor: "#FFA726",

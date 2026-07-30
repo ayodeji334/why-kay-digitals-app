@@ -606,7 +606,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
       marginBottom: 16,
-      lineHeight: normalize(20),
+      // lineHeight: normalize(20),
     },
     card: {
       backgroundColor: colors.surface,
@@ -677,7 +677,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
-      lineHeight: normalize(18),
+      // lineHeight: normalize(18),
     },
 
     // Copy button (inline for code, full-width for url)
@@ -715,7 +715,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(17),
       fontFamily: getFontFamily("400"),
       color: colors.warning,
-      lineHeight: normalize(19),
+      // lineHeight: normalize(19),
     },
 
     // Info blocks
@@ -731,7 +731,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      lineHeight: normalize(19),
+      // lineHeight: normalize(19),
     },
     mutedText: {
       fontSize: normalize(18),

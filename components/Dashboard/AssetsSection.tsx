@@ -192,7 +192,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     sellAllButton: {
       borderWidth: 1,
       borderColor: COLORS.primary,
-      borderRadius: 20,
+      borderRadius: 200,
       paddingHorizontal: normalize(29),
       paddingVertical: normalize(9),
     },
@@ -329,7 +329,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.textMuted,
       textAlign: "center",
       marginBottom: 16,
-      lineHeight: 16,
+      // lineHeight: 16,
     },
     emptyButton: {
       backgroundColor: COLORS.secondary,

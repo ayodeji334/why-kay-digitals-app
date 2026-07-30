@@ -387,6 +387,7 @@ export default function CryptoSwapScreen() {
               {errors.amount && (
                 <AppText style={styles.error}>{errors.amount.message}</AppText>
               )}
+
               {fromAsset && amount > 0 && (
                 <AppText style={styles.approx}>
                   Approximately {fromAmount} will debited from your {symbol}{" "}
@@ -433,7 +434,7 @@ export default function CryptoSwapScreen() {
                   fontFamily: getFontFamily("400"),
                   textAlign: "center",
                   fontSize: normalize(18),
-                  lineHeight: 15,
+                  // lineHeight: 15,
                 }}
               >
                 The market prices are volatile. Estimated amounts may change due
@@ -489,7 +490,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     input: {
       flex: 1,
-      paddingVertical: normalize(16),
+      paddingVertical: normalize(12),
       fontSize: normalize(22),
       fontFamily: getFontFamily("700"),
       color: colors.text,
@@ -578,7 +579,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderColor: "rgba(255, 0, 0, 0.3)",
     },
     warningText: {
-      color: "#db0b0bff",
+      color: colors.error,
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       textAlign: "center",

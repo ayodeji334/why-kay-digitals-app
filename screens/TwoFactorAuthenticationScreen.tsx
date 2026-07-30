@@ -323,7 +323,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       color: colors.text,
       textAlign: "center",
-      lineHeight: 24,
+      // lineHeight: 24,
     },
     qrContainer: {
       marginVertical: 20,

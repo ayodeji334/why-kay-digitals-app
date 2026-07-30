@@ -1093,7 +1093,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
       color: colors.textMuted,
       marginBottom: 14,
-      lineHeight: normalize(20),
+      // lineHeight: normalize(20),
     },
     header: {
       justifyContent: "space-between",
@@ -1156,7 +1156,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(26),
       fontFamily: getFontFamily("400"),
       color: COLORS.primary,
-      lineHeight: normalize(28),
+      // lineHeight: normalize(28),
     },
     headerTitle: {
       fontSize: normalize(18),
@@ -1201,7 +1201,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       textAlign: "right",
-      lineHeight: 17,
+      // lineHeight: 17,
       color: colors.text,
     },
     copyButton: {

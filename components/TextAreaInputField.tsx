@@ -68,7 +68,7 @@ const TextAreaInput = ({
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     label: {
-      fontSize: normalize(19),
+      fontSize: normalize(17),
       fontFamily: getFontFamily("800"),
       marginBottom: 4,
       color: colors.background,
@@ -84,6 +84,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     errorBorder: {
       borderColor: COLORS.error,
+      borderWidth: 1,
     },
     errorText: {
       color: COLORS.error,

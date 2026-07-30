@@ -178,7 +178,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
       textAlign: "center",
       marginBottom: 24,
-      lineHeight: 22,
+      // lineHeight: 22,
     },
     button: {
       paddingVertical: 14,

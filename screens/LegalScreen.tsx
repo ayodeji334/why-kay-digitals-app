@@ -165,7 +165,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      lineHeight: 20,
+      // lineHeight: 20,
     },
     menuItem: {
       flexDirection: "row",
@@ -185,7 +185,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     menuItemTitle: {
       fontSize: normalize(18),
-      fontFamily: getFontFamily("700"),
+      fontFamily: getFontFamily("800"),
       color: colors.text,
     },
     menuItemSubtitle: {

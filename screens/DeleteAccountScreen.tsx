@@ -209,7 +209,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      lineHeight: 20,
+      // lineHeight: 20,
     },
     reasonItem: {
       borderWidth: 1,

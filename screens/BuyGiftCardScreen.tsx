@@ -1915,7 +1915,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(17),
     fontFamily: getFontFamily("400"),
     color: "#33353a",
-    lineHeight: 18,
+    // lineHeight: 18,
   },
   recipientSection: {
     borderWidth: 1,
@@ -1996,7 +1996,7 @@ const styles = StyleSheet.create({
     color: "#DC2626",
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
-    lineHeight: normalize(20),
+    // lineHeight: normalize(20),
   },
 
   summaryPill: {

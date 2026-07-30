@@ -214,7 +214,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
       paddingTop: 0,
       paddingBottom: 0,
-      lineHeight: 40,
+      // lineHeight: 40,
     },
     boxText: {
       position: "absolute",

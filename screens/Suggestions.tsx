@@ -202,7 +202,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       color: colors.textMuted,
       fontFamily: getFontFamily("700"),
-      lineHeight: 18,
+      // lineHeight: 18,
     },
     form: {
       gap: 20,

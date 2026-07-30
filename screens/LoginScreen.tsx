@@ -19,8 +19,14 @@ export default function LoginScreen() {
     navigation.navigate("SignUp" as never);
   };
 
+  const resolvedTheme = useResolvedTheme();
+
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.header}>
           <AppText style={styles.title}>Welcome</AppText>
