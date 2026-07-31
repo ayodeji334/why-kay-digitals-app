@@ -200,7 +200,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       paddingVertical: 10,
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
-      color: colors.primaryDark,
+      color: colors.primaryLight,
     },
   });
 

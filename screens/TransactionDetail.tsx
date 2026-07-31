@@ -623,6 +623,7 @@ const TransactionDetailScreen = () => {
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
         <View style={styles.iconContainer}>

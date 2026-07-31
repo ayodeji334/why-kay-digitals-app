@@ -261,6 +261,8 @@ const CryptoWalletSection = () => {
           <FlatList
             data={filteredWallets}
             keyExtractor={item => item.value}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => handleSelectAsset(item.value)}

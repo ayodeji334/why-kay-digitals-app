@@ -74,8 +74,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     tab: {
       flex: 1,
-      paddingVertical: 7,
-      paddingHorizontal: 16,
+      paddingVertical: normalize(12),
+      paddingHorizontal: normalize(16),
       borderRadius: 600,
       alignItems: "center",
     },

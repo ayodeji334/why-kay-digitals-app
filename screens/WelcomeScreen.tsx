@@ -29,6 +29,7 @@ const WelcomeScreen = () => {
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <View style={styles.imageWrapper}>
           <Image
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("700"),
   },
   termsText: {
-    fontSize: normalize(17),
+    fontSize: normalize(18),
     color: COLORS.whiteBackground,
     fontFamily: getFontFamily("400"),
     // lineHeight: 19,

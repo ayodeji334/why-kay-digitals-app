@@ -84,6 +84,7 @@ const SuggestionScreen = () => {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
         >
           <View style={styles.header}>
             <AppText style={styles.title}>Send a Suggestion</AppText>

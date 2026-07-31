@@ -468,7 +468,11 @@ const HelpSupportScreen: React.FC = () => {
 
   return (
     <SafeAreaView edges={["right", "left"]} style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        style={styles.container}
+      >
         <Section title="">
           <MenuItem
             title="Available Hours"

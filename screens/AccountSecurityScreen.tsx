@@ -115,6 +115,7 @@ export default function AccountSecurityScreen() {
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
       <ScrollView
+        showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >

@@ -59,7 +59,11 @@ export default function ChangeTransactionPinScreen() {
 
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContainer}
+      >
         {step === "password" && (
           <View>
             <AppText style={styles.subtitle}>

@@ -523,6 +523,7 @@ export default function GiftCardVouchersScreen() {
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <AppText style={styles.sectionTitle}>
           {vouchers.length > 1

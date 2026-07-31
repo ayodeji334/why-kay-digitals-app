@@ -654,6 +654,7 @@ export default function BrandDetailScreen() {
           <ScrollView
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
             {/* ── Brand header ── */}

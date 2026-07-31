@@ -375,7 +375,8 @@ export default function PayCableTVSubscriptionScreen() {
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <NumberInputField
           placeholder="Enter your Smartcard/IUC Number"

@@ -522,6 +522,8 @@ export default function ConversionQuote() {
         backgroundColor={colors.background}
       />
       <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         style={{ flex: 1 }}
         contentContainerStyle={{
           backgroundColor: colors.background,

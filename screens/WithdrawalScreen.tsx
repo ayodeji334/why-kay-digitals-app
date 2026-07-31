@@ -262,6 +262,7 @@ export default function WithdrawScreen() {
           />
         }
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <BalanceLimitCard walletSummary={walletSummary} />
 

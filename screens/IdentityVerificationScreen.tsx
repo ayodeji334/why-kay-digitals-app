@@ -136,6 +136,7 @@ export default function IdentityVerificationScreen() {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         {/* {!isProfileComplete ? (
           <View style={styles.infoSection}>

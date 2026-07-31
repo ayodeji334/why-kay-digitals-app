@@ -331,6 +331,7 @@ export default function TransferScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}

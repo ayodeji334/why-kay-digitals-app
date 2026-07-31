@@ -272,7 +272,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     linkText: {
       fontSize: normalize(14),
       fontFamily: getFontFamily("400"),
-      color: "#93C5FD",
+      color: colors.primaryLight,
     },
   });
 

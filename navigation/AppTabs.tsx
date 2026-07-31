@@ -27,10 +27,10 @@ export default function AppTabs() {
         tabBarActiveTintColor: colors?.text,
         tabBarInactiveTintColor: colors?.textMuted,
         tabBarStyle: {
-          height: 80,
-          paddingTop: 4,
+          height: 90,
+          paddingVertical: 4,
           backgroundColor: colors.background,
-          borderTopColor: colors.border,
+          borderTopColor: colors.borderLight,
         },
         headerTitleAllowFontScaling: false,
         tabBarAllowFontScaling: false,

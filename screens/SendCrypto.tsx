@@ -507,6 +507,8 @@ export default function SendScreen() {
     >
       <ScrollView
         style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
         refreshControl={
           <RefreshControl refreshing={isFetching} onRefresh={() => refetch()} />

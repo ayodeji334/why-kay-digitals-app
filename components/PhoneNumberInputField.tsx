@@ -38,6 +38,7 @@ interface Props {
   value?: string;
   onChangeText?: (val: string) => void;
   defaultCountryCode?: CountryCode;
+  excludedCountryCodes?: string[];
 }
 
 const PhoneNumberInputField: React.FC<Props> = ({
@@ -54,14 +55,16 @@ const PhoneNumberInputField: React.FC<Props> = ({
   placeholderTextColor = "#999",
   onChangeText,
   defaultCountryCode = "NG",
+  excludedCountryCodes = [],
 }) => {
   // const { data: allCountries } = useCountries();
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
 
-  const [countries, setCountries] = useState<any[]>(allCountries ?? []);
+  const [countries, setCountries] = useState<any[]>(
+    (allCountries ?? []).filter(c => !excludedCountryCodes.includes(c.cca2)),
+  );
   const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
-
   const colors = useColors();
   const styles = makeStyles(colors);
 
@@ -77,14 +80,32 @@ const PhoneNumberInputField: React.FC<Props> = ({
     let cancelled = false;
 
     if (!cancelled) {
-      const def = allCountries?.find(c => c.cca2 === defaultCountryCode);
-      if (def) setSelectedCountry(def);
+      const filtered = (allCountries ?? []).filter(
+        c => !excludedCountryCodes.includes(c.cca2),
+      );
+      setCountries(filtered);
+
+      const def = filtered.find(c => c.cca2 === defaultCountryCode);
+      setSelectedCountry(def ?? filtered[0] ?? null);
     }
 
     return () => {
       cancelled = true;
     };
-  }, [defaultCountryCode, allCountries]);
+  }, [defaultCountryCode, allCountries, excludedCountryCodes.length]);
+
+  // useEffect(() => {
+  //   let cancelled = false;
+
+  //   if (!cancelled) {
+  //     const def = allCountries?.find(c => c.cca2 === defaultCountryCode);
+  //     if (def) setSelectedCountry(def);
+  //   }
+
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [defaultCountryCode, allCountries]);
 
   const filteredCountries = useMemo(() => {
     return countries.filter(
@@ -225,10 +246,12 @@ const PhoneNumberInputField: React.FC<Props> = ({
               )}
             /> */}
             <FlatList
+              showsVerticalScrollIndicator={false}
               data={filteredCountries}
               keyExtractor={item => item.cca2}
               renderItem={({ item }) => (
                 <TouchableOpacity
+                  activeOpacity={0.89}
                   style={styles.countryRow}
                   onPress={() => {
                     if (selectedCountry) {
@@ -370,7 +393,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       fontSize: normalize(17),
       borderWidth: 1,
-      borderColor: "#ccc",
+      borderColor: colors.border,
       padding: 10,
       borderRadius: 8,
       marginBottom: 10,
@@ -378,7 +401,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     countryRow: {
       paddingVertical: 14,
       borderBottomWidth: 0.5,
-      borderBottomColor: "#e5e5e5ff",
+      borderBottomColor: colors.border,
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
@@ -388,11 +411,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     countryName: {
       fontFamily: getFontFamily("700"),
       fontSize: normalize(17),
+      color: colors.text,
     },
     callingCode: {
       fontFamily: getFontFamily("700"),
       fontSize: normalize(17),
-      color: "#666",
+      color: colors.textMuted,
     },
   });
 

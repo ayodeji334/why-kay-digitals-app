@@ -123,6 +123,8 @@ export default function ConfirmCryptoWithdrawScreen() {
   return (
     <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
       <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}
         contentContainerStyle={{
           flex: 1,

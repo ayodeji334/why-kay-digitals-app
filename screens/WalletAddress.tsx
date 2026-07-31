@@ -707,6 +707,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
       <ScrollView
         style={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         <View style={{ paddingTop: 10 }}>

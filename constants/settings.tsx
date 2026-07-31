@@ -21,7 +21,7 @@ export const normalize = (size: number) => {
       ? TABLET_SCALE
       : Math.min(width / guidelineBaseWidth, PHONE_MAX_SCALE);
 
-  return PixelRatio.roundToNearestPixel(scale * (size - 2));
+  return PixelRatio.roundToNearestPixel(scale * (size - 1));
 };
 
 export const getFontFamily = (weight: string | number) => {

@@ -170,6 +170,7 @@ export default function SettingsScreen() {
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <View style={[styles.profileSection, { marginVertical: 20 }]}>
           <View

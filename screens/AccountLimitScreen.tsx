@@ -158,6 +158,8 @@ const AccountLimitsScreen = () => {
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         style={styles.content}
         refreshControl={
           <RefreshControl

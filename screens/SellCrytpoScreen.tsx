@@ -456,6 +456,8 @@ export default function CryptoSellScreen() {
       edges={["right", "left"]}
     >
       <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
           flexGrow: 1,
         }}

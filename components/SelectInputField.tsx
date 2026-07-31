@@ -432,7 +432,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingVertical: normalize(12),
+      paddingVertical: normalize(14),
       paddingHorizontal: normalize(14),
       // backgroundColor: colors.background,
       justifyContent: "center",

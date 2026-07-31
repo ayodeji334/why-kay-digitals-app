@@ -92,7 +92,11 @@ export default function ConfirmSecurityPinScreen() {
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        style={styles.scrollContainer}
+      >
         <View style={styles.header}>
           <AppText style={styles.title}>Confirm your Security Pin</AppText>
           <AppText

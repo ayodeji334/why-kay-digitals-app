@@ -137,6 +137,7 @@ const TwoFactorAuthenticationScreen = () => {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <View style={styles.content}>
           {is2FAEnabled && (

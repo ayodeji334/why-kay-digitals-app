@@ -27,6 +27,7 @@ export default function BVNVerificationScreen() {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         {/* {!isProfileComplete ? (
           <View style={styles.infoSection}>

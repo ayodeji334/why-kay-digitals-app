@@ -28,7 +28,11 @@ export default function VerificationCodeScreen({ route }: any) {
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        style={styles.scrollContainer}
+      >
         <View style={styles.header}>
           <AppText style={styles.title}>Verify your email address</AppText>
           <AppText

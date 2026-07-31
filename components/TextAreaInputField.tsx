@@ -77,7 +77,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      padding: 12,
+      padding: normalize(14),
       fontSize: width * 0.032,
       backgroundColor: colors.inputBackground,
       minHeight: 120,

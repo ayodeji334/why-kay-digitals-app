@@ -85,6 +85,7 @@ const DepositScreen = () => {
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
         >
           <View style={styles.section}>
             <AppText style={styles.sectionTitle}>

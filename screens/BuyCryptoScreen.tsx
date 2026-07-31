@@ -168,6 +168,8 @@ export default function CryptoBuyScreen() {
     enabled: !!selectedAssetUuid,
   });
 
+  console.log(assetDetails);
+
   // Derived values
   const TOLERANCE_PERCENT = 1.23;
 
@@ -400,6 +402,8 @@ export default function CryptoBuyScreen() {
       edges={["right", "left"]}
     >
       <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

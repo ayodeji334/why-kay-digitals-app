@@ -17,7 +17,11 @@ export default function ChangePasswordScreen() {
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        style={styles.scrollContainer}
+      >
         <View style={{ gap: 5 }}>
           <AppText style={styles.subtitle}>
             Your password protects your account and personal information.

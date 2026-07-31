@@ -602,7 +602,6 @@ const RegisterForm: React.FC = () => {
   const username = useWatch({ control, name: "username" });
   const debouncedUsername = useDebounce(username?.trim() ?? "", 500);
 
-  // "How did you hear about us?" options — via react-query
   const {
     data: heardAboutOptions = [],
     isLoading: loadingHeardAboutOptions,

@@ -125,7 +125,11 @@ export default function ConfirmTransactionScreen() {
 
   return (
     <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        style={styles.scrollContainer}
+      >
         <View style={styles.header}>
           <AppText style={styles.title}>Enter Transaction PIN</AppText>
           <AppText

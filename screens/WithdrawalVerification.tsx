@@ -294,7 +294,11 @@ export default function WithdrawalVerificationScreen({ route }: any) {
         barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
         backgroundColor={colors.background}
       />
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        style={styles.scrollContainer}
+      >
         <View style={styles.header}>
           <AppText style={styles.title}>Verify your withdrawal</AppText>
           <AppText style={styles.description}>

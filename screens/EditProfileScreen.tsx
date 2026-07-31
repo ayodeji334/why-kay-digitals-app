@@ -191,6 +191,7 @@ export default function EditProfileScreen() {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <View style={styles.profilePictureSection}>
           <View>

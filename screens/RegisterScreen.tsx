@@ -27,6 +27,7 @@ export default function RegisterScreen() {
         style={styles.scrollContainer}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
@@ -68,7 +69,7 @@ export default function RegisterScreen() {
               {
                 fontSize: normalize(18),
                 fontFamily: getFontFamily(700),
-                color: colors.primary,
+                color: colors.primaryLight,
               },
             ]}
           >

@@ -113,6 +113,7 @@ const AssetsSection = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.assetsList}
         >
           {filteredAssets.map((asset: any) => (
@@ -191,13 +192,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     sellAllButton: {
       borderWidth: 1,
-      borderColor: COLORS.primary,
+      borderColor: colors.primaryLight,
       borderRadius: 200,
       paddingHorizontal: normalize(29),
       paddingVertical: normalize(9),
     },
     sellAllText: {
-      color: COLORS.primary,
+      color: colors.primaryLight,
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
     },

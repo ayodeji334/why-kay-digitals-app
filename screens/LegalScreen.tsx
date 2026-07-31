@@ -104,6 +104,7 @@ export default function LegalScreen() {
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <AppText style={styles.screenDescription}>
           Stay informed about our terms, policies, and how we handle your data.

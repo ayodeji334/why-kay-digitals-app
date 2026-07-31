@@ -87,6 +87,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
       {showActionButtons && (
         <View style={styles.actionButtons}>
           <TouchableOpacity
+            hitSlop={10}
             activeOpacity={0.85}
             style={styles.depositButton}
             onPress={() => setDepositModalVisible(true)}
@@ -96,6 +97,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
           </TouchableOpacity>
 
           <TouchableOpacity
+            hitSlop={10}
             activeOpacity={0.85}
             style={styles.withdrawButton}
             onPress={() => setWithdrawModalVisible(true)}
@@ -224,13 +226,13 @@ const styles = StyleSheet.create({
     borderColor: "white",
     borderWidth: 1,
     borderRadius: 250,
-    paddingVertical: 9,
+    paddingVertical: normalize(12),
     gap: 8,
   },
   depositText: {
     color: "#fff",
     fontSize: normalize(18),
-    fontFamily: getFontFamily(800),
+    fontFamily: getFontFamily(700),
   },
   withdrawButton: {
     flex: 1,
@@ -239,13 +241,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#fff",
     borderRadius: 25,
-    paddingVertical: 8,
+    paddingVertical: normalize(12),
     gap: 8,
   },
   withdrawText: {
     color: "#333",
     fontSize: normalize(18),
-    fontFamily: getFontFamily(800),
+    fontFamily: getFontFamily(700),
   },
 });
 

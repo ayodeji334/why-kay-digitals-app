@@ -216,7 +216,11 @@ export default function ConfirmTwoFactorAuthenticationScreen() {
         barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
         backgroundColor={colors.background}
       />
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        style={styles.scrollContainer}
+      >
         <View style={styles.header}>
           <AppText style={styles.title}>Complete 2FA Setup</AppText>
           <AppText style={styles.subtitle}>

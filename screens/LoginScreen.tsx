@@ -70,7 +70,7 @@ export default function LoginScreen() {
                 fontSize: normalize(18),
                 fontFamily: getFontFamily(700),
               },
-              { color: colors.primaryDark },
+              { color: colors.primaryLight },
             ]}
           >
             Sign up here

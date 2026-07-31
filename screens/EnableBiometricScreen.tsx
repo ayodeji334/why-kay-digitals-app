@@ -495,6 +495,7 @@ const BiometricsScreen = () => {
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <View style={styles.content}>
           <View style={styles.textContainer}>

@@ -235,7 +235,11 @@ export default function BankAccountModal({
           <AppText style={styles.title}>Add Bank Account</AppText>
         </View>
 
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          style={{ flex: 1, paddingHorizontal: 16 }}
+        >
           <SelectInput
             label="Select Bank"
             value={selectedBank?.value}

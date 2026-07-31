@@ -129,6 +129,7 @@ const CryptoWalletDepositScreen = () => {
           />
         }
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
       >
         <WalletDetails

@@ -42,6 +42,73 @@ export default function CryptoRatesScreen() {
     },
   });
 
+  console.log(data);
+
+  // const cryptoOptions = useMemo<CryptoOption[]>(() => {
+  //   if (!Array.isArray(data)) return [];
+  //   return data.map((asset: any) => ({
+  //     id: asset.uuid,
+  //     value: asset.uuid,
+  //     label: `${asset.symbol} (${asset.name})`,
+  //     logo_url: asset.logo_url,
+  //     symbol: asset.symbol,
+  //     market_value: Number(asset.market_current_value ?? 0),
+  //     rates: asset.rates ?? [],
+  //     is_buy_enabled: asset.is_buy_enabled,
+  //     is_sell_enabled: asset.is_sell_enabled,
+  //   }));
+  // }, [data]);
+
+  // const crypto = useMemo(
+  //   () => cryptoOptions.find(c => c.value === selectedCrypto) ?? null,
+  //   [cryptoOptions, selectedCrypto],
+  // );
+
+  // const amountNum = useMemo(() => {
+  //   const n = parseFloat(rawAmount);
+  //   return isNaN(n) || n <= 0 ? 0 : n;
+  // }, [rawAmount]);
+
+  // const rateInfo = useMemo(() => {
+  //   if (!crypto || !Array.isArray(crypto.rates)) return null;
+
+  //   const matchedRate = crypto.rates.find(r => r.type === activeTab);
+  //   if (!matchedRate) return null;
+
+  //   const defaultValue = parseFloat(matchedRate.default_value ?? "0");
+  //   // const categories = matchedRate.categories ?? [];
+
+  //   // Resolve effective rate — match category by amount range, fallback to default
+  //   let effectiveRate = defaultValue;
+  //   let categoryLabel = "Default rate";
+  //   let source: "category" | "default" = "default";
+
+  //   // if (categories.length > 0 && amountNum > 0) {
+  //   //   const matched = categories.find(
+  //   //     (cat: any) =>
+  //   //       amountNum >= parseFloat(cat.min_amount ?? "0") &&
+  //   //       amountNum <= parseFloat(cat.max_amount ?? "0"),
+  //   //   );
+
+  //   //   if (matched) {
+  //   //     effectiveRate = parseFloat(matched.value ?? "0");
+  //   //     categoryLabel = matched.label ?? "Category rate";
+  //   //     source = "category";
+  //   //   }
+  //   // }
+
+  //   return {
+  //     value: effectiveRate,
+  //     label: categoryLabel,
+  //     source,
+  //     totalNgn: amountNum > 0 ? amountNum * effectiveRate : 0,
+  //     coinAmount:
+  //       amountNum > 0 && crypto.market_value > 0
+  //         ? amountNum / crypto.market_value
+  //         : 0,
+  //   };
+  // }, [crypto, activeTab, amountNum]);
+
   const cryptoOptions = useMemo<CryptoOption[]>(() => {
     if (!Array.isArray(data)) return [];
     return data.map((asset: any) => ({
@@ -51,7 +118,8 @@ export default function CryptoRatesScreen() {
       logo_url: asset.logo_url,
       symbol: asset.symbol,
       market_value: Number(asset.market_current_value ?? 0),
-      rates: asset.rates ?? [],
+      buy_rate: Number(asset.buy_rate ?? 0),
+      sell_rate: Number(asset.sell_rate ?? 0),
       is_buy_enabled: asset.is_buy_enabled,
       is_sell_enabled: asset.is_sell_enabled,
     }));
@@ -68,37 +136,14 @@ export default function CryptoRatesScreen() {
   }, [rawAmount]);
 
   const rateInfo = useMemo(() => {
-    if (!crypto || !Array.isArray(crypto.rates)) return null;
+    if (!crypto) return null;
 
-    const matchedRate = crypto.rates.find(r => r.type === activeTab);
-    if (!matchedRate) return null;
-
-    const defaultValue = parseFloat(matchedRate.default_value ?? "0");
-    // const categories = matchedRate.categories ?? [];
-
-    // Resolve effective rate — match category by amount range, fallback to default
-    let effectiveRate = defaultValue;
-    let categoryLabel = "Default rate";
-    let source: "category" | "default" = "default";
-
-    // if (categories.length > 0 && amountNum > 0) {
-    //   const matched = categories.find(
-    //     (cat: any) =>
-    //       amountNum >= parseFloat(cat.min_amount ?? "0") &&
-    //       amountNum <= parseFloat(cat.max_amount ?? "0"),
-    //   );
-
-    //   if (matched) {
-    //     effectiveRate = parseFloat(matched.value ?? "0");
-    //     categoryLabel = matched.label ?? "Category rate";
-    //     source = "category";
-    //   }
-    // }
+    const effectiveRate =
+      activeTab === "buy" ? crypto.buy_rate : crypto.sell_rate;
+    if (!effectiveRate) return null;
 
     return {
       value: effectiveRate,
-      label: categoryLabel,
-      source,
       totalNgn: amountNum > 0 ? amountNum * effectiveRate : 0,
       coinAmount:
         amountNum > 0 && crypto.market_value > 0
@@ -145,6 +190,8 @@ export default function CryptoRatesScreen() {
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 16 }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
@@ -190,7 +237,7 @@ export default function CryptoRatesScreen() {
           activeTabTextStyle={styles.activeTabText}
         />
 
-        <View>
+        <View style={{ marginTop: 20 }}>
           <SelectInput
             label="Coin"
             options={cryptoOptions}
@@ -341,15 +388,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       gap: 5,
     },
     dollarSign: {
-      fontSize: normalize(25),
+      fontSize: normalize(21),
       fontFamily: getFontFamily("800"),
       color: colors.text,
       paddingLeft: 15,
     },
     input: {
       flex: 1,
-      paddingVertical: normalize(14),
-      fontSize: normalize(25),
+      paddingVertical: normalize(12),
+      fontSize: normalize(23),
       fontFamily: getFontFamily("800"),
       color: colors.text,
     },

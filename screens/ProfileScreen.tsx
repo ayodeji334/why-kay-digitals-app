@@ -84,6 +84,7 @@ export default function ProfileScreen() {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <View style={styles.profileHeader}>
           <View style={styles.imageWrapper}>

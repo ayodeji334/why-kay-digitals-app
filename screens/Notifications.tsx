@@ -230,6 +230,8 @@ export default function NotificationsScreen() {
             onEndReached={() =>
               hasNextPage && !isFetchingNextPage && fetchNextPage()
             }
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
             onEndReachedThreshold={0.4}
             ListFooterComponent={renderFooter}
           />

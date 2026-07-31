@@ -191,6 +191,8 @@ export default function BuyAirtimeScreen() {
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
         style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
         <NumberInputField
