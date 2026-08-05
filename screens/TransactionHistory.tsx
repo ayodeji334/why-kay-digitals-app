@@ -157,6 +157,8 @@ const TransactionHistoryScreen: React.FC = () => {
     return <LoadingState message={"Loading the transactions..."} />;
   }
 
+  console.log("Transactions: ", transactions);
+
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <StatusBar

@@ -351,7 +351,7 @@ const MenuItem = ({
         >
           <AppText
             style={{
-              color: colors.primary,
+              color: colors.primaryLight,
               fontSize: normalize(15),
               fontFamily: getFontFamily(800),
             }}

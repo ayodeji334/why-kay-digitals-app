@@ -59,7 +59,7 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
         <>
           {loading && (
             <View style={styles.loaderContainer}>
-              <ActivityIndicator size={20} color={COLORS.primary} />
+              <ActivityIndicator size={20} color={colors.primaryLight} />
             </View>
           )}
           <WebView
@@ -94,7 +94,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       zIndex: 2,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: colors.overlay,
+      backgroundColor: colors.background, // semi-transparent background
     },
     loadingText: {
       marginTop: 10,

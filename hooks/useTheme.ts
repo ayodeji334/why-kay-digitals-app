@@ -166,7 +166,7 @@ const LIGHT_COLORS: ThemeColors = {
   background: "#FFFFFF",
   surface: "#fff",
   surfaceSecondary: "#F1F5F9",
-  border: "#E2E8F0",
+  border: "#cacaca",
   borderLight: "#F1F5F9",
   text: "#0F172A",
   textSecondary: "#334155",

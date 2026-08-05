@@ -749,6 +749,7 @@ const RegisterForm: React.FC = () => {
         label="Phone Number"
         control={control}
         name="phone_number"
+        excludedCountryCodes={["US", "GB", "CN"]}
         placeholder="Enter phone number"
       />
       <PasswordInputField

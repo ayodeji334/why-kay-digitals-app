@@ -259,7 +259,7 @@ const CryptoWalletScreen = () => {
           here. Kindly reach out to us through our support channel.
           <Text
             onPress={handleWhatsApp}
-            style={{ color: COLORS.primary, paddingHorizontal: 8 }}
+            style={{ color: colors.primaryLight, paddingHorizontal: 8 }}
           >
             {" "}
             Contact us on Whatsapp

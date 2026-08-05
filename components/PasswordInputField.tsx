@@ -142,7 +142,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     input: {
       flex: 1,
       paddingHorizontal: 5,
-      paddingVertical: normalize(14),
+      paddingVertical: normalize(16),
       color: colors.text,
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),

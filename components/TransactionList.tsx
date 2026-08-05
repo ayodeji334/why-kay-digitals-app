@@ -112,11 +112,11 @@ const TransactionItem = ({ item }: any) => {
             style={{
               color:
                 item?.status.toLowerCase() === "successful"
-                  ? "#059669"
+                  ? colors.primaryLight
                   : item?.status.toLowerCase() === "processing" ||
                     item?.status.toLowerCase() === "pending"
                   ? "#b46108"
-                  : "#DC2626",
+                  : colors.error,
               fontSize: normalize(17),
               fontFamily: getFontFamily(700),
             }}

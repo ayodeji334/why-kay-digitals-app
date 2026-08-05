@@ -763,12 +763,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     detailLabel: {
       fontFamily: getFontFamily("700"),
-      fontSize: 13,
+      fontSize: normalize(17),
       color: colors.text,
     },
     detailValue: {
       fontFamily: getFontFamily("700"),
-      fontSize: 13,
+      fontSize: normalize(17),
       fontWeight: "500",
       color: colors.text,
     },

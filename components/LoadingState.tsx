@@ -18,7 +18,7 @@ const LoadingState: React.FC<LoadingProps> = ({
     <View style={styles.loadingContainer}>
       <ActivityIndicator
         size="large"
-        color={colors.primary}
+        color={colors.primaryLight}
         style={styles.spinner}
       />
       <AppText style={styles.loadingText}>{message}</AppText>
@@ -29,7 +29,7 @@ const LoadingState: React.FC<LoadingProps> = ({
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     loadingContainer: {
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: colors.background,
       borderRadius: 12,
       padding: 24,
       alignItems: "center",

@@ -74,7 +74,7 @@ export default function ReturningUserLoginScreen() {
                 fontSize: normalize(18),
                 fontFamily: getFontFamily(700),
               },
-              { color: colors.primaryDark },
+              { color: colors.primaryLight },
             ]}
           >
             Switch Account

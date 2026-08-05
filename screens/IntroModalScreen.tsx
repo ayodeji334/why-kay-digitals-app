@@ -606,7 +606,7 @@ export default function IntroModalScreen() {
           <AppText style={styles.skip}>Skip</AppText>
         </Pressable>
         <Pressable hitSlop={20} style={styles.nextButton} onPress={handleNext}>
-          <ArrowRight2 color="#fff" size={normalize(15)} />
+          <ArrowRight2 color="#fff" size={normalize(19)} />
         </Pressable>
       </View>
     </SafeAreaView>
@@ -625,7 +625,7 @@ const makeStyles = (
       marginTop: marginTop,
     },
     slide: {
-      paddingTop: 40,
+      paddingTop: 80,
       width: screenWidth,
       flex: 1,
       justifyContent: "flex-start",
@@ -655,7 +655,7 @@ const makeStyles = (
       color: colors.text,
     },
     highlight: {
-      color: colors.primary,
+      color: colors.primaryLight,
       fontFamily: getFontFamily(900),
     },
     subtitle: {
@@ -698,8 +698,8 @@ const makeStyles = (
     },
     nextButton: {
       paddingHorizontal: normalize(28),
-      paddingVertical: normalize(10),
-      borderRadius: 28,
+      paddingVertical: normalize(14),
+      borderRadius: 280,
       backgroundColor: colors.primary,
       justifyContent: "center",
       alignItems: "center",
