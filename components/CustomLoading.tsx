@@ -8,10 +8,7 @@ type CustomLoadingProps = {
   color?: string;
 };
 
-export default function CustomLoading({
-  loading,
-  color = COLORS.secondary,
-}: CustomLoadingProps) {
+export default function CustomLoading({ loading, color }: CustomLoadingProps) {
   const colors = useColors();
   const styles = makeStyles(colors);
 
@@ -24,7 +21,7 @@ export default function CustomLoading({
     >
       <View style={styles.modalBackground}>
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color={color} />
+          <ActivityIndicator size={40} color={colors.primary} />
         </View>
       </View>
     </Modal>
@@ -40,8 +37,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
     },
     loaderContainer: {
-      backgroundColor: colors.overlay,
-      padding: 20,
+      backgroundColor: "white",
+      padding: 10,
       borderRadius: 10,
       alignItems: "center",
     },

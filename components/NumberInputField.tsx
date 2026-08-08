@@ -82,9 +82,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     input: {
       borderWidth: 1,
       borderColor: colors.border,
-      borderRadius: 10,
-      paddingHorizontal: normalize(14),
-      paddingVertical: normalize(14),
+      borderRadius: 8,
+      paddingHorizontal: normalize(16),
+      paddingVertical: normalize(16),
       color: colors.text,
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),

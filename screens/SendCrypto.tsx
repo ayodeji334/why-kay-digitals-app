@@ -778,7 +778,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     error: {
-      color: "red",
+      color: colors.error,
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
       marginBottom: 10,

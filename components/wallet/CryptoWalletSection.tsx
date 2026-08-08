@@ -159,7 +159,7 @@ const CryptoWalletSection = () => {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={refetch}
-            colors={[COLORS.primary]}
+            colors={colors.primary ? [colors.primary] : [COLORS.primary]}
           />
         }
         data={walletList}
@@ -739,7 +739,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       paddingHorizontal: normalize(19),
       borderRadius: 30,
       borderColor: colors.border,
-      borderWidth: 1,
+      borderWidth: 1.5,
       alignItems: "center",
       flexDirection: "row",
       gap: 4,

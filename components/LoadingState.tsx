@@ -17,8 +17,8 @@ const LoadingState: React.FC<LoadingProps> = ({
   return (
     <View style={styles.loadingContainer}>
       <ActivityIndicator
-        size="large"
-        color={colors.primaryLight}
+        size={90}
+        color={colors.primary}
         style={styles.spinner}
       />
       <AppText style={styles.loadingText}>{message}</AppText>

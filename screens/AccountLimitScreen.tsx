@@ -340,7 +340,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       marginBottom: 24,
     },
     upgradeButtonText: {
-      color: colors.text,
+      color: "white",
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
     },
