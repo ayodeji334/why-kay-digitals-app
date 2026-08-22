@@ -78,7 +78,11 @@ export const DetailRow: React.FC<{
             {copied ? (
               <CustomIcon source={CheckCircleIcon} size={15} color="green" />
             ) : (
-              <CustomIcon source={CopyIcon} size={15} color="#0a580dff" />
+              <CustomIcon
+                source={CopyIcon}
+                size={15}
+                color={colors.primaryLight}
+              />
             )}
           </TouchableOpacity>
         ) : null}
@@ -1172,7 +1176,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     detailsContainer: {
-      backgroundColor: colors.inputBackground,
+      backgroundColor: colors.infoCardBackgroundColor,
       borderRadius: 12,
       padding: 16,
       marginBottom: 30,

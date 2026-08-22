@@ -167,9 +167,6 @@ export function createAxiosClient(): AxiosInstance {
         }
       }
 
-      console.log(error?.response);
-
-      // No toast logic here — just reject
       return Promise.reject(error);
     },
   );

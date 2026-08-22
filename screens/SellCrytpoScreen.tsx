@@ -134,8 +134,6 @@ export default function CryptoSellScreen() {
   const { intent } = route.params;
   const { minSellAmount } = useCryptoLimits();
 
-  console.log(minSellAmount);
-
   const selectedAssetUuid = intent.assetId ?? "";
 
   const schema = useMemo(
@@ -297,8 +295,6 @@ export default function CryptoSellScreen() {
     }
   }, [marketPrice]);
 
-  console.log(assetDetails);
-
   // Effect: pre-fill amount from intent
   // useEffect(() => {
   //   if (!intent?.amount) return;
@@ -447,7 +443,17 @@ export default function CryptoSellScreen() {
   };
 
   if (isLoading) {
-    return <CustomLoading loading={true} />;
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          backgroundColor: colors.background,
+        }}
+      >
+        <CustomLoading loading={isLoading} />
+      </View>
+    );
   }
 
   return (

@@ -48,16 +48,55 @@ export const useBiometricEnrollment = () => {
     );
   }, []);
 
+  // const handleError = useCallback(
+  //   (err: any) => {
+  //     const msg = String(err?.message ?? "");
+  //     if (msg.includes("cancel") || msg.includes("User cancelled")) return;
+  //     if (err?.code === "ERR_NETWORK")
+  //       showError("Network error. Please check your connection.");
+  //     else if (msg.includes("NONE_ENROLLED")) showEnrollmentAlert();
+  //     else if (err?.response?.status === 400)
+  //       showError(err.response.data?.message || "Invalid request");
+  //     else showError("Something went wrong. Please try again.");
+  //   },
+  //   [showEnrollmentAlert],
+  // );
+
   const handleError = useCallback(
     (err: any) => {
-      const msg = String(err?.message ?? "");
-      if (msg.includes("cancel") || msg.includes("User cancelled")) return;
-      if (err?.code === "ERR_NETWORK")
+      const msg = String(err?.message ?? "").toLowerCase();
+      const code = String(err?.code ?? "").toLowerCase();
+
+      // User dismissed the biometric prompt itself (tapped Cancel / "Use
+      // password instead" / swiped away) — not an error, just fall through.
+      const isPromptCancel =
+        msg.includes("cancel") ||
+        code.includes("cancel") ||
+        code === "userfallback";
+      if (isPromptCancel) return;
+
+      // User denied the system-level Face ID / biometrics permission, or no
+      // biometrics are enrolled on the device — guide them to Settings
+      // instead of showing a generic error.
+      const isPermissionOrAvailabilityIssue =
+        msg.includes("not available") ||
+        msg.includes("not permitted") ||
+        msg.includes("not enrolled") ||
+        msg.includes("none_enrolled") ||
+        msg.includes("permission") ||
+        msg.includes("denied");
+      if (isPermissionOrAvailabilityIssue) {
+        showEnrollmentAlert();
+        return;
+      }
+
+      if (err?.code === "ERR_NETWORK") {
         showError("Network error. Please check your connection.");
-      else if (msg.includes("NONE_ENROLLED")) showEnrollmentAlert();
-      else if (err?.response?.status === 400)
+      } else if (err?.response?.status === 400) {
         showError(err.response.data?.message || "Invalid request");
-      else showError("Something went wrong. Please try again.");
+      } else {
+        showError("Something went wrong. Please try again.");
+      }
     },
     [showEnrollmentAlert],
   );

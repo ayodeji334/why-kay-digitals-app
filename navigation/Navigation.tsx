@@ -671,6 +671,8 @@ import LandingScreen from "../screens/LandingScreen";
 import { useBiometricPromptStore } from "../stores/biometricPromptSlice";
 import { refreshBiometricState } from "../stores/biometricSlice";
 import { ThemeScreen } from "../screens/ThemeScreen";
+import PhoneNumberVerificationScreen from "../screens/PhoneNumberVerificationScreen";
+import BVNOwnershipConfirmationScreen from "../screens/BVNOwnershipConfirmationScreen";
 
 const useIsSignedOut = () => !useIsAuthenticated();
 
@@ -905,6 +907,24 @@ const RootStack = createNativeStackNavigator({
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Buy Gift Card" />,
+          },
+        },
+        PhoneNumberVerification: {
+          screen: PhoneNumberVerificationScreen,
+          options: {
+            headerShown: true,
+            header: () => (
+              <CustomHeader showTitle title="Verify Phone Number" />
+            ),
+          },
+        },
+        BVNOwnershipConfirmation: {
+          screen: BVNOwnershipConfirmationScreen,
+          options: {
+            headerShown: true,
+            header: () => (
+              <CustomHeader showTitle title="Confirm BVN Ownership" />
+            ),
           },
         },
         BrandDetail: {

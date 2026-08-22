@@ -19,8 +19,8 @@ import { getFontFamily, normalize } from "../constants/settings";
 import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
 import { useNavigation } from "@react-navigation/native";
-import PhoneNumberInputField from "../components/PhoneNumberInputField";
-import parsePhoneNumberFromString from "libphonenumber-js";
+// import PhoneNumberInputField from "../components/PhoneNumberInputField";
+// import parsePhoneNumberFromString from "libphonenumber-js";
 import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
 import { DEFAULT_IMAGE } from "./SettingsScreen";
@@ -31,30 +31,30 @@ const profileSchema = yup.object().shape({
   last_name: yup.string().required("Last Name is required"),
   username: yup.string().required("Username is required"),
   gender: yup.string().required("Gender is required"),
-  phone_number: yup
-    .string()
-    .required("Phone number is required")
-    .test(
-      "is-valid-phone",
-      "Please provide a valid phone number",
-      function (value) {
-        if (!value) return false;
+  // phone_number: yup
+  //   .string()
+  //   .required("Phone number is required")
+  //   .test(
+  //     "is-valid-phone",
+  //     "Please provide a valid phone number",
+  //     function (value) {
+  //       if (!value) return false;
 
-        try {
-          // Remove any non-digit characters except + at the beginning
-          const cleanedValue = value.replace(/(?!^\+)[^\d]/g, "");
+  //       try {
+  //         // Remove any non-digit characters except + at the beginning
+  //         const cleanedValue = value.replace(/(?!^\+)[^\d]/g, "");
 
-          // Parse the phone number with Nigeria as default country
-          const phoneNumber = parsePhoneNumberFromString(cleanedValue, "NG");
+  //         // Parse the phone number with Nigeria as default country
+  //         const phoneNumber = parsePhoneNumberFromString(cleanedValue, "NG");
 
-          // Return true if valid, false if invalid
-          return phoneNumber ? phoneNumber.isValid() : false;
-        } catch (error) {
-          // console.log("Phone number parsing error:", error);
-          return false;
-        }
-      },
-    ),
+  //         // Return true if valid, false if invalid
+  //         return phoneNumber ? phoneNumber.isValid() : false;
+  //       } catch (error) {
+  //         // console.log("Phone number parsing error:", error);
+  //         return false;
+  //       }
+  //     },
+  //   ),
 });
 
 export default function EditProfileScreen() {
@@ -73,7 +73,7 @@ export default function EditProfileScreen() {
       last_name: user?.last_name || "",
       username: user?.username || "",
       gender: user?.gender || "",
-      phone_number: user?.phone_number || "",
+      // phone_number: user?.phone_number || "",
     },
   });
 
@@ -259,7 +259,7 @@ export default function EditProfileScreen() {
               { label: "Female", value: "FEMALE" },
             ]}
           />
-          <PhoneNumberInputField
+          {/* <PhoneNumberInputField
             label="Phone Number"
             control={control}
             name="phone_number"
@@ -267,10 +267,11 @@ export default function EditProfileScreen() {
             containerStyle={{
               marginTop: 5,
             }}
-          />
+          /> */}
         </View>
 
         <TouchableOpacity
+          activeOpacity={0.87}
           style={[styles.updateButton, loading && styles.updateButtonDisabled]}
           onPress={handleSubmit(handleUpdateProfile)}
           disabled={loading}

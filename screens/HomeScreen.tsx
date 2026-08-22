@@ -23,11 +23,10 @@ import { useFiatBalance } from "../hooks/useFiatBalance";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppText } from "../components/AppText";
 import { DEFAULT_IMAGE } from "./SettingsScreen";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 
 const HomeScreen = () => {
   const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
   const user = useUser();
   const navigation = useNavigation();
   const { refetch, isRefetching } = useFiatBalance();

@@ -11,6 +11,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { Calendar } from "iconsax-react-nativejs";
 
 interface DatePickerFieldProps {
   label: string;
@@ -83,6 +84,7 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
         activeOpacity={0.8}
       >
         <AppText style={styles.dateText}>{displayText}</AppText>
+        <Calendar size={15} color={colors.text} />
       </TouchableOpacity>
 
       <Modal visible={visible} transparent animationType="slide">
@@ -242,11 +244,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     dateField: {
       backgroundColor: "inherit",
-      paddingVertical: 18,
-      paddingHorizontal: 14,
+      paddingVertical: normalize(14),
+      paddingHorizontal: normalize(14),
       borderRadius: 8,
       borderWidth: 1,
       borderColor: colors.border,
+      flexDirection: "row",
+      justifyContent: "space-between",
     },
     dateText: {
       fontSize: normalize(17),

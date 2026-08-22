@@ -22,8 +22,12 @@ import { CryptoOption, TradeIntent, TradeTab } from "../libs/types";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import TabSwitcher from "../components/TabSwitcher";
+import { usePhoneVerification } from "../hooks/usePhoneVerification";
+import HalfScreenModal from "../components/HalfScreenModal";
 
 export default function CryptoRatesScreen() {
+  const { isPhoneVerified } = usePhoneVerification();
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("sell");
   const [selectedCrypto, setSelectedCrypto] = useState<string | null>(null);
   const [rawAmount, setRawAmount] = useState("");
@@ -42,7 +46,10 @@ export default function CryptoRatesScreen() {
     },
   });
 
-  console.log(data);
+  const handleVerifyNow = () => {
+    setShowPhoneModal(false);
+    navigation.navigate("PhoneNumberVerification" as never);
+  };
 
   // const cryptoOptions = useMemo<CryptoOption[]>(() => {
   //   if (!Array.isArray(data)) return [];
@@ -163,6 +170,11 @@ export default function CryptoRatesScreen() {
       return;
     }
 
+    if (!isPhoneVerified) {
+      setShowPhoneModal(true);
+      return;
+    }
+
     const intent: TradeIntent = {
       assetId: crypto.value,
       symbol: crypto.symbol,
@@ -175,7 +187,41 @@ export default function CryptoRatesScreen() {
     navigation.navigate(activeTab === "buy" ? "BuyCrypto" : "SellCrypto", {
       intent,
     });
-  }, [selectedCrypto, crypto, activeTab, rawAmount, rateInfo, navigation]);
+  }, [
+    selectedCrypto,
+    crypto,
+    amountNum,
+    isPhoneVerified,
+    activeTab,
+    rawAmount,
+    rateInfo,
+    navigation,
+  ]);
+
+  // const onPressTrade = useCallback(() => {
+  //   if (!selectedCrypto || !crypto) {
+  //     showError("Please select an asset");
+  //     return;
+  //   }
+
+  //   if (!amountNum) {
+  //     showError("Please enter the amount");
+  //     return;
+  //   }
+
+  //   const intent: TradeIntent = {
+  //     assetId: crypto.value,
+  //     symbol: crypto.symbol,
+  //     action: activeTab as any,
+  //     source: "rates",
+  //     amount: rawAmount,
+  //     rate: rateInfo?.totalNgn ?? 0,
+  //   };
+
+  //   navigation.navigate(activeTab === "buy" ? "BuyCrypto" : "SellCrypto", {
+  //     intent,
+  //   });
+  // }, [selectedCrypto, crypto, activeTab, rawAmount, rateInfo, navigation]);
 
   const resetStates = useCallback(() => {
     setActiveTab("sell");
@@ -339,6 +385,18 @@ export default function CryptoRatesScreen() {
       </ScrollView>
 
       <CustomLoading loading={isLoading} />
+
+      <HalfScreenModal
+        isVisible={showPhoneModal}
+        onClose={() => setShowPhoneModal(false)}
+        title="Verify your phone number"
+        description="You need to verify your phone number before you can continue."
+        buttonText="Verify Now"
+        actionButton={handleVerifyNow}
+        secondaryButtonText="Maybe later"
+        secondaryAction={() => setShowPhoneModal(false)}
+        showCloseButton
+      />
     </SafeAreaView>
   );
 }

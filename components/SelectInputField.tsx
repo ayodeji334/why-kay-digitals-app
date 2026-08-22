@@ -110,7 +110,7 @@ export function SelectInput({
 
         <TouchableOpacity
           activeOpacity={0.8}
-          hitSlop={10}
+          hitSlop={3}
           style={[styles.input, errorMessage && styles.errorBorder]}
           onPress={handlePress}
           disabled={isDisabled}

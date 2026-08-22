@@ -40,19 +40,46 @@ const BVNForm = () => {
     },
   });
 
+  // const onSubmit = async (data: any) => {
+  //   try {
+  //     const response = await post("/kyc/verify-bvn", data);
+  //     navigation.goBack();
+  //     setUser(response.data?.data?.user);
+
+  //     reset();
+
+  //     showSuccess("BVN Verified successful");
+  //   } catch (err: any) {
+  //     console.log(err);
+  //     // showError(err?.message ?? "Cannot verify your BVN at the moment");
+  //     // console.log(error?.response);
+  //     if (err instanceof AxiosError) {
+  //       const errorMessage =
+  //         err.response?.data?.message ?? "Cannot verify your BVN at the moment";
+  //       showError(errorMessage);
+  //     } else {
+  //       showError("An unexpected error occurred. Please try again.");
+  //     }
+  //   }
+  // };
+
   const onSubmit = async (data: any) => {
     try {
       const response = await post("/kyc/verify-bvn", data);
-      navigation.goBack();
-      setUser(response.data?.data?.user);
+      const result = response.data?.data;
 
+      setUser(response.data?.data?.user);
       reset();
 
-      showSuccess("BVN Verified successful");
+      navigation.navigate(
+        "BVNOwnershipConfirmation" as never,
+        {
+          bvn: result?.bvn,
+          maskedPhoneNumber: result?.maskedPhoneNumber,
+        } as never,
+      );
     } catch (err: any) {
       console.log(err);
-      // showError(err?.message ?? "Cannot verify your BVN at the moment");
-      // console.log(error?.response);
       if (err instanceof AxiosError) {
         const errorMessage =
           err.response?.data?.message ?? "Cannot verify your BVN at the moment";

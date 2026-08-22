@@ -171,9 +171,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     hintValid: {
-      color: COLORS.primary,
+      color: colors.primaryLight,
       fontFamily: getFontFamily("700"),
-      fontSize: normalize(16),
+      fontSize: normalize(17),
     },
     hintInvalid: {
       color: "red",

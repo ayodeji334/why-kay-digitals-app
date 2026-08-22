@@ -533,11 +533,12 @@ import { AxiosError } from "axios";
 import { getFontFamily, normalize } from "../../constants/settings";
 import { SelectInput } from "../SelectInputField";
 import useAxios from "../../hooks/useAxios";
-import parsePhoneNumberFromString from "libphonenumber-js";
-import PhoneNumberInputField from "../PhoneNumberInputField";
+// import parsePhoneNumberFromString from "libphonenumber-js";
+// import PhoneNumberInputField from "../PhoneNumberInputField";
 import EmailInputField from "../EmailInputField";
 import { OneSignal } from "react-native-onesignal";
 import { AppText } from "../AppText";
+import { useColors } from "../../hooks/useTheme";
 
 const registerSchema = yup.object().shape({
   username: yup
@@ -546,23 +547,23 @@ const registerSchema = yup.object().shape({
     .max(30, "Your username is too long")
     .required("Username is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
-  phone_number: yup
-    .string()
-    .required("Phone number is required")
-    .test(
-      "is-valid-phone",
-      "Please provide a valid phone number",
-      function (value) {
-        if (!value) return false;
-        try {
-          const cleanedValue = value.replace(/(?!^\+)[^\d]/g, "");
-          const phoneNumber = parsePhoneNumberFromString(cleanedValue, "NG");
-          return phoneNumber ? phoneNumber.isValid() : false;
-        } catch (error) {
-          return false;
-        }
-      },
-    ),
+  // phone_number: yup
+  //   .string()
+  //   .required("Phone number is required")
+  //   .test(
+  //     "is-valid-phone",
+  //     "Please provide a valid phone number",
+  //     function (value) {
+  //       if (!value) return false;
+  //       try {
+  //         const cleanedValue = value.replace(/(?!^\+)[^\d]/g, "");
+  //         const phoneNumber = parsePhoneNumberFromString(cleanedValue, "NG");
+  //         return phoneNumber ? phoneNumber.isValid() : false;
+  //       } catch (error) {
+  //         return false;
+  //       }
+  //     },
+  //   ),
   password: yup
     .string()
     .min(6, "Password must be at least 6 characters")
@@ -593,6 +594,9 @@ const RegisterForm: React.FC = () => {
     available?: boolean;
     message?: string;
   }>({});
+
+  const colors = useColors();
+  const styles = makeStyles(colors);
 
   const { control, handleSubmit, setError, clearErrors } = useForm<any>({
     resolver: yupResolver(registerSchema),
@@ -745,13 +749,13 @@ const RegisterForm: React.FC = () => {
         placeholder="Enter your email address"
       />
 
-      <PhoneNumberInputField
+      {/* <PhoneNumberInputField
         label="Phone Number"
         control={control}
         name="phone_number"
         excludedCountryCodes={["US", "GB", "CN"]}
         placeholder="Enter phone number"
-      />
+      /> */}
       <PasswordInputField
         label="Password"
         control={control}
@@ -806,33 +810,35 @@ const RegisterForm: React.FC = () => {
 
 export default RegisterForm;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingVertical: 20,
-  },
-  checkingText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("400"),
-    marginTop: -5,
-    marginBottom: 10,
-  },
-  available: {
-    color: "green",
-  },
-  taken: {
-    color: "red",
-  },
-  button: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    marginTop: 30,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("800"),
-    fontSize: normalize(18),
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    container: {
+      // flex: 1,
+      paddingVertical: 20,
+      flexGrow: 1,
+    },
+    checkingText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      marginTop: -5,
+      marginBottom: 10,
+    },
+    available: {
+      color: colors.primaryLight,
+    },
+    taken: {
+      color: "red",
+    },
+    button: {
+      backgroundColor: COLORS.primary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      marginTop: 30,
+      alignItems: "center",
+    },
+    buttonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(18),
+    },
+  });

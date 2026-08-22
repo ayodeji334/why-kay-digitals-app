@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { FingerScan, Scan } from "iconsax-react-nativejs";
 import { useQueryClient } from "@tanstack/react-query";
-import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "./AppText";
 import { useBiometricLogin } from "../hooks/useBiometricLogin";
