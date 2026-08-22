@@ -121,11 +121,11 @@ export default function ProfileScreen() {
             isCopy={true}
           />
           <ProfileField label="Gender" value={userData?.gender} />
-          {/* <ProfileField
+          <ProfileField
             label="Phone number"
             value={userData?.phone_number}
             isCopy={true}
-          /> */}
+          />
           <ProfileField
             label="Email address"
             value={userData?.email}

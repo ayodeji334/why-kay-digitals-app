@@ -421,7 +421,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         isVisible={withdrawModalVisible}
         onClose={() => setWithdrawModalVisible(false)}
         title="Withdraw"
-        description=""
+        description="Which wallet do you want to withdraw from?"
         actionButton={() => {
           setWithdrawModalVisible(false);
           setTimeout(() => navigation.navigate("Withdrawal" as never), 600);
