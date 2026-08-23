@@ -2,7 +2,7 @@ import { Platform, StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import NavigationRoot from "./navigation/Navigation";
 import SplashScreen from "./screens/SplashScreen";
-import { RootSiblingParent } from "react-native-root-siblings";
+import ToastHost from "./components/ToastHost";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "./stores/authSlice";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -34,9 +34,8 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RootSiblingParent>
-        <MainApp />
-      </RootSiblingParent>
+      <MainApp />
+      <ToastHost />
     </QueryClientProvider>
   );
 }

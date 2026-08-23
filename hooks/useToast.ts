@@ -1,70 +1,69 @@
-import { useEffect, useState, useCallback } from "react";
-import Toast from "react-native-root-toast";
+import { useCallback } from "react";
 
 export enum ToastType {
   ERROR = "error",
   SUCCESS = "success",
 }
 
-interface ToastProps {
+export interface ToastProps {
   type: ToastType;
   message: string;
+  /** Extra top offset (px), e.g. to stack a toast under another one. */
   position?: number;
+  duration?: number;
+}
+
+export interface QueuedToast extends ToastProps {
+  id: number;
+}
+
+type Listener = (toasts: QueuedToast[]) => void;
+
+// Tiny, dependency-free pub/sub. `ToastHost` (mounted once at the app root,
+// see App.tsx) is the sole subscriber and is what actually renders the
+// queued toasts — this module just tracks the queue and fans out updates.
+let queue: QueuedToast[] = [];
+let listeners: Listener[] = [];
+let nextId = 0;
+
+function notify() {
+  listeners.forEach(listener => listener(queue));
+}
+
+export function pushToast(props: ToastProps) {
+  const id = ++nextId;
+  queue = [...queue, { ...props, id }];
+  notify();
+  return id;
+}
+
+export function dismissToast(id: number) {
+  queue = queue.filter(toast => toast.id !== id);
+  notify();
+}
+
+export function subscribeToToasts(listener: Listener) {
+  listeners = [...listeners, listener];
+  listener(queue);
+  return () => {
+    listeners = listeners.filter(l => l !== listener);
+  };
+}
+
+function showSequentially(items: ToastProps[], index: number) {
+  if (index >= items.length) return;
+  pushToast(items[index]);
+  setTimeout(() => showSequentially(items, index + 1), 200);
 }
 
 export function useCustomToast() {
-  const [messages, setMessages] = useState<ToastProps[]>([]);
-
-  const baseToastOptions = {
-    duration: 3000,
-    opacity: 1,
-    textColor: "white",
-    shadow: false,
-    animation: true,
-    hideOnPress: true,
-    delay: 100,
-    containerStyle: {
-      width: "92%",
-      padding: 20,
-      borderRadius: 15,
-      zIndex: 20000,
-      marginBottom: 10,
-    },
-    textStyle: {
-      fontFamily: "Poppins-SemiBold",
-      fontSize: 13,
-      textAlign: "left",
-    },
-  } as const;
-
-  const renderToast = (props: ToastProps, index = 0) => {
-    Toast.show(props.message, {
-      ...baseToastOptions,
-      position: (props.position ?? 10) + index * 80,
-      backgroundColor: props.type === ToastType.ERROR ? "#D41111" : "green",
-    });
-  };
-
   const showToast = useCallback((props: ToastProps | ToastProps[]) => {
     if (Array.isArray(props)) {
-      setMessages(props);
+      showSequentially(props, 0);
     } else {
-      renderToast(props);
+      pushToast(props);
     }
   }, []);
-
-  useEffect(() => {
-    if (messages.length === 0) return;
-
-    const showSequentially = (index: number) => {
-      if (index < messages.length) {
-        renderToast(messages[index], index);
-        setTimeout(() => showSequentially(index + 1), 200);
-      }
-    };
-
-    showSequentially(0);
-  }, [messages]);
 
   return showToast;
 }
