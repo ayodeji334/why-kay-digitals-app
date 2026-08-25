@@ -71,13 +71,13 @@ function relativeChangeExceeded(
 
 const STABLECOINS = ["USDT"];
 
-const schema = Yup.object().shape({
-  asset_id: Yup.string().required("Select the crypto you want to sell"),
-  amount: Yup.number()
-    .min(20, "The amount should not be less than $20")
-    .typeError("Enter a valid amount")
-    .required("Amount is required"),
-});
+// const schema = Yup.object().shape({
+//   asset_id: Yup.string().required("Select the crypto you want to sell"),
+//   amount: Yup.number()
+//     .min(20, "The amount should not be less than $20")
+//     .typeError("Enter a valid amount")
+//     .required("Amount is required"),
+// });
 
 function calculateSellFeeBreakdown(
   amount: number,

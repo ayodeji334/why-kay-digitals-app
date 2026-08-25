@@ -111,10 +111,7 @@ export default function ProfileScreen() {
         {/* Profile Details */}
         <View style={styles.detailsSection}>
           <ProfileField label="Firstname" value={userData?.first_name} />
-          <ProfileField
-            label="Lastname (Surname)"
-            value={userData?.last_name}
-          />
+          <ProfileField label="Lastname" value={userData?.last_name} />
           <ProfileField
             label="Username"
             value={userData?.username}

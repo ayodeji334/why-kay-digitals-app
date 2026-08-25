@@ -806,12 +806,7 @@ const StatCard: React.FC<{
 
   return (
     <View style={[styles.statCard, { alignItems: align }]}>
-      <AppText
-        style={[
-          styles.statTitle,
-          { textAlign: direction, fontSize: normalize(14) },
-        ]}
-      >
+      <AppText style={[styles.statTitle, { textAlign: direction }]}>
         {title}
       </AppText>
       <AppText
@@ -1042,7 +1037,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       justifyContent: "space-between",
     },
     statTitle: {
-      fontSize: normalize(15),
+      fontSize: normalize(17),
       fontFamily: getFontFamily(400),
       marginBottom: 8,
       textAlign: "right",

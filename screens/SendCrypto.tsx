@@ -1697,13 +1697,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     feeLabel: {
       color: colors.text,
       fontFamily: getFontFamily("700"),
-      fontSize: 12,
+      fontSize: normalize(17),
       flex: 1,
     },
     feeValue: {
       color: colors.text,
       fontFamily: getFontFamily("900"),
-      fontSize: 12,
+      fontSize: normalize(16),
       textAlign: "right",
       flex: 1,
     },

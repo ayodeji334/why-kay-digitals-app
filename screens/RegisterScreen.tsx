@@ -1,21 +1,39 @@
-import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize, width } from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
-import RegisterForm from "../components/forms/RegisterForm";
+import RegisterForm, {
+  RegisterFormHandle,
+} from "../components/forms/RegisterForm";
 import { AppText } from "../components/AppText";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useCallback, useRef, useState } from "react";
 
 export default function RegisterScreen() {
   const colors = useColors();
   const styles = makeStyles(colors);
   const resolvedTheme = useResolvedTheme();
   const navigation = useNavigation();
+  const formRef = useRef<RegisterFormHandle>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleNavigate = () => {
     navigation.navigate("SignIn" as never);
   };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await formRef.current?.refetchHeardAboutOptions();
+    setRefreshing(false);
+  }, []);
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
@@ -29,6 +47,9 @@ export default function RegisterScreen() {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         <View style={styles.header}>
           <AppText style={styles.title}>Getting Started</AppText>
@@ -45,7 +66,7 @@ export default function RegisterScreen() {
           </AppText>
         </View>
 
-        <RegisterForm />
+        <RegisterForm ref={formRef} />
 
         <View
           style={{

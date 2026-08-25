@@ -512,7 +512,12 @@
 //   },
 // });
 
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import {
   View,
   StyleSheet,
@@ -539,6 +544,10 @@ import EmailInputField from "../EmailInputField";
 import { OneSignal } from "react-native-onesignal";
 import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
+
+export interface RegisterFormHandle {
+  refetchHeardAboutOptions: () => void;
+}
 
 const registerSchema = yup.object().shape({
   username: yup
@@ -584,7 +593,7 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-const RegisterForm: React.FC = () => {
+const RegisterForm = forwardRef<RegisterFormHandle>((_, ref) => {
   const { apiGet, post } = useAxios();
   const { showSuccess, showError } = useToastHelpers();
   const navigation: any = useNavigation();
@@ -610,6 +619,7 @@ const RegisterForm: React.FC = () => {
     data: heardAboutOptions = [],
     isLoading: loadingHeardAboutOptions,
     isError: heardAboutOptionsFailed,
+    refetch: refetchHeardAboutOptions,
   } = useQuery({
     queryKey: ["how-heard-about-options"],
     queryFn: async ({ signal }) => {
@@ -628,6 +638,10 @@ const RegisterForm: React.FC = () => {
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  useImperativeHandle(ref, () => ({
+    refetchHeardAboutOptions: () => refetchHeardAboutOptions(),
+  }));
 
   useEffect(() => {
     console.log(heardAboutOptionsFailed);
@@ -806,7 +820,7 @@ const RegisterForm: React.FC = () => {
       <CustomLoading loading={loading} />
     </View>
   );
-};
+});
 
 export default RegisterForm;
 
