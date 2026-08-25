@@ -310,6 +310,9 @@ import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../AppText";
 import { AxiosError } from "axios";
 import OtpInputField from "../OtpInputField";
+import PhoneNumberInputField from "../PhoneNumberInputField";
+import parsePhoneNumberFromString from "libphonenumber-js";
+import { useColors } from "../../hooks/useTheme";
 
 const NIGERIA_MOBILE_PREFIXES = [
   "0701",
@@ -354,13 +357,17 @@ const phoneSchema = yup.object({
   phoneNumber: yup
     .string()
     .required("Phone number is required")
-    .matches(/^0\d{10}$/, "Phone number must be 11 digits starting with 0")
-    .test(
-      "valid-ng-prefix",
-      "Enter a valid Nigerian mobile number (e.g. 0803..., 0810..., 0901...)",
-      value =>
-        !!value && NIGERIA_MOBILE_PREFIXES.some(p => value.startsWith(p)),
-    ),
+    .test("valid-phone", "Enter a valid phone number", value => {
+      if (!value) return false;
+      try {
+        // value is calling-code + national number with no leading '+',
+        // e.g. "2348031234567" — prepend '+' so libphonenumber can parse it.
+        const parsed = parsePhoneNumberFromString(`+${value}`);
+        return parsed ? parsed.isValid() : false;
+      } catch {
+        return false;
+      }
+    }),
 });
 
 const otpSchema = yup.object({
@@ -392,6 +399,10 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
     setStepState(next);
     onStepChange?.(next);
   };
+
+  const colors = useColors();
+
+  const styles = makeStyles(colors);
 
   const startResendCooldown = () => {
     if (intervalRef.current) {
@@ -499,7 +510,15 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
   if (step === "otp") {
     return (
       <View style={styles.form}>
-        <OtpInputField control={otpForm.control} name="otp" boxes={6} />
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            paddingVertical: 14,
+          }}
+        >
+          <OtpInputField control={otpForm.control} name="otp" boxes={6} />
+        </View>
 
         <AppText style={styles.instruction}>
           We sent a code to {phoneNumber}.{" "}
@@ -554,11 +573,20 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
 
   return (
     <View style={styles.form}>
-      <NumberInputField
+      {/* <NumberInputField
         control={phoneForm.control}
         name="phoneNumber"
         label="Phone Number"
         placeholder="Enter your phone number"
+        maxLength={11}
+      /> */}
+
+      <PhoneNumberInputField
+        label="Phone Number"
+        control={phoneForm.control}
+        name="phoneNumber"
+        // excludedCountryCodes={["US", "GB", "CN"]}
+        placeholder="Enter phone number"
         maxLength={11}
       />
 
@@ -589,59 +617,60 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  form: {
-    width: "100%",
-  },
-  button: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
-    borderRadius: 100,
-    marginTop: 30,
-    justifyContent: "center",
-    alignContent: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-    textAlign: "center",
-  },
-  instruction: {
-    color: COLORS.primary,
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(16),
-    textAlign: "left",
-  },
-  resendLink: {
-    color: "#007AFF",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-  },
-  resendDisabled: {
-    color: "#999",
-    fontFamily: getFontFamily("700"),
-    fontSize: normalize(18),
-  },
-  changeNumberLink: {
-    marginTop: 16,
-    alignItems: "center",
-  },
-  changeNumberText: {
-    fontSize: normalize(18),
-    fontFamily: getFontFamily("700"),
-    color: COLORS.primary,
-  },
-  helpLink: {
-    marginTop: 12,
-    marginBottom: 24,
-  },
-  helpText: {
-    fontSize: normalize(17),
-    fontFamily: getFontFamily("400"),
-    color: "#007AFF",
-    textAlign: "center",
-  },
-});
+const makeStyles = (colors: ReturnType<typeof useColors>) =>
+  StyleSheet.create({
+    form: {
+      width: "100%",
+    },
+    button: {
+      backgroundColor: COLORS.secondary,
+      paddingVertical: 14,
+      borderRadius: 100,
+      marginTop: 30,
+      justifyContent: "center",
+      alignContent: "center",
+    },
+    buttonText: {
+      color: "#fff",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      textAlign: "center",
+    },
+    instruction: {
+      color: colors.text,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      textAlign: "center",
+    },
+    resendLink: {
+      color: colors.primaryLight,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+    },
+    resendDisabled: {
+      color: "#999",
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(17),
+    },
+    changeNumberLink: {
+      marginTop: 16,
+      alignItems: "center",
+    },
+    changeNumberText: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: colors.primaryLight,
+    },
+    helpLink: {
+      marginTop: 12,
+      marginBottom: 24,
+    },
+    helpText: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: "#007AFF",
+      textAlign: "center",
+    },
+  });
 
 export default PhoneNumberForm;

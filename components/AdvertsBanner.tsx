@@ -124,6 +124,8 @@ import { getFontFamily, normalize } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import ErrorState from "./ErrorState";
 import LoadingState from "./LoadingState";
+import HalfScreenModal from "./HalfScreenModal";
+import { usePhoneVerification } from "../hooks/usePhoneVerification";
 
 type Banner = {
   id: number;
@@ -140,6 +142,9 @@ const AUTO_SCROLL_INTERVAL_MS = 4000;
 const AdvertsBanner = () => {
   const navigation = useNavigation();
   const { apiGet } = useAxios();
+
+  const { isPhoneVerified } = usePhoneVerification();
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
 
   const flatListRef = useRef<FlatList>(null);
   const currentIndexRef = useRef(0); // avoids stale closures inside the interval
@@ -197,6 +202,26 @@ const AdvertsBanner = () => {
     return clearAutoScroll;
   }, [banners, isUserInteracting, startAutoScroll, clearAutoScroll]);
 
+  const handleVerifyNow = () => {
+    setShowPhoneModal(false);
+    setTimeout(
+      () => navigation.navigate("PhoneNumberVerification" as never),
+      600,
+    );
+  };
+
+  const handleBannerPress = (banner: Banner) => {
+    if (banner.linking_type === "internal") {
+      if (!isPhoneVerified) {
+        setShowPhoneModal(true);
+        return;
+      }
+      navigation.navigate(banner.identifier as never);
+    } else {
+      Linking.openURL(banner.identifier);
+    }
+  };
+
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
       if (viewableItems.length > 0 && viewableItems[0].index != null) {
@@ -229,15 +254,7 @@ const AdvertsBanner = () => {
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
         renderItem={({ item: banner }) => (
-          <Pressable
-            onPress={() => {
-              if (banner.linking_type === "internal") {
-                navigation.navigate(banner.identifier as never);
-              } else {
-                Linking.openURL(banner.identifier);
-              }
-            }}
-          >
+          <Pressable onPress={() => handleBannerPress(banner)}>
             <ImageBackground
               source={{ uri: banner.image_url }}
               style={styles.card}
@@ -245,6 +262,18 @@ const AdvertsBanner = () => {
             />
           </Pressable>
         )}
+      />
+
+      <HalfScreenModal
+        isVisible={showPhoneModal}
+        onClose={() => setShowPhoneModal(false)}
+        title="Verify your phone number"
+        description="You need to verify your phone number before you can continue."
+        buttonText="Verify Now"
+        actionButton={handleVerifyNow}
+        secondaryButtonText="Maybe later"
+        secondaryAction={() => setShowPhoneModal(false)}
+        showCloseButton
       />
     </View>
   );

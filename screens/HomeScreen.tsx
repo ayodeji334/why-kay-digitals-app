@@ -23,7 +23,7 @@ import { useFiatBalance } from "../hooks/useFiatBalance";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppText } from "../components/AppText";
 import { DEFAULT_IMAGE } from "./SettingsScreen";
-import { useColors } from "../hooks/useTheme";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 const HomeScreen = () => {
   const colors = useColors();
@@ -32,6 +32,7 @@ const HomeScreen = () => {
   const { refetch, isRefetching } = useFiatBalance();
   const queryClient = useQueryClient();
   const styles = makeStyles(colors);
+  const resolvedTheme = useResolvedTheme();
 
   const hasCompleteVerification = useMemo(
     () =>
@@ -63,6 +64,10 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}

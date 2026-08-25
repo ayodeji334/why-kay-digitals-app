@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import {
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
@@ -535,6 +534,7 @@ export default function CryptoSellScreen() {
                     </View>
                   )}
                 />
+
                 {errors.amount && (
                   <AppText style={styles.error}>
                     {errors.amount.message}
@@ -817,7 +817,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       marginBottom: normalize(9),
-      color: COLORS.primary,
+      color: colors.primaryLight,
     },
     balance: {
       fontSize: normalize(18),

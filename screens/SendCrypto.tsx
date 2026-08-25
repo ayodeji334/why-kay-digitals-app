@@ -1041,7 +1041,7 @@ export default function SendScreen() {
   // crypto_withdraw_charge isn't configured — same fallback value the
   // backend itself uses, so the preview matches what confirm will actually
   // charge whether or not the charge exists yet.
-  const { getCharge } = useServiceCharges();
+  const { getCharge, refetch: refetchServiceCharges } = useServiceCharges();
   const withdrawCharge = getCharge("crypto_withdrawal_fee");
 
   console.log("Withdraw charge:", withdrawCharge);
@@ -1371,6 +1371,11 @@ export default function SendScreen() {
     );
   }
 
+  const onRefresh = async () => {
+    refetch();
+    await Promise.all([refetch(), refetchServiceCharges()]);
+  };
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.background }}
@@ -1382,7 +1387,7 @@ export default function SendScreen() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
         refreshControl={
-          <RefreshControl refreshing={isFetching} onRefresh={() => refetch()} />
+          <RefreshControl refreshing={isFetching} onRefresh={onRefresh} />
         }
       >
         {!assetDetails?.wallet_id ? (

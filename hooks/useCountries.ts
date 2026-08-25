@@ -1,10 +1,5 @@
 // hooks/useCountries.ts
 import { useQuery } from "@tanstack/react-query";
-import {
-  getAllCountries,
-  FlagType,
-  Country,
-} from "react-native-country-picker-modal";
 
 export const allCountries = [
   {

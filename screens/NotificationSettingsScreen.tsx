@@ -36,6 +36,8 @@ export default function NotificationSettingsScreen() {
   const colors = useColors();
   const styles = makeStyles(colors);
 
+  console.log(userData);
+
   const isPushNotificationEnabled =
     userData?.is_push_notification_enabled ?? false;
   const isEmailNotificationEnabled =
@@ -90,6 +92,7 @@ export default function NotificationSettingsScreen() {
     try {
       const response = await patch("users/notifications/email/toggle");
       const updatedUser = response.data.data;
+
       setUser(updatedUser);
 
       showSuccess("Email Notification Setting Updated");
@@ -117,6 +120,7 @@ export default function NotificationSettingsScreen() {
             switchValue={isPushNotificationEnabled}
             disable={isPushLoading}
           />
+
           <MenuItem
             title="Email Notifications"
             subtitle="Receive notifications via email"

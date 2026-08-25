@@ -20,7 +20,7 @@ import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
 import { Country } from "../libs/types";
 import { TranslationLanguageCodeMap } from "react-native-country-picker-modal";
-import { allCountries, useCountries } from "../hooks/useCountries";
+import { allCountries } from "../hooks/useCountries";
 import { useColors } from "../hooks/useTheme";
 
 interface Props {
@@ -166,11 +166,28 @@ const PhoneNumberInputField: React.FC<Props> = ({
             onBlur?.();
             trigger?.(name); // trigger validation on blur
           }}
+          // onChangeText={text => {
+          //   const numericValue = text.replace(/[^0-9]/g, "");
+          //   const fullNumber = selectedCountry
+          //     ? `${selectedCountry.callingCode[0]}${numericValue}`
+          //     : numericValue;
+          //   onChange(fullNumber);
+          //   onChangeText?.(fullNumber);
+          // }}
           onChangeText={text => {
-            const numericValue = text.replace(/[^0-9]/g, "");
-            const fullNumber = selectedCountry
-              ? `${selectedCountry.callingCode[0]}${numericValue}`
-              : numericValue;
+            let numericValue = text.replace(/[^0-9]/g, "");
+            const code = selectedCountry?.callingCode?.[0] ?? "";
+
+            if (code && numericValue.startsWith(code)) {
+              // Pasted number already includes the country code — don't double it.
+              numericValue = numericValue.slice(code.length);
+            } else if (numericValue.startsWith("0")) {
+              // User typed the local trunk prefix out of habit — international
+              // format drops it.
+              numericValue = numericValue.slice(1);
+            }
+
+            const fullNumber = code ? `${code}${numericValue}` : numericValue;
             onChange(fullNumber);
             onChangeText?.(fullNumber);
           }}
@@ -327,9 +344,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
       borderWidth: 1,
       borderColor: colors.border,
-      borderRadius: 10,
+      borderRadius: 8,
       paddingHorizontal: 10,
-      paddingVertical: normalize(14),
+      paddingVertical: normalize(16),
       backgroundColor: colors.background,
     },
     countryCode: {
@@ -341,9 +358,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flex: 1,
       borderWidth: 1,
       borderColor: colors.border,
-      borderRadius: 10,
+      borderRadius: 8,
       paddingHorizontal: 16,
-      paddingVertical: normalize(14),
+      paddingVertical: normalize(16),
       color: colors.text,
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),
@@ -394,7 +411,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(17),
       borderWidth: 1,
       borderColor: colors.border,
-      padding: normalize(11),
+      padding: normalize(14),
       borderRadius: 8,
       marginBottom: 10,
     },

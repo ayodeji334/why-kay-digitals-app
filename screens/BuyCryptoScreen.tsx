@@ -1696,9 +1696,11 @@ export default function CryptoBuyScreen() {
   const selectedAssetUuid = intent.assetId ?? "";
   const { fiatBalance } = useFiatBalance();
   const { minBuyAmount } = useCryptoLimits();
-  const { getCharge } = useServiceCharges();
+  const { getCharge, refetch: refetchServiceCharges } = useServiceCharges();
 
   const buyFeeCharge = getCharge("crypto_buy_fee");
+
+  console.log(buyFeeCharge);
 
   // ASSUMPTION: backend returns buy_fee as a percentage number (e.g. "1.8"
   // for 1.8%), so it's divided by 100 to get the decimal rate used in
@@ -1947,10 +1949,17 @@ export default function CryptoBuyScreen() {
   };
 
   // Pull to refresh
+  // const onRefresh = async () => {
+  //   setRefreshing(true);
+  //   rateOverriddenRef.current = false;
+  //   await refetch();
+  //   setRefreshing(false);
+  // };
+
   const onRefresh = async () => {
     setRefreshing(true);
     rateOverriddenRef.current = false;
-    await refetch();
+    await Promise.all([refetch(), refetchServiceCharges()]);
     setRefreshing(false);
   };
 
@@ -2183,7 +2192,7 @@ export default function CryptoBuyScreen() {
                         <AppText style={[styles.balance]}>
                           Operational Fee (
                           {(
-                            (feeBreakdown.buyFeeRate ?? buyFeeRate) * 100
+                            (buyFeeRate ?? feeBreakdown.buyFeeRate) * 100
                           ).toFixed(2)}
                           %):
                         </AppText>

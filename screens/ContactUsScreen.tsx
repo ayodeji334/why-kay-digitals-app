@@ -494,12 +494,12 @@ const HelpSupportScreen: React.FC = () => {
             onPress={handleLiveChat}
             IconComponent={Message}
           />
-          <MenuItem
+          {/* <MenuItem
             title="WhatsApp"
             subtitle={["Chat with a support agent", "Response time: 1-5 mins"]}
             onPress={handleWhatsApp}
             IconComponent={Whatsapp}
-          />
+          /> */}
           <MenuItem
             title="Call Us (070 1234 5678)"
             subtitle="Speak directly with our support agent"

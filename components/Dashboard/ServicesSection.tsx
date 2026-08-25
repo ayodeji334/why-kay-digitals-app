@@ -440,6 +440,7 @@ import {
   ElectricityBillIcon,
   CableTVIcon,
   TransferIcon,
+  // GiftCardIcon,
 } from "../../assets";
 import { useQueryClient } from "@tanstack/react-query";
 import { TradeIntent } from "../../libs/types";
@@ -447,7 +448,6 @@ import { Dribbble } from "iconsax-react-nativejs";
 import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
 import { usePhoneVerification } from "../../hooks/usePhoneVerification";
-import PhoneVerificationModal from "../PhoneVerificationModal";
 import HalfScreenModal from "../HalfScreenModal";
 
 const ServicesSection = () => {
@@ -497,6 +497,14 @@ const ServicesSection = () => {
       screenName: "SwapCrypto",
       icon: <CustomIcon source={SwapIcon} size={24} color={colors.primary} />,
     },
+    // {
+    //   id: 6,
+    //   title: "Buy Giftcards",
+    //   icon: (
+    //     <CustomIcon source={GiftCardIcon} size={24} color={colors.primary} />
+    //   ),
+    //   screenName: "BuyGiftCard",
+    // },
     {
       id: 7,
       title: "Airtime",
@@ -547,7 +555,40 @@ const ServicesSection = () => {
     );
   };
 
+  // const handleNavigation = (service: (typeof mainServices)[0]) => {
+  //   if (!service.screenName) {
+  //     Alert.alert(
+  //       "Coming Soon",
+  //       "The screen is not available for now. Kindly check back later",
+  //     );
+  //     return;
+  //   }
+
+  //   if (!isPhoneVerified) {
+  //     setShowPhoneModal(true);
+  //     return;
+  //   }
+
+  //   if (service.action === "buy" || service.action === "sell") {
+  //     navigation.navigate(
+  //       service.screenName as never,
+  //       {
+  //         action: service.action,
+  //         source: "home",
+  //       } as never,
+  //     );
+  //     return;
+  //   }
+
+  //   navigation.navigate(service.screenName as never);
+  // };
+
   const handleNavigation = (service: (typeof mainServices)[0]) => {
+    if (!isPhoneVerified) {
+      setShowPhoneModal(true);
+      return;
+    }
+
     if (!service.screenName) {
       Alert.alert(
         "Coming Soon",
@@ -556,18 +597,10 @@ const ServicesSection = () => {
       return;
     }
 
-    if (!isPhoneVerified) {
-      setShowPhoneModal(true);
-      return;
-    }
-
     if (service.action === "buy" || service.action === "sell") {
       navigation.navigate(
         service.screenName as never,
-        {
-          action: service.action,
-          source: "home",
-        } as never,
+        { action: service.action, source: "home" } as never,
       );
       return;
     }
