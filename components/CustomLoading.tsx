@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Modal, ActivityIndicator, StyleSheet } from "react-native";
-import { COLORS } from "../constants/colors";
 import { useColors } from "../hooks/useTheme";
 
 type CustomLoadingProps = {
@@ -21,7 +20,7 @@ export default function CustomLoading({ loading, color }: CustomLoadingProps) {
     >
       <View style={styles.modalBackground}>
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size={40} color={colors.primary} />
+          <ActivityIndicator size={20} color={colors.primary} />
         </View>
       </View>
     </Modal>

@@ -13,7 +13,7 @@ import { COLORS } from "../constants/colors";
 import { InfoCircle } from "iconsax-react-nativejs";
 import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "../components/AppText";
-import { useColors } from "../hooks/useTheme";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 interface WebPageScreenProps {
   route: {
@@ -29,6 +29,7 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
   const [error, setError] = useState(false);
   const colors = useColors();
   const styles = makeStyles(colors);
+  const resolvedTheme = useResolvedTheme();
 
   const handleRetry = () => {
     setError(false);
@@ -37,6 +38,10 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       {error ? (
         <View style={styles.errorContainer}>
           <View style={styles.errorIconContainer}>

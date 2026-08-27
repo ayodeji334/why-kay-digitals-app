@@ -1,16 +1,14 @@
 import {
-  Alert,
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { getFontFamily, normalize } from "../constants/settings";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -24,7 +22,7 @@ import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
 import { useBiometricPromptStore } from "../stores/biometricPromptSlice";
 import { refreshBiometricState } from "../stores/biometricSlice";
-import { useColors } from "../hooks/useTheme";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 type FormData = {
   pin: string;
@@ -38,7 +36,6 @@ const schema = yup.object().shape({
 });
 
 export default function ConfirmSecurityPinScreen() {
-  const navigation = useNavigation();
   const setUser = useAuthStore(state => state.setUser);
   const setToken = useAuthStore(state => state.setToken);
   const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
@@ -48,6 +45,7 @@ export default function ConfirmSecurityPinScreen() {
   const { pin } = route.params;
   const { token, refreshToken, user } = route.params?.params;
   const colors = useColors();
+  const resolvedTheme = useResolvedTheme();
   const styles = makeStyles(colors);
 
   const { control, handleSubmit } = useForm<FormData>({
@@ -91,7 +89,10 @@ export default function ConfirmSecurityPinScreen() {
 
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

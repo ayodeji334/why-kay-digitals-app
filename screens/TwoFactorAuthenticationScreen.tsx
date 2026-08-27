@@ -21,10 +21,11 @@ import Clipboard from "@react-native-clipboard/clipboard";
 import CustomIcon from "../components/CustomIcon";
 import { CopyIcon } from "../assets";
 import { AppText } from "../components/AppText";
-import { useColors } from "../hooks/useTheme";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 const TwoFactorAuthenticationScreen = () => {
   const navigation = useNavigation();
+  const resolvedTheme = useResolvedTheme();
   const { apiGet } = useAxios();
   const user = useAuthStore(state => state.user);
   const setUser = useAuthStore(state => state.setUser);
@@ -133,6 +134,10 @@ const TwoFactorAuthenticationScreen = () => {
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -315,7 +320,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderRadius: 10,
     },
     enabledBadgeText: {
-      color: colors.text,
+      color: "white",
       fontSize: normalize(16),
       fontFamily: getFontFamily("700"),
     },

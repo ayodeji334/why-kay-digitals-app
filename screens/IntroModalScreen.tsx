@@ -475,7 +475,10 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { getFontFamily, normalize } from "../constants/settings";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { ArrowRight2 } from "iconsax-react-nativejs";
 import { AppText } from "../components/AppText";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
@@ -522,7 +525,9 @@ export default function IntroModalScreen() {
   const resolvedTheme = useResolvedTheme();
   // Single source of truth for both dimensions — reactive on rotation/split-view.
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-  const styles = makeStyles(colors, screenWidth, screenHeight);
+  const insets = useSafeAreaInsets();
+  const styles = makeStyles(colors, screenWidth, screenHeight, insets.top);
+  // const styles = makeStyles(colors, screenWidth, screenHeight, topIn);
   const flatListRef = useRef<FlatList>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -554,12 +559,13 @@ export default function IntroModalScreen() {
         barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
         backgroundColor={colors.background}
       />
+
       <FlatList
         ref={flatListRef}
         data={slides}
         keyExtractor={item => item.id}
         horizontal
-        style={{ flex: 1 }}
+        // style={{ flex: 1 }}
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onViewableItemsChanged={onViewableItemsChanged}
@@ -617,6 +623,7 @@ const makeStyles = (
   colors: ReturnType<typeof useColors>,
   screenWidth: number,
   screenHeight: number,
+  topInset: number,
 ) =>
   StyleSheet.create({
     container: {
@@ -625,7 +632,8 @@ const makeStyles = (
       marginTop: marginTop,
     },
     slide: {
-      paddingTop: 80,
+      paddingTop: topInset + normalize(20),
+      // paddingTop: 80,
       width: screenWidth,
       flex: 1,
       justifyContent: "flex-start",
@@ -639,12 +647,21 @@ const makeStyles = (
       paddingHorizontal: 17,
       overflow: "hidden",
     },
+    // imageWrapper: {
+    //   width: "100%",
+    //   aspectRatio: 1, // adjust to match your actual illustration's real w:h ratio
+    //   justifyContent: "center",
+    //   alignItems: "center",
+    //   fontFamily: getFontFamily(700),
+    //   paddingHorizontal: 17,
+    //   overflow: "hidden",
+    // },
     image: {
       width: "100%",
       height: "100%",
     },
     textContainer: {
-      marginTop: normalize(40),
+      marginBottom: normalize(40),
       paddingHorizontal: 17,
     },
     title: {
@@ -669,7 +686,7 @@ const makeStyles = (
       flexDirection: "row",
       justifyContent: "flex-start",
       alignItems: "center",
-      marginBottom: 40,
+      marginBottom: normalize(40),
       paddingHorizontal: 17,
     },
     dot: {

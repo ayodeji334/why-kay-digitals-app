@@ -12,6 +12,7 @@ import { ArrowRight2, DocumentText, ReceiptEdit } from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { PRIVACY_WEB_URL, TERMS_WEB_URL } from "../config";
 
 interface MenuItemProps {
   title: string;
@@ -120,7 +121,7 @@ export default function LegalScreen() {
               navigation.navigate(
                 "WebView" as never,
                 {
-                  url: "https://why-kay-digitals.netlify.app/privacy",
+                  url: PRIVACY_WEB_URL,
                 } as never,
               )
             }
@@ -134,7 +135,7 @@ export default function LegalScreen() {
               navigation.navigate(
                 "WebView" as never,
                 {
-                  url: "https://why-kay-digitals.netlify.app/terms",
+                  url: TERMS_WEB_URL,
                 } as never,
               )
             }
@@ -178,7 +179,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderColor: colors.border,
       marginVertical: 5,
       borderRadius: 8,
-      backgroundColor: colors.infoCardBackgroundColor,
+      backgroundColor: colors.inputBackground,
       gap: 2,
     },
     menuItemContent: {

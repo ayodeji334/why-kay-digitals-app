@@ -1619,6 +1619,7 @@ import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import { useCryptoLimits } from "../hooks/useCryptoLimits";
 import { useServiceCharges } from "../hooks/useServiceCharges";
+import NoWallet from "../components/NoWallet";
 
 type CryptoBuyScreenParams = {
   CryptoBuy: {
@@ -1977,40 +1978,49 @@ export default function CryptoBuyScreen() {
     );
   }
 
+  // if (!assetDetails) {
+  //   return (
+  //     <SafeAreaView
+  //       style={{ flex: 1, backgroundColor: colors.background }}
+  //       edges={["right", "left"]}
+  //     >
+  //       <View
+  //         style={{
+  //           flex: 1,
+  //           alignItems: "center",
+  //           justifyContent: "center",
+  //           paddingHorizontal: normalize(20),
+  //         }}
+  //       >
+  //         <AppText
+  //           style={{
+  //             fontSize: normalize(18),
+  //             fontFamily: getFontFamily("700"),
+  //             color: colors.text,
+  //             textAlign: "center",
+  //           }}
+  //         >
+  //           No wallet found
+  //         </AppText>
+  //         <TouchableOpacity
+  //           activeOpacity={0.89}
+  //           style={[styles.button, { paddingHorizontal: 24, marginTop: 16 }]}
+  //           onPress={() => refetch()}
+  //         >
+  //           <AppText style={styles.buttonText}>Retry</AppText>
+  //         </TouchableOpacity>
+  //       </View>
+  //     </SafeAreaView>
+  //   );
+  // }
+
   if (!assetDetails) {
-    return (
-      <SafeAreaView
-        style={{ flex: 1, backgroundColor: colors.background }}
-        edges={["right", "left"]}
-      >
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            paddingHorizontal: normalize(20),
-          }}
-        >
-          <AppText
-            style={{
-              fontSize: normalize(18),
-              fontFamily: getFontFamily("700"),
-              color: colors.text,
-              textAlign: "center",
-            }}
-          >
-            No wallet found
-          </AppText>
-          <TouchableOpacity
-            activeOpacity={0.89}
-            style={[styles.button, { paddingHorizontal: 24, marginTop: 16 }]}
-            onPress={() => refetch()}
-          >
-            <AppText style={styles.buttonText}>Retry</AppText>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
+    <NoWallet
+      selectedAssetUuid={selectedAssetUuid}
+      onSuccess={() => {
+        refetch();
+      }}
+    />;
   }
 
   return (
@@ -2420,7 +2430,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
     },
     paymentContainer: {
-      backgroundColor: colors.primaryLight,
+      backgroundColor: colors.primary,
       borderRadius: 9,
       marginVertical: 20,
       padding: 10,

@@ -10,7 +10,7 @@ import { FingerScan, TickCircle } from "iconsax-react-nativejs";
 import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "../components/AppText";
 import { useBiometricEnrollment } from "../hooks/useBiometricEnrollment";
-import { useColors } from "../hooks/useTheme";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 export default function BiometricPromptScreen() {
   const { enroll, isLoading, biometryType } = useBiometricEnrollment();
@@ -19,6 +19,7 @@ export default function BiometricPromptScreen() {
   const { isSecondAsk } = useShouldPromptBiometric();
   const colors = useColors();
   const styles = makeStyles(colors);
+  const resolvedTheme = useResolvedTheme();
 
   const [enrolled, setEnrolled] = useState(false);
 
@@ -50,7 +51,10 @@ export default function BiometricPromptScreen() {
       edges={["top", "right", "bottom", "left"]}
       style={styles.container}
     >
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
 
       <View style={styles.content}>
         <View style={styles.hero}>

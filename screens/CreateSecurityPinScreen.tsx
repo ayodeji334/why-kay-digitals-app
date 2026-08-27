@@ -3,7 +3,6 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -16,7 +15,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import OtpInputField from "../components/OtpInputField";
 import { AppText } from "../components/AppText";
-import { useColors } from "../hooks/useTheme";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 type FormData = {
   pin: string;
@@ -38,6 +37,7 @@ export default function CreateSecurityPinScreen() {
   });
   const colors = useColors();
   const styles = makeStyles(colors);
+  const resolvedTheme = useResolvedTheme();
 
   const onSubmit = (data: FormData) => {
     if (data.pin.length !== 4) {
@@ -53,6 +53,10 @@ export default function CreateSecurityPinScreen() {
 
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

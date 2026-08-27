@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "../components/AppText";
+import { PRIVACY_WEB_URL, TERMS_WEB_URL } from "../config";
 
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -89,7 +90,7 @@ const WelcomeScreen = () => {
                 navigation.navigate(
                   "WebView" as never,
                   {
-                    url: "https://why-kay-digitals.netlify.app/terms",
+                    url: TERMS_WEB_URL,
                   } as never,
                 )
               }
@@ -104,7 +105,7 @@ const WelcomeScreen = () => {
                 navigation.navigate(
                   "WebView" as never,
                   {
-                    url: "https://why-kay-digitals.netlify.app/privacy",
+                    url: PRIVACY_WEB_URL,
                   } as never,
                 )
               }

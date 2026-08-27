@@ -64,11 +64,6 @@ const LoginForm: React.FC = () => {
           "Please verify your email before logging in. Code has been sent to your email.",
         );
 
-        console.log(
-          "Navigating to VerifyCode with email:",
-          res.data?.data?.email,
-        );
-
         navigation.navigate(
           "VerifyCode" as never,
           { email: res?.data?.data?.email ?? "" } as never,
@@ -81,11 +76,6 @@ const LoginForm: React.FC = () => {
       if (!auth && !res?.data?.data?.is_email_verified) {
         showError(
           "Please verify your email before logging in. Code has been sent to your email.",
-        );
-
-        console.log(
-          "Navigating to VerifyCode with email:",
-          res.data?.data?.email,
         );
 
         navigation.navigate(
