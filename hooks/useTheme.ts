@@ -135,6 +135,7 @@ interface ThemeColors {
   surfaceSecondary: string;
   border: string;
   borderLight: string;
+  tabTopBorderLight: string;
   text: string;
   textSecondary: string;
   textMuted: string;
@@ -168,6 +169,7 @@ const LIGHT_COLORS: ThemeColors = {
   surfaceSecondary: "#F1F5F9",
   border: "#cacaca",
   borderLight: "#F1F5F9",
+  tabTopBorderLight: "#c5c5c5",
   text: "#0F172A",
   textSecondary: "#334155",
   textMuted: "#64748B",
@@ -193,6 +195,7 @@ const DARK_COLORS: ThemeColors = {
   surfaceSecondary: "#050115",
   border: "#334155",
   borderLight: "#1E293B",
+  tabTopBorderLight: "#a1a1a1",
   text: "#F8FAFC",
   textSecondary: "#CBD5E1",
   textMuted: "#94A3B8",

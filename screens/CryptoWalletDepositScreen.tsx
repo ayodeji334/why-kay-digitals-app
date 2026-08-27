@@ -169,7 +169,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       paddingHorizontal: 20,
       paddingTop: 14,
       paddingBottom: 30,
-      backgroundColor: colors.inputBackground,
+      backgroundColor: colors.background,
       columnGap: 17,
       borderTopWidth: 1,
       borderTopColor: colors.border,
@@ -193,10 +193,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       justifyContent: "center",
     },
     actionLabel: {
-      fontSize: normalize(18),
+      fontSize: normalize(16),
       fontFamily: getFontFamily(800),
       color: COLORS.whiteBackground,
-      fontWeight: "500",
     },
     header: {
       flexDirection: "row",

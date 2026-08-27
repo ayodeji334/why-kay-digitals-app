@@ -1002,7 +1002,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     generateButtonText: {
       color: "white",
       fontFamily: getFontFamily(800),
-      fontSize: normalize(18),
+      fontSize: normalize(17),
     },
     qrContainer: {
       alignSelf: "center",

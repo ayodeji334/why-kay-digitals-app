@@ -171,7 +171,8 @@ import { getFontFamily, normalize } from "../constants/settings";
 import { useColors } from "../hooks/useTheme";
 import { useUser } from "../stores/authSlice";
 import HalfScreenModal from "../components/HalfScreenModal";
-import { COLORS } from "../constants/colors";
+import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
 
@@ -180,6 +181,10 @@ export default function AppTabs() {
   const user = useUser();
   const navigation: any = useNavigation();
   const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const insets = useSafeAreaInsets();
+
+  const TAB_BAR_BASE_HEIGHT = Platform.OS === "ios" ? 55 : 60;
+  const tabBarHeight = TAB_BAR_BASE_HEIGHT + insets.bottom;
 
   const isPhoneVerified = !!user?.phone_verified_at;
 
@@ -201,11 +206,18 @@ export default function AppTabs() {
         screenOptions={{
           tabBarActiveTintColor: colors?.text,
           tabBarInactiveTintColor: colors?.textMuted,
+          // tabBarStyle: {
+          //   height: 70,
+          //   paddingVertical: 4,
+          //   backgroundColor: colors.background,
+          //   borderTopColor: colors.borderLight,
+          // },
           tabBarStyle: {
-            height: 90,
-            paddingVertical: 4,
+            height: tabBarHeight,
+            paddingTop: 4,
+            paddingBottom: insets.bottom || 4, // fall back to a small pad if no inset (e.g. older devices)
             backgroundColor: colors.background,
-            borderTopColor: colors.borderLight,
+            borderTopColor: colors.tabTopBorderLight,
           },
           headerTitleAllowFontScaling: false,
           tabBarAllowFontScaling: false,
@@ -214,13 +226,13 @@ export default function AppTabs() {
           },
           headerTitleStyle: {
             fontFamily: getFontFamily(700),
-            fontSize: normalize(18),
-            padding: 20,
+            fontSize: normalize(17),
+            padding: 0,
             color: colors.text,
           },
           tabBarLabelStyle: {
             fontFamily: getFontFamily(700),
-            fontSize: normalize(17),
+            fontSize: normalize(16),
             color: colors.text,
           },
         }}

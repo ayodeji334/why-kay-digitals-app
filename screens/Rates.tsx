@@ -46,6 +46,8 @@ export default function CryptoRatesScreen() {
     },
   });
 
+  console.log(data);
+
   const handleVerifyNow = () => {
     setShowPhoneModal(false);
     navigation.navigate("PhoneNumberVerification" as never);
@@ -118,19 +120,24 @@ export default function CryptoRatesScreen() {
 
   const cryptoOptions = useMemo<CryptoOption[]>(() => {
     if (!Array.isArray(data)) return [];
-    return data.map((asset: any) => ({
-      id: asset.uuid,
-      value: asset.uuid,
-      label: `${asset.symbol} (${asset.name})`,
-      logo_url: asset.logo_url,
-      symbol: asset.symbol,
-      market_value: Number(asset.market_current_value ?? 0),
-      buy_rate: Number(asset.buy_rate ?? 0),
-      sell_rate: Number(asset.sell_rate ?? 0),
-      is_buy_enabled: asset.is_buy_enabled,
-      is_sell_enabled: asset.is_sell_enabled,
-    }));
-  }, [data]);
+
+    return data
+      .filter((asset: any) =>
+        activeTab === "buy" ? asset.is_buy_enabled : asset.is_sell_enabled,
+      )
+      .map((asset: any) => ({
+        id: asset.uuid,
+        value: asset.uuid,
+        label: `${asset.symbol} (${asset.name})`,
+        logo_url: asset.logo_url,
+        symbol: asset.symbol,
+        market_value: Number(asset.market_current_value ?? 0),
+        buy_rate: Number(asset.buy_rate ?? 0),
+        sell_rate: Number(asset.sell_rate ?? 0),
+        is_buy_enabled: asset.is_buy_enabled,
+        is_sell_enabled: asset.is_sell_enabled,
+      }));
+  }, [data, activeTab]);
 
   const crypto = useMemo(
     () => cryptoOptions.find(c => c.value === selectedCrypto) ?? null,

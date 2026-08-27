@@ -344,9 +344,7 @@ export default function SettingsScreen() {
           />
         </Section>
         <View style={{ paddingVertical: 20 }}>
-          <AppText style={styles.versionText}>
-            Version {appVersion} (Build {buildNumber})
-          </AppText>
+          <AppText style={styles.versionText}>Version {appVersion}</AppText>
         </View>
 
         <HalfScreenModal

@@ -2382,7 +2382,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderColor: colors.border,
     },
     balance: {
-      fontSize: normalize(18),
+      fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
       paddingVertical: 3,
       color: colors.text,
@@ -2406,7 +2406,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     note: {
-      fontSize: normalize(18),
+      fontSize: normalize(17),
       fontFamily: getFontFamily("800"),
       color: colors.text,
       marginBottom: normalize(10),
