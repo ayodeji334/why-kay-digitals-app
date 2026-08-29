@@ -1698,10 +1698,7 @@ export default function CryptoBuyScreen() {
   const { fiatBalance } = useFiatBalance();
   const { minBuyAmount } = useCryptoLimits();
   const { getCharge, refetch: refetchServiceCharges } = useServiceCharges();
-
   const buyFeeCharge = getCharge("crypto_buy_fee");
-
-  console.log(buyFeeCharge);
 
   // ASSUMPTION: backend returns buy_fee as a percentage number (e.g. "1.8"
   // for 1.8%), so it's divided by 100 to get the decimal rate used in
@@ -1762,6 +1759,8 @@ export default function CryptoBuyScreen() {
     enabled: !!selectedAssetUuid,
   });
 
+  console.log(assetDetails);
+
   const marketPrice = useMemo(
     () =>
       feeBreakdown?.currentMarketPrice ??
@@ -1774,6 +1773,11 @@ export default function CryptoBuyScreen() {
     if (!feeBreakdown?.totalCostNgn) return false;
     return feeBreakdown?.totalCostNgn > fiatBalance;
   }, [feeBreakdown?.totalCostNgn, fiatBalance]);
+
+  const isRateUnavailable = useMemo(() => {
+    const sellRate = parseFloat(assetDetails?.sell_rate ?? "0");
+    return !assetDetails?.rates?.sell || !sellRate || sellRate <= 0;
+  }, [assetDetails?.rates?.sell, assetDetails?.sell_rate]);
 
   const insufficientBalanceMessage = useMemo(() => {
     if (!hasInsufficientBalance || !amount || !fiatBalance) return null;
@@ -1944,8 +1948,10 @@ export default function CryptoBuyScreen() {
         payload: { ...values, url: "/wallets/user/buy-crypto" },
       });
     } catch (error: any) {
-      console.log(error);
-      showError("Error checking rates. Try again.");
+      console.log(error?.response?.data);
+      showError(
+        error?.response?.data?.message ?? "Error checking rates. Try again.",
+      );
     }
   };
 
@@ -2054,248 +2060,287 @@ export default function CryptoBuyScreen() {
                 </View>
               </View>
             </View>
-            <View>
-              <AppText style={styles.label}>
-                Enter the amount you want to buy
-              </AppText>
-              <Controller
-                control={control}
-                name="amount"
-                render={({ field: { onChange, onBlur } }) => (
-                  <View
-                    style={[
-                      styles.inputContainer,
-                      errors.amount && styles.errorBorder,
-                    ]}
-                  >
-                    <AppText style={styles.dollarSign}>$</AppText>
-                    <TextInput
-                      style={[styles.input]}
-                      value={displayAmount}
-                      placeholder="0.00"
-                      placeholderTextColor="#999"
-                      keyboardType="decimal-pad"
-                      onBlur={onBlur}
-                      maxFontSizeMultiplier={1}
-                      allowFontScaling={false}
-                      onChangeText={text => {
-                        const formatted = formatWithCommas(text);
-                        const numeric = parseToNumber(formatted);
-                        onChange(numeric);
-                        setDisplayAmount(formatted);
-                      }}
-                    />
-                  </View>
-                )}
-              />
-              {errors.amount && (
-                <AppText style={styles.error}>{errors.amount.message}</AppText>
-              )}
 
-              {hasInsufficientBalance && insufficientBalanceMessage && (
-                <AppText style={styles.error}>
-                  {insufficientBalanceMessage}
+            {isRateUnavailable && (
+              <View style={styles.warningContainer}>
+                <AppText style={styles.warningText}>
+                  Rates for {assetDetails?.symbol ?? "this asset"} are currently
+                  unavailable. Please check back later.
                 </AppText>
-              )}
+              </View>
+            )}
 
-              {!errors.amount && (
-                <AppText style={styles.approx}>
-                  Approximately {assetValueEquivalent} {assetDetails?.symbol}
+            {isRateUnavailable ? null : (
+              <View>
+                <AppText style={styles.label}>
+                  Enter the amount you want to buy
                 </AppText>
-              )}
-
-              <View
-                style={{
-                  marginVertical: 10,
-                  backgroundColor: colors.inputBackground,
-                  padding: 10,
-                  borderRadius: 10,
-                  gap: 8,
-                }}
-              >
-                <AppText style={[styles.note]}>
-                  Wallet Balance, Exchange Rate & Fee Breakdown
-                </AppText>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <AppText style={[styles.balance]}>Fiat Balance:</AppText>
-                  <AppText style={styles.balance}>
-                    {formatAmount(fiatBalance, {
-                      currency: "NGN",
-                      decimalPlace: 2,
-                    })}
-                  </AppText>
-                </View>
-
-                <View style={{ height: 1, backgroundColor: colors.border }} />
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <AppText style={[styles.balance]}>Buy Rate:</AppText>
-                  <AppText style={styles.balance}>
-                    {formatAmount(
-                      feeBreakdown?.currentBuyRate ??
-                        assetDetails?.buy_rate ??
-                        0,
-                    )}
-                    /$
-                  </AppText>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <AppText style={[styles.balance]}>Market Price:</AppText>
-                  <AppText style={styles.balance}>
-                    {formatAmount(
-                      Number(feeBreakdown?.marketCurrentPrice) || 0,
-                      {
-                        currency: "USD",
-                      },
-                    )}
-                    /{assetDetails?.symbol}
-                  </AppText>
-                </View>
-
-                {feeBreakdown && amount > 0 && (
-                  <>
+                <Controller
+                  control={control}
+                  name="amount"
+                  render={({ field: { onChange, onBlur } }) => (
                     <View
-                      style={{ height: 1, backgroundColor: colors.border }}
-                    />
-
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
+                      style={[
+                        styles.inputContainer,
+                        errors.amount && styles.errorBorder,
+                      ]}
                     >
-                      <AppText style={[styles.balance]}>You Buy:</AppText>
-                      <AppText style={styles.balance}>
-                        {feeBreakdown.coinAmount} {assetDetails?.symbol} (≈{" "}
-                        {formatAmount(feeBreakdown.grossUsd, {
-                          currency: "USD",
-                          decimalPlace: 2,
-                        })}
-                        )
-                      </AppText>
+                      <AppText style={styles.dollarSign}>$</AppText>
+                      <TextInput
+                        style={[styles.input]}
+                        value={displayAmount}
+                        placeholder="0.00"
+                        placeholderTextColor="#999"
+                        keyboardType="decimal-pad"
+                        onBlur={onBlur}
+                        maxFontSizeMultiplier={1}
+                        allowFontScaling={false}
+                        onChangeText={text => {
+                          const formatted = formatWithCommas(text);
+                          const numeric = parseToNumber(formatted);
+                          onChange(numeric);
+                          setDisplayAmount(formatted);
+                        }}
+                      />
                     </View>
+                  )}
+                />
 
-                    {!feeBreakdown.isStablecoin && (
+                {/* {errors.amount && (
+                  <AppText style={styles.error}>
+                    {errors.amount.message}
+                  </AppText>
+                )}
+
+                {hasInsufficientBalance && insufficientBalanceMessage && (
+                  <AppText style={styles.error}>
+                    {insufficientBalanceMessage}
+                  </AppText>
+                )}
+
+                {!errors.amount && (
+                  <AppText style={styles.approx}>
+                    Approximately {assetValueEquivalent} {assetDetails?.symbol}
+                  </AppText>
+                )} */}
+
+                {errors.amount ? (
+                  <AppText style={styles.error}>
+                    {errors.amount.message}
+                  </AppText>
+                ) : (
+                  hasInsufficientBalance &&
+                  insufficientBalanceMessage && (
+                    <AppText style={styles.error}>
+                      {insufficientBalanceMessage}
+                    </AppText>
+                  )
+                )}
+
+                {!errors.amount && !hasInsufficientBalance && (
+                  <AppText style={styles.approx}>
+                    Approximately {assetValueEquivalent} {assetDetails?.symbo}
+                  </AppText>
+                )}
+
+                <View
+                  style={{
+                    marginVertical: 10,
+                    backgroundColor: colors.inputBackground,
+                    padding: 10,
+                    borderRadius: 10,
+                    gap: 8,
+                  }}
+                >
+                  <AppText style={[styles.note]}>
+                    Wallet Balance, Exchange Rate & Fee Breakdown
+                  </AppText>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <AppText style={[styles.balance]}>Fiat Balance:</AppText>
+                    <AppText style={styles.balance}>
+                      {formatAmount(fiatBalance, {
+                        currency: "NGN",
+                        decimalPlace: 2,
+                      })}
+                    </AppText>
+                  </View>
+
+                  <View style={{ height: 1, backgroundColor: colors.border }} />
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <AppText style={[styles.balance]}>Buy Rate:</AppText>
+                    <AppText style={styles.balance}>
+                      {formatAmount(
+                        feeBreakdown?.currentBuyRate ??
+                          assetDetails?.buy_rate ??
+                          0,
+                      )}
+                      /$
+                    </AppText>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <AppText style={[styles.balance]}>Market Price:</AppText>
+                    <AppText style={styles.balance}>
+                      {formatAmount(
+                        Number(feeBreakdown?.marketCurrentPrice) || 0,
+                        {
+                          currency: "USD",
+                        },
+                      )}
+                      /{assetDetails?.symbol}
+                    </AppText>
+                  </View>
+
+                  {feeBreakdown && amount > 0 && (
+                    <>
+                      <View
+                        style={{ height: 1, backgroundColor: colors.border }}
+                      />
+
                       <View
                         style={{
                           flexDirection: "row",
                           justifyContent: "space-between",
                         }}
                       >
-                        <AppText style={[styles.balance]}>
-                          Operational Fee (
-                          {(
-                            (buyFeeRate ?? feeBreakdown.buyFeeRate) * 100
-                          ).toFixed(2)}
-                          %):
-                        </AppText>
-                        <AppText style={[styles.balance]}>
-                          +{feeBreakdown.platformFeeCoin} {assetDetails?.symbol}{" "}
-                          (≈ ${feeBreakdown.platformFeeUsd})
-                        </AppText>
-                      </View>
-                    )}
-
-                    {feeBreakdown.isStablecoin && (
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <AppText style={[styles.balance]}>
-                          Operational Fee:
-                        </AppText>
-                        <AppText style={[styles.balance, { color: "#2e7d32" }]}>
-                          No fee for {assetDetails?.symbol}
-                        </AppText>
-                      </View>
-                    )}
-
-                    <View
-                      style={{ height: 1, backgroundColor: colors.border }}
-                    />
-
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <AppText style={[styles.balance]}>
-                        Total Cost (USD):
-                      </AppText>
-                      <AppText style={[styles.balance]}>
-                        {formatAmount(
-                          Number(feeBreakdown.totalCostUsd ?? 100),
-                          {
+                        <AppText style={[styles.balance]}>You Buy:</AppText>
+                        <AppText style={styles.balance}>
+                          {feeBreakdown.coinAmount} {assetDetails?.symbol} (≈{" "}
+                          {formatAmount(feeBreakdown.grossUsd, {
                             currency: "USD",
                             decimalPlace: 2,
-                          },
-                        )}
-                      </AppText>
-                    </View>
+                          })}
+                          )
+                        </AppText>
+                      </View>
 
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <AppText style={[styles.balance]}>
-                        You'll Pay (₦):
-                      </AppText>
-                      <AppText style={[styles.balance]}>{ngnAmount}</AppText>
-                    </View>
-                  </>
-                )}
-              </View>
+                      {!feeBreakdown.isStablecoin && (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <AppText style={[styles.balance]}>
+                            Operational Fee (
+                            {(
+                              (buyFeeRate ?? feeBreakdown.buyFeeRate) * 100
+                            ).toFixed(2)}
+                            %):
+                          </AppText>
+                          <AppText style={[styles.balance]}>
+                            +{feeBreakdown.platformFeeCoin}{" "}
+                            {assetDetails?.symbol} (≈ $
+                            {feeBreakdown.platformFeeUsd})
+                          </AppText>
+                        </View>
+                      )}
 
-              <View style={styles.paymentContainer}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    padding: 9,
-                  }}
-                >
-                  <AppText style={styles.ngn}>You're Paying:</AppText>
-                  <AppText style={styles.ngn}>{ngnAmount}</AppText>
+                      {feeBreakdown.isStablecoin && (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <AppText style={[styles.balance]}>
+                            Operational Fee:
+                          </AppText>
+                          <AppText
+                            style={[styles.balance, { color: "#2e7d32" }]}
+                          >
+                            No fee for {assetDetails?.symbol}
+                          </AppText>
+                        </View>
+                      )}
+
+                      <View
+                        style={{ height: 1, backgroundColor: colors.border }}
+                      />
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <AppText style={[styles.balance]}>
+                          Total Cost (USD):
+                        </AppText>
+                        <AppText style={[styles.balance]}>
+                          {formatAmount(
+                            Number(feeBreakdown.totalCostUsd ?? 100),
+                            {
+                              currency: "USD",
+                              decimalPlace: 2,
+                            },
+                          )}
+                        </AppText>
+                      </View>
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <AppText style={[styles.balance]}>
+                          You'll Pay (₦):
+                        </AppText>
+                        <AppText style={[styles.balance]}>{ngnAmount}</AppText>
+                      </View>
+                    </>
+                  )}
+                </View>
+
+                <View style={styles.paymentContainer}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      padding: 9,
+                    }}
+                  >
+                    <AppText style={styles.ngn}>You're Paying:</AppText>
+                    <AppText style={styles.ngn}>{ngnAmount}</AppText>
+                  </View>
                 </View>
               </View>
-            </View>
+            )}
           </View>
 
-          <TouchableOpacity
-            activeOpacity={0.89}
-            style={[
-              styles.button,
-              hasInsufficientBalance && styles.buttonDisabled,
-            ]}
-            disabled={hasInsufficientBalance || isSubmitting}
-            onPress={handleSubmit(onSubmit)}
-          >
-            <AppText style={styles.buttonText}>
-              {isSubmitting ? "Please wait..." : "Continue"}
-            </AppText>
-          </TouchableOpacity>
+          {isRateUnavailable ? null : (
+            <TouchableOpacity
+              activeOpacity={0.89}
+              style={[
+                styles.button,
+                hasInsufficientBalance && styles.buttonDisabled,
+              ]}
+              disabled={hasInsufficientBalance || isSubmitting}
+              onPress={handleSubmit(onSubmit)}
+            >
+              <AppText style={styles.buttonText}>
+                {isSubmitting ? "Please wait..." : "Continue"}
+              </AppText>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

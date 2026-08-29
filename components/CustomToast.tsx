@@ -17,7 +17,7 @@ import { getFontFamily, normalize } from "../constants/settings";
 // (e.g. PayCableTVSubscriptionScreen) and a sane constant for iOS, where
 // currentHeight is always undefined.
 const STATUS_BAR_HEIGHT =
-  Platform.OS === "android" ? StatusBar.currentHeight ?? 24 : 54;
+  Platform.OS === "android" ? StatusBar.currentHeight ?? 24 : 58;
 
 // How far above the screen the toast starts before it slides down. Kept
 // larger than the status bar so the entrance is visibly "beyond" it.
@@ -86,28 +86,32 @@ export default function CustomToast({
   }, []);
 
   return (
-    <Animated.View
-      pointerEvents="box-none"
-      style={[
-        styles.wrapper,
-        { top: offset, opacity, transform: [{ translateY }] },
-      ]}
-    >
-      <Pressable
-        onPress={dismiss}
+    <>
+      <StatusBar barStyle="light-content" animated />
+
+      <Animated.View
+        pointerEvents="box-none"
         style={[
-          styles.container,
-          {
-            paddingTop: STATUS_BAR_HEIGHT + 14,
-            backgroundColor: type === ToastType.ERROR ? "#D41111" : "green",
-          },
+          styles.wrapper,
+          { top: offset, opacity, transform: [{ translateY }] },
         ]}
       >
-        <Text style={styles.text} numberOfLines={3}>
-          {message}
-        </Text>
-      </Pressable>
-    </Animated.View>
+        <Pressable
+          onPress={dismiss}
+          style={[
+            styles.container,
+            {
+              paddingTop: STATUS_BAR_HEIGHT + 14,
+              backgroundColor: type === ToastType.ERROR ? "#D41111" : "green",
+            },
+          ]}
+        >
+          <Text style={styles.text} numberOfLines={3}>
+            {message}
+          </Text>
+        </Pressable>
+      </Animated.View>
+    </>
   );
 }
 
@@ -134,7 +138,7 @@ const styles = StyleSheet.create({
   text: {
     color: "white",
     fontFamily: getFontFamily(700),
-    fontSize: normalize(20),
+    fontSize: normalize(21),
     textAlign: "left",
   },
 });

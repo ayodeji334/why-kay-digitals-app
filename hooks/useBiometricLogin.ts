@@ -5,6 +5,7 @@ import { showError } from "../utlis/toast";
 import { storage, STORAGE_KEYS } from "../utlis/storage";
 import { OneSignal } from "react-native-onesignal";
 import { useAuthStore } from "../stores/authSlice";
+import DeviceInfo from "react-native-device-info";
 
 const rnBiometrics = new ReactNativeBiometrics({
   allowDeviceCredentials: true, // true = also allow PIN/pattern fallback
@@ -156,6 +157,7 @@ export const useBiometricLogin = () => {
         payload,
         signature,
         device_id: userOneSignalID,
+        device_name: DeviceInfo.getModel() ?? null,
       });
 
       // return verified;

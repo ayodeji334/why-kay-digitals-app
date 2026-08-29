@@ -764,7 +764,9 @@ const RootStack = createNativeStackNavigator({
           screen: WebViewScreen,
           options: {
             headerBackTitle: ".",
-            header: () => <CustomHeader showTitle={false} />,
+            header: () => (
+              <CustomHeader showTitle title="Confirm Security Pin" />
+            ),
           },
         },
       },

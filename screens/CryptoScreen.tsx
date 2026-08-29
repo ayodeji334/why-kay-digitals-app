@@ -231,11 +231,83 @@ const CryptoWalletScreen = () => {
   }, []);
 
   const handleWhatsApp = () => {
-    Linking.openURL("https://wa.me/07012345678");
+    // Linking.openURL("https://wa.me/07012345678");
+    navigation.navigate("ContactUs");
   };
 
+  const renderEmptyState = () => (
+    <View style={styles.emptyContainer}>
+      <AppText style={styles.emptyTitle}>
+        {searchQuery ? "No matching asset found" : "No asset available"}
+      </AppText>
+      <AppText style={styles.emptySubtitle}>
+        {searchQuery
+          ? `We couldn't find any asset matching "${searchQuery}".`
+          : "Pull down to refresh, or check your connection."}
+      </AppText>
+    </View>
+  );
+
   return (
+    // <SafeAreaView edges={["left", "right"]} style={styles.container}>
+    //   <StatusBar
+    //     barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+    //     backgroundColor={colors.background}
+    //   />
+    //   <View style={styles.searchContainer}>
+    //     <TextInput
+    //       style={styles.searchInput}
+    //       placeholder="Search coin"
+    //       value={searchQuery}
+    //       onChangeText={setSearchQuery}
+    //       maxFontSizeMultiplier={1}
+    //       allowFontScaling={false}
+    //       placeholderTextColor="#6b6b6b"
+    //     />
+    //     <Text
+    //       style={{
+    //         fontSize: normalize(20),
+    //         fontFamily: getFontFamily("400"),
+    //         marginVertical: normalize(7),
+    //         paddingVertical: 5,
+    //         color: colors.text,
+    //       }}
+    //     >
+    //       Below are the supported coins. If the coin (or asset) is not listed
+    //       here. Kindly reach out to us through our support channel.
+    //       <Text
+    //         onPress={handleWhatsApp}
+    //         style={{ color: colors.primaryLight, paddingHorizontal: 8 }}
+    //       >
+    //         {" "}
+    //         Click here
+    //       </Text>
+    //     </Text>
+    //   </View>
+
+    //   <FlatList
+    //     refreshControl={
+    //       <RefreshControl
+    //         refreshing={isRefetching}
+    //         onRefresh={refetchData}
+    //         colors={[COLORS.primary]}
+    //       />
+    //     }
+    //     data={filteredAssets}
+    //     renderItem={renderCryptoItem}
+    //     keyExtractor={item => item.id}
+    //     showsVerticalScrollIndicator={false}
+    //     contentContainerStyle={styles.listContent}
+    //   />
+
+    //   <CustomLoading loading={isLoading} />
+    // </SafeAreaView>
+
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -255,14 +327,14 @@ const CryptoWalletScreen = () => {
             color: colors.text,
           }}
         >
-          Below are the supported coins. If the coin (or asset) is not listed
-          here. Kindly reach out to us through our support channel.
+          Below are the supported assets. If the asset you want to trade is not
+          listed here. Kindly reach out to us through our support channel.
           <Text
             onPress={handleWhatsApp}
             style={{ color: colors.primaryLight, paddingHorizontal: 8 }}
           >
             {" "}
-            Contact us on Whatsapp
+            Click here
           </Text>
         </Text>
       </View>
@@ -280,6 +352,7 @@ const CryptoWalletScreen = () => {
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
+        ListEmptyComponent={renderEmptyState}
       />
 
       <CustomLoading loading={isLoading} />
@@ -288,6 +361,59 @@ const CryptoWalletScreen = () => {
 };
 
 export default CryptoWalletScreen;
+
+// const makeStyles = (colors: ReturnType<typeof useColors>) =>
+//   StyleSheet.create({
+//     container: { flex: 1, backgroundColor: colors.background },
+//     searchContainer: { paddingHorizontal: 16, paddingVertical: 12 },
+//     searchInput: {
+//       backgroundColor: colors.inputBackground,
+//       paddingVertical: normalize(12),
+//       paddingHorizontal: normalize(18),
+//       borderRadius: 100,
+//       fontSize: normalize(18),
+//       fontFamily: getFontFamily("700"),
+//       color: colors.text,
+//       borderColor: colors.border,
+//       borderWidth: 1,
+//     },
+//     listContent: { paddingHorizontal: 16 },
+//     cryptoItem: {
+//       flexDirection: "row",
+//       alignItems: "center",
+//       justifyContent: "space-between",
+//       paddingVertical: 16,
+//       borderBottomWidth: 1,
+//       borderBottomColor: colors.border,
+//     },
+//     cryptoLeft: { flexDirection: "row", alignItems: "center" },
+//     assetIcon: { width: 30, height: 30, borderRadius: 20, marginRight: 12 },
+//     cryptoInfo: { flexDirection: "column" },
+//     cryptoName: {
+//       fontSize: normalize(16),
+//       color: colors.text,
+//       fontFamily: getFontFamily(800),
+//     },
+//     cryptoSymbol: {
+//       fontSize: normalize(16),
+//       fontFamily: getFontFamily(400),
+//       color: colors.text,
+//     },
+//     cryptoRight: {
+//       alignItems: "flex-end",
+//       gap: 3,
+//     },
+//     cryptoBalance: {
+//       fontSize: normalize(17),
+//       fontFamily: getFontFamily(900),
+//       color: colors.text,
+//     },
+//     cryptoValue: {
+//       fontFamily: getFontFamily(900),
+//       fontSize: normalize(17),
+//       color: colors.text,
+//     },
+//   });
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
@@ -304,7 +430,29 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderColor: colors.border,
       borderWidth: 1,
     },
-    listContent: { paddingHorizontal: 16 },
+    listContent: {
+      paddingHorizontal: 16,
+      flexGrow: 1,
+    },
+    emptyContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: 30,
+    },
+    emptyTitle: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily(800),
+      color: colors.text,
+      textAlign: "center",
+      marginBottom: 8,
+    },
+    emptySubtitle: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily(400),
+      color: colors.textMuted ?? colors.text,
+      textAlign: "center",
+    },
     cryptoItem: {
       flexDirection: "row",
       alignItems: "center",

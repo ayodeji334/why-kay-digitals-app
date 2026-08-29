@@ -4,8 +4,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { ArrowLeft2 } from "iconsax-react-nativejs";
 import { getFontFamily, normalize } from "../constants/settings";
 import { AppText } from "./AppText";
-import { useColors, useThemeMode } from "../hooks/useTheme";
-import { COLORS } from "../constants/colors";
+import { useColors } from "../hooks/useTheme";
 
 type Props = {
   title?: string;
@@ -16,13 +15,13 @@ type Props = {
 const marginTop = Platform.select({
   android: normalize(10),
   default: 0,
-  ios: normalize(60),
+  ios: normalize(67),
 });
 
 const marginBotom = Platform.select({
-  android: normalize(0),
+  android: normalize(10),
   default: 0,
-  ios: normalize(8),
+  ios: normalize(10),
 });
 
 // const CustomHeader: React.FC<Props> = ({
@@ -106,7 +105,7 @@ const makeScreenStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 12,
-      paddingVertical: 19,
+      paddingVertical: 209,
       backgroundColor: colors.background,
     },
     scrollContainer: {

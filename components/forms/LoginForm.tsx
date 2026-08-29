@@ -20,6 +20,7 @@ import { refreshBiometricState } from "../../stores/biometricSlice";
 import { useBiometricPromptStore } from "../../stores/biometricPromptSlice";
 import { useBiometricLogin } from "../../hooks/useBiometricLogin";
 import { useColors } from "../../hooks/useTheme";
+import DeviceInfo from "react-native-device-info";
 
 const loginSchema = yup.object().shape({
   login: yup.string().required("Email or Username is required"),
@@ -57,6 +58,7 @@ const LoginForm: React.FC = () => {
         login,
         password,
         device_id: userOneSignalID,
+        device_name: DeviceInfo.getModel() ?? null,
       });
 
       if (res?.data?.data?.is_email_verified) {

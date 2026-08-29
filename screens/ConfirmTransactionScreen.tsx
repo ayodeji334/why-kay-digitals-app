@@ -25,7 +25,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { showError } from "../utlis/toast";
 import { AxiosError } from "axios";
 import { AppText } from "../components/AppText";
-import { useColors } from "../hooks/useTheme";
+import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
 type FormData = {
   pin: string;
@@ -37,6 +37,8 @@ const schema = yup.object().shape({
 
 export default function ConfirmTransactionScreen() {
   const { post, apiGet } = useAxios();
+  const resolvedTheme = useResolvedTheme();
+
   const navigation: any = useNavigation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const route: any = useRoute();
@@ -116,7 +118,7 @@ export default function ConfirmTransactionScreen() {
         } else {
           showError(err.response?.data?.message || "Something went wrong");
         }
-        showError(err.response?.data?.message || "Something went wrong");
+        // showError(err.response?.data?.message || "Something went wrong");
       }
     } finally {
       setIsLoading(false);
@@ -125,6 +127,10 @@ export default function ConfirmTransactionScreen() {
 
   return (
     <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
+      <StatusBar
+        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

@@ -17,6 +17,7 @@ import { AppText } from "../AppText";
 import { useBiometricPromptStore } from "../../stores/biometricPromptSlice";
 import { refreshBiometricState } from "../../stores/biometricSlice";
 import { useColors } from "../../hooks/useTheme";
+import DeviceInfo from "react-native-device-info";
 
 const loginSchema = yup.object().shape({
   password: yup.string().required("Password is required"),
@@ -52,6 +53,7 @@ const ReturningUserLoginForm: React.FC = () => {
         login: userDetail?.email || userDetail?.username,
         password,
         device_id: userOneSignalID,
+        device_name: DeviceInfo.getModel() ?? null,
       });
 
       const { auth, user } = res.data?.data ?? {};

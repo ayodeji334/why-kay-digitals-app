@@ -429,8 +429,11 @@ export default function CryptoSellScreen() {
       navigation.navigate("ConfirmTransaction" as never, {
         payload: { ...values, url: "/wallets/user/sell-crypto" },
       });
-    } catch {
-      showError("Error checking rates. Try again.");
+    } catch (error: any) {
+      console.log(error?.response?.data);
+      showError(
+        error?.response?.data?.message ?? "Error checking rates. Try again.",
+      );
     }
   };
 
@@ -440,6 +443,11 @@ export default function CryptoSellScreen() {
     await refetch();
     setRefreshing(false);
   };
+
+  const isRateUnavailable = useMemo(() => {
+    const sellRate = parseFloat(assetDetails?.sell_rate ?? "0");
+    return !assetDetails?.rates?.sell || !sellRate || sellRate <= 0;
+  }, [assetDetails?.rates?.sell, assetDetails?.sell_rate]);
 
   if (isLoading) {
     return (
@@ -500,158 +508,122 @@ export default function CryptoSellScreen() {
               </View>
 
               <View>
-                <AppText style={styles.label}>
-                  Enter the amount (in $ dollars)
-                </AppText>
-
-                <Controller
-                  control={control}
-                  name="amount"
-                  render={({ field: { onChange, onBlur } }) => (
-                    <View
-                      style={[
-                        styles.inputContainer,
-                        errors.amount && styles.errorBorder,
-                      ]}
-                    >
-                      <AppText style={styles.dollarSign}>$</AppText>
-                      <TextInput
-                        style={styles.input}
-                        value={displayAmount}
-                        placeholder="0.00"
-                        maxFontSizeMultiplier={1}
-                        allowFontScaling={false}
-                        placeholderTextColor="#999"
-                        keyboardType="decimal-pad"
-                        onBlur={onBlur}
-                        onChangeText={text => {
-                          const formatted = formatWithCommas(text);
-                          const numeric = parseToNumber(formatted);
-                          onChange(numeric);
-                          setDisplayAmount(formatted);
-                        }}
-                      />
-                    </View>
-                  )}
-                />
-
-                {errors.amount && (
-                  <AppText style={styles.error}>
-                    {errors.amount.message}
-                  </AppText>
-                )}
-
-                {/* Insufficient balance message with max sellable amount */}
-                {hasInsufficientBalance && insufficientBalanceMessage && (
-                  <AppText style={styles.error}>
-                    {insufficientBalanceMessage}
-                  </AppText>
-                )}
-
-                {!hasInsufficientBalance && (
-                  <AppText style={styles.approx}>
-                    Approximately {assetValueEquivalent} {symbol}
-                  </AppText>
-                )}
-
-                <View
-                  style={{
-                    marginVertical: 10,
-                    backgroundColor: colors.inputBackground,
-                    padding: 13,
-                    borderRadius: 10,
-                    gap: 8,
-                  }}
-                >
-                  <AppText style={[styles.note, { color: colors.text }]}>
-                    Wallet Balance, Exchange Rate & Fee Breakdown
-                  </AppText>
-
-                  {/* Wallet balance */}
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingVertical: 2,
-                    }}
-                  >
-                    <AppText style={[styles.balance]}>Wallet Balance:</AppText>
-                    <AppText style={styles.balance}>
-                      {assetDetails?.balance || 0} {assetDetails?.symbol}
+                {isRateUnavailable ? null : (
+                  <>
+                    <AppText style={styles.label}>
+                      Enter the amount (in $ dollars)
                     </AppText>
-                  </View>
 
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingVertical: 2,
-                    }}
-                  >
-                    <AppText style={[styles.balance]}>Balance in USD:</AppText>
-                    <AppText style={styles.balance}>
-                      {formatAmount(
-                        Number(assetDetails?.balance) * marketPrice || 0,
-                        { currency: "USD", decimalPlace: 2 },
+                    <Controller
+                      control={control}
+                      name="amount"
+                      render={({ field: { onChange, onBlur } }) => (
+                        <View
+                          style={[
+                            styles.inputContainer,
+                            errors.amount && styles.errorBorder,
+                          ]}
+                        >
+                          <AppText style={styles.dollarSign}>$</AppText>
+                          <TextInput
+                            style={styles.input}
+                            value={displayAmount}
+                            placeholder="0.00"
+                            maxFontSizeMultiplier={1}
+                            allowFontScaling={false}
+                            placeholderTextColor="#999"
+                            keyboardType="decimal-pad"
+                            onBlur={onBlur}
+                            onChangeText={text => {
+                              const formatted = formatWithCommas(text);
+                              const numeric = parseToNumber(formatted);
+                              onChange(numeric);
+                              setDisplayAmount(formatted);
+                            }}
+                          />
+                        </View>
                       )}
+                    />
+
+                    {errors.amount ? (
+                      <AppText style={styles.error}>
+                        {errors.amount.message}
+                      </AppText>
+                    ) : (
+                      hasInsufficientBalance &&
+                      insufficientBalanceMessage && (
+                        <AppText style={styles.error}>
+                          {insufficientBalanceMessage}
+                        </AppText>
+                      )
+                    )}
+
+                    {!errors.amount && !hasInsufficientBalance && (
+                      <AppText style={styles.approx}>
+                        Approximately {assetValueEquivalent} {symbol}
+                      </AppText>
+                    )}
+                  </>
+                )}
+
+                {isRateUnavailable && (
+                  <View style={styles.warningContainer}>
+                    <AppText style={styles.warningText}>
+                      Rates for {assetDetails?.symbol ?? "this asset"} are
+                      currently unavailable. Please check back later.
                     </AppText>
                   </View>
+                )}
 
-                  <View
-                    style={{
-                      height: 1,
-                      backgroundColor: colors.border,
-                      marginVertical: 4,
-                    }}
-                  />
-
-                  {/* Rate */}
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingVertical: 2,
-                    }}
-                  >
-                    <AppText
-                      style={[
-                        styles.balance,
-                        { fontFamily: getFontFamily("800") },
-                      ]}
+                {!isRateUnavailable ? (
+                  <>
+                    <View
+                      style={{
+                        marginVertical: 10,
+                        backgroundColor: colors.inputBackground,
+                        padding: 13,
+                        borderRadius: 10,
+                        gap: 8,
+                      }}
                     >
-                      Sell Rate:
-                    </AppText>
-                    <AppText style={styles.balance}>
-                      {formatAmount(acknowledgedSellRateRef.current ?? 0)}/$
-                    </AppText>
-                  </View>
+                      <AppText style={[styles.note, { color: colors.text }]}>
+                        Wallet Balance, Exchange Rate & Fee Breakdown
+                      </AppText>
 
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingVertical: 2,
-                    }}
-                  >
-                    <AppText
-                      style={[
-                        styles.balance,
-                        { fontFamily: getFontFamily("800") },
-                      ]}
-                    >
-                      Market Price:
-                    </AppText>
-                    <AppText style={styles.balance}>
-                      {formatAmount(marketPrice || 0, {
-                        currency: "USD",
-                      })}
-                      /{assetDetails?.symbol}
-                    </AppText>
-                  </View>
+                      {/* Wallet balance */}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          paddingVertical: 2,
+                        }}
+                      >
+                        <AppText style={[styles.balance]}>
+                          Wallet Balance:
+                        </AppText>
+                        <AppText style={styles.balance}>
+                          {assetDetails?.balance || 0} {assetDetails?.symbol}
+                        </AppText>
+                      </View>
 
-                  {/* Fee breakdown — only show when amount is entered */}
-                  {feeBreakdown && amount > 0 && (
-                    <>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          paddingVertical: 2,
+                        }}
+                      >
+                        <AppText style={[styles.balance]}>
+                          Balance in USD:
+                        </AppText>
+                        <AppText style={styles.balance}>
+                          {formatAmount(
+                            Number(assetDetails?.balance) * marketPrice || 0,
+                            { currency: "USD", decimalPlace: 2 },
+                          )}
+                        </AppText>
+                      </View>
+
                       <View
                         style={{
                           height: 1,
@@ -660,10 +632,12 @@ export default function CryptoSellScreen() {
                         }}
                       />
 
+                      {/* Rate */}
                       <View
                         style={{
                           flexDirection: "row",
                           justifyContent: "space-between",
+                          paddingVertical: 2,
                         }}
                       >
                         <AppText
@@ -672,75 +646,133 @@ export default function CryptoSellScreen() {
                             { fontFamily: getFontFamily("800") },
                           ]}
                         >
-                          You Sell:
+                          Sell Rate:
                         </AppText>
                         <AppText style={styles.balance}>
-                          {feeBreakdown?.coinAmount} {assetDetails?.symbol} (≈{" "}
-                          {formatAmount(feeBreakdown?.grossUsd, {
-                            currency: "USD",
-                          })}
-                          )
+                          {formatAmount(acknowledgedSellRateRef.current ?? 0)}/$
                         </AppText>
                       </View>
-
-                      <View
-                        style={{
-                          height: 1,
-                          backgroundColor: colors.border,
-                          marginVertical: 4,
-                        }}
-                      />
 
                       <View
                         style={{
                           flexDirection: "row",
                           justifyContent: "space-between",
+                          paddingVertical: 2,
                         }}
                       >
-                        <AppText style={[styles.balance]}>
-                          You'll Receive:
-                        </AppText>
                         <AppText
                           style={[
                             styles.balance,
-                            {
-                              fontFamily: getFontFamily("800"),
-                            },
+                            { fontFamily: getFontFamily("800") },
                           ]}
                         >
-                          {feeBreakdown?.netNgn}
+                          Market Price:
+                        </AppText>
+                        <AppText style={styles.balance}>
+                          {formatAmount(marketPrice || 0, {
+                            currency: "USD",
+                          })}
+                          /{assetDetails?.symbol}
                         </AppText>
                       </View>
-                    </>
-                  )}
-                </View>
 
-                <View style={styles.paymentContainer}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingVertical: 2,
-                    }}
-                  >
-                    <AppText style={styles.ngn}>You’ll be paid:</AppText>
-                    <AppText style={styles.ngn}>{ngnAmount}</AppText>
-                  </View>
-                </View>
+                      {/* Fee breakdown — only show when amount is entered */}
+                      {feeBreakdown && amount > 0 && (
+                        <>
+                          <View
+                            style={{
+                              height: 1,
+                              backgroundColor: colors.border,
+                              marginVertical: 4,
+                            }}
+                          />
+
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <AppText
+                              style={[
+                                styles.balance,
+                                { fontFamily: getFontFamily("800") },
+                              ]}
+                            >
+                              You Sell:
+                            </AppText>
+                            <AppText style={styles.balance}>
+                              {feeBreakdown?.coinAmount} {assetDetails?.symbol}{" "}
+                              (≈{" "}
+                              {formatAmount(feeBreakdown?.grossUsd, {
+                                currency: "USD",
+                              })}
+                              )
+                            </AppText>
+                          </View>
+
+                          <View
+                            style={{
+                              height: 1,
+                              backgroundColor: colors.border,
+                              marginVertical: 4,
+                            }}
+                          />
+
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <AppText style={[styles.balance]}>
+                              You'll Receive:
+                            </AppText>
+                            <AppText
+                              style={[
+                                styles.balance,
+                                {
+                                  fontFamily: getFontFamily("800"),
+                                },
+                              ]}
+                            >
+                              {feeBreakdown?.netNgn}
+                            </AppText>
+                          </View>
+                        </>
+                      )}
+                    </View>
+
+                    <View style={styles.paymentContainer}>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          paddingVertical: 2,
+                        }}
+                      >
+                        <AppText style={styles.ngn}>You’ll be paid:</AppText>
+                        <AppText style={styles.ngn}>{ngnAmount}</AppText>
+                      </View>
+                    </View>
+                  </>
+                ) : null}
               </View>
             </View>
 
-            <TouchableOpacity
-              activeOpacity={0.89}
-              style={[
-                styles.button,
-                hasInsufficientBalance && styles.buttonDisabled,
-              ]}
-              disabled={hasInsufficientBalance}
-              onPress={handleSubmit(onSubmit)}
-            >
-              <AppText style={styles.buttonText}>Continue</AppText>
-            </TouchableOpacity>
+            {isRateUnavailable ? null : (
+              <TouchableOpacity
+                activeOpacity={0.89}
+                style={[
+                  styles.button,
+                  hasInsufficientBalance && styles.buttonDisabled,
+                ]}
+                disabled={hasInsufficientBalance}
+                onPress={handleSubmit(onSubmit)}
+              >
+                <AppText style={styles.buttonText}>Continue</AppText>
+              </TouchableOpacity>
+            )}
           </View>
         )}
       </ScrollView>
