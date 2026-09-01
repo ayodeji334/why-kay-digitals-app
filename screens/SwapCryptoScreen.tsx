@@ -323,6 +323,7 @@ export default function CryptoSwapScreen() {
                 name="from_asset"
                 label="Select asset(coin) you want to convert from"
                 options={userWallets}
+                loading={isLoading}
                 placeholder="Select an asset(coin)"
                 title="Select from your wallet"
                 showWalletPrice={true}
@@ -350,6 +351,8 @@ export default function CryptoSwapScreen() {
                     ? "Select a source asset first"
                     : "Select an asset to convert to"
                 }
+                loading={isFetching}
+                // disabled={!fromAsset || isFetching}
                 title="Select an asset"
               />
             </View>

@@ -673,6 +673,7 @@ import { refreshBiometricState } from "../stores/biometricSlice";
 import { ThemeScreen } from "../screens/ThemeScreen";
 import PhoneNumberVerificationScreen from "../screens/PhoneNumberVerificationScreen";
 import BVNOwnershipConfirmationScreen from "../screens/BVNOwnershipConfirmationScreen";
+import { LiveChatProvider } from "../context/LiveChatProvider";
 
 const useIsSignedOut = () => !useIsAuthenticated();
 
@@ -719,7 +720,7 @@ const RootStack = createNativeStackNavigator({
         },
         SignUp: {
           screen: RegisterScreen,
-          options: { header: () => <CustomHeader title="Sign Up" /> },
+          options: { header: () => <CustomHeader title="Sign Up" showChat /> },
         },
         VerifyCode: {
           screen: VerificationCodeScreen,
@@ -1217,5 +1218,9 @@ export default function NavigationRoot() {
 
   if (!booted) return <SplashScreen />;
 
-  return <Navigation />;
+  return (
+    <LiveChatProvider>
+      <Navigation />
+    </LiveChatProvider>
+  );
 }

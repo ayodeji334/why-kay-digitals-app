@@ -569,7 +569,7 @@ export default function CryptoSellScreen() {
                 {isRateUnavailable && (
                   <View style={styles.warningContainer}>
                     <AppText style={styles.warningText}>
-                      Rates for {assetDetails?.symbol ?? "this asset"} are
+                      Sell Rates for {assetDetails?.symbol ?? "this asset"} are
                       currently unavailable. Please check back later.
                     </AppText>
                   </View>
@@ -803,7 +803,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     warningText: {
       color: colors.error,
       fontSize: normalize(18),
-      fontFamily: getFontFamily("800"),
+      fontFamily: getFontFamily("700"),
       textAlign: "center",
     },
     label: {

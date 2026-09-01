@@ -279,7 +279,7 @@ const MenuItem = ({
   onPress,
   showArrow = true,
   isDangerous = false,
-  color,
+  // color,
   IconComponent = <ArrowRight2 />,
   isVerified = false,
   isLocked = false,
@@ -375,6 +375,8 @@ export default function KYCVerificationScreen() {
   const navigation = useNavigation();
   const user = useAuthStore(state => state.user);
 
+  console.log("KYCVerificationScreen user:", user);
+
   const isBvnVerified = user?.bvn_verification_status === "VERIFIED";
   const isNinVerified = user?.nin_verification_status === "VERIFIED";
 
@@ -384,7 +386,7 @@ export default function KYCVerificationScreen() {
   // Sequential gating: NIN requires BVN done first; Selfie requires both
   // BVN and NIN done first.
   const isNinLocked = !isBvnVerified;
-  const isSelfieLocked = !isBvnVerified || !isNinVerified;
+  // const isSelfieLocked = !isBvnVerified || !isNinVerified;
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
@@ -431,7 +433,7 @@ export default function KYCVerificationScreen() {
             isLocked={isNinLocked}
             lockedMessage="Complete BVN verification first"
           />
-          <MenuItem
+          {/* <MenuItem
             title="Selfie Verification"
             subtitle="Check your current transaction limits"
             onPress={() => navigation.navigate("SelfieVerification" as never)}
@@ -445,7 +447,7 @@ export default function KYCVerificationScreen() {
             isVerified={user?.selfie_verification_status === "VERIFIED"}
             isLocked={isSelfieLocked}
             lockedMessage="Complete BVN and NIN verification first"
-          />
+          /> */}
         </View>
       </ScrollView>
     </SafeAreaView>

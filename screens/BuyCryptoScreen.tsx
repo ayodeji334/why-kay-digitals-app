@@ -2064,8 +2064,8 @@ export default function CryptoBuyScreen() {
             {isRateUnavailable && (
               <View style={styles.warningContainer}>
                 <AppText style={styles.warningText}>
-                  Rates for {assetDetails?.symbol ?? "this asset"} are currently
-                  unavailable. Please check back later.
+                  Buy Rates for {assetDetails?.symbol ?? "this asset"} are
+                  currently unavailable. Please check back later.
                 </AppText>
               </View>
             )}
@@ -2486,10 +2486,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: "rgba(255, 0, 0, 0.03)",
       borderRadius: 6,
       borderWidth: 1,
-      borderColor: "rgba(255, 0, 0, 0.3)",
+      borderColor: colors.errorLight,
     },
     warningText: {
-      color: "#db0b0bff",
+      color: colors.error,
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       textAlign: "center",

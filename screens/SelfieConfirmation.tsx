@@ -1,8 +1,327 @@
+// // import React, { useState } from "react";
+// // import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+// // import { SafeAreaView } from "react-native-safe-area-context";
+// // import { getFontFamily, normalize } from "../constants/settings";
+// // import { COLORS } from "../constants/colors";
+// // import { useNavigation, useRoute } from "@react-navigation/native";
+// // import ReactNativeBlobUtil from "react-native-blob-util";
+// // import useAxios from "../hooks/useAxios";
+// // import { showError } from "../utlis/toast";
+// // import { useAuthStore } from "../stores/authSlice";
+// // import { CloseCircle, TickCircle } from "iconsax-react-nativejs";
+// // import IdentityVerifying from "../components/IdentityVerifying";
+// // import { AxiosError } from "axios";
+// // import { AppText } from "../components/AppText";
+
+// // export default function SelfieConfirmationScreen() {
+// //   const route = useRoute();
+// //   const navigation: any = useNavigation();
+// //   const { image }: any = route.params;
+// //   const axiosInstance = useAxios();
+// //   const setUser = useAuthStore(state => state.setUser);
+
+// //   const [isLoading, setIsLoading] = useState<boolean>(false);
+// //   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+
+// //   const handleRetake = () => {
+// //     navigation.replace("SelfieVerification");
+// //   };
+
+// //   async function convertImageToBase64(imagePath: string): Promise<string> {
+// //     try {
+// //       const base64String = await ReactNativeBlobUtil.fs.readFile(
+// //         imagePath,
+// //         "base64",
+// //       );
+// //       return base64String;
+// //     } catch (error) {
+// //       console.error("Error converting image to base64:", error);
+// //       throw error;
+// //     }
+// //   }
+
+// //   const errorMessage =
+// //     "Unable to process selfie verification. Kindly try again after some minutes";
+
+// //   const handleConfirm = async () => {
+// //     try {
+// //       setIsLoading(true);
+// //       const base64Image = await convertImageToBase64(image.path);
+// //       if (!base64Image) {
+// //         showError(errorMessage);
+// //         setStatus("error");
+// //         return;
+// //       }
+
+// //       const payload = { image: base64Image };
+// //       const response = await axiosInstance.post("/kyc/verify-selfie", payload);
+
+// //       setStatus("success");
+// //       setUser(response.data.data?.user);
+// //     } catch (err: any) {
+// //       setStatus("error");
+// //       if (err instanceof AxiosError) {
+// //         showError(
+// //           err.response?.data?.message || "Something went wrong. Try again.",
+// //         );
+// //       }
+// //     } finally {
+// //       setIsLoading(false);
+// //     }
+// //   };
+
+// //   return (
+// //     <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
+// //       {isLoading ? (
+// //         <IdentityVerifying loading={isLoading} />
+// //       ) : status === "success" ? (
+// //         <View style={styles.statusContent}>
+// //           <View
+// //             style={{
+// //               justifyContent: "center",
+// //               alignContent: "center",
+// //               alignItems: "center",
+// //             }}
+// //           >
+// //             <TickCircle size={40} color={COLORS.primary} variant="Bold" />
+// //             <AppText style={styles.statusTitle}>Verification Complete</AppText>
+// //             <AppText style={styles.statusDescription}>
+// //               Your identity has been successfully verified. You now have full
+// //               access to upgrade your account and increase your transaction
+// //               limits.
+// //             </AppText>
+// //           </View>
+// //           <TouchableOpacity
+// //             style={[styles.confirmButton, { marginLeft: 0, width: "100%" }]}
+// //             onPress={() => navigation.replace("Verification")}
+// //           >
+// //             <AppText style={styles.buttonText}>Continue</AppText>
+// //           </TouchableOpacity>
+// //         </View>
+// //       ) : status === "error" ? (
+// //         // ERROR STATE
+// //         <View style={styles.statusContent}>
+// //           <View
+// //             style={{
+// //               justifyContent: "center",
+// //               alignContent: "center",
+// //               alignItems: "center",
+// //             }}
+// //           >
+// //             <CloseCircle size={40} color="#FF4D4D" variant="Bold" />
+// //             <AppText style={styles.statusTitle}>Verification Failed</AppText>
+// //             <AppText style={styles.statusDescription}>
+// //               We couldn't get a clear match of your face. Please ensure you are
+// //               in a well-lit area and your face is fully centered in the frame.
+// //             </AppText>
+// //           </View>
+// //           <TouchableOpacity
+// //             activeOpacity={0.8}
+// //             style={styles.retakeButton}
+// //             onPress={handleRetake}
+// //           >
+// //             <AppText style={styles.buttonText}>Try Again</AppText>
+// //           </TouchableOpacity>
+// //         </View>
+// //       ) : (
+// //         // IDLE STATE
+// //         <View style={styles.idleContent}>
+// //           <Image
+// //             source={{ uri: `file://${image.path}` }}
+// //             style={styles.previewImage}
+// //             resizeMode="cover"
+// //           />
+// //           <AppText style={styles.instructions}>
+// //             Make sure your face is clearly visible and centered.
+// //           </AppText>
+// //           <View style={styles.buttonRow}>
+// //             <TouchableOpacity
+// //               activeOpacity={0.8}
+// //               style={[styles.retakeButton, { flex: 1 }]}
+// //               onPress={handleRetake}
+// //             >
+// //               <AppText style={styles.buttonText}>Retake</AppText>
+// //             </TouchableOpacity>
+// //             <TouchableOpacity
+// //               activeOpacity={0.8}
+// //               style={[styles.confirmButton, { flex: 1 }]}
+// //               onPress={handleConfirm}
+// //             >
+// //               <AppText style={styles.buttonText}>Confirm</AppText>
+// //             </TouchableOpacity>
+// //           </View>
+// //         </View>
+// //       )}
+// //     </SafeAreaView>
+// //   );
+
+// //   // return (
+// //   //   <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
+// //   //     <IdentityVerificationScreen loading={isLoading} />
+
+// //   //     {/* SUCCESS STATE */}
+// //   //     {!isLoading && status === "success" && (
+// //   //       <View style={styles.statusContent}>
+// //   //         <View>
+// //   //           <TickCircle size={80} color={COLORS.primary} variant="Bold" />
+// //   //           <AppText style={styles.statusTitle}>Verification Complete</AppText>
+// //   //           <AppText style={styles.statusDescription}>
+// //   //             Your identity has been successfully verified. You now have full
+// //   //             access to upgrade your account and increase your transaction
+// //   //             limits.
+// //   //           </AppText>
+// //   //           <TouchableOpacity
+// //   //             style={[styles.confirmButton, { marginLeft: 0, width: "100%" }]}
+// //   //             onPress={() => navigation.navigate("Verification")}
+// //   //           >
+// //   //             <AppText style={styles.buttonText}>Continue to Dashboard</AppText>
+// //   //           </TouchableOpacity>
+// //   //         </View>
+// //   //       </View>
+// //   //     )}
+
+// //   //     {/* ERROR STATE */}
+// //   //     {!isLoading && status === "error" && (
+// //   //       <View style={styles.statusContent}>
+// //   //         <View
+// //   //           style={{
+// //   //             justifyContent: "center",
+// //   //             alignItems: "center",
+// //   //           }}
+// //   //         >
+// //   //           <CloseCircle size={40} color="#FF4D4D" variant="Bold" />
+// //   //           <AppText style={styles.statusTitle}>Verification Failed</AppText>
+// //   //           <AppText style={styles.statusDescription}>
+// //   //             We couldn't get a clear match of your face. Please ensure you are
+// //   //             in a well-lit area and your face is fully centered in the frame.
+// //   //           </AppText>
+// //   //         </View>
+// //   //         <View>
+// //   //           <TouchableOpacity
+// //   //             activeOpacity={0.8}
+// //   //             style={[styles.retakeButton]}
+// //   //             onPress={handleRetake}
+// //   //           >
+// //   //             <AppText style={styles.buttonText}>Try Again</AppText>
+// //   //           </TouchableOpacity>
+// //   //         </View>
+// //   //       </View>
+// //   //     )}
+
+// //   //     {!isLoading && status === "idle" && (
+// //   //       <View style={styles.idleContent}>
+// //   //         <Image
+// //   //           source={{ uri: `file://${image.path}` }}
+// //   //           style={styles.previewImage}
+// //   //           resizeMode="cover"
+// //   //         />
+
+// //   //         <AppText style={styles.instructions}>
+// //   //           Make sure your face is clearly visible and centered.
+// //   //         </AppText>
+
+// //   //         <View style={styles.buttonRow}>
+// //   //           <TouchableOpacity
+// //   //             activeOpacity={0.8}
+// //   //             style={[styles.retakeButton, { flex: 1 }]}
+// //   //             onPress={handleRetake}
+// //   //           >
+// //   //             <AppText style={styles.buttonText}>Retake</AppText>
+// //   //           </TouchableOpacity>
+
+// //   //           <TouchableOpacity
+// //   //             activeOpacity={0.8}
+// //   //             style={[styles.confirmButton, { flex: 1 }]}
+// //   //             onPress={handleConfirm}
+// //   //           >
+// //   //             <AppText style={styles.buttonText}>Confirm</AppText>
+// //   //           </TouchableOpacity>
+// //   //         </View>
+// //   //       </View>
+// //   //     )}
+// //   //   </SafeAreaView>
+// //   // );
+// // }
+
+// // const styles = StyleSheet.create({
+// //   container: {
+// //     flex: 1,
+// //     backgroundColor: "#fff",
+// //     paddingHorizontal: 20,
+// //   },
+// //   idleContent: {
+// //     flex: 1,
+// //     paddingTop: 20,
+// //   },
+// //   statusContent: {
+// //     flex: 1,
+// //     alignContent: "center",
+// //     justifyContent: "space-between",
+// //     paddingBottom: 60,
+// //     paddingTop: 30,
+// //   },
+// //   previewImage: {
+// //     width: "100%",
+// //     height: "60%",
+// //     borderRadius: 24,
+// //     marginBottom: 24,
+// //   },
+// //   instructions: {
+// //     fontSize: normalize(18),
+// //     fontFamily: getFontFamily("700"),
+// //     color: "#000000ff",
+// //     textAlign: "center",
+// //     marginBottom: 32,
+// //     lineHeight: 24,
+// //   },
+// //   buttonRow: {
+// //     flexDirection: "row",
+// //     width: "100%",
+// //   },
+// //   retakeButton: {
+// //     backgroundColor: "#d30b0bff",
+// //     paddingVertical: 16,
+// //     borderRadius: 120,
+// //     marginRight: 8,
+// //     alignItems: "center",
+// //   },
+// //   confirmButton: {
+// //     backgroundColor: COLORS.primary,
+// //     paddingVertical: 16,
+// //     borderRadius: 120,
+// //     marginLeft: 8,
+// //     alignItems: "center",
+// //   },
+// //   buttonText: {
+// //     color: "#fff",
+// //     fontSize: normalize(18),
+// //     fontFamily: getFontFamily("700"),
+// //   },
+// //   retakeText: {
+// //     color: "#FF4D4D",
+// //   },
+// //   statusTitle: {
+// //     fontSize: normalize(18),
+// //     fontFamily: getFontFamily("800"),
+// //     color: "#000",
+// //     marginTop: 24,
+// //     marginBottom: 12,
+// //     textAlign: "center",
+// //   },
+// //   statusDescription: {
+// //     fontSize: normalize(16),
+// //     fontFamily: getFontFamily("400"),
+// //     color: "#000",
+// //     textAlign: "center",
+// //     lineHeight: 24,
+// //     marginBottom: 40,
+// //     paddingHorizontal: 10,
+// //   },
+// // });
 // import React, { useState } from "react";
-// import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+// import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 // import { SafeAreaView } from "react-native-safe-area-context";
 // import { getFontFamily, normalize } from "../constants/settings";
-// import { COLORS } from "../constants/colors";
 // import { useNavigation, useRoute } from "@react-navigation/native";
 // import ReactNativeBlobUtil from "react-native-blob-util";
 // import useAxios from "../hooks/useAxios";
@@ -12,6 +331,7 @@
 // import IdentityVerifying from "../components/IdentityVerifying";
 // import { AxiosError } from "axios";
 // import { AppText } from "../components/AppText";
+// import { useColors } from "../hooks/useTheme";
 
 // export default function SelfieConfirmationScreen() {
 //   const route = useRoute();
@@ -19,6 +339,8 @@
 //   const { image }: any = route.params;
 //   const axiosInstance = useAxios();
 //   const setUser = useAuthStore(state => state.setUser);
+//   const colors = useColors();
+//   const styles = makeStyles(colors);
 
 //   const [isLoading, setIsLoading] = useState<boolean>(false);
 //   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
@@ -83,7 +405,7 @@
 //               alignItems: "center",
 //             }}
 //           >
-//             <TickCircle size={40} color={COLORS.primary} variant="Bold" />
+//             <TickCircle size={40} color={colors.primary} variant="Bold" />
 //             <AppText style={styles.statusTitle}>Verification Complete</AppText>
 //             <AppText style={styles.statusDescription}>
 //               Your identity has been successfully verified. You now have full
@@ -99,7 +421,6 @@
 //           </TouchableOpacity>
 //         </View>
 //       ) : status === "error" ? (
-//         // ERROR STATE
 //         <View style={styles.statusContent}>
 //           <View
 //             style={{
@@ -108,7 +429,7 @@
 //               alignItems: "center",
 //             }}
 //           >
-//             <CloseCircle size={40} color="#FF4D4D" variant="Bold" />
+//             <CloseCircle size={40} color={colors.error} variant="Bold" />
 //             <AppText style={styles.statusTitle}>Verification Failed</AppText>
 //             <AppText style={styles.statusDescription}>
 //               We couldn't get a clear match of your face. Please ensure you are
@@ -124,7 +445,6 @@
 //           </TouchableOpacity>
 //         </View>
 //       ) : (
-//         // IDLE STATE
 //         <View style={styles.idleContent}>
 //           <Image
 //             source={{ uri: `file://${image.path}` }}
@@ -154,170 +474,84 @@
 //       )}
 //     </SafeAreaView>
 //   );
-
-//   // return (
-//   //   <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
-//   //     <IdentityVerificationScreen loading={isLoading} />
-
-//   //     {/* SUCCESS STATE */}
-//   //     {!isLoading && status === "success" && (
-//   //       <View style={styles.statusContent}>
-//   //         <View>
-//   //           <TickCircle size={80} color={COLORS.primary} variant="Bold" />
-//   //           <AppText style={styles.statusTitle}>Verification Complete</AppText>
-//   //           <AppText style={styles.statusDescription}>
-//   //             Your identity has been successfully verified. You now have full
-//   //             access to upgrade your account and increase your transaction
-//   //             limits.
-//   //           </AppText>
-//   //           <TouchableOpacity
-//   //             style={[styles.confirmButton, { marginLeft: 0, width: "100%" }]}
-//   //             onPress={() => navigation.navigate("Verification")}
-//   //           >
-//   //             <AppText style={styles.buttonText}>Continue to Dashboard</AppText>
-//   //           </TouchableOpacity>
-//   //         </View>
-//   //       </View>
-//   //     )}
-
-//   //     {/* ERROR STATE */}
-//   //     {!isLoading && status === "error" && (
-//   //       <View style={styles.statusContent}>
-//   //         <View
-//   //           style={{
-//   //             justifyContent: "center",
-//   //             alignItems: "center",
-//   //           }}
-//   //         >
-//   //           <CloseCircle size={40} color="#FF4D4D" variant="Bold" />
-//   //           <AppText style={styles.statusTitle}>Verification Failed</AppText>
-//   //           <AppText style={styles.statusDescription}>
-//   //             We couldn't get a clear match of your face. Please ensure you are
-//   //             in a well-lit area and your face is fully centered in the frame.
-//   //           </AppText>
-//   //         </View>
-//   //         <View>
-//   //           <TouchableOpacity
-//   //             activeOpacity={0.8}
-//   //             style={[styles.retakeButton]}
-//   //             onPress={handleRetake}
-//   //           >
-//   //             <AppText style={styles.buttonText}>Try Again</AppText>
-//   //           </TouchableOpacity>
-//   //         </View>
-//   //       </View>
-//   //     )}
-
-//   //     {!isLoading && status === "idle" && (
-//   //       <View style={styles.idleContent}>
-//   //         <Image
-//   //           source={{ uri: `file://${image.path}` }}
-//   //           style={styles.previewImage}
-//   //           resizeMode="cover"
-//   //         />
-
-//   //         <AppText style={styles.instructions}>
-//   //           Make sure your face is clearly visible and centered.
-//   //         </AppText>
-
-//   //         <View style={styles.buttonRow}>
-//   //           <TouchableOpacity
-//   //             activeOpacity={0.8}
-//   //             style={[styles.retakeButton, { flex: 1 }]}
-//   //             onPress={handleRetake}
-//   //           >
-//   //             <AppText style={styles.buttonText}>Retake</AppText>
-//   //           </TouchableOpacity>
-
-//   //           <TouchableOpacity
-//   //             activeOpacity={0.8}
-//   //             style={[styles.confirmButton, { flex: 1 }]}
-//   //             onPress={handleConfirm}
-//   //           >
-//   //             <AppText style={styles.buttonText}>Confirm</AppText>
-//   //           </TouchableOpacity>
-//   //         </View>
-//   //       </View>
-//   //     )}
-//   //   </SafeAreaView>
-//   // );
 // }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#fff",
-//     paddingHorizontal: 20,
-//   },
-//   idleContent: {
-//     flex: 1,
-//     paddingTop: 20,
-//   },
-//   statusContent: {
-//     flex: 1,
-//     alignContent: "center",
-//     justifyContent: "space-between",
-//     paddingBottom: 60,
-//     paddingTop: 30,
-//   },
-//   previewImage: {
-//     width: "100%",
-//     height: "60%",
-//     borderRadius: 24,
-//     marginBottom: 24,
-//   },
-//   instructions: {
-//     fontSize: normalize(18),
-//     fontFamily: getFontFamily("700"),
-//     color: "#000000ff",
-//     textAlign: "center",
-//     marginBottom: 32,
-//     lineHeight: 24,
-//   },
-//   buttonRow: {
-//     flexDirection: "row",
-//     width: "100%",
-//   },
-//   retakeButton: {
-//     backgroundColor: "#d30b0bff",
-//     paddingVertical: 16,
-//     borderRadius: 120,
-//     marginRight: 8,
-//     alignItems: "center",
-//   },
-//   confirmButton: {
-//     backgroundColor: COLORS.primary,
-//     paddingVertical: 16,
-//     borderRadius: 120,
-//     marginLeft: 8,
-//     alignItems: "center",
-//   },
-//   buttonText: {
-//     color: "#fff",
-//     fontSize: normalize(18),
-//     fontFamily: getFontFamily("700"),
-//   },
-//   retakeText: {
-//     color: "#FF4D4D",
-//   },
-//   statusTitle: {
-//     fontSize: normalize(18),
-//     fontFamily: getFontFamily("800"),
-//     color: "#000",
-//     marginTop: 24,
-//     marginBottom: 12,
-//     textAlign: "center",
-//   },
-//   statusDescription: {
-//     fontSize: normalize(16),
-//     fontFamily: getFontFamily("400"),
-//     color: "#000",
-//     textAlign: "center",
-//     lineHeight: 24,
-//     marginBottom: 40,
-//     paddingHorizontal: 10,
-//   },
-// });
+// const makeStyles = (colors: ReturnType<typeof useColors>) =>
+//   StyleSheet.create({
+//     container: {
+//       flex: 1,
+//       backgroundColor: colors.background,
+//       paddingHorizontal: 20,
+//     },
+//     idleContent: {
+//       flex: 1,
+//       paddingTop: 20,
+//     },
+//     statusContent: {
+//       flex: 1,
+//       alignContent: "center",
+//       justifyContent: "space-between",
+//       paddingBottom: 60,
+//       paddingTop: 30,
+//     },
+//     previewImage: {
+//       width: "100%",
+//       height: "60%",
+//       borderRadius: 24,
+//       marginBottom: 24,
+//     },
+//     instructions: {
+//       fontSize: normalize(18),
+//       fontFamily: getFontFamily("700"),
+//       color: colors.text,
+//       textAlign: "center",
+//       marginBottom: 32,
+//       // lineHeight: 24,
+//     },
+//     buttonRow: {
+//       flexDirection: "row",
+//       width: "100%",
+//     },
+//     retakeButton: {
+//       backgroundColor: colors.error,
+//       paddingVertical: 16,
+//       borderRadius: 120,
+//       marginRight: 8,
+//       alignItems: "center",
+//     },
+//     confirmButton: {
+//       backgroundColor: colors.primary,
+//       paddingVertical: 16,
+//       borderRadius: 120,
+//       marginLeft: 8,
+//       alignItems: "center",
+//     },
+//     buttonText: {
+//       color: "#fff",
+//       fontSize: normalize(18),
+//       fontFamily: getFontFamily("700"),
+//     },
+//     retakeText: {
+//       color: colors.error,
+//     },
+//     statusTitle: {
+//       fontSize: normalize(18),
+//       fontFamily: getFontFamily("800"),
+//       color: colors.text,
+//       marginTop: 24,
+//       marginBottom: 12,
+//       textAlign: "center",
+//     },
+//     statusDescription: {
+//       fontSize: normalize(16),
+//       fontFamily: getFontFamily("400"),
+//       color: colors.textMuted,
+//       textAlign: "center",
+//       // lineHeight: 24,
+//       marginBottom: 40,
+//       paddingHorizontal: 10,
+//     },
+//   });
 import React, { useState } from "react";
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -336,7 +570,7 @@ import { useColors } from "../hooks/useTheme";
 export default function SelfieConfirmationScreen() {
   const route = useRoute();
   const navigation: any = useNavigation();
-  const { image }: any = route.params;
+  const { image, bvn }: any = route.params;
   const axiosInstance = useAxios();
   const setUser = useAuthStore(state => state.setUser);
   const colors = useColors();
@@ -346,7 +580,8 @@ export default function SelfieConfirmationScreen() {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
   const handleRetake = () => {
-    navigation.replace("SelfieVerification");
+    // Keep the already-verified bvn — only the photo needs retaking.
+    navigation.replace("SelfieVerification", { bvn });
   };
 
   async function convertImageToBase64(imagePath: string): Promise<string> {
@@ -368,6 +603,13 @@ export default function SelfieConfirmationScreen() {
   const handleConfirm = async () => {
     try {
       setIsLoading(true);
+
+      if (!bvn) {
+        showError("Missing BVN — please restart verification.");
+        setStatus("error");
+        return;
+      }
+
       const base64Image = await convertImageToBase64(image.path);
       if (!base64Image) {
         showError(errorMessage);
@@ -375,8 +617,13 @@ export default function SelfieConfirmationScreen() {
         return;
       }
 
-      const payload = { image: base64Image };
-      const response = await axiosInstance.post("/kyc/verify-selfie", payload);
+      // Single combined call — backend matches this image against the
+      // pending BVN verification and writes both bvn + selfie data at once.
+      const payload = { bvn, image: base64Image };
+      const response = await axiosInstance.post(
+        "/kyc/verify-bvn-selfie",
+        payload,
+      );
 
       setStatus("success");
       setUser(response.data.data?.user);
@@ -415,7 +662,7 @@ export default function SelfieConfirmationScreen() {
           </View>
           <TouchableOpacity
             style={[styles.confirmButton, { marginLeft: 0, width: "100%" }]}
-            onPress={() => navigation.replace("Verification")}
+            onPress={() => navigation.pop(2)}
           >
             <AppText style={styles.buttonText}>Continue</AppText>
           </TouchableOpacity>
@@ -506,7 +753,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
       textAlign: "center",
       marginBottom: 32,
-      // lineHeight: 24,
     },
     buttonRow: {
       flexDirection: "row",
@@ -547,7 +793,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
       textAlign: "center",
-      // lineHeight: 24,
       marginBottom: 40,
       paddingHorizontal: 10,
     },
