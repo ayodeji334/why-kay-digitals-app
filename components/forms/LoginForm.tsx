@@ -170,7 +170,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     button: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 14,
+      paddingVertical: normalize(16),
       borderRadius: 100,
       marginTop: 30,
       justifyContent: "center",

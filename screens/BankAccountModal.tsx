@@ -300,7 +300,7 @@ export default function BankAccountModal({
               {validating ? "Please wait..." : "Save Recipient"}
             </AppText>
           </TouchableOpacity>
-          <View style={{ marginVertical: 10 }}>
+          <View style={{ marginVertical: 30 }}>
             <SavedBeneficiaries
               data={data ?? []}
               isLoading={isLoading}
@@ -370,18 +370,18 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderColor: colors.border,
       borderRadius: 8,
       paddingHorizontal: 16,
-      paddingVertical: 14,
+      paddingVertical: normalize(16),
       color: colors.text,
       fontFamily: getFontFamily("400"),
-      fontSize: normalize(19),
+      fontSize: normalize(18),
       // backgroundColor: "#FFFFFF",
     },
     errorBorder: {
-      borderColor: "#FF3B30",
+      borderColor: colors.error,
       borderWidth: 1.5,
     },
     errorText: {
-      color: "#FF3B30",
+      color: colors.error,
       marginTop: 6,
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
@@ -389,7 +389,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     button: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 14,
+      paddingVertical: normalize(16),
       borderRadius: 100,
       marginTop: 30,
     },

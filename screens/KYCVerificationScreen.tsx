@@ -375,8 +375,6 @@ export default function KYCVerificationScreen() {
   const navigation = useNavigation();
   const user = useAuthStore(state => state.user);
 
-  console.log("KYCVerificationScreen user:", user);
-
   const isBvnVerified = user?.bvn_verification_status === "VERIFIED";
   const isNinVerified = user?.nin_verification_status === "VERIFIED";
 
@@ -416,7 +414,7 @@ export default function KYCVerificationScreen() {
                 color={COLORS.primary}
               />
             }
-            isVerified={false}
+            isVerified={isBvnVerified}
           />
           <MenuItem
             title="Proof of Identity"

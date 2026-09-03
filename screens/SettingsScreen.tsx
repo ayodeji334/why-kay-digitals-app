@@ -1,6 +1,6 @@
 import {
   ScrollView,
-  StatusBar,
+  // StatusBar,
   StyleSheet,
   View,
   TouchableOpacity,
@@ -34,7 +34,7 @@ import { AppText } from "../components/AppText";
 import { setItem } from "../utlis/storage";
 import { biometricPromptKey } from "../stores/biometricPromptSlice";
 import { useQueryClient } from "@tanstack/react-query";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 
 export const DEFAULT_IMAGE = require("../assets/avatar.png");
 interface MenuItemProps {
@@ -130,11 +130,11 @@ export default function SettingsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const appVersion = DeviceInfo.getVersion();
-  const buildNumber = DeviceInfo.getBuildNumber();
+  // const buildNumber = DeviceInfo.getBuildNumber();
   const logout = useAuthStore(state => state.logout);
   const user = useAuthStore(state => state.user);
   const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
+  // const resolvedTheme = useResolvedTheme();
   const styles = makeStyles(colors);
 
   const handleEditInfo = () => {

@@ -163,7 +163,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       justifyContent: "center",
       alignItems: "center",
       gap: 8,
-      paddingVertical: 13,
+      paddingVertical: normalize(16),
       borderRadius: 30,
       borderWidth: 1,
       borderColor: colors.primary,

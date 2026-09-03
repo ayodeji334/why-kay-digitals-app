@@ -120,7 +120,11 @@ import {
   ViewToken,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  width as SCREEN_WIDTH,
+} from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import ErrorState from "./ErrorState";
 import LoadingState from "./LoadingState";
@@ -134,7 +138,13 @@ type Banner = {
   linking_type: "internal" | "external";
 };
 
-const CARD_WIDTH = 340;
+// A flat 300px card reads as a different proportion of the screen on every
+// device — noticeably wider relative to the screen on narrower Android
+// phones, narrower relative to the screen on the iPhone's larger point
+// width. Sizing it as a percentage of the actual screen width keeps the
+// card (and its "peek" of the next card) visually consistent everywhere.
+const CARD_WIDTH_RATIO = 0.72;
+const CARD_WIDTH = SCREEN_WIDTH * CARD_WIDTH_RATIO;
 const CARD_GAP = 12;
 const ITEM_STRIDE = CARD_WIDTH + CARD_GAP; // horizontal distance between card starts
 const AUTO_SCROLL_INTERVAL_MS = 4000;
@@ -299,7 +309,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: CARD_WIDTH,
-    height: 120,
+    height: 109,
     borderRadius: 10,
     paddingVertical: 16,
     backgroundColor: "#e7e7e7",

@@ -121,7 +121,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     button: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 14,
+      paddingVertical: normalize(14),
       borderRadius: 100,
       marginTop: 30,
       justifyContent: "center",
@@ -140,7 +140,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
     },
     link: {
-      paddingVertical: 10,
+      paddingVertical: normalize(10),
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
       color: colors.primaryLight,
