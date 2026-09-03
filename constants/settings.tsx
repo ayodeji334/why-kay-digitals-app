@@ -1,4 +1,4 @@
-import { Dimensions, PixelRatio } from "react-native";
+import { Dimensions, PixelRatio, Platform } from "react-native";
 
 // export const { width, height } = Dimensions.get("window");
 // const guidelineBaseWidth = 375;
@@ -15,13 +15,32 @@ const PHONE_MAX_SCALE = 0.89; // largest phones (e.g. Pro Max models)
 const TABLET_SCALE = 1.19; // fixed multiplier for iPad-class widths
 const TABLET_BREAKPOINT = 600; // widely-used phone/tablet cutoff
 
+// Virtually every modern phone (iOS or Android) reports a window width at
+// or above TABLET_BREAKPOINT's phone-side threshold, so the width-based
+// `scale` above almost always clamps to the same PHONE_MAX_SCALE on both
+// platforms — it isn't actually why the iPhone 14 Pro Max and Tecno Camon
+// 20 render differently. The real cause: Android's text engine derives a
+// taller default line-height/leading from a font's metrics than iOS does
+// for the same nominal fontSize, especially for a custom typeface (Zain)
+// whose metrics read as iOS-tuned — so identical `normalize()` output
+// still renders visibly bigger, and layouts built around that size shift,
+// on Android specifically. Correct for it with a small Android-only
+// factor rather than changing anything for iOS.
+const ANDROID_FONT_CORRECTION = 0.92;
+
 export const normalize = (size: number) => {
   const scale =
     width >= TABLET_BREAKPOINT
       ? TABLET_SCALE
       : Math.min(width / guidelineBaseWidth, PHONE_MAX_SCALE);
 
-  return PixelRatio.roundToNearestPixel(scale * (size - 2));
+  const normalized = scale * (size - 2);
+  const corrected =
+    Platform.OS === "android"
+      ? normalized * ANDROID_FONT_CORRECTION
+      : normalized;
+
+  return PixelRatio.roundToNearestPixel(corrected);
 };
 
 export const getFontFamily = (weight: string | number) => {

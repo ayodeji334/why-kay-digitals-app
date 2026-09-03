@@ -59,7 +59,7 @@ const profileSchema = yup.object().shape({
 
 export default function EditProfileScreen() {
   const navigation = useNavigation();
-  const { user, setUser, token } = useAuthStore(state => state);
+  const { user, setUser } = useAuthStore(state => state);
   const { patch } = useAxios();
   const [loading, setLoading] = useState(false);
   const colors = useColors();

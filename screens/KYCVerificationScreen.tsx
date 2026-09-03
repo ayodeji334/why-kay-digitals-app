@@ -416,7 +416,7 @@ export default function KYCVerificationScreen() {
                 color={COLORS.primary}
               />
             }
-            isVerified={isBvnVerified}
+            isVerified={false}
           />
           <MenuItem
             title="Proof of Identity"

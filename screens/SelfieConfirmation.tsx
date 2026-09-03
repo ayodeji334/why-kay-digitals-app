@@ -552,21 +552,27 @@
 //       paddingHorizontal: 10,
 //     },
 //   });
-import React, { useState } from "react";
-import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFontFamily, normalize } from "../constants/settings";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import ReactNativeBlobUtil from "react-native-blob-util";
 import useAxios from "../hooks/useAxios";
 import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 import { CloseCircle, TickCircle } from "iconsax-react-nativejs";
-import IdentityVerifying from "../components/IdentityVerifying";
 import { AxiosError } from "axios";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import CustomLoading from "../components/CustomLoading";
+import IdentityVerifying from "../components/IdentityVerifying";
 
+// By the time we get here, LivenessCheck has already run its full
+// align/capture/blink/turn challenge and handed back a ready-to-submit,
+// already-compressed base64 image — a static, unchallenged photo can never
+// reach this screen. This screen's only job now is submitting it and
+// showing the outcome; there's no separate preview/confirm step to repeat
+// what LivenessCheck's own review ("Looks good / Retake") already covered.
 export default function SelfieConfirmationScreen() {
   const route = useRoute();
   const navigation: any = useNavigation();
@@ -578,27 +584,16 @@ export default function SelfieConfirmationScreen() {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  // Only populated for a 400 response, whose message is specific enough
+  // (e.g. "face doesn't match BVN record") to show the user directly —
+  // every other failure (network error, 5xx, etc.) keeps the generic
+  // hardcoded description below instead.
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleRetake = () => {
-    // Keep the already-verified bvn — only the photo needs retaking.
+    // Keep the already-verified bvn — only the photo/liveness check needs redoing.
     navigation.replace("SelfieVerification", { bvn });
   };
-
-  async function convertImageToBase64(imagePath: string): Promise<string> {
-    try {
-      const base64String = await ReactNativeBlobUtil.fs.readFile(
-        imagePath,
-        "base64",
-      );
-      return base64String;
-    } catch (error) {
-      console.error("Error converting image to base64:", error);
-      throw error;
-    }
-  }
-
-  const errorMessage =
-    "Unable to process selfie verification. Kindly try again after some minutes";
 
   const handleConfirm = async () => {
     try {
@@ -610,9 +605,11 @@ export default function SelfieConfirmationScreen() {
         return;
       }
 
-      const base64Image = await convertImageToBase64(image.path);
+      const base64Image: string | undefined = image?.base64;
       if (!base64Image) {
-        showError(errorMessage);
+        showError(
+          "Unable to process selfie verification. Kindly try again after some minutes",
+        );
         setStatus("error");
         return;
       }
@@ -630,19 +627,33 @@ export default function SelfieConfirmationScreen() {
     } catch (err: any) {
       setStatus("error");
       if (err instanceof AxiosError) {
-        showError(
-          err.response?.data?.message || "Something went wrong. Try again.",
-        );
+        const backendMessage = err.response?.data?.message;
+        if (err.response?.status === 400 && backendMessage) {
+          setErrorMessage(backendMessage);
+        }
+        showError(backendMessage || "Something went wrong. Try again.");
       }
     } finally {
       setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    handleConfirm();
+    // Submit exactly once on mount with the image/bvn this screen was
+    // opened with — deliberately not re-running if handleConfirm's
+    // identity changes on re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // if (isLoading || status === "idle") {
+  //   return;
+  // }
+
   return (
     <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
-      {isLoading ? (
-        <IdentityVerifying loading={isLoading} />
+      {isLoading || status === "idle" ? (
+        <IdentityVerifying loading={isLoading || status === "idle"} />
       ) : status === "success" ? (
         <View style={styles.statusContent}>
           <View
@@ -679,8 +690,8 @@ export default function SelfieConfirmationScreen() {
             <CloseCircle size={40} color={colors.error} variant="Bold" />
             <AppText style={styles.statusTitle}>Verification Failed</AppText>
             <AppText style={styles.statusDescription}>
-              We couldn't get a clear match of your face. Please ensure you are
-              in a well-lit area and your face is fully centered in the frame.
+              {errorMessage ??
+                "We couldn't get a clear match of your face. Please ensure you are in a well-lit area and your face is fully centered in the frame."}
             </AppText>
           </View>
           <TouchableOpacity
@@ -691,34 +702,7 @@ export default function SelfieConfirmationScreen() {
             <AppText style={styles.buttonText}>Try Again</AppText>
           </TouchableOpacity>
         </View>
-      ) : (
-        <View style={styles.idleContent}>
-          <Image
-            source={{ uri: `file://${image.path}` }}
-            style={styles.previewImage}
-            resizeMode="cover"
-          />
-          <AppText style={styles.instructions}>
-            Make sure your face is clearly visible and centered.
-          </AppText>
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={[styles.retakeButton, { flex: 1 }]}
-              onPress={handleRetake}
-            >
-              <AppText style={styles.buttonText}>Retake</AppText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={[styles.confirmButton, { flex: 1 }]}
-              onPress={handleConfirm}
-            >
-              <AppText style={styles.buttonText}>Confirm</AppText>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -730,33 +714,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background,
       paddingHorizontal: 20,
     },
-    idleContent: {
-      flex: 1,
-      paddingTop: 20,
-    },
     statusContent: {
       flex: 1,
       alignContent: "center",
       justifyContent: "space-between",
       paddingBottom: 60,
       paddingTop: 30,
-    },
-    previewImage: {
-      width: "100%",
-      height: "60%",
-      borderRadius: 24,
-      marginBottom: 24,
-    },
-    instructions: {
-      fontSize: normalize(18),
-      fontFamily: getFontFamily("700"),
-      color: colors.text,
-      textAlign: "center",
-      marginBottom: 32,
-    },
-    buttonRow: {
-      flexDirection: "row",
-      width: "100%",
     },
     retakeButton: {
       backgroundColor: colors.error,

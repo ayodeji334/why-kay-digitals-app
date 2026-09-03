@@ -210,7 +210,6 @@ const CustomHeader: React.FC<Props> = ({
     <View
       style={[
         styles.container,
-        { backgroundColor: colors.background },
         { paddingTop: marginTop, paddingBottom: marginBotom },
       ]}
     >

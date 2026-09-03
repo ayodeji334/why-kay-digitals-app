@@ -378,8 +378,6 @@ const otpSchema = yup.object({
     .length(6, "Code must be 6 digits"),
 });
 
-const RESEND_COOLDOWN_SECONDS = 30;
-
 type VerificationStep = "phone" | "otp";
 
 interface PhoneNumberFormProps {
@@ -392,6 +390,9 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
   const { post } = useAxios();
   const [step, setStepState] = useState<VerificationStep>("phone");
   const [phoneNumber, setPhoneNumber] = useState("");
+  // Identifies the OTP verification record the backend is tracking — sent
+  // back to /verify instead of the raw phone number.
+  const [otpUuid, setOtpUuid] = useState<string | null>(null);
   const [resendCooldown, setResendCooldown] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -404,24 +405,30 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
 
   const styles = makeStyles(colors);
 
-  const startResendCooldown = () => {
+  // Drives the countdown off the OTP's actual server-issued expiry instead
+  // of a fixed local timer, so it can't drift out of sync with when the
+  // code the user actually holds stops being valid.
+  const startResendCooldown = (expiresAt: string) => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
 
-    setResendCooldown(RESEND_COOLDOWN_SECONDS);
+    const secondsUntilExpiry = () =>
+      Math.max(
+        0,
+        Math.round((new Date(expiresAt).getTime() - Date.now()) / 1000),
+      );
+
+    setResendCooldown(secondsUntilExpiry());
 
     intervalRef.current = setInterval(() => {
-      setResendCooldown(prev => {
-        if (prev <= 1) {
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
-          }
-          return 0;
-        }
-        return prev - 1;
-      });
+      const remaining = secondsUntilExpiry();
+      setResendCooldown(remaining);
+
+      if (remaining <= 0 && intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     }, 1000);
   };
 
@@ -447,11 +454,23 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
 
   const onSubmitPhone = async (data: any) => {
     try {
-      await post("/auth/phone-otp/send", { phone: data.phoneNumber });
-      setPhoneNumber(data.phoneNumber);
+      const response = await post("/auth/phone-otp/send", {
+        phone: data.phoneNumber,
+      });
+      const result = response.data?.data;
+
+      setPhoneNumber(result?.phoneNumber ?? data.phoneNumber);
+      setOtpUuid(result?.uuid ?? null);
       setStep("otp");
-      startResendCooldown();
-      showSuccess("A verification code has been sent to your phone");
+
+      if (result?.expiresAt) {
+        startResendCooldown(result.expiresAt);
+      }
+
+      showSuccess(
+        response.data?.message ??
+          "A verification code has been sent to your phone",
+      );
     } catch (err: any) {
       if (err instanceof AxiosError) {
         const errorMessage =
@@ -465,15 +484,25 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
   };
 
   const onSubmitOtp = async (data: any) => {
+    if (!otpUuid) {
+      showError(
+        "Your verification session has expired. Please request a new code.",
+      );
+      setStep("phone");
+      return;
+    }
+
     try {
       const response = await post("/auth/phone-otp/verify", {
-        phone: phoneNumber,
+        uuid: otpUuid,
         otp: data.otp,
       });
+
       setUser(response.data?.data?.user);
 
       otpForm.reset();
       phoneForm.reset();
+      setOtpUuid(null);
 
       showSuccess("Phone number verified successfully");
       navigation.goBack();
@@ -493,9 +522,22 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
     if (resendCooldown > 0) return;
 
     try {
-      await post("auth/phone-otp/send", { phone: phoneNumber });
-      startResendCooldown();
-      showSuccess("A new code has been sent to your phone");
+      const response = await post("/auth/phone-otp/send", {
+        phone: phoneNumber,
+      });
+      const result = response.data?.data;
+
+      setOtpUuid(result?.uuid ?? null);
+
+      if (result?.expiresAt) {
+        startResendCooldown(result.expiresAt);
+      }
+
+      otpForm.reset();
+
+      showSuccess(
+        response.data?.message ?? "A new code has been sent to your phone",
+      );
     } catch (err: any) {
       if (err instanceof AxiosError) {
         const errorMessage =
