@@ -905,7 +905,11 @@ import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllCountries, FlagType } from "react-native-country-picker-modal";
 
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { formatAmount } from "../libs/formatNumber";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
@@ -1475,7 +1479,7 @@ export default function BuyGiftCardScreen() {
               {loadingOffers ? (
                 <ActivityIndicator
                   color={COLORS.primary}
-                  style={{ marginVertical: 30 }}
+                  style={{ marginVertical: normalizeSpacing(30) }}
                   size={30}
                 />
               ) : offers.length === 0 ? (
@@ -1702,7 +1706,9 @@ export default function BuyGiftCardScreen() {
 
           {breakdown && (
             <>
-              <AppText style={[styles.fieldHint, { marginTop: 4 }]}>
+              <AppText
+                style={[styles.fieldHint, { marginTop: normalizeSpacing(4) }]}
+              >
                 Here's exactly what you're paying and where each figure comes
                 from.
               </AppText>
@@ -1710,7 +1716,7 @@ export default function BuyGiftCardScreen() {
               {loadingRate ? (
                 <ActivityIndicator
                   color={COLORS.primary}
-                  style={{ marginVertical: 12 }}
+                  style={{ marginVertical: normalizeSpacing(12) }}
                 />
               ) : (
                 <View style={styles.breakdownCard}>
@@ -1784,31 +1790,31 @@ export default function BuyGiftCardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: normalize(20),
-    paddingTop: normalize(16),
-    paddingBottom: normalize(40),
+    paddingHorizontal: normalizeSpacing(20),
+    paddingTop: normalizeSpacing(16),
+    paddingBottom: normalizeSpacing(40),
     backgroundColor: "#fff",
   },
 
   // Field block
-  fieldBlock: { marginBottom: 14 },
+  fieldBlock: { marginBottom: normalizeSpacing(14) },
   fieldLabel: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     color: "#000",
-    marginBottom: 2,
+    marginBottom: normalizeSpacing(2),
   },
   fieldHint: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("400"),
     color: "#424750",
-    marginBottom: 8,
+    marginBottom: normalizeSpacing(8),
   },
   errorText: {
     color: "#FF3B30",
     fontSize: normalize(13),
     fontFamily: getFontFamily("700"),
-    marginTop: 4,
+    marginTop: normalizeSpacing(4),
   },
 
   // Amount input
@@ -1818,7 +1824,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#D1D5DB",
     borderRadius: normalize(12),
-    paddingHorizontal: normalize(14),
+    paddingHorizontal: normalizeSpacing(14),
     gap: 4,
   },
   currencySymbol: {
@@ -1828,7 +1834,7 @@ const styles = StyleSheet.create({
   },
   amountInput: {
     flex: 1,
-    paddingVertical: normalize(14),
+    paddingVertical: normalizeSpacing(14),
     fontSize: normalize(24),
     fontFamily: getFontFamily("800"),
     color: "#000",
@@ -1842,8 +1848,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#D1D5DB",
     borderRadius: normalize(12),
-    paddingHorizontal: normalize(14),
-    paddingVertical: normalize(14),
+    paddingHorizontal: normalizeSpacing(14),
+    paddingVertical: normalizeSpacing(14),
     backgroundColor: "#F9FAFB",
   },
   lockedValue: {
@@ -1856,15 +1862,15 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("800"),
     color: COLORS.primary,
     backgroundColor: `${COLORS.primary}18`,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
+    paddingHorizontal: normalizeSpacing(10),
+    paddingVertical: normalizeSpacing(3),
     borderRadius: 20,
   },
   quantityRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    marginTop: 10,
+    marginTop: normalizeSpacing(10),
   },
   qtyButton: {
     width: 42,
@@ -1887,7 +1893,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#D1D5DB",
     borderRadius: 10,
-    paddingVertical: normalize(14),
+    paddingVertical: normalizeSpacing(14),
     fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
     color: "#1A1A1A",
@@ -1901,9 +1907,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
     borderRadius: normalize(12),
-    padding: normalize(14),
-    marginTop: normalize(6),
-    marginBottom: normalize(14),
+    padding: normalizeSpacing(14),
+    marginTop: normalizeSpacing(6),
+    marginBottom: normalizeSpacing(14),
     gap: 12,
   },
   friendToggleText: { flex: 1 },
@@ -1911,7 +1917,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(18),
     fontFamily: getFontFamily("800"),
     color: "#1A1A1A",
-    marginBottom: 2,
+    marginBottom: normalizeSpacing(2),
   },
   friendToggleHint: {
     fontSize: normalize(17),
@@ -1923,8 +1929,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: `${COLORS.primary}30`,
     borderRadius: normalize(16),
-    padding: normalize(14),
-    marginBottom: normalize(14),
+    padding: normalizeSpacing(14),
+    marginBottom: normalizeSpacing(14),
     backgroundColor: `${COLORS.primary}08`,
   },
   recipientSectionTitle: {
@@ -1933,14 +1939,14 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     textTransform: "uppercase",
     letterSpacing: 0.6,
-    marginBottom: normalize(12),
+    marginBottom: normalizeSpacing(12),
   },
   textField: {
     borderWidth: 1,
     borderColor: "#D1D5DB",
     borderRadius: normalize(10),
-    paddingHorizontal: normalize(14),
-    paddingVertical: normalize(14),
+    paddingHorizontal: normalizeSpacing(14),
+    paddingVertical: normalizeSpacing(14),
     fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#1A1A1A",
@@ -1951,15 +1957,15 @@ const styles = StyleSheet.create({
   breakdownCard: {
     backgroundColor: "#EFF7EC",
     borderRadius: 12,
-    padding: 14,
+    padding: normalizeSpacing(14),
     gap: 4,
-    marginBottom: 14,
-    marginTop: 8,
+    marginBottom: normalizeSpacing(14),
+    marginTop: normalizeSpacing(8),
   },
   breakdownRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 4,
+    paddingVertical: normalizeSpacing(4),
   },
   breakdownLabel: {
     fontSize: normalize(18),
@@ -1982,7 +1988,7 @@ const styles = StyleSheet.create({
   breakdownDivider: {
     height: 1,
     backgroundColor: "#d4edda",
-    marginVertical: 6,
+    marginVertical: normalizeSpacing(6),
   },
 
   // Warning box
@@ -1991,8 +1997,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FECACA",
     borderRadius: 10,
-    padding: 12,
-    marginBottom: 12,
+    padding: normalizeSpacing(12),
+    marginBottom: normalizeSpacing(12),
   },
   warningText: {
     color: "#DC2626",
@@ -2004,11 +2010,11 @@ const styles = StyleSheet.create({
   summaryPill: {
     backgroundColor: COLORS.primary,
     borderRadius: 10,
-    padding: 14,
+    padding: normalizeSpacing(14),
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: normalizeSpacing(20),
   },
   summaryLabel: {
     color: "#fff",
@@ -2025,16 +2031,16 @@ const styles = StyleSheet.create({
     fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#9CA3AF",
-    marginTop: 8,
+    marginTop: normalizeSpacing(8),
     textAlign: "center",
   },
 
   ctaButton: {
     backgroundColor: COLORS.primary,
-    paddingVertical: 16,
+    paddingVertical: normalizeSpacing(14),
     borderRadius: normalize(208),
     alignItems: "center",
-    marginTop: 4,
+    marginTop: normalizeSpacing(4),
   },
   ctaDisabled: {
     backgroundColor: "#9CA3AF",

@@ -7,7 +7,11 @@ import {
   formatWithCommas,
   parseToNumber,
 } from "../../screens/SwapCryptoScreen";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import { AppText } from "../AppText";
 
 type CryptoTransferFormProps = {
@@ -51,7 +55,7 @@ export function CryptoTransferForm({
         placeholder="Enter recipient username"
       />
 
-      <View style={{ marginVertical: 4 }}>
+      <View style={{ marginVertical: normalizeSpacing(4) }}>
         <SelectInput
           control={control}
           isDisabled={true}
@@ -63,7 +67,7 @@ export function CryptoTransferForm({
         />
       </View>
 
-      <View style={{ marginVertical: 4 }}>
+      <View style={{ marginVertical: normalizeSpacing(4) }}>
         <AppText style={styles.label}>Amount</AppText>
 
         <Controller
@@ -174,7 +178,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontFamily: getFontFamily("800"),
-    marginBottom: 8,
+    marginBottom: normalizeSpacing(8),
     color: "#333",
   },
   inputContainer: {
@@ -183,18 +187,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E0E0E0",
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: normalizeSpacing(12),
     backgroundColor: "#fff",
   },
   dollarSign: {
     fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
     color: "#333",
-    marginRight: 8,
+    marginRight: normalizeSpacing(8),
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(16),
+    paddingVertical: normalizeSpacing(16),
     fontSize: normalize(23),
     fontFamily: getFontFamily("800"),
     color: "#000",
@@ -202,11 +206,11 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
     fontSize: 12,
-    marginTop: 4,
+    marginTop: normalizeSpacing(4),
   },
   warningContainer: {
-    marginVertical: 12,
-    padding: 10,
+    marginVertical: normalizeSpacing(12),
+    padding: normalizeSpacing(10),
     backgroundColor: "rgba(255, 0, 0, 0.03)",
     borderRadius: 6,
     borderWidth: 1,

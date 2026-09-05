@@ -13,7 +13,11 @@ import {
   useSetThemeMode,
   useThemeMode,
 } from "../hooks/useTheme";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 
 type ThemeMode = "light" | "dark" | "system";
 
@@ -101,7 +105,7 @@ export function ThemeScreen() {
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: {
-      padding: 19,
+      padding: normalizeSpacing(19),
       backgroundColor: colors.background,
       flex: 1,
     },
@@ -116,19 +120,19 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(19),
       fontFamily: getFontFamily(700),
       color: colors.text,
-      marginTop: 4,
-      marginBottom: 20,
+      marginTop: normalizeSpacing(4),
+      marginBottom: normalizeSpacing(20),
     },
     card: {
       borderRadius: 14,
       gap: 10,
-      marginTop: 20,
+      marginTop: normalizeSpacing(20),
     },
     option: {
       flexDirection: "row",
       alignItems: "center",
-      paddingVertical: normalize(14),
-      paddingHorizontal: normalize(17),
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(17),
       gap: 12,
       borderWidth: 1,
       borderRadius: 10,
@@ -160,7 +164,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(19),
       fontFamily: getFontFamily(400),
       color: colors.textMuted,
-      marginTop: 2,
+      marginTop: normalizeSpacing(2),
     },
     radioOuter: {
       width: 17,

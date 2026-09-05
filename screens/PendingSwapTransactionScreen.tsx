@@ -143,7 +143,11 @@ import {
   Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import {
   CommonActions,
   useNavigation,
@@ -189,14 +193,16 @@ const PendingSwapScreen = () => {
         backgroundColor={colors.background}
       />
       <View style={styles.content}>
-        <View style={{ alignItems: "center", paddingTop: 40 }}>
+        <View
+          style={{ alignItems: "center", paddingTop: normalizeSpacing(40) }}
+        >
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
               columnGap: 19,
-              marginTop: 20,
-              padding: 20,
+              marginTop: normalizeSpacing(20),
+              padding: normalizeSpacing(20),
             }}
           >
             <Image
@@ -238,28 +244,28 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flex: 1,
       alignItems: "center",
       justifyContent: "space-between",
-      padding: 20,
+      padding: normalizeSpacing(20),
     },
-    icon: { width: 80, height: 80, marginBottom: 20 },
+    icon: { width: 80, height: 80, marginBottom: normalizeSpacing(20) },
     title: {
       fontSize: normalize(22),
       fontFamily: getFontFamily("900"),
       color: colors.text,
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
     },
     message: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       color: colors.textMuted,
       textAlign: "center",
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     button: {
       backgroundColor: colors.primary,
-      paddingVertical: 14,
-      paddingHorizontal: 40,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(40),
       borderRadius: 25,
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
       width: "100%",
     },
     buttonText: {
@@ -268,7 +274,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "#fff",
       textAlign: "center",
     },
-    link: { marginTop: 8 },
+    link: { marginTop: normalizeSpacing(8) },
     linkText: {
       fontSize: normalize(14),
       fontFamily: getFontFamily("400"),

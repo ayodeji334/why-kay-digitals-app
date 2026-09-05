@@ -8,7 +8,11 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import {
   useInfiniteQuery,
@@ -162,7 +166,7 @@ export default function NotificationsScreen() {
       <ActivityIndicator
         size="small"
         color={COLORS.primary}
-        style={{ marginVertical: 12 }}
+        style={{ marginVertical: normalizeSpacing(12) }}
       />
     );
   };
@@ -266,7 +270,7 @@ export default function NotificationsScreen() {
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
-    scrollContainer: { flex: 1, paddingVertical: 20 },
+    scrollContainer: { flex: 1, paddingVertical: normalizeSpacing(20) },
     actionsContainer: {
       flexWrap: "wrap",
       flexDirection: "row",
@@ -275,7 +279,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     tabSwitcher: {
       backgroundColor: colors.inputBackground,
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
     },
     activeTab: {
       backgroundColor: COLORS.primary,
@@ -285,11 +289,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "white",
     },
     headerRow: {
-      marginTop: -10,
+      marginTop: normalizeSpacing(-10),
       flexDirection: "row",
       justifyContent: "flex-end",
-      paddingHorizontal: 20,
-      paddingBottom: 4,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingBottom: normalizeSpacing(4),
     },
     headerTitle: {
       fontSize: normalize(22),
@@ -300,9 +304,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      padding: 16,
-      marginHorizontal: 20,
-      marginBottom: 12,
+      padding: normalizeSpacing(16),
+      marginHorizontal: normalizeSpacing(20),
+      marginBottom: normalizeSpacing(12),
       borderRadius: 9,
       borderWidth: 1,
       borderColor: colors.border,
@@ -321,7 +325,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       height: 6,
       borderRadius: 4,
       backgroundColor: "#27A15E",
-      marginRight: 3,
+      marginRight: normalizeSpacing(3),
     },
     assetIcon: {
       width: 48,
@@ -330,13 +334,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: "#F0F0F0",
       justifyContent: "center",
       alignItems: "center",
-      marginRight: 12,
+      marginRight: normalizeSpacing(12),
     },
     assetName: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     assetSymbol: {
       fontSize: normalize(17),
@@ -350,13 +354,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     modalContent: {
-      paddingVertical: 20,
+      paddingVertical: normalizeSpacing(20),
     },
     modalTitle: {
       fontSize: normalize(19),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
     modalMessage: {
       fontSize: normalize(19),
@@ -365,11 +369,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       // lineHeight: 22,
     },
     tabContainer: {
-      paddingHorizontal: 15,
+      paddingHorizontal: normalizeSpacing(15),
     },
     tabButton: {
       flex: 1,
-      paddingVertical: 5,
+      paddingVertical: normalizeSpacing(14),
       alignItems: "center",
     },
     tabText: {
@@ -402,7 +406,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(16),
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
@@ -421,7 +425,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     assetRight: { alignItems: "flex-end" },
     emptyState: {
       alignItems: "center",
-      paddingVertical: 40,
+      paddingVertical: normalizeSpacing(40),
       flex: 1,
       justifyContent: "center",
     },
@@ -436,8 +440,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     markAllButton: {
-      paddingVertical: 6,
-      paddingHorizontal: 6,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(6),
     },
     markAllButtonText: {
       fontSize: normalize(17),

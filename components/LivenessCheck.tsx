@@ -27,7 +27,11 @@ import { Worklets } from "react-native-worklets-core";
 import Svg, { Ellipse, Mask, Rect } from "react-native-svg";
 import { CloseCircle, TickCircle } from "iconsax-react-nativejs";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { captureAndCompress } from "../utlis/imageCapture";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
@@ -771,15 +775,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      paddingHorizontal: 32,
-      paddingBottom: 170,
+      paddingHorizontal: normalizeSpacing(32),
+      paddingBottom: normalizeSpacing(170),
     },
     statusTitle: {
       color: colors.text,
       fontSize: normalize(19),
       fontFamily: getFontFamily("800"),
-      marginTop: 16,
-      marginBottom: 8,
+      marginTop: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(8),
       textAlign: "center",
     },
     statusSubtitle: {
@@ -797,8 +801,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       gap: 4,
       backgroundColor: "rgba(0,0,0,0.6)",
       borderRadius: 24,
-      paddingVertical: 16,
-      paddingHorizontal: 22,
+      paddingVertical: normalizeSpacing(16),
+      paddingHorizontal: normalizeSpacing(22),
     },
     bannerPrimary: {
       color: "#FFFFFF",
@@ -819,13 +823,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       bottom: 64,
       width: "100%",
       alignItems: "center",
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     soundHint: {
       flexDirection: "row",
       alignItems: "center",
       gap: 6,
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
     },
     soundHintText: {
       color: colors.textMuted,
@@ -834,11 +838,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     primaryButton: {
       backgroundColor: colors.primary,
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
       alignItems: "center",
       width: "100%",
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
     },
     primaryButtonText: {
       color: "#fff",
@@ -846,7 +850,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
     },
     secondaryButton: {
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       alignItems: "center",
       width: "100%",
       backgroundColor: colors.inputBackground,
@@ -861,7 +865,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexGrow: 1,
       alignItems: "center",
       justifyContent: "center",
-      paddingHorizontal: 32,
+      paddingHorizontal: normalizeSpacing(32),
     },
     successImageFrame: {
       width: 200,
@@ -869,8 +873,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderRadius: 7,
       borderWidth: 3,
       borderColor: colors.success,
-      padding: 3,
-      marginTop: -200,
+      padding: normalizeSpacing(3),
+      marginTop: normalizeSpacing(-200),
     },
     successImage: {
       width: "100%",
@@ -883,14 +887,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       bottom: -2,
       backgroundColor: colors.background,
       borderRadius: 16,
-      padding: 2,
+      padding: normalizeSpacing(2),
     },
     successTitle: {
       color: colors.text,
       fontSize: normalize(24),
       fontFamily: getFontFamily("800"),
-      marginTop: 20,
-      marginBottom: 8,
+      marginTop: normalizeSpacing(20),
+      marginBottom: normalizeSpacing(8),
       textAlign: "center",
     },
     successSubtitle: {
@@ -906,8 +910,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       textAlign: "center",
       lineHeight: 18,
-      paddingHorizontal: 32,
-      paddingBottom: 160,
-      marginBottom: 80,
+      paddingHorizontal: normalizeSpacing(32),
+      paddingBottom: normalizeSpacing(160),
+      marginBottom: normalizeSpacing(80),
     },
   });

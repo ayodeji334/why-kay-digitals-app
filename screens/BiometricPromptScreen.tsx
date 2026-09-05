@@ -7,7 +7,11 @@ import { COLORS } from "../constants/colors";
 import { useBiometricPromptStore } from "../stores/biometricPromptSlice";
 import { useShouldPromptBiometric } from "../hooks/useShouldPromptBiometric";
 import { FingerScan, TickCircle } from "iconsax-react-nativejs";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "../components/AppText";
 import { useBiometricEnrollment } from "../hooks/useBiometricEnrollment";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
@@ -237,8 +241,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     content: {
       flex: 1,
-      paddingHorizontal: normalize(29),
-      paddingBottom: normalize(24),
+      paddingHorizontal: normalizeSpacing(29),
+      paddingBottom: normalizeSpacing(24),
       justifyContent: "space-between",
     },
     hero: {
@@ -274,11 +278,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily(400),
       color: colors.text,
       textAlign: "center",
-      paddingHorizontal: normalize(8),
+      paddingHorizontal: normalizeSpacing(8),
     },
     buttonContainer: {
       gap: normalize(12),
-      paddingBottom: 23,
+      paddingBottom: normalizeSpacing(23),
     },
     primaryButton: {
       height: normalize(56),

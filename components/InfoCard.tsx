@@ -7,7 +7,11 @@ import {
   StyleProp,
   ViewStyle,
 } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
@@ -40,10 +44,10 @@ const InfoCard: React.FC<InfoCardProps> = ({
     <View
       style={[
         {
-          marginVertical: normalize(20),
+          marginVertical: normalizeSpacing(20),
           backgroundColor: colors.infoCardBackgroundColor,
           borderRadius: 10,
-          padding: 15,
+          padding: normalizeSpacing(15),
           height: "auto",
         },
         style,
@@ -75,7 +79,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
               style={{
                 maxWidth: buttonWidth,
                 width: "auto",
-                marginTop: 8,
+                marginTop: normalizeSpacing(8),
               }}
             >
               <TouchableOpacity
@@ -116,19 +120,19 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     editButton: {
       backgroundColor: COLORS.primary,
-      paddingHorizontal: 16,
-      paddingVertical: 8,
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 6,
       alignItems: "center",
     },
     listContainer: {
-      marginTop: 1,
+      marginTop: normalizeSpacing(1),
       gap: 3,
     },
     listItem: {
       flexDirection: "row",
       alignItems: "flex-start",
-      marginTop: 2,
+      marginTop: normalizeSpacing(2),
     },
     editButtonText: {
       color: "#fff",

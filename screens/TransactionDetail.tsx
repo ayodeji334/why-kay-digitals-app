@@ -10,7 +10,11 @@ import {
   LayoutChangeEvent,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import {
   CommonActions,
   useNavigation,
@@ -467,7 +471,7 @@ const TransactionDetailScreen = () => {
       base64: false,
       width: receiptSize?.width ?? RECEIPT_CARD_WIDTH,
       height: receiptSize?.height ?? 700,
-      padding: 0,
+      padding: normalizeSpacing(0),
     });
 
     await ShareLib.open({
@@ -634,7 +638,7 @@ const TransactionDetailScreen = () => {
           <StatusIcon />
         </View>
 
-        <View style={{ marginBottom: 20, gap: 0 }}>
+        <View style={{ marginBottom: normalizeSpacing(20), gap: 0 }}>
           <AppText style={styles.amount}>{displayAmount}</AppText>
           <AppText
             style={{
@@ -687,8 +691,8 @@ const TransactionDetailScreen = () => {
           <View
             style={{
               backgroundColor: "#F9FAFB",
-              paddingHorizontal: 10,
-              marginBottom: 20,
+              paddingHorizontal: normalizeSpacing(10),
+              marginBottom: normalizeSpacing(20),
             }}
           >
             <DetailRow
@@ -958,7 +962,7 @@ const TransactionDetailScreen = () => {
         visible={formatModalVisible}
         onClose={() => setFormatModalVisible(false)}
       >
-        <View style={{ gap: 10, marginTop: 13 }}>
+        <View style={{ gap: 10, marginTop: normalizeSpacing(13) }}>
           <TouchableOpacity
             hitSlop={10}
             style={styles.formatOption}
@@ -1075,35 +1079,35 @@ const TransactionDetailScreen = () => {
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
-    content: { padding: 20 },
+    content: { padding: normalizeSpacing(20) },
     iconContainer: {
       alignItems: "center",
       justifyContent: "center",
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
       width: 50,
       height: 50,
       margin: "auto",
     },
     vouchersSection: {
-      marginBottom: 24,
+      marginBottom: normalizeSpacing(24),
     },
     vouchersSectionTitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     vouchersSectionHint: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
       color: colors.textMuted,
-      marginBottom: 14,
+      marginBottom: normalizeSpacing(14),
       // lineHeight: normalize(20),
     },
     header: {
       justifyContent: "space-between",
-      paddingHorizontal: 10,
-      paddingVertical: 15,
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(15),
       gap: 10,
     },
     networkLogo: {
@@ -1114,7 +1118,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     headerButton: {
       borderColor: colors.text,
       borderWidth: 1,
-      padding: 14,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(14),
       flex: 1,
       gap: 6,
       flexDirection: "row",
@@ -1124,7 +1129,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     goBackButton: {
       backgroundColor: COLORS.secondary,
-      padding: 14,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(14),
       flex: 1,
       gap: 6,
       flexDirection: "row",
@@ -1140,8 +1146,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: `${COLORS.primary}30`,
       borderRadius: 12,
-      padding: 14,
-      marginBottom: 20,
+      padding: normalizeSpacing(14),
+      marginBottom: normalizeSpacing(20),
     },
     viewVouchersLeft: {
       flex: 1,
@@ -1170,7 +1176,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     amount: {
       textAlign: "center",
-      marginTop: 4,
+      marginTop: normalizeSpacing(4),
       fontSize: normalize(23),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -1178,14 +1184,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     detailsContainer: {
       backgroundColor: colors.infoCardBackgroundColor,
       borderRadius: 12,
-      padding: 16,
-      marginBottom: 30,
+      padding: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(30),
     },
     row: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      paddingVertical: 10,
+      paddingVertical: normalizeSpacing(10),
       columnGap: 9,
     },
     label: {
@@ -1210,8 +1216,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     copyButton: {
-      marginLeft: 6,
-      padding: 8,
+      marginLeft: normalizeSpacing(6),
+      padding: normalizeSpacing(8),
       flexShrink: 0,
       borderRadius: 10,
       backgroundColor: colors.shadow,
@@ -1225,9 +1231,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: "#fff",
       borderTopLeftRadius: 22,
       borderTopRightRadius: 22,
-      paddingHorizontal: 20,
-      paddingTop: 10,
-      paddingBottom: 30,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingTop: normalizeSpacing(10),
+      paddingBottom: normalizeSpacing(30),
     },
     modalHandle: {
       width: 40,
@@ -1235,25 +1241,25 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderRadius: 2,
       backgroundColor: "#fff",
       alignSelf: "center",
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
     },
     modalTitle: {
       fontSize: normalize(20),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 14,
+      marginBottom: normalizeSpacing(14),
     },
     formatOption: {
       flexDirection: "row",
       alignItems: "center",
       gap: 12,
-      paddingVertical: normalize(16),
-      paddingHorizontal: normalize(18),
+      paddingVertical: normalizeSpacing(16),
+      paddingHorizontal: normalizeSpacing(18),
       borderRadius: 10,
       borderWidth: 1,
       borderColor: "#659e5f",
       backgroundColor: colors.inputBackground,
-      marginBottom: 10,
+      marginBottom: normalizeSpacing(10),
     },
     formatBadge: {
       width: 46,
@@ -1286,8 +1292,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.textMuted,
     },
     modalCancel: {
-      marginTop: 6,
-      paddingVertical: 13,
+      marginTop: normalizeSpacing(6),
+      paddingVertical: normalizeSpacing(13),
       borderRadius: 40,
       alignItems: "center",
       borderWidth: 1,
@@ -1317,7 +1323,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderStyle: "dashed",
       borderWidth: 1,
       borderColor: "#E0E0E0",
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
     },
     receiptDivider: {
       height: 1,
@@ -1325,8 +1331,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     receiptHeader: {
       backgroundColor: COLORS.primary,
-      paddingVertical: 12,
-      paddingHorizontal: 20,
+      paddingVertical: normalizeSpacing(12),
+      paddingHorizontal: normalizeSpacing(20),
       alignItems: "center",
     },
     receiptAppName: {
@@ -1337,12 +1343,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     receiptAmountBlock: {
       alignItems: "center",
-      paddingVertical: 24,
+      paddingVertical: normalizeSpacing(24),
     },
     receiptStatusText: {
       fontFamily: getFontFamily(700),
       fontSize: 12,
-      marginBottom: 2,
+      marginBottom: normalizeSpacing(2),
       textTransform: "uppercase",
       letterSpacing: 0.8,
       color: "black",
@@ -1351,27 +1357,27 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily(800),
       fontSize: 24,
       color: "black",
-      marginTop: 6,
+      marginTop: normalizeSpacing(6),
     },
     receiptDateText: {
       fontFamily: getFontFamily(400),
       fontSize: 12,
       color: "#8C8C8C",
-      marginTop: 4,
+      marginTop: normalizeSpacing(4),
     },
     receiptRows: {
-      marginHorizontal: 14,
-      marginBottom: 12,
+      marginHorizontal: normalizeSpacing(14),
+      marginBottom: normalizeSpacing(12),
       backgroundColor: "#F9FAFB",
       borderRadius: 12,
-      paddingVertical: 4,
-      paddingHorizontal: 12,
+      paddingVertical: normalizeSpacing(4),
+      paddingHorizontal: normalizeSpacing(12),
     },
     receiptRow: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "flex-start",
-      paddingVertical: 7,
+      paddingVertical: normalizeSpacing(7),
       columnGap: 10,
     },
     receiptRowLabel: {
@@ -1389,8 +1395,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     receiptFooter: {
       borderTopWidth: 1,
       borderTopColor: "#EFEFEF",
-      paddingVertical: 12,
-      paddingHorizontal: 20,
+      paddingVertical: normalizeSpacing(12),
+      paddingHorizontal: normalizeSpacing(20),
       alignItems: "center",
       backgroundColor: "#FAFAFA",
       gap: 3,

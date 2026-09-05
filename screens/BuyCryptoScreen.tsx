@@ -1603,7 +1603,11 @@ import {
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { formatAmount } from "../libs/formatNumber";
@@ -2031,7 +2035,11 @@ export default function CryptoBuyScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, paddingBottom: 20, backgroundColor: colors.background }}
+      style={{
+        flex: 1,
+        paddingBottom: normalizeSpacing(20),
+        backgroundColor: colors.background,
+      }}
       edges={["right", "left"]}
     >
       <ScrollView
@@ -2044,7 +2052,7 @@ export default function CryptoBuyScreen() {
       >
         <View style={styles.container}>
           <View>
-            <View style={{ marginBottom: 15 }}>
+            <View style={{ marginBottom: normalizeSpacing(15) }}>
               <AppText style={styles.label}>Coin</AppText>
               <View style={styles.cryptoRow}>
                 {assetDetails?.asset_logo_url && (
@@ -2145,9 +2153,9 @@ export default function CryptoBuyScreen() {
 
                 <View
                   style={{
-                    marginVertical: 10,
+                    marginVertical: normalizeSpacing(10),
                     backgroundColor: colors.inputBackground,
-                    padding: 10,
+                    padding: normalizeSpacing(10),
                     borderRadius: 10,
                     gap: 8,
                   }}
@@ -2315,7 +2323,7 @@ export default function CryptoBuyScreen() {
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
-                      padding: 9,
+                      padding: normalizeSpacing(9),
                     }}
                   >
                     <AppText style={styles.ngn}>You're Paying:</AppText>
@@ -2351,7 +2359,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      paddingHorizontal: normalize(20),
+      paddingHorizontal: normalizeSpacing(20),
       backgroundColor: colors.background,
       justifyContent: "space-between",
     },
@@ -2362,7 +2370,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     label: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      marginBottom: normalize(8),
+      marginBottom: normalizeSpacing(8),
       color: colors.text,
     },
     inputContainer: {
@@ -2371,19 +2379,19 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: normalize(12),
-      paddingHorizontal: normalize(16),
-      marginBottom: normalize(10),
+      paddingHorizontal: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(10),
       gap: 5,
     },
     dollarSign: {
       fontSize: normalize(26),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginRight: normalize(5),
+      marginRight: normalizeSpacing(5),
     },
     input: {
       flex: 1,
-      paddingVertical: normalize(15),
+      paddingVertical: normalizeSpacing(15),
       fontSize: normalize(26),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -2392,7 +2400,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.error,
       fontSize: normalize(19),
       fontFamily: getFontFamily("700"),
-      marginBottom: normalize(10),
+      marginBottom: normalizeSpacing(10),
     },
     errorBorder: {
       borderColor: colors.error,
@@ -2401,7 +2409,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     approx: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      marginBottom: normalize(9),
+      marginBottom: normalizeSpacing(9),
       color: colors.primaryLight,
     },
     cryptoRow: {
@@ -2411,7 +2419,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      padding: 10,
+      padding: normalizeSpacing(10),
     },
     cryptoInfo: { flex: 1 },
     optionName: {
@@ -2429,32 +2437,32 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     balance: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
-      paddingVertical: 3,
+      paddingVertical: normalizeSpacing(3),
       color: colors.text,
     },
     fee: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      marginBottom: normalize(4),
+      marginBottom: normalizeSpacing(4),
       color: colors.text,
     },
     rate: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
-      marginBottom: normalize(4),
+      marginBottom: normalizeSpacing(4),
       color: colors.text,
     },
     min: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
-      marginBottom: normalize(4),
+      marginBottom: normalizeSpacing(4),
       color: colors.text,
     },
     note: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: normalize(10),
+      marginBottom: normalizeSpacing(10),
     },
     ngn: {
       color: "white",
@@ -2463,11 +2471,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     button: {
       backgroundColor: COLORS.primary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: normalize(208),
       alignItems: "center",
-      marginTop: 20,
-      marginBottom: 30,
+      marginTop: normalizeSpacing(20),
+      marginBottom: normalizeSpacing(30),
     },
     buttonText: {
       color: "#fff",
@@ -2477,12 +2485,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     paymentContainer: {
       backgroundColor: colors.primary,
       borderRadius: 9,
-      marginVertical: 20,
-      padding: 10,
+      marginVertical: normalizeSpacing(20),
+      padding: normalizeSpacing(10),
     },
     warningContainer: {
-      marginVertical: 12,
-      padding: 10,
+      marginVertical: normalizeSpacing(12),
+      padding: normalizeSpacing(10),
       backgroundColor: "rgba(255, 0, 0, 0.03)",
       borderRadius: 6,
       borderWidth: 1,

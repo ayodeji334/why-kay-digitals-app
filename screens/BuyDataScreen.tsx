@@ -486,7 +486,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { showError } from "../utlis/toast";
 import { SelectInput } from "../components/SelectInputField";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -727,7 +731,7 @@ export default function BuyDataScreen() {
           control={control}
         />
 
-        <View style={{ marginBottom: 10 }}>
+        <View style={{ marginBottom: normalizeSpacing(10) }}>
           <SavedBeneficiaries
             onRefetch={refetch}
             data={data ?? []}
@@ -744,7 +748,7 @@ export default function BuyDataScreen() {
             deleting={deleting}
           />
         </View>
-        <View style={{ marginBottom: 10 }}>
+        <View style={{ marginBottom: normalizeSpacing(10) }}>
           <AppText style={styles.subHeader}>Select Network Provider</AppText>
           <View style={styles.networkRow}>
             {networks.map((item, index) => (
@@ -890,26 +894,26 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background,
     },
     content: {
-      paddingHorizontal: 16,
-      paddingVertical: 10,
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(10),
     },
     header: {
       fontSize: normalize(20),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
     },
     subHeader: {
-      marginTop: 20,
+      marginTop: normalizeSpacing(20),
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
       color: colors.text,
     },
     networkRow: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
     networkButton: {
       borderWidth: 1,
@@ -949,8 +953,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     errorText: {
       color: colors.error,
-      marginTop: 4,
-      marginBottom: 10,
+      marginTop: normalizeSpacing(4),
+      marginBottom: normalizeSpacing(10),
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
     },
@@ -958,7 +962,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     balanceValue: {
       fontSize: normalize(18),
@@ -966,17 +970,17 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "#000",
     },
     balanceCard: {
-      paddingHorizontal: normalize(10),
-      paddingVertical: normalize(9),
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(9),
     },
     fundingSourceCard: {
-      paddingHorizontal: normalize(10),
-      paddingVertical: normalize(9),
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(9),
       backgroundColor: colors.inputBackground,
       borderRadius: 12,
       borderWidth: 1,
       borderColor: colors.border,
-      marginTop: 8,
+      marginTop: normalizeSpacing(8),
     },
     fundingSourceRow: {
       flexDirection: "row",
@@ -989,14 +993,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     loader: {
-      marginTop: 12,
+      marginTop: normalizeSpacing(12),
     },
     buttonWrapper: {
-      marginTop: 32,
+      marginTop: normalizeSpacing(32),
     },
     warningContainer: {
-      marginVertical: 12,
-      padding: 10,
+      marginVertical: normalizeSpacing(12),
+      padding: normalizeSpacing(10),
       backgroundColor: "rgba(255, 0, 0, 0.03)",
       borderRadius: 6,
       borderWidth: 1,
@@ -1010,9 +1014,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     button: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 100,
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
       justifyContent: "center",
       alignContent: "center",
     },

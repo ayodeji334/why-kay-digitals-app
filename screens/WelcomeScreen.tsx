@@ -11,7 +11,11 @@ import {
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "../components/AppText";
 import { PRIVACY_WEB_URL, TERMS_WEB_URL } from "../config";
 
@@ -138,7 +142,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     minHeight: screenHeight * 0.4,
-    paddingHorizontal: 20,
+    paddingHorizontal: normalizeSpacing(20),
     paddingTop: screenHeight * 0.05,
   },
   image: {
@@ -148,8 +152,8 @@ const styles = StyleSheet.create({
   },
   contentWrapper: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingBottom: 20,
+    paddingHorizontal: normalizeSpacing(24),
+    paddingBottom: normalizeSpacing(20),
     justifyContent: "flex-end",
     alignContent: "center",
   },
@@ -164,7 +168,7 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily(800),
     maxWidth: "90%",
     marginHorizontal: "auto",
-    marginBottom: 10,
+    marginBottom: normalizeSpacing(10),
     // lineHeight: 28,
   },
   highlight: {
@@ -175,7 +179,7 @@ const styles = StyleSheet.create({
     color: COLORS.whiteBackground,
     textAlign: "center",
     // lineHeight: 24,
-    paddingHorizontal: 10,
+    paddingHorizontal: normalizeSpacing(10),
     fontFamily: getFontFamily(400),
   },
   buttonContainer: {
@@ -183,8 +187,8 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: 30,
-    paddingVertical: 14,
-    marginBottom: 12,
+    paddingVertical: normalizeSpacing(14),
+    marginBottom: normalizeSpacing(12),
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
@@ -212,7 +216,7 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("400"),
     // lineHeight: 19,
     textAlign: "center",
-    paddingHorizontal: 2,
+    paddingHorizontal: normalizeSpacing(2),
   },
   termsHighlight: {
     color: "#72FFB0",

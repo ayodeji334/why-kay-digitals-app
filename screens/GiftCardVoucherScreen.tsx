@@ -380,7 +380,11 @@ import React from "react";
 import { View, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "../components/AppText";
 import { DetailRow } from "./TransactionDetail";
 import { useColors } from "../hooks/useTheme";
@@ -487,7 +491,7 @@ const VoucherCard = ({
       )}
 
       {!!voucher.instructions?.trim() && (
-        <View style={[styles.infoBlock, { marginTop: 10 }]}>
+        <View style={[styles.infoBlock, { marginTop: normalizeSpacing(10) }]}>
           <AppText style={styles.infoLabel}>How to redeem</AppText>
           <AppText style={styles.infoText}>{voucher.instructions}</AppText>
         </View>
@@ -546,7 +550,7 @@ export default function GiftCardVouchersScreen() {
         ))}
       </ScrollView>
 
-      <View style={{ padding: 20 }}>
+      <View style={{ padding: normalizeSpacing(20) }}>
         <TouchableOpacity
           style={styles.doneButton}
           activeOpacity={0.8}
@@ -566,15 +570,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background,
     },
     content: {
-      paddingHorizontal: normalize(23),
-      paddingTop: normalize(16),
-      paddingBottom: normalize(40),
+      paddingHorizontal: normalizeSpacing(23),
+      paddingTop: normalizeSpacing(16),
+      paddingBottom: normalizeSpacing(40),
     },
     summaryCard: {
       backgroundColor: colors.primary,
       borderRadius: 14,
-      padding: 16,
-      marginBottom: 24,
+      padding: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(24),
       gap: 8,
     },
     summaryRow: {
@@ -600,13 +604,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(20),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     sectionHint: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
       // lineHeight: normalize(20),
     },
     card: {
@@ -614,8 +618,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 0.5,
       borderColor: colors.border,
       borderRadius: 12,
-      padding: 13,
-      marginBottom: 12,
+      padding: normalizeSpacing(13),
+      marginBottom: normalizeSpacing(12),
       gap: 12,
     },
     cardHeader: {
@@ -635,7 +639,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     valueBlock: {
       borderRadius: 8,
-      paddingVertical: 12,
+      paddingVertical: normalizeSpacing(12),
       gap: 8,
     },
     valueBlockLabel: {
@@ -665,8 +669,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 0.5,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingHorizontal: 10,
-      paddingVertical: 8,
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(8),
     },
     urlText: {
       fontSize: normalize(18),
@@ -686,8 +690,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 0.5,
       borderColor: colors.primary,
       borderRadius: 8,
-      paddingHorizontal: 12,
-      paddingVertical: 12,
+      paddingHorizontal: normalizeSpacing(12),
+      paddingVertical: normalizeSpacing(14),
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: colors.primary,
@@ -710,7 +714,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 0.5,
       borderColor: colors.warning,
       borderRadius: 8,
-      padding: 12,
+      padding: normalizeSpacing(12),
     },
     pendingText: {
       fontSize: normalize(17),
@@ -750,9 +754,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     doneButton: {
       backgroundColor: colors.primary,
       borderRadius: normalize(208),
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       alignItems: "center",
-      marginTop: 8,
+      marginTop: normalizeSpacing(8),
     },
     doneButtonText: {
       fontSize: normalize(17),

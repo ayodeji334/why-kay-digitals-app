@@ -9,7 +9,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Controller } from "react-hook-form";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
@@ -179,7 +183,7 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     wrapper: {
-      marginBottom: 15,
+      marginBottom: normalizeSpacing(15),
     },
     container: {
       flexDirection: "row",
@@ -212,8 +216,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       justifyContent: "center",
       alignContent: "center",
       alignItems: "center",
-      paddingTop: 0,
-      paddingBottom: 0,
+      paddingTop: normalizeSpacing(0),
+      paddingBottom: normalizeSpacing(0),
       // lineHeight: 40,
     },
     boxText: {
@@ -235,7 +239,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     label: {
       fontFamily: getFontFamily("800"),
       fontSize: normalize(19),
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
       color: colors.text,
     },
     errorBorder: {
@@ -243,10 +247,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     errorText: {
       color: colors.error,
-      marginTop: 6,
+      marginTop: normalizeSpacing(6),
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
-      marginLeft: 4,
+      marginLeft: normalizeSpacing(4),
     },
   });
 

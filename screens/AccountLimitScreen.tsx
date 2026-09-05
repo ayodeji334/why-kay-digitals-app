@@ -13,7 +13,11 @@ import {
   RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import InfoCard from "../components/InfoCard";
@@ -248,7 +252,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     content: {
       flexGrow: 1,
-      padding: 20,
+      padding: normalizeSpacing(20),
     },
     accordionContainer: {
       borderRadius: 12,
@@ -265,8 +269,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      paddingVertical: 16,
-      paddingHorizontal: 20,
+      paddingVertical: normalizeSpacing(16),
+      paddingHorizontal: normalizeSpacing(20),
     },
     accordionIcon: {
       flexDirection: "row",
@@ -296,7 +300,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginRight: 12,
+      marginRight: normalizeSpacing(12),
     },
     accordionTitleExpanded: {
       color: colors.text,
@@ -306,8 +310,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     tierSelection: {
       backgroundColor: colors.inputBackground,
       borderRadius: 12,
-      padding: 4,
-      marginBottom: 20,
+      padding: normalizeSpacing(4),
+      marginBottom: normalizeSpacing(20),
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
@@ -318,26 +322,26 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      paddingVertical: 16,
-      paddingHorizontal: 20,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(20),
       borderRadius: 8,
-      marginVertical: 2,
+      marginVertical: normalizeSpacing(2),
     },
     currentBadge: {
       fontSize: normalize(15),
       fontFamily: getFontFamily("900"),
       color: colors.text,
-      paddingHorizontal: 12,
-      paddingVertical: 4,
+      paddingHorizontal: normalizeSpacing(12),
+      paddingVertical: normalizeSpacing(4),
       borderRadius: 12,
       backgroundColor: colors.infoCardBackgroundColor,
     },
     upgradeButton: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
       alignItems: "center",
-      marginBottom: 24,
+      marginBottom: normalizeSpacing(24),
     },
     upgradeButtonText: {
       color: "white",
@@ -347,24 +351,24 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     limitsContainer: {
       backgroundColor: colors.inputBackground,
       borderRadius: 0,
-      paddingTop: 20,
-      paddingHorizontal: 20,
+      paddingTop: normalizeSpacing(20),
+      paddingHorizontal: normalizeSpacing(20),
       elevation: 2,
     },
     limitGroup: {
-      marginBottom: 24,
+      marginBottom: normalizeSpacing(24),
     },
     limitCategory: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
       color: colors.textMuted,
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
     },
     limitItem: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
@@ -382,14 +386,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     infoSection: {
       backgroundColor: colors.inputBackground,
       borderRadius: 12,
-      padding: 16,
-      marginBottom: 20,
+      padding: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(20),
     },
     infoText: {
       fontSize: normalize(13),
       fontFamily: getFontFamily("700"),
       color: "#007AFF",
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
   });
 

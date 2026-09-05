@@ -535,7 +535,11 @@ import { useNavigation } from "@react-navigation/native";
 import CustomLoading from "../CustomLoading";
 import { useToastHelpers } from "../../utlis/toast";
 import { AxiosError } from "axios";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import { SelectInput } from "../SelectInputField";
 import useAxios from "../../hooks/useAxios";
 // import parsePhoneNumberFromString from "libphonenumber-js";
@@ -828,14 +832,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: {
       // flex: 1,
-      paddingVertical: 20,
+      paddingVertical: normalizeSpacing(20),
       flexGrow: 1,
     },
     checkingText: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
-      marginTop: -5,
-      marginBottom: 10,
+      marginTop: normalizeSpacing(-5),
+      marginBottom: normalizeSpacing(10),
     },
     available: {
       color: colors.primaryLight,
@@ -845,14 +849,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     button: {
       backgroundColor: COLORS.primary,
-      paddingVertical: normalize(14),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 100,
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
       alignItems: "center",
     },
     buttonText: {
       color: "#fff",
-      fontFamily: getFontFamily("800"),
+      fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
     },
   });

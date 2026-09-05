@@ -670,7 +670,11 @@ import {
 } from "react-native";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { useAuthStore } from "../stores/authSlice";
 import { useQuery } from "@tanstack/react-query";
@@ -963,15 +967,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     emptyState: {
       alignItems: "center",
       justifyContent: "center",
-      paddingVertical: 60,
-      paddingHorizontal: 40,
+      paddingVertical: normalizeSpacing(60),
+      paddingHorizontal: normalizeSpacing(40),
     },
     emptyStateTitle: {
       fontSize: normalize(20),
       fontFamily: getFontFamily("800"),
       color: colors.text,
       textAlign: "center",
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     emptyStateDescription: {
       fontSize: normalize(18),
@@ -979,12 +983,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.textMuted,
       textAlign: "center",
       lineHeight: normalize(22),
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
     },
     inviteButton: {
       backgroundColor: COLORS.secondary,
-      paddingHorizontal: 20,
-      paddingVertical: 8,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 38,
     },
     inviteButtonText: {
@@ -994,7 +998,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     tabSwitcher: {
       backgroundColor: colors.inputBackground,
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
     },
     activeTab: {
       backgroundColor: COLORS.primary,
@@ -1004,9 +1008,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "white",
     },
     header: {
-      paddingHorizontal: 20,
-      paddingTop: 16,
-      paddingBottom: 8,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingTop: normalizeSpacing(16),
+      paddingBottom: normalizeSpacing(8),
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
@@ -1018,17 +1022,17 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     content: {
       flexGrow: 1,
-      paddingHorizontal: 20,
-      marginTop: 20,
+      paddingHorizontal: normalizeSpacing(20),
+      marginTop: normalizeSpacing(20),
     },
     statsSection: {
       flexDirection: "row",
-      padding: 16,
+      padding: normalizeSpacing(16),
       backgroundColor: colors.primary,
       borderWidth: 1,
       borderColor: colors.border,
       gap: 12,
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
       borderRadius: 10,
     },
     statCard: {
@@ -1039,7 +1043,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     statTitle: {
       fontSize: normalize(17),
       fontFamily: getFontFamily(400),
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
       textAlign: "right",
       color: "#fff",
     },
@@ -1051,9 +1055,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     tabsContainer: {
       flexDirection: "row",
-      padding: 7,
-      marginTop: 10,
-      marginBottom: 16,
+      padding: normalizeSpacing(7),
+      marginTop: normalizeSpacing(10),
+      marginBottom: normalizeSpacing(16),
       gap: 8,
       backgroundColor: "#F3F4F6",
       borderRadius: 1000,
@@ -1063,8 +1067,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      paddingVertical: 8,
-      paddingHorizontal: 12,
+      paddingVertical: normalizeSpacing(8),
+      paddingHorizontal: normalizeSpacing(12),
       backgroundColor: "#F3F4F6",
       borderRadius: 800,
       gap: 8,
@@ -1077,8 +1081,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "#fff",
     },
     countBadge: {
-      paddingHorizontal: 8,
-      paddingVertical: 2,
+      paddingHorizontal: normalizeSpacing(8),
+      paddingVertical: normalizeSpacing(2),
       borderRadius: 12,
     },
     activeCountBadge: {},
@@ -1095,7 +1099,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     referralCard: {
       backgroundColor: colors.inputBackground,
-      padding: 10,
+      padding: normalizeSpacing(10),
       borderRadius: 12,
       borderWidth: 1,
       borderColor: colors.border,
@@ -1105,7 +1109,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "flex-start",
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
     },
     userInfo: {
       flex: 1,
@@ -1114,7 +1118,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(17),
       fontFamily: getFontFamily(900),
       color: colors.text,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
       textTransform: "uppercase",
     },
     userEmail: {
@@ -1138,8 +1142,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.textMuted,
     },
     statusBadge: {
-      paddingHorizontal: 12,
-      paddingVertical: 4,
+      paddingHorizontal: normalizeSpacing(12),
+      paddingVertical: normalizeSpacing(4),
       borderRadius: 12,
     },
     statusText: {

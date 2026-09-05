@@ -13,7 +13,11 @@ import {
 } from "react-native";
 import { CloseIcon } from "../assets";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "./AppText";
 import CustomIcon from "./CustomIcon";
 import { ArrowDown2 } from "iconsax-react-nativejs";
@@ -308,20 +312,20 @@ export default CountryPicker;
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
-    container: { marginBottom: 10 },
+    container: { marginBottom: normalizeSpacing(10) },
     label: {
       fontFamily: getFontFamily("800"),
       fontSize: normalize(18),
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
       color: colors.text,
     },
     listState: {
-      paddingVertical: normalize(32),
+      paddingVertical: normalizeSpacing(32),
       alignItems: "center",
       justifyContent: "center",
     },
     listStateText: {
-      marginTop: 8,
+      marginTop: normalizeSpacing(8),
       color: colors.textMuted,
       fontSize: normalize(18),
     },
@@ -332,8 +336,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingHorizontal: 12,
-      paddingVertical: 10,
+      paddingHorizontal: normalizeSpacing(12),
+      paddingVertical: normalizeSpacing(10),
       backgroundColor: colors.background,
       minHeight: 45,
     },
@@ -362,10 +366,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     errorBorder: { borderColor: colors.error, borderWidth: 1.5 },
     errorText: {
       color: colors.error,
-      marginTop: 6,
+      marginTop: normalizeSpacing(6),
       fontFamily: getFontFamily("700"),
       fontSize: normalize(14),
-      marginLeft: 4,
+      marginLeft: normalizeSpacing(4),
     },
 
     // Modal
@@ -377,14 +381,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     backdropTap: { flex: 1 },
     modalContainer: {
       backgroundColor: colors.inputBackground,
-      paddingVertical: 26,
-      paddingHorizontal: 18,
+      paddingVertical: normalizeSpacing(26),
+      paddingHorizontal: normalizeSpacing(18),
       maxHeight: "80%",
       borderTopRightRadius: 12,
       borderTopLeftRadius: 12,
     },
     modalHeader: {
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
@@ -400,12 +404,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
       borderWidth: 1,
       borderColor: colors.border,
-      padding: 10,
+      padding: normalizeSpacing(10),
       borderRadius: 8,
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
     },
     countryRow: {
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderBottomWidth: 0.5,
       borderBottomColor: colors.border,
       flexDirection: "row",

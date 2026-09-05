@@ -9,7 +9,11 @@ import {
   Pressable,
   TextInput,
 } from "react-native";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import ErrorState from "../ErrorState";
 import { COLORS } from "../../constants/colors";
 import { Refresh2, Trash } from "iconsax-react-nativejs";
@@ -301,9 +305,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       width: "100%",
       borderTopLeftRadius: 16,
       borderTopRightRadius: 16,
-      padding: 20,
+      padding: normalizeSpacing(20),
       maxHeight: "80%",
-      paddingBottom: 40,
+      paddingBottom: normalizeSpacing(40),
     },
     modalTitle: {
       fontFamily: getFontFamily("900"),
@@ -319,15 +323,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      padding: 12,
-      marginBottom: 16,
+      padding: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(16),
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
       color: "#374151",
       backgroundColor: colors.inputBackground,
     },
     option: { borderBottomWidth: 0 },
-    optionContent: { padding: 10, width: "100%" },
+    optionContent: { padding: normalizeSpacing(10), width: "100%" },
     cryptoRow: {
       flexDirection: "row",
       alignItems: "center",
@@ -347,12 +351,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     list: {
-      paddingVertical: 8,
-      marginVertical: 10,
+      paddingVertical: normalizeSpacing(8),
+      marginVertical: normalizeSpacing(10),
       gap: 10,
     },
     header: {
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
@@ -367,7 +371,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     card: {
       width: "100%",
-      padding: 12,
+      padding: normalizeSpacing(12),
       borderRadius: 8,
       borderWidth: 1,
     },
@@ -385,12 +389,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderColor: COLORS.primary,
       borderWidth: 1,
       borderRadius: 8,
-      padding: 10,
+      padding: normalizeSpacing(10),
     },
     rowBetween: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     deleteButton: {
       flexDirection: "row",
@@ -398,8 +402,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: "red",
       borderRadius: 1200,
-      paddingHorizontal: 10,
-      paddingVertical: 5,
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(14),
       gap: 5,
     },
     deleteText: {
@@ -416,12 +420,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
     },
     modalActions: {
       flexDirection: "row",
       gap: 8,
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
     },
     actionButton: {
       flexDirection: "row",
@@ -430,8 +434,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.error,
       borderRadius: 600,
-      paddingVertical: 5,
-      paddingHorizontal: 20,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(20),
     },
     actionText: {
       fontSize: normalize(16),
@@ -442,9 +446,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingVertical: 10,
-      paddingHorizontal: 12,
-      marginBottom: 12,
+      paddingVertical: normalizeSpacing(10),
+      paddingHorizontal: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(12),
       fontSize: normalize(18),
       color: "#111",
       fontFamily: getFontFamily("700"),
@@ -456,7 +460,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: "#dcfce7", // green-100
       alignItems: "center",
       justifyContent: "center",
-      marginRight: 12,
+      marginRight: normalizeSpacing(12),
     },
     info: {
       flex: 1,
@@ -470,7 +474,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     item: {
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
-      marginVertical: 1,
+      marginVertical: normalizeSpacing(1),
     },
     name: {
       fontSize: normalize(16),
@@ -482,10 +486,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      marginTop: 2,
+      marginTop: normalizeSpacing(2),
     },
     emptyContainer: {
-      padding: normalize(16),
+      padding: normalizeSpacing(16),
       alignItems: "center",
     },
     emptyText: {

@@ -2,7 +2,11 @@ import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import SetNewPasswordForm from "../components/forms/SetNewPasswordForm";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import HalfScreenModal from "../components/HalfScreenModal";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -32,8 +36,8 @@ export default function SetNewPasswordScreen({ route }: any) {
               {
                 fontFamily: getFontFamily(400),
                 fontSize: normalize(18),
-                marginTop: 2,
-                marginLeft: 1,
+                marginTop: normalizeSpacing(2),
+                marginLeft: normalizeSpacing(1),
               },
             ]}
           >
@@ -69,10 +73,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollContainer: {
       flex: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     header: {
-      marginBottom: 23,
+      marginBottom: normalizeSpacing(23),
     },
     title: {
       fontSize: normalize(23),

@@ -1,7 +1,11 @@
 import React from "react";
 import { View, StyleSheet, TouchableOpacity, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import {
   CommonActions,
@@ -42,7 +46,9 @@ const PendingGiftCardScreen = () => {
   return (
     <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
       <View style={styles.content}>
-        <View style={{ alignItems: "center", paddingTop: 40 }}>
+        <View
+          style={{ alignItems: "center", paddingTop: normalizeSpacing(40) }}
+        >
           <Activity size={48} color={COLORS.primary} variant="Bold" />
           {/* <Image
             source={{ uri: transaction?.meta?.offer_snapshot?.brand_logo }}
@@ -50,7 +56,7 @@ const PendingGiftCardScreen = () => {
               width: 60,
               height: 60,
               borderRadius: 30,
-              marginBottom: 20,
+              marginBottom: normalizeSpacing(20),
             }}
           /> */}
           <AppText style={styles.title}>Gift Card Processing</AppText>
@@ -81,27 +87,27 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flex: 1,
       alignItems: "center",
       justifyContent: "space-between",
-      padding: 20,
+      padding: normalizeSpacing(20),
     },
     title: {
       fontSize: normalize(22),
       fontFamily: getFontFamily("900"),
       color: colors.text,
-      marginVertical: 12,
+      marginVertical: normalizeSpacing(12),
     },
     message: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       color: colors.text,
       textAlign: "center",
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     button: {
       backgroundColor: COLORS.primary,
-      paddingVertical: 14,
-      paddingHorizontal: 40,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(40),
       borderRadius: 25,
-      marginVertical: 12,
+      marginVertical: normalizeSpacing(12),
       width: "100%",
     },
     buttonText: {

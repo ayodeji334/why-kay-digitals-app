@@ -15,7 +15,11 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SelectInput } from "../components/SelectInputField";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
 import { useNavigation } from "@react-navigation/native";
@@ -265,7 +269,7 @@ export default function EditProfileScreen() {
             name="phone_number"
             placeholder="Enter your phone number"
             containerStyle={{
-              marginTop: 5,
+              marginTop: normalizeSpacing(5),
             }}
           /> */}
         </View>
@@ -289,14 +293,17 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     scrollView: { flexGrow: 1 },
-    profilePictureSection: { alignItems: "center", padding: 20 },
+    profilePictureSection: {
+      alignItems: "center",
+      padding: normalizeSpacing(20),
+    },
     imageWrapper: {
       width: 70,
       height: 70,
       borderRadius: 2500,
-      marginRight: 12,
+      marginRight: normalizeSpacing(12),
       overflow: "hidden",
-      padding: 5,
+      padding: normalizeSpacing(5),
       backgroundColor: colors.text,
     },
     profileImage: {
@@ -319,15 +326,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       position: "absolute",
       borderRadius: 60,
       right: 0,
-      padding: 6,
+      padding: normalizeSpacing(6),
     },
-    formSection: { padding: 20 },
+    formSection: { padding: normalizeSpacing(20) },
     updateButton: {
       backgroundColor: COLORS.secondary,
-      marginHorizontal: 20,
-      marginTop: 20,
-      marginBottom: 30,
-      paddingVertical: 14,
+      marginHorizontal: normalizeSpacing(20),
+      marginTop: normalizeSpacing(20),
+      marginBottom: normalizeSpacing(30),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 48,
       alignItems: "center",
     },

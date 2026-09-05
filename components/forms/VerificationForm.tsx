@@ -188,7 +188,11 @@ import OtpInputField from "../OtpInputField";
 import { COLORS } from "../../constants/colors";
 import { useCountdown } from "../../hooks/useCountdown";
 import { useNavigation } from "@react-navigation/native";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { showError, showSuccess } from "../../utlis/toast";
 import { AxiosError } from "axios";
@@ -395,26 +399,26 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     container: {
       flex: 1,
       justifyContent: "center",
-      paddingVertical: 20,
+      paddingVertical: normalizeSpacing(20),
     },
     resendWrapper: {
       flexDirection: "row",
       justifyContent: "center",
-      marginVertical: 10,
-      paddingVertical: 30,
+      marginVertical: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(30),
     },
     infoText: {
       fontFamily: getFontFamily(700),
       fontSize: normalize(19),
-      marginTop: 2,
-      marginLeft: 1,
+      marginTop: normalizeSpacing(2),
+      marginLeft: normalizeSpacing(1),
       color: colors.text,
     },
     resendText: {
       fontFamily: getFontFamily(700),
       fontSize: normalize(19),
-      marginTop: 2,
-      marginLeft: 1,
+      marginTop: normalizeSpacing(2),
+      marginLeft: normalizeSpacing(1),
       color: colors.primary,
     },
     disabledResend: {
@@ -422,9 +426,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     button: {
       backgroundColor: COLORS.secondary,
-      padding: 14,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(14),
       borderRadius: 80,
-      marginTop: 40,
+      marginTop: normalizeSpacing(40),
       alignItems: "center",
     },
     buttonText: {

@@ -7,7 +7,11 @@ import {
   StyleSheet,
 } from "react-native";
 import { AppText } from "../AppText";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 
 interface Beneficiary {
   id: number;
@@ -93,12 +97,12 @@ export default function SavedBeneficiariesList({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    marginBottom: normalizeSpacing(16),
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: normalizeSpacing(12),
   },
   headerText: {
     fontSize: 12,
@@ -112,7 +116,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "100%",
-    padding: 12,
+    padding: normalizeSpacing(12),
     borderRadius: 8,
     borderWidth: 1,
   },
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
   rowBetween: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 4,
+    marginBottom: normalizeSpacing(4),
   },
   avatar: {
     width: 40,
@@ -140,7 +144,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#dcfce7",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 12,
+    marginRight: normalizeSpacing(12),
   },
   info: {
     flex: 1,

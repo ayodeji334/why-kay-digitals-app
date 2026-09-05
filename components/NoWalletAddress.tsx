@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CustomIcon from "./CustomIcon";
 import { WalletIcon } from "../assets";
@@ -93,13 +97,13 @@ export default NoWalletAddress;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: normalizeSpacing(20),
     backgroundColor: "white",
     justifyContent: "space-between",
   },
   header: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: normalizeSpacing(20),
   },
   walletCircle: {
     width: 70,
@@ -108,13 +112,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F4F6",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: normalizeSpacing(15),
   },
   title: {
     fontSize: 20,
     fontFamily: getFontFamily(800),
     color: "black",
-    marginBottom: 8,
+    marginBottom: normalizeSpacing(8),
   },
   subtitle: {
     textAlign: "center",
@@ -125,17 +129,17 @@ const styles = StyleSheet.create({
     maxWidth: 260,
   },
   section: {
-    marginVertical: 15,
+    marginVertical: normalizeSpacing(15),
   },
   label: {
     fontSize: 16,
     fontFamily: getFontFamily(700),
     color: "black",
-    marginBottom: 8,
+    marginBottom: normalizeSpacing(8),
   },
   generateButton: {
     width: "100%",
-    paddingVertical: 14,
+    paddingVertical: normalizeSpacing(14),
     borderRadius: 30,
     backgroundColor: COLORS.primary,
     alignItems: "center",
@@ -146,7 +150,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   note: {
-    marginTop: 10,
+    marginTop: normalizeSpacing(10),
     textAlign: "center",
     fontSize: 13,
     fontFamily: getFontFamily(400),

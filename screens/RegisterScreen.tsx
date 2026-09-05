@@ -8,7 +8,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize, width } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  width,
+  normalizeSpacing,
+} from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 import RegisterForm, {
   RegisterFormHandle,
@@ -43,7 +48,10 @@ export default function RegisterScreen() {
       />
       <ScrollView
         style={styles.scrollContainer}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: normalizeSpacing(40),
+        }}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -109,10 +117,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollContainer: {
       flexGrow: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     header: {
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
     },
     title: {
       fontSize: normalize(23),

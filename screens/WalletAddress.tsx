@@ -504,7 +504,11 @@ import {
   ScrollView,
   Share as RNShare,
 } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { Copy } from "iconsax-react-nativejs";
 import QRCode from "react-native-qrcode-svg";
@@ -708,9 +712,9 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
         style={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={{ paddingBottom: normalizeSpacing(20) }}
       >
-        <View style={{ paddingTop: 10 }}>
+        <View style={{ paddingTop: normalizeSpacing(10) }}>
           {walletDetail?.address ? (
             <View style={styles.qrContainer}>
               <QRCode value={walletDetail.address} size={180} quietZone={8} />
@@ -763,7 +767,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
           </View>
 
           {/* Network Selection */}
-          <View style={{ marginVertical: 10 }}>
+          <View style={{ marginVertical: normalizeSpacing(10) }}>
             <AppText style={styles.modalLabel}>Asset Networks</AppText>
             <SelectInput
               options={(Array.isArray(wallet?.chains) ? wallet.chains : [])
@@ -965,27 +969,27 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     container: {
       flex: 1,
-      paddingBottom: 20,
+      paddingBottom: normalizeSpacing(20),
       backgroundColor: colors.background,
     },
-    header: { alignItems: "center", marginBottom: 0 },
-    logo: { width: 40, height: 40, marginRight: 10 },
+    header: { alignItems: "center", marginBottom: normalizeSpacing(0) },
+    logo: { width: 40, height: 40, marginRight: normalizeSpacing(10) },
     title: {
       fontFamily: getFontFamily(800),
       fontSize: normalize(19),
       color: colors.text,
     },
     section: {
-      marginVertical: 15,
+      marginVertical: normalizeSpacing(15),
     },
     label: {
       fontSize: normalize(18),
       fontFamily: getFontFamily(800),
       color: colors.text,
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
     note: {
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
       textAlign: "center",
       fontSize: normalize(13),
       fontFamily: getFontFamily(400),
@@ -994,7 +998,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     generateButton: {
       width: "100%",
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 30,
       backgroundColor: COLORS.primary,
       alignItems: "center",
@@ -1006,11 +1010,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     qrContainer: {
       alignSelf: "center",
-      marginBottom: 10,
+      marginBottom: normalizeSpacing(10),
       borderColor: COLORS.primary,
       borderWidth: 1,
       borderRadius: 12,
-      padding: 10,
+      padding: normalizeSpacing(10),
     },
     walletCircle: {
       width: 50,
@@ -1019,19 +1023,19 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: "#F3F4F6",
       justifyContent: "center",
       alignItems: "center",
-      marginBottom: 15,
+      marginBottom: normalizeSpacing(15),
     },
-    networkSection: { marginBottom: 20 },
+    networkSection: { marginBottom: normalizeSpacing(20) },
     sectionLabel: {
       fontFamily: getFontFamily(700),
       fontSize: normalize(16),
-      marginBottom: 10,
+      marginBottom: normalizeSpacing(10),
       color: colors.text,
     },
     networkButton: {
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      marginRight: 10,
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(14),
+      marginRight: normalizeSpacing(10),
       backgroundColor: "#F3F4F6",
       borderRadius: 20,
       borderWidth: 1,
@@ -1049,23 +1053,23 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     networkButtonTextActive: { color: colors.text },
     sectionBox: {
       backgroundColor: colors.inputBackground,
-      padding: 14,
+      padding: normalizeSpacing(14),
       borderRadius: 10,
       borderColor: colors.border,
       borderWidth: 1,
-      marginBottom: 15,
+      marginBottom: normalizeSpacing(15),
     },
     modalLabel: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("900"),
       color: "black",
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
     },
     notesSection: {
       width: "100%",
-      padding: 14,
+      padding: normalizeSpacing(14),
       borderRadius: 10,
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
     },
     notesText: {
       fontFamily: getFontFamily(400),
@@ -1094,13 +1098,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     copyButton: {
-      padding: 7,
+      padding: normalizeSpacing(7),
       backgroundColor: colors.background,
       borderRadius: 8,
     },
     infoSection: {
       borderColor: colors.border,
-      paddingHorizontal: 14,
+      paddingHorizontal: normalizeSpacing(14),
       borderRadius: 10,
       borderWidth: 1,
       backgroundColor: colors.inputBackground,
@@ -1108,7 +1112,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     infoRow: {
       flexDirection: "row",
       justifyContent: "space-between",
-      paddingVertical: 13,
+      paddingVertical: normalizeSpacing(13),
     },
     infoLabel: {
       fontFamily: getFontFamily(800),
@@ -1120,35 +1124,35 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       color: colors.text,
     },
-    actionsContainer: { marginTop: 30 },
+    actionsContainer: { marginTop: normalizeSpacing(30) },
     shareButton: {
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: COLORS.primary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 30,
-      marginVertical: 12,
+      marginVertical: normalizeSpacing(12),
     },
     viewRatesButton: {
       borderWidth: 1,
       borderColor: colors.text,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 30,
       alignItems: "center",
     },
     actionButtonText: {
       fontFamily: getFontFamily(800),
       fontSize: normalize(18),
-      marginLeft: 6,
+      marginLeft: normalizeSpacing(6),
       color: colors.text,
     },
     scrollContent: {
       flexGrow: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     bottomActions: {
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
 
     shareCardOffscreen: {
@@ -1164,8 +1168,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     shareHeader: {
       backgroundColor: COLORS.primary,
-      paddingVertical: 16,
-      paddingHorizontal: 20,
+      paddingVertical: normalizeSpacing(16),
+      paddingHorizontal: normalizeSpacing(20),
       alignItems: "center",
     },
     shareAppName: {
@@ -1178,11 +1182,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily(500),
       fontSize: normalize(12),
       color: "rgba(255,255,255,0.85)",
-      marginTop: 2,
+      marginTop: normalizeSpacing(2),
     },
     shareBody: {
-      paddingVertical: 18,
-      paddingHorizontal: 20,
+      paddingVertical: normalizeSpacing(18),
+      paddingHorizontal: normalizeSpacing(20),
       alignItems: "center",
     },
     shareAssetName: {
@@ -1193,9 +1197,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     shareNetworkPill: {
       backgroundColor: "rgba(188, 191, 189, 0.12)",
       borderRadius: 20,
-      paddingHorizontal: 19,
-      paddingVertical: 3,
-      marginTop: 6,
+      paddingHorizontal: normalizeSpacing(19),
+      paddingVertical: normalizeSpacing(3),
+      marginTop: normalizeSpacing(6),
     },
     shareNetworkText: {
       fontFamily: getFontFamily(800),
@@ -1204,9 +1208,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       letterSpacing: 0.5,
     },
     shareQrBox: {
-      marginTop: 14,
-      marginBottom: 14,
-      padding: 6,
+      marginTop: normalizeSpacing(14),
+      marginBottom: normalizeSpacing(14),
+      padding: normalizeSpacing(6),
       borderWidth: 1,
       borderColor: COLORS.primary,
       borderRadius: 12,
@@ -1216,9 +1220,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       width: "100%",
       backgroundColor: "#F7F7F7",
       borderRadius: 10,
-      paddingVertical: 10,
-      paddingHorizontal: 12,
-      marginBottom: 10,
+      paddingVertical: normalizeSpacing(10),
+      paddingHorizontal: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(10),
       textAlign: "center",
     },
     shareMemoField: {
@@ -1231,7 +1235,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(14),
       color: "#181819",
       letterSpacing: 0.6,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
       textAlign: "center",
     },
     shareMemoLabel: {
@@ -1250,12 +1254,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       lineHeight: 14,
       color: "#000000",
       textAlign: "center",
-      marginTop: 2,
+      marginTop: normalizeSpacing(2),
     },
     shareFooter: {
       borderTopWidth: 1,
       borderTopColor: "#EFEFEF",
-      paddingVertical: 10,
+      paddingVertical: normalizeSpacing(10),
       alignItems: "center",
       backgroundColor: "#FAFAFA",
     },

@@ -15,7 +15,11 @@ import {
   ProfileCircle,
   EmojiNormal,
 } from "iconsax-react-nativejs";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
@@ -157,31 +161,31 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingHorizontal: 20,
-      paddingVertical: 12,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingVertical: normalizeSpacing(12),
     },
     headerBtn: {
-      padding: 4,
+      padding: normalizeSpacing(4),
     },
     scroll: {
       flex: 1,
     },
     scrollContent: {
-      paddingHorizontal: 20,
-      paddingTop: 8,
-      paddingBottom: 24,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingTop: normalizeSpacing(8),
+      paddingBottom: normalizeSpacing(24),
     },
     title: {
       fontSize: normalize(23),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
     subtitle: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
-      marginBottom: 28,
+      marginBottom: normalizeSpacing(28),
     },
     grid: {
       flexDirection: "row",
@@ -192,8 +196,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       width: "48%",
       backgroundColor: colors.inputBackground,
       borderRadius: 16,
-      padding: 16,
-      marginBottom: 16,
+      padding: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(16),
     },
     cardIconBadge: {
       width: normalize(44),
@@ -202,13 +206,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: COLORS.fadeBackgroundPrimary,
       alignItems: "center",
       justifyContent: "center",
-      marginBottom: 14,
+      marginBottom: normalizeSpacing(14),
     },
     cardTitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     cardDescription: {
       fontSize: normalize(16),
@@ -217,13 +221,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       lineHeight: normalize(18),
     },
     footer: {
-      paddingHorizontal: 20,
-      paddingBottom: 20,
-      paddingTop: 8,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingBottom: normalizeSpacing(20),
+      paddingTop: normalizeSpacing(8),
     },
     primaryButton: {
       backgroundColor: COLORS.primary,
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 25,
       alignItems: "center",
     },

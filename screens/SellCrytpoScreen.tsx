@@ -23,7 +23,11 @@ import {
   useRoute,
   useFocusEffect,
 } from "@react-navigation/native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { formatAmount } from "../libs/formatNumber";
@@ -465,7 +469,11 @@ export default function CryptoSellScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, paddingBottom: 10, backgroundColor: colors.background }}
+      style={{
+        flex: 1,
+        paddingBottom: normalizeSpacing(10),
+        backgroundColor: colors.background,
+      }}
       edges={["right", "left"]}
     >
       <ScrollView
@@ -488,7 +496,7 @@ export default function CryptoSellScreen() {
         ) : (
           <View style={styles.container}>
             <View>
-              <View style={{ marginBottom: 15 }}>
+              <View style={{ marginBottom: normalizeSpacing(15) }}>
                 <AppText style={styles.label}>Coin</AppText>
 
                 <View style={styles.cryptoRow}>
@@ -579,9 +587,9 @@ export default function CryptoSellScreen() {
                   <>
                     <View
                       style={{
-                        marginVertical: 10,
+                        marginVertical: normalizeSpacing(10),
                         backgroundColor: colors.inputBackground,
-                        padding: 13,
+                        padding: normalizeSpacing(13),
                         borderRadius: 10,
                         gap: 8,
                       }}
@@ -595,7 +603,7 @@ export default function CryptoSellScreen() {
                         style={{
                           flexDirection: "row",
                           justifyContent: "space-between",
-                          paddingVertical: 2,
+                          paddingVertical: normalizeSpacing(2),
                         }}
                       >
                         <AppText style={[styles.balance]}>
@@ -610,7 +618,7 @@ export default function CryptoSellScreen() {
                         style={{
                           flexDirection: "row",
                           justifyContent: "space-between",
-                          paddingVertical: 2,
+                          paddingVertical: normalizeSpacing(2),
                         }}
                       >
                         <AppText style={[styles.balance]}>
@@ -628,7 +636,7 @@ export default function CryptoSellScreen() {
                         style={{
                           height: 1,
                           backgroundColor: colors.border,
-                          marginVertical: 4,
+                          marginVertical: normalizeSpacing(4),
                         }}
                       />
 
@@ -637,7 +645,7 @@ export default function CryptoSellScreen() {
                         style={{
                           flexDirection: "row",
                           justifyContent: "space-between",
-                          paddingVertical: 2,
+                          paddingVertical: normalizeSpacing(2),
                         }}
                       >
                         <AppText
@@ -657,7 +665,7 @@ export default function CryptoSellScreen() {
                         style={{
                           flexDirection: "row",
                           justifyContent: "space-between",
-                          paddingVertical: 2,
+                          paddingVertical: normalizeSpacing(2),
                         }}
                       >
                         <AppText
@@ -683,7 +691,7 @@ export default function CryptoSellScreen() {
                             style={{
                               height: 1,
                               backgroundColor: colors.border,
-                              marginVertical: 4,
+                              marginVertical: normalizeSpacing(4),
                             }}
                           />
 
@@ -715,7 +723,7 @@ export default function CryptoSellScreen() {
                             style={{
                               height: 1,
                               backgroundColor: colors.border,
-                              marginVertical: 4,
+                              marginVertical: normalizeSpacing(4),
                             }}
                           />
 
@@ -748,7 +756,7 @@ export default function CryptoSellScreen() {
                         style={{
                           flexDirection: "row",
                           justifyContent: "space-between",
-                          paddingVertical: 2,
+                          paddingVertical: normalizeSpacing(2),
                         }}
                       >
                         <AppText style={styles.ngn}>You’ll be paid:</AppText>
@@ -784,7 +792,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      paddingHorizontal: normalize(20),
+      paddingHorizontal: normalizeSpacing(20),
       backgroundColor: colors.background,
       justifyContent: "space-between",
     },
@@ -793,8 +801,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       opacity: 0.6,
     },
     warningContainer: {
-      marginTop: 12,
-      padding: 10,
+      marginTop: normalizeSpacing(12),
+      padding: normalizeSpacing(10),
       backgroundColor: "rgba(255, 0, 0, 0.03)",
       borderRadius: 6,
       borderWidth: 1,
@@ -809,7 +817,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     label: {
       fontSize: normalize(19),
       fontFamily: getFontFamily("800"),
-      marginBottom: normalize(8),
+      marginBottom: normalizeSpacing(8),
       color: colors.text,
     },
     inputContainer: {
@@ -818,8 +826,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: normalize(12),
-      paddingHorizontal: normalize(16),
-      marginBottom: normalize(10),
+      paddingHorizontal: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(10),
       gap: 5,
     },
     errorBorder: {
@@ -830,11 +838,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(26),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      marginRight: normalize(5),
+      marginRight: normalizeSpacing(5),
     },
     input: {
       flex: 1,
-      paddingVertical: normalize(15),
+      paddingVertical: normalizeSpacing(15),
       fontSize: normalize(26),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -843,37 +851,37 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.error,
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      marginBottom: normalize(10),
+      marginBottom: normalizeSpacing(10),
     },
     approx: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      marginBottom: normalize(9),
+      marginBottom: normalizeSpacing(9),
       color: colors.primaryLight,
     },
     balance: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      marginBottom: normalize(4),
+      marginBottom: normalizeSpacing(4),
       color: colors.text,
     },
     rate: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("800"),
-      marginBottom: normalize(4),
+      marginBottom: normalizeSpacing(4),
       color: colors.text,
     },
     min: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("800"),
-      marginBottom: normalize(4),
+      marginBottom: normalizeSpacing(4),
       color: colors.text,
     },
     note: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: normalize(10),
+      marginBottom: normalizeSpacing(10),
     },
     cryptoRow: {
       flexDirection: "row",
@@ -882,7 +890,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      padding: 10,
+      padding: normalizeSpacing(10),
     },
     cryptoInfo: { flex: 1 },
     optionName: {
@@ -904,10 +912,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     button: {
       backgroundColor: COLORS.primary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: normalize(208),
       alignItems: "center",
-      marginBottom: 30,
+      marginBottom: normalizeSpacing(30),
     },
     buttonText: {
       color: "#fff",
@@ -917,7 +925,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     paymentContainer: {
       backgroundColor: COLORS.primary,
       borderRadius: 9,
-      marginVertical: 20,
-      padding: 14,
+      marginVertical: normalizeSpacing(20),
+      padding: normalizeSpacing(14),
     },
   });

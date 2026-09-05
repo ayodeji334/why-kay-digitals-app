@@ -22,7 +22,11 @@ import CustomLoading from "../components/CustomLoading";
 import ConfirmationModal from "../components/ConfirmationModal";
 import TabSwitcher, { TabOption } from "../components/TabSwitcher";
 import { COLORS } from "../constants/colors";
-import { normalize, getFontFamily } from "../constants/settings";
+import {
+  normalize,
+  getFontFamily,
+  normalizeSpacing,
+} from "../constants/settings";
 import BalanceCard from "../components/Dashboard/BalanceCard";
 import { formatAmount } from "../libs/formatNumber";
 import TextInputField from "../components/TextInputField";
@@ -317,7 +321,7 @@ export default function TransferScreen() {
       style={{
         flex: 1,
         backgroundColor: colors.background,
-        paddingHorizontal: 16,
+        paddingHorizontal: normalizeSpacing(16),
       }}
     >
       <TabSwitcher
@@ -458,7 +462,7 @@ export default function TransferScreen() {
           )}
 
           {activeTab === "crypto" && (
-            <View style={{ marginVertical: 4 }}>
+            <View style={{ marginVertical: normalizeSpacing(4) }}>
               <SelectInput
                 control={control}
                 name="asset_id"
@@ -471,7 +475,7 @@ export default function TransferScreen() {
             </View>
           )}
 
-          <View style={{ marginVertical: 4 }}>
+          <View style={{ marginVertical: normalizeSpacing(4) }}>
             <AppText style={styles.label}>Amount</AppText>
             <Controller
               control={control}
@@ -507,7 +511,7 @@ export default function TransferScreen() {
           </View>
 
           {activeTab === "fiat" && (
-            <View style={{ marginVertical: 4 }}>
+            <View style={{ marginVertical: normalizeSpacing(4) }}>
               <TextInputField
                 label="Narration"
                 control={control}
@@ -554,8 +558,8 @@ export default function TransferScreen() {
               ? colors.surfaceSecondary
               : COLORS.secondary,
             borderRadius: 100,
-            paddingVertical: 16,
-            marginVertical: 30,
+            paddingVertical: normalizeSpacing(16),
+            marginVertical: normalizeSpacing(30),
           }}
         >
           <AppText
@@ -589,14 +593,14 @@ export default function TransferScreen() {
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     limitContainer: {
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
       backgroundColor: colors.infoCardBackgroundColor,
-      padding: 10,
+      padding: normalizeSpacing(10),
       borderRadius: 10,
     },
     tabSwitcher: {
       backgroundColor: colors.inputBackground,
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
     },
     activeTab: {
       backgroundColor: COLORS.primary,
@@ -608,7 +612,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     usernameStatus: {
       flexDirection: "row",
       alignItems: "center",
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
       gap: 6,
     },
     usernameChecking: {
@@ -627,8 +631,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
     },
     warningContainer: {
-      marginVertical: 12,
-      padding: 10,
+      marginVertical: normalizeSpacing(12),
+      padding: normalizeSpacing(10),
       backgroundColor: "rgba(255, 0, 0, 0.03)",
       borderRadius: 6,
       borderWidth: 1,
@@ -644,13 +648,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.error,
       fontSize: normalize(19),
       fontFamily: getFontFamily("800"),
-      marginBottom: normalize(10),
+      marginBottom: normalizeSpacing(10),
     },
-    form: { marginVertical: 10 },
+    form: { marginVertical: normalizeSpacing(10) },
     label: {
       fontFamily: getFontFamily("800"),
       fontSize: normalize(18),
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
       color: colors.text,
     },
     inputContainer: {
@@ -659,19 +663,19 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 10,
-      paddingHorizontal: normalize(16),
-      marginBottom: normalize(10),
+      paddingHorizontal: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(10),
       gap: 5,
     },
     dollarSign: {
       fontSize: normalize(23),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      marginRight: normalize(5),
+      marginRight: normalizeSpacing(5),
     },
     input: {
       flex: 1,
-      paddingVertical: normalize(14),
+      paddingVertical: normalizeSpacing(14),
       fontSize: normalize(23),
       fontFamily: getFontFamily("700"),
       color: colors.text,
@@ -696,7 +700,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       height: 4,
       backgroundColor: "#E5E7EB",
       borderRadius: 3,
-      marginTop: 18,
+      marginTop: normalizeSpacing(18),
     },
     progressBarFill: {
       height: 6,
@@ -706,7 +710,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     limitRange: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginTop: 4,
+      marginTop: normalizeSpacing(4),
     },
     limitValue: {
       fontFamily: getFontFamily("800"),

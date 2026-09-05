@@ -197,7 +197,11 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AxiosError } from "axios";
 import { showError, showSuccess } from "../utlis/toast";
 import useAxios from "../hooks/useAxios";
@@ -353,10 +357,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollContainer: {
       flex: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     header: {
-      marginBottom: 23,
+      marginBottom: normalizeSpacing(23),
     },
     title: {
       fontSize: normalize(23),
@@ -366,7 +370,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     description: {
       fontFamily: getFontFamily(400),
       fontSize: normalize(18),
-      marginTop: 8,
+      marginTop: normalizeSpacing(8),
       color: colors.textMuted,
     },
     highlight: {
@@ -376,13 +380,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     errorText: {
       color: colors.error,
       fontSize: normalize(14),
-      marginTop: 4,
+      marginTop: normalizeSpacing(4),
     },
     button: {
       backgroundColor: colors.primary,
-      padding: 14,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(14),
       borderRadius: 80,
-      marginTop: 40,
+      marginTop: normalizeSpacing(40),
       alignItems: "center",
     },
     buttonText: {

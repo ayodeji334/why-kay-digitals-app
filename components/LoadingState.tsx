@@ -1,6 +1,10 @@
 import React from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
-import { normalize, getFontFamily } from "../constants/settings";
+import {
+  normalize,
+  getFontFamily,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
 
@@ -31,13 +35,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     loadingContainer: {
       backgroundColor: colors.background,
       borderRadius: 12,
-      padding: 24,
+      padding: normalizeSpacing(24),
       alignItems: "center",
       justifyContent: "center",
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
     },
     spinner: {
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
     },
     loadingText: {
       fontSize: normalize(18),

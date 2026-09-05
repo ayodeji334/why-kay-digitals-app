@@ -124,6 +124,7 @@ import {
   getFontFamily,
   normalize,
   width as SCREEN_WIDTH,
+  normalizeSpacing,
 } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import ErrorState from "./ErrorState";
@@ -291,16 +292,16 @@ const AdvertsBanner = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
+    paddingVertical: normalizeSpacing(20),
     flex: 1,
   },
   text: {
-    paddingVertical: 30,
+    paddingVertical: normalizeSpacing(30),
     textAlign: "center",
     borderBottomColor: "gray",
     borderWidth: 1,
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: normalizeSpacing(20),
     fontFamily: getFontFamily(700),
     fontSize: normalize(18),
   },
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     height: 109,
     borderRadius: 10,
-    paddingVertical: 16,
+    paddingVertical: normalizeSpacing(16),
     backgroundColor: "#e7e7e7",
   },
 });

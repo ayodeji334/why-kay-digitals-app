@@ -9,7 +9,11 @@ import {
   Text,
 } from "react-native";
 import { ToastType } from "../hooks/useToast";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 
 // ToastHost is mounted at the very root of the app (see App.tsx), outside
 // SafeAreaProvider, so useSafeAreaInsets isn't available here — fall back to
@@ -128,8 +132,8 @@ const styles = StyleSheet.create({
   // rather than a floating card.
   container: {
     width: "100%",
-    paddingHorizontal: 20,
-    paddingBottom: 16,
+    paddingHorizontal: normalizeSpacing(20),
+    paddingBottom: normalizeSpacing(16),
     // shadowColor: "#000",
     // shadowOffset: { width: 0, height: 4 },
     // shadowOpacity: 0.2,

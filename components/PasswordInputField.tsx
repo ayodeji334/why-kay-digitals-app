@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Controller } from "react-hook-form";
 import { TextInput, View, StyleSheet, TouchableOpacity } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { Eye, EyeSlash } from "iconsax-react-nativejs";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
@@ -77,7 +81,7 @@ const PasswordInputField: React.FC<Props> = ({
               allowFontScaling={false}
             />
             <TouchableOpacity
-              style={{ marginRight: 5 }}
+              style={{ marginRight: normalizeSpacing(5) }}
               hitSlop={10}
               activeOpacity={1}
               onPress={() => setShowPassword(!showPassword)}
@@ -118,12 +122,12 @@ const PasswordInputField: React.FC<Props> = ({
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: {
-      marginBottom: 10,
+      marginBottom: normalizeSpacing(10),
     },
     label: {
       fontFamily: getFontFamily("800"),
       fontSize: normalize(17),
-      marginBottom: 2,
+      marginBottom: normalizeSpacing(2),
       color: colors.text,
     },
     placeholderStyle: {
@@ -136,13 +140,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingHorizontal: 8,
+      paddingHorizontal: normalizeSpacing(8),
       backgroundColor: colors.background,
     },
     input: {
       flex: 1,
-      paddingHorizontal: 5,
-      paddingVertical: normalize(16),
+      paddingHorizontal: normalizeSpacing(5),
+      paddingVertical: normalizeSpacing(16),
       color: colors.text,
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),
@@ -154,12 +158,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     errorText: {
       color: colors.error,
-      marginVertical: 4,
+      marginVertical: normalizeSpacing(4),
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
     },
     hintsWrapper: {
-      marginTop: 6,
+      marginTop: normalizeSpacing(6),
       flexDirection: "row",
       gap: 9,
       flexWrap: "wrap",
@@ -167,7 +171,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     hint: {
       fontFamily: getFontFamily("700"),
       fontSize: normalize(16),
-      marginVertical: 2,
+      marginVertical: normalizeSpacing(2),
       color: colors.text,
     },
     hintValid: {

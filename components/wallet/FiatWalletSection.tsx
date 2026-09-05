@@ -2,7 +2,11 @@ import React, { useCallback, useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { COLORS } from "../../constants/colors";
-import { normalize, getFontFamily } from "../../constants/settings";
+import {
+  normalize,
+  getFontFamily,
+  normalizeSpacing,
+} from "../../constants/settings";
 import useAxios from "../../hooks/useAxios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TransactionSectionList from "../TransactionList";
@@ -68,7 +72,7 @@ const FiatWalletSection = () => {
   );
 
   return (
-    <View style={{ marginTop: 10 }}>
+    <View style={{ marginTop: normalizeSpacing(10) }}>
       {
         <TransactionSectionList
           transactions={transactions}
@@ -95,16 +99,16 @@ export default FiatWalletSection;
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     sectionHeader: {
-      paddingVertical: 8,
+      paddingVertical: normalizeSpacing(8),
       fontSize: normalize(19),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
     },
     txItem: {
       flexDirection: "row",
       justifyContent: "space-between",
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
@@ -117,7 +121,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
       color: COLORS.primary,
     },
-    emptyState: { alignItems: "center", paddingVertical: 40 },
+    emptyState: { alignItems: "center", paddingVertical: normalizeSpacing(40) },
     emptyStateText: {
       fontSize: normalize(22),
       fontFamily: getFontFamily("800"),
@@ -125,6 +129,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     groupTitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
   });

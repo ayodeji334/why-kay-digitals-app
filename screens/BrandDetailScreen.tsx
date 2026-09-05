@@ -23,7 +23,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { AppText } from "../components/AppText";
 import useAxios from "../hooks/useAxios";
@@ -510,7 +514,7 @@ function PurchaseSection({
           {loadingRate ? (
             <ActivityIndicator
               color={COLORS.primary}
-              style={{ marginVertical: 12 }}
+              style={{ marginVertical: normalizeSpacing(12) }}
             />
           ) : (
             <View style={styles.breakdownCard}>
@@ -658,7 +662,7 @@ export default function BrandDetailScreen() {
             keyboardShouldPersistTaps="handled"
           >
             {/* ── Brand header ── */}
-            <View style={{ paddingBottom: 30 }}>
+            <View style={{ paddingBottom: normalizeSpacing(30) }}>
               <Image
                 source={{ uri: brand.brand_logo }}
                 style={styles.brandLogo}
@@ -707,9 +711,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     safe: { flex: 1, backgroundColor: colors.background },
     loadingWrap: { flex: 1, alignItems: "center", justifyContent: "center" },
     scrollContent: {
-      paddingHorizontal: normalize(24),
-      paddingTop: normalize(16),
-      paddingBottom: normalize(40),
+      paddingHorizontal: normalizeSpacing(24),
+      paddingTop: normalizeSpacing(16),
+      paddingBottom: normalizeSpacing(40),
       flexGrow: 1,
     },
     brandLogo: {
@@ -725,18 +729,18 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: normalize(12),
-      padding: normalize(14),
-      marginVertical: normalize(20),
+      padding: normalizeSpacing(14),
+      marginVertical: normalizeSpacing(20),
       gap: 12,
       rowGap: 12,
-      paddingRight: 10,
+      paddingRight: normalizeSpacing(10),
     },
     friendToggleText: { flex: 1 },
     friendToggleLabel: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 2,
+      marginBottom: normalizeSpacing(2),
     },
     friendToggleHint: {
       fontSize: normalize(16),
@@ -748,8 +752,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: normalize(16),
-      padding: normalize(14),
-      marginBottom: normalize(14),
+      padding: normalizeSpacing(14),
+      marginBottom: normalizeSpacing(14),
       backgroundColor: colors.infoCardBackgroundColor,
     },
     recipientSectionTitle: {
@@ -758,39 +762,39 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: COLORS.primary,
       textTransform: "uppercase",
       letterSpacing: 0.6,
-      marginBottom: normalize(12),
+      marginBottom: normalizeSpacing(12),
     },
     textField: {
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: normalize(10),
-      paddingHorizontal: normalize(14),
-      paddingVertical: normalize(16),
+      paddingHorizontal: normalizeSpacing(14),
+      paddingVertical: normalizeSpacing(16),
       fontSize: normalize(20),
       fontFamily: getFontFamily("700"),
       color: colors.text,
       backgroundColor: colors.background,
     },
     textFieldError: { borderColor: colors.error },
-    fieldBlock: { marginBottom: normalize(18) },
+    fieldBlock: { marginBottom: normalizeSpacing(18) },
     fieldLabel: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 2,
+      marginBottom: normalizeSpacing(2),
       textTransform: "capitalize",
     },
     fieldHint: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
     },
     errorText: {
       color: colors.error,
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      marginTop: 3,
+      marginTop: normalizeSpacing(3),
     },
     amountBox: {
       flexDirection: "row",
@@ -798,7 +802,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: normalize(12),
-      paddingHorizontal: normalize(14),
+      paddingHorizontal: normalizeSpacing(14),
     },
     currencySymbol: {
       fontSize: normalize(24),
@@ -807,7 +811,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     amountInput: {
       flex: 1,
-      paddingVertical: normalize(18),
+      paddingVertical: normalizeSpacing(18),
       fontSize: normalize(24),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -820,8 +824,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: normalize(12),
-      paddingHorizontal: normalize(14),
-      paddingVertical: normalize(14),
+      paddingHorizontal: normalizeSpacing(14),
+      paddingVertical: normalizeSpacing(14),
       backgroundColor: colors.background,
     },
     lockedValue: {
@@ -834,8 +838,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
       color: "white",
       backgroundColor: colors.infoCardBackgroundColor,
-      paddingHorizontal: 10,
-      paddingVertical: 3,
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(3),
       borderRadius: 20,
     },
 
@@ -843,7 +847,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       alignItems: "center",
       gap: 12,
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
     },
     qtyButton: {
       width: 37,
@@ -864,7 +868,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 10,
-      paddingVertical: normalize(12),
+      paddingVertical: normalizeSpacing(12),
       fontSize: normalize(20),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -873,15 +877,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     breakdownCard: {
       backgroundColor: colors.infoCardBackgroundColor,
       borderRadius: 12,
-      padding: 14,
+      padding: normalizeSpacing(14),
       gap: 4,
-      marginBottom: 14,
-      marginTop: 8,
+      marginBottom: normalizeSpacing(14),
+      marginTop: normalizeSpacing(8),
     },
     breakdownRow: {
       flexDirection: "row",
       justifyContent: "space-between",
-      paddingVertical: 4,
+      paddingVertical: normalizeSpacing(4),
     },
     breakdownLabel: {
       fontSize: normalize(18),
@@ -906,8 +910,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: "#FECACA",
       borderRadius: 10,
-      padding: 12,
-      marginBottom: 12,
+      padding: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(12),
     },
     warningText: {
       color: "#DC2626",
@@ -919,11 +923,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     summaryPill: {
       backgroundColor: COLORS.primary,
       borderRadius: 10,
-      padding: 14,
+      padding: normalizeSpacing(14),
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
     },
     summaryLabel: {
       color: "#fff",
@@ -937,7 +941,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     ctaButton: {
       backgroundColor: COLORS.primary,
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: normalize(208),
       alignItems: "center",
     },

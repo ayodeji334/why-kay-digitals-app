@@ -2,7 +2,11 @@ import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import ForgotPasswordForm from "../components/forms/ForgotPasswordForm";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "../components/AppText";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
@@ -26,8 +30,8 @@ export default function ForgetPasswordScreen() {
               {
                 fontFamily: getFontFamily(400),
                 fontSize: normalize(18),
-                marginTop: 2,
-                marginLeft: 1,
+                marginTop: normalizeSpacing(2),
+                marginLeft: normalizeSpacing(1),
               },
             ]}
           >
@@ -50,10 +54,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollContainer: {
       flex: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     header: {
-      marginBottom: 10,
+      marginBottom: normalizeSpacing(10),
     },
     title: {
       fontSize: normalize(21),

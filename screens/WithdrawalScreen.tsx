@@ -15,7 +15,11 @@ import * as yup from "yup";
 import CustomLoading from "../components/CustomLoading";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import { COLORS } from "../constants/colors";
-import { normalize, getFontFamily } from "../constants/settings";
+import {
+  normalize,
+  getFontFamily,
+  normalizeSpacing,
+} from "../constants/settings";
 import BalanceLimitCard from "../components/BalanceLimitCard";
 import BankAccountSelector from "./BankAccountSelector";
 import BankAccountModal from "./BankAccountModal";
@@ -250,7 +254,7 @@ export default function WithdrawScreen() {
       style={{
         flex: 1,
         backgroundColor: colors.background,
-        paddingHorizontal: 16,
+        paddingHorizontal: normalizeSpacing(16),
       }}
     >
       <ScrollView
@@ -267,7 +271,12 @@ export default function WithdrawScreen() {
         <BalanceLimitCard walletSummary={walletSummary} />
 
         <View style={styles.amountBox}>
-          <View style={{ marginBottom: 2, marginTop: 10 }}>
+          <View
+            style={{
+              marginBottom: normalizeSpacing(2),
+              marginTop: normalizeSpacing(10),
+            }}
+          >
             <AppText style={styles.label}>Amount</AppText>
             <View
               style={[
@@ -387,7 +396,7 @@ export default function WithdrawScreen() {
         {(errors.account_number?.message || errors?.bank_code?.message) && (
           <AppText
             style={{
-              paddingVertical: 10,
+              paddingVertical: normalizeSpacing(10),
               color: colors.text,
               fontFamily: getFontFamily("800"),
               fontSize: 12,
@@ -409,8 +418,8 @@ export default function WithdrawScreen() {
           style={{
             backgroundColor: COLORS.secondary,
             borderRadius: 100,
-            paddingVertical: 14,
-            marginVertical: 30,
+            paddingVertical: normalizeSpacing(14),
+            marginVertical: normalizeSpacing(30),
             opacity: isDisabled ? 0.5 : 1,
           }}
           disabled={isDisabled}
@@ -816,8 +825,8 @@ export default function WithdrawScreen() {
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     warningContainer: {
-      marginTop: 12,
-      padding: 10,
+      marginTop: normalizeSpacing(12),
+      padding: normalizeSpacing(10),
       backgroundColor: "rgba(255, 0, 0, 0)",
       borderRadius: 6,
       borderWidth: 0.5,
@@ -830,15 +839,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     feeBreakdownContainer: {
       backgroundColor: colors.inputBackground,
       borderRadius: 12,
-      padding: 16,
+      padding: normalizeSpacing(16),
       gap: 10,
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
     },
     feeBreakdownTitle: {
       color: colors.text,
       fontFamily: getFontFamily("800"),
       fontSize: 13,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     feeRow: {
       flexDirection: "row",
@@ -865,8 +874,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     feeWarning: {
       backgroundColor: "#3a1a1a",
       borderRadius: 8,
-      padding: 10,
-      marginTop: 4,
+      padding: normalizeSpacing(10),
+      marginTop: normalizeSpacing(4),
     },
     feeWarningText: {
       color: colors.error,
@@ -879,16 +888,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("800"),
       textAlign: "left",
     },
-    amountBox: { marginTop: 24 },
+    amountBox: { marginTop: normalizeSpacing(24) },
     amountNote: {
       color: "#000",
       fontSize: normalize(16),
       fontFamily: getFontFamily("700"),
-      marginBottom: 9,
-      marginTop: 3,
+      marginBottom: normalizeSpacing(9),
+      marginTop: normalizeSpacing(3),
     },
     label: {
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -904,7 +913,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     input: {
       flex: 1,
-      paddingVertical: normalize(12),
+      paddingVertical: normalizeSpacing(12),
       fontSize: normalize(23),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -913,6 +922,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(21),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      paddingLeft: 15,
+      paddingLeft: normalizeSpacing(15),
     },
   });

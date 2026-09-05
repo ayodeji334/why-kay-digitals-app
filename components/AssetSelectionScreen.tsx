@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily } from "../constants/settings";
+import { getFontFamily, normalizeSpacing } from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import { AppText } from "./AppText";
 
@@ -131,26 +131,31 @@ export default AssetSelectionScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
-  searchContainer: { paddingHorizontal: 16 },
+  searchContainer: { paddingHorizontal: normalizeSpacing(16) },
   searchInput: {
     backgroundColor: "#fff",
-    padding: 15,
+    padding: normalizeSpacing(15),
     borderRadius: 100,
     fontSize: 16,
     fontFamily: getFontFamily("700"),
     borderColor: "#E8E8E8",
     borderWidth: 1,
   },
-  listContent: { padding: 16 },
+  listContent: { padding: normalizeSpacing(16) },
   cryptoItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 16,
+    paddingVertical: normalizeSpacing(16),
     borderBottomWidth: 1,
     borderBottomColor: "#dcdcdc",
   },
   cryptoLeft: { flexDirection: "row", alignItems: "center" },
-  assetIcon: { height: 30, width: 40, borderRadius: 20, marginRight: 10 },
+  assetIcon: {
+    height: 30,
+    width: 40,
+    borderRadius: 20,
+    marginRight: normalizeSpacing(10),
+  },
   cryptoInfo: { flexDirection: "column" },
   cryptoName: { fontSize: 10, fontFamily: getFontFamily(800) },
   cryptoSymbol: { fontSize: 14, fontFamily: getFontFamily(400), color: "#000" },

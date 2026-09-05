@@ -1,7 +1,11 @@
 import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
 import ReturningUserLoginForm from "../components/forms/ReturningUserLoginForm";
@@ -93,10 +97,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollContainer: {
       flex: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     header: {
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
     },
     title: {
       fontSize: normalize(22),

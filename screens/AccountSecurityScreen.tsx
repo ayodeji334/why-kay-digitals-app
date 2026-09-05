@@ -8,7 +8,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { ArrowRight2 } from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
@@ -61,7 +65,7 @@ export const MenuItem = ({
     >
       <View
         style={{
-          marginRight: 2,
+          marginRight: normalizeSpacing(2),
           height: 20,
           width: 20,
           borderRadius: 100,
@@ -119,7 +123,7 @@ export default function AccountSecurityScreen() {
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        <View style={{ marginTop: 20 }}>
+        <View style={{ marginTop: normalizeSpacing(20) }}>
           <MenuItem
             title="Change Password"
             subtitle="Update your login password to keep your account secure"
@@ -188,17 +192,17 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollContainer: {
       flexGrow: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     menuItem: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      paddingVertical: 13,
-      paddingHorizontal: 10,
+      paddingVertical: normalizeSpacing(13),
+      paddingHorizontal: normalizeSpacing(10),
       borderWidth: 0.5,
       borderColor: colors.border,
-      marginVertical: 5,
+      marginVertical: normalizeSpacing(5),
       borderRadius: 8,
       backgroundColor: colors.inputBackground,
       gap: 10,
@@ -215,6 +219,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(16),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      marginTop: 2,
+      marginTop: normalizeSpacing(2),
     },
   });

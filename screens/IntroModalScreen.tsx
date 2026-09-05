@@ -474,7 +474,11 @@ import {
   Platform,
   useWindowDimensions,
 } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -606,7 +610,7 @@ export default function IntroModalScreen() {
       <View style={styles.bottomNav}>
         <Pressable
           hitSlop={20}
-          style={{ paddingVertical: 4 }}
+          style={{ paddingVertical: normalizeSpacing(4) }}
           onPress={() => navigation.navigate("Welcome" as never)}
         >
           <AppText style={styles.skip}>Skip</AppText>
@@ -644,7 +648,7 @@ const makeStyles = (
       justifyContent: "center",
       alignItems: "center",
       fontFamily: getFontFamily(700),
-      paddingHorizontal: 17,
+      paddingHorizontal: normalizeSpacing(17),
       overflow: "hidden",
     },
     // imageWrapper: {
@@ -661,13 +665,13 @@ const makeStyles = (
       height: "100%",
     },
     textContainer: {
-      marginBottom: normalize(40),
-      paddingHorizontal: 17,
+      marginBottom: normalizeSpacing(40),
+      paddingHorizontal: normalizeSpacing(17),
     },
     title: {
       fontSize: normalize(26),
       textAlign: "left",
-      marginBottom: 2,
+      marginBottom: normalizeSpacing(2),
       fontFamily: getFontFamily(900),
       color: colors.text,
     },
@@ -677,7 +681,7 @@ const makeStyles = (
     },
     subtitle: {
       fontSize: normalize(20),
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
       // lineHeight: normalize(21) * 1,
       fontFamily: getFontFamily(400),
       color: colors.text,
@@ -686,15 +690,15 @@ const makeStyles = (
       flexDirection: "row",
       justifyContent: "flex-start",
       alignItems: "center",
-      marginBottom: normalize(40),
-      paddingHorizontal: 17,
+      marginBottom: normalizeSpacing(40),
+      paddingHorizontal: normalizeSpacing(17),
     },
     dot: {
       width: 15,
       height: 8,
       borderRadius: 4,
       backgroundColor: colors.border,
-      marginHorizontal: 4,
+      marginHorizontal: normalizeSpacing(4),
     },
     activeDot: {
       width: 30,
@@ -704,9 +708,9 @@ const makeStyles = (
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginVertical: 10,
-      paddingVertical: 20,
-      paddingHorizontal: 17,
+      marginVertical: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(20),
+      paddingHorizontal: normalizeSpacing(17),
     },
     skip: {
       fontSize: normalize(20),
@@ -714,8 +718,8 @@ const makeStyles = (
       color: colors.text,
     },
     nextButton: {
-      paddingHorizontal: normalize(28),
-      paddingVertical: normalize(14),
+      paddingHorizontal: normalizeSpacing(28),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 280,
       backgroundColor: colors.primary,
       justifyContent: "center",

@@ -1,6 +1,10 @@
 import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
 
@@ -69,13 +73,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       backgroundColor: colors.inputBackground,
       borderRadius: 800,
-      padding: 4,
+      padding: normalizeSpacing(4),
       // marginBottom: 20,
     },
     tab: {
       flex: 1,
-      paddingVertical: normalize(12),
-      paddingHorizontal: normalize(16),
+      paddingVertical: normalizeSpacing(9),
+      paddingHorizontal: normalizeSpacing(16),
       borderRadius: 600,
       alignItems: "center",
     },

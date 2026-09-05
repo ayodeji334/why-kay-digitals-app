@@ -116,7 +116,11 @@ import {
   // TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import NINVerificationForm from "../components/forms/NINVerificationForm";
 // import { useUser } from "../stores/authSlice";
 // import { useNavigation } from "@react-navigation/native";
@@ -182,38 +186,38 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollView: {
       flex: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
       backgroundColor: colors.background,
     },
     subtitle: {
       fontSize: normalize(18),
       color: colors.text,
       fontFamily: getFontFamily(400),
-      paddingBottom: 20,
+      paddingBottom: normalizeSpacing(20),
     },
     formSection: {
-      marginBottom: 32,
+      marginBottom: normalizeSpacing(32),
     },
     infoSection: {
       backgroundColor: colors.surface,
       borderRadius: 12,
-      paddingVertical: 20,
-      paddingHorizontal: 16,
-      marginBottom: 20,
+      paddingVertical: normalizeSpacing(20),
+      paddingHorizontal: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(20),
     },
     bulletText: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
       // lineHeight: 20,
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
     },
     editButton: {
       backgroundColor: colors.primary,
-      paddingVertical: 12,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 80,
       alignItems: "center",
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
     },
     editButtonText: {
       color: "#FFF",

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CustomIcon from "./CustomIcon";
 import { WalletIcon } from "../assets";
@@ -80,8 +84,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     centerContainer: {
       alignItems: "center",
-      paddingVertical: 20,
-      paddingHorizontal: 18,
+      paddingVertical: normalizeSpacing(20),
+      paddingHorizontal: normalizeSpacing(18),
       minHeight: "100%",
       justifyContent: "space-between",
       gap: 10,
@@ -92,14 +96,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily(400),
       fontSize: 14,
       color: "#B00020",
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
       maxWidth: 260,
       // lineHeight: 18,
     },
     section: {
       alignItems: "center",
-      paddingTop: 20,
-      paddingHorizontal: 18,
+      paddingTop: normalizeSpacing(20),
+      paddingHorizontal: normalizeSpacing(18),
     },
     walletCircle: {
       width: 70,
@@ -108,38 +112,38 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: "#D9D9D91A",
       justifyContent: "center",
       alignItems: "center",
-      marginBottom: 30,
+      marginBottom: normalizeSpacing(30),
     },
     noWalletTitle: {
       color: colors.text,
       fontFamily: getFontFamily(800),
       fontSize: normalize(22),
-      marginBottom: 10,
+      marginBottom: normalizeSpacing(10),
     },
     noWalletText: {
       textAlign: "center",
       fontFamily: getFontFamily(400),
       fontSize: normalize(18),
       color: colors.text,
-      marginBottom: 30,
+      marginBottom: normalizeSpacing(30),
       maxWidth: 290,
     },
     label: {
       color: colors.text,
       fontFamily: getFontFamily(900),
       fontSize: normalize(19),
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
     },
     chainButton: {
-      paddingVertical: 8,
-      paddingHorizontal: 14,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(14),
       borderRadius: 20,
       borderWidth: 1,
     },
     generateButton: {
       width: "100%",
       minWidth: "100%",
-      paddingVertical: normalize(16),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 30,
       backgroundColor: COLORS.primary,
       alignItems: "center",
@@ -150,7 +154,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
     },
     noteText: {
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
       color: colors.textMuted,
       fontFamily: getFontFamily(400),
       fontSize: normalize(16),

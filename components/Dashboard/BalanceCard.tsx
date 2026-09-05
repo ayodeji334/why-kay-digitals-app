@@ -262,7 +262,11 @@ import {
   ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import HalfScreenModal from "../HalfScreenModal";
 import { COLORS } from "../../constants/colors";
 import { formatAmount } from "../../libs/formatNumber";
@@ -463,8 +467,8 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
 const styles = StyleSheet.create({
   balanceCard: {
     borderRadius: 20,
-    padding: 20,
-    marginBottom: 20,
+    padding: normalizeSpacing(20),
+    marginBottom: normalizeSpacing(20),
     overflow: "hidden",
     gap: 25,
     backgroundColor: COLORS.primary,
@@ -487,7 +491,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: normalize(17),
     fontFamily: getFontFamily(700),
-    marginRight: 4,
+    marginRight: normalizeSpacing(4),
   },
   balanceAmount: {
     flexDirection: "row",
@@ -501,11 +505,11 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily(800),
   },
   eyeIcon: {
-    marginLeft: 0,
+    marginLeft: normalizeSpacing(0),
     borderWidth: 1,
     borderColor: "#fff",
     borderRadius: 25,
-    padding: 5,
+    padding: normalizeSpacing(5),
   },
   actionButtons: {
     flexDirection: "row",
@@ -519,7 +523,7 @@ const styles = StyleSheet.create({
     borderColor: "white",
     borderWidth: 1,
     borderRadius: 250,
-    paddingVertical: normalize(12),
+    paddingVertical: normalizeSpacing(10),
     gap: 8,
   },
   depositText: {
@@ -534,7 +538,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#fff",
     borderRadius: 25,
-    paddingVertical: normalize(12),
+    paddingVertical: normalizeSpacing(10),
     gap: 8,
   },
   withdrawText: {

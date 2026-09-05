@@ -13,7 +13,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useMutation } from "@tanstack/react-query";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { showError, showSuccess } from "../utlis/toast";
@@ -168,10 +172,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     submitBtn: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
       alignItems: "center",
-      marginBottom: 24,
+      marginBottom: normalizeSpacing(24),
     },
     upgradeButtonText: {
       color: "white",
@@ -186,17 +190,17 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flex: 1,
     },
     scrollContent: {
-      paddingHorizontal: 20,
-      paddingBottom: 8,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingBottom: normalizeSpacing(8),
       flexGrow: 1,
     },
     header: {
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
     },
     title: {
       fontSize: normalize(20),
       color: colors.text,
-      marginBottom: 3,
+      marginBottom: normalizeSpacing(3),
       fontFamily: getFontFamily("800"),
     },
     subtitle: {
@@ -207,7 +211,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     form: {
       gap: 20,
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
     },
     fieldWrapper: {
       gap: 6,
@@ -215,14 +219,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     label: {
       fontSize: normalize(18),
       color: colors.text,
-      marginBottom: 2,
+      marginBottom: normalizeSpacing(2),
       fontFamily: getFontFamily("800"),
     },
     textarea: {
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 10,
-      padding: 14,
+      padding: normalizeSpacing(14),
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),
       color: colors.text,
@@ -237,7 +241,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginTop: 4,
+      marginTop: normalizeSpacing(4),
     },
     errorText: {
       fontSize: normalize(17),
@@ -254,7 +258,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "#545454",
     },
     footer: {
-      padding: 20,
+      padding: normalizeSpacing(20),
       paddingBottom: Platform.OS === "ios" ? 8 : 20,
     },
     //   submitBtn: {

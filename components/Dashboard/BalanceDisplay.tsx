@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import { Eye, EyeSlash } from "iconsax-react-nativejs";
 import { AppText } from "../AppText";
 
@@ -44,7 +48,7 @@ const styles = StyleSheet.create({
   balanceAmount: {
     flexDirection: "row",
     alignItems: "center",
-    paddingRight: 10,
+    paddingRight: normalizeSpacing(10),
     borderRadius: 8,
     gap: 20,
   },
@@ -52,7 +56,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(13),
     fontFamily: getFontFamily("700"),
     color: "#fff",
-    marginRight: 4,
+    marginRight: normalizeSpacing(4),
   },
   amount: {
     fontSize: normalize(13),
@@ -60,6 +64,6 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   eyeIcon: {
-    paddingHorizontal: 6,
+    paddingHorizontal: normalizeSpacing(6),
   },
 });

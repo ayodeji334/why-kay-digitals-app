@@ -18,7 +18,11 @@ import {
 import CustomIcon from "../CustomIcon";
 import { formatAmount } from "../../libs/formatNumber";
 import { useNavigation } from "@react-navigation/native";
-import { normalize, getFontFamily } from "../../constants/settings";
+import {
+  normalize,
+  getFontFamily,
+  normalizeSpacing,
+} from "../../constants/settings";
 import { Add, Refresh2 } from "iconsax-react-nativejs";
 import useAxios from "../../hooks/useAxios";
 import CustomModal from "../CustomModal";
@@ -247,7 +251,7 @@ const CryptoWalletSection = () => {
             </View>
           )
         }
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: normalizeSpacing(40) }}
       />
 
       <CustomModal
@@ -622,15 +626,18 @@ export default CryptoWalletSection;
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
-    container: { backgroundColor: colors.background, paddingBottom: 50 },
-    scrollContainer: { flex: 1, paddingBottom: 20 },
+    container: {
+      backgroundColor: colors.background,
+      paddingBottom: normalizeSpacing(50),
+    },
+    scrollContainer: { flex: 1, paddingBottom: normalizeSpacing(20) },
     tabContainer: {
       flexDirection: "row",
       justifyContent: "center",
       backgroundColor: "#F5F5F5",
       borderRadius: 12,
-      marginHorizontal: 20,
-      marginTop: 20,
+      marginHorizontal: normalizeSpacing(20),
+      marginTop: normalizeSpacing(20),
     },
     modalContainer: {
       flex: 1,
@@ -641,15 +648,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      marginTop: 26,
-      marginBottom: 16,
+      marginTop: normalizeSpacing(26),
+      marginBottom: normalizeSpacing(16),
     },
     separator: {
       height: 1,
       backgroundColor: colors.border,
     },
     emptyModalState: {
-      padding: 20,
+      padding: normalizeSpacing(20),
       alignItems: "center",
       justifyContent: "center",
     },
@@ -657,16 +664,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       width: "85%",
       backgroundColor: "#fff",
       borderRadius: 12,
-      padding: 20,
+      padding: normalizeSpacing(20),
     },
     modalTitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
       color: "#000",
     },
     assetOption: {
-      paddingVertical: 12,
+      paddingVertical: normalizeSpacing(12),
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
       flexDirection: "column",
@@ -685,7 +692,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     tabButton: {
       flex: 1,
-      paddingVertical: 12,
+      paddingVertical: normalizeSpacing(14),
       alignItems: "center",
     },
     tabText: {
@@ -703,26 +710,26 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     actionsContainer: {
       flexDirection: "row",
       flexWrap: "wrap",
-      marginTop: 7,
+      marginTop: normalizeSpacing(7),
       justifyContent: "space-between",
     },
     actionCard: {
       flex: 1,
       backgroundColor: "#F8F9FA",
-      paddingVertical: 10,
-      marginHorizontal: 5,
+      paddingVertical: normalizeSpacing(10),
+      marginHorizontal: normalizeSpacing(5),
       borderRadius: 10,
       alignItems: "center",
       borderWidth: 1,
       borderColor: "#F3F4F6",
     },
-    actionIcon: { marginBottom: 10 },
+    actionIcon: { marginBottom: normalizeSpacing(10) },
     actionTitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: "#000",
     },
-    assetsSection: { paddingVertical: 30 },
+    assetsSection: { paddingVertical: normalizeSpacing(30) },
     sectionTitle: {
       fontSize: normalize(22),
       fontFamily: getFontFamily("800"),
@@ -735,8 +742,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       overflow: "hidden",
     },
     generateButton: {
-      paddingVertical: 6,
-      paddingHorizontal: normalize(19),
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(19),
       borderRadius: 30,
       borderColor: colors.border,
       borderWidth: 1.5,
@@ -753,7 +760,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingVertical: normalize(14),
+      paddingVertical: normalizeSpacing(14),
       borderBottomWidth: 0.5,
       borderColor: colors.border,
     },
@@ -765,7 +772,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background,
       justifyContent: "center",
       alignItems: "center",
-      marginRight: 10,
+      marginRight: normalizeSpacing(10),
     },
     assetInfo: { flex: 1 },
     assetName: {
@@ -784,7 +791,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("800"),
       color: colors.text,
     },
-    emptyState: { alignItems: "center", paddingVertical: 40 },
+    emptyState: { alignItems: "center", paddingVertical: normalizeSpacing(40) },
     emptyStateText: {
       fontSize: normalize(20),
       fontFamily: getFontFamily("800"),
@@ -799,8 +806,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     emptyButton: {
       width: "100%",
-      paddingVertical: 10,
-      paddingHorizontal: 20,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(20),
       borderRadius: 160,
       alignItems: "center",
       justifyContent: "center",
@@ -818,7 +825,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     txItem: {
       flexDirection: "row",
       justifyContent: "space-between",
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderBottomWidth: 0.5,
       borderBottomColor: colors.border,
     },

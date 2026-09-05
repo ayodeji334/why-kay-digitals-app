@@ -13,7 +13,11 @@ import { useNavigation } from "@react-navigation/native";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { formatDate } from "../libs/formatDate";
 import { COLORS } from "../constants/colors";
-import { normalize, getFontFamily } from "../constants/settings";
+import {
+  normalize,
+  getFontFamily,
+  normalizeSpacing,
+} from "../constants/settings";
 import { EmptyTransactionState } from "../screens/TransactionHistory";
 import { AppText } from "./AppText";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
@@ -150,7 +154,7 @@ const TransactionSectionList: React.FC<TransactionSectionListProps> = ({
 
   const renderFooter = () =>
     isFetchingMore ? (
-      <View style={{ paddingVertical: 20 }}>
+      <View style={{ paddingVertical: normalizeSpacing(20) }}>
         <ActivityIndicator size="small" color={COLORS.primary} />
       </View>
     ) : null;
@@ -172,7 +176,7 @@ const TransactionSectionList: React.FC<TransactionSectionListProps> = ({
         <AppText style={styles.sectionHeader}>{title}</AppText>
       )}
       ListEmptyComponent={
-        <View style={{ paddingVertical: 40 }}>
+        <View style={{ paddingVertical: normalizeSpacing(40) }}>
           <EmptyTransactionState />
         </View>
       }
@@ -201,28 +205,28 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      paddingBottom: 30,
+      paddingBottom: normalizeSpacing(30),
     },
     sectionHeader: {
-      paddingHorizontal: 0,
-      paddingVertical: 4,
+      paddingHorizontal: normalizeSpacing(0),
+      paddingVertical: normalizeSpacing(4),
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       color: colors.textMuted,
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
       backgroundColor: colors.background,
     },
     sectionTitle: {
       fontSize: normalize(22),
       fontFamily: getFontFamily("800"),
       color: "#000",
-      marginVertical: 16,
+      marginVertical: normalizeSpacing(16),
     },
     transactionItem: {
       flexDirection: "row",
       alignItems: "center",
-      paddingHorizontal: 0,
-      paddingVertical: 10,
+      paddingHorizontal: normalizeSpacing(0),
+      paddingVertical: normalizeSpacing(10),
       borderBottomWidth: 0.5,
       borderBottomColor: colors.border,
     },

@@ -828,7 +828,11 @@ import { useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { SelectInput } from "../components/SelectInputField";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -906,11 +910,11 @@ const MeterValidationStatus = memo(
 
     return (
       <View style={styles.detailsContainer}>
-        <View style={{ paddingVertical: 5 }}>
+        <View style={{ paddingVertical: normalizeSpacing(5) }}>
           <AppText style={styles.detailsLabel}>Name</AppText>
           <AppText style={styles.detailsValue}>{userDetail.name}</AppText>
         </View>
-        <View style={{ paddingVertical: 5 }}>
+        <View style={{ paddingVertical: normalizeSpacing(5) }}>
           <AppText style={styles.detailsLabel}>Address</AppText>
           <AppText style={styles.detailsValue}>{userDetail.address}</AppText>
         </View>
@@ -1325,7 +1329,7 @@ export default function PayElectricityBillsScreen() {
         />
 
         {/* Saved beneficiaries */}
-        <View style={{ marginBottom: 10 }}>
+        <View style={{ marginBottom: normalizeSpacing(10) }}>
           <SavedBeneficiaries
             onRefetch={refetchBeneficiaries}
             data={beneficiaries ?? []}
@@ -1341,7 +1345,7 @@ export default function PayElectricityBillsScreen() {
         </View>
 
         {/* Meter number */}
-        <View style={{ marginTop: -10 }}>
+        <View style={{ marginTop: normalizeSpacing(-10) }}>
           <NumberInputField
             placeholder="Enter Meter Number"
             label="Meter Number"
@@ -1366,7 +1370,12 @@ export default function PayElectricityBillsScreen() {
         />
 
         {/* Amount */}
-        <View style={{ marginBottom: 2, marginTop: 10 }}>
+        <View
+          style={{
+            marginBottom: normalizeSpacing(2),
+            marginTop: normalizeSpacing(10),
+          }}
+        >
           <AppText style={styles.label}>Amount</AppText>
           <View style={styles.inputContainer}>
             <AppText style={styles.dollarSign}>₦</AppText>
@@ -1438,9 +1447,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     scrollView: { flexGrow: 1 },
-    content: { paddingHorizontal: 16, paddingVertical: 20 },
+    content: {
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(20),
+    },
     label: {
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -1448,7 +1460,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     errorText: {
       color: colors.error,
       fontSize: normalize(14),
-      marginTop: 4,
+      marginTop: normalizeSpacing(4),
       fontFamily: getFontFamily("600"),
     },
     inputContainer: {
@@ -1462,7 +1474,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     input: {
       flex: 1,
-      paddingVertical: normalize(14),
+      paddingVertical: normalizeSpacing(14),
       fontSize: normalize(26),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -1471,13 +1483,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(22),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      paddingLeft: 15,
+      paddingLeft: normalizeSpacing(15),
     },
     paymentTypeContainer: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginTop: 16,
-      marginBottom: 20,
+      marginTop: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(20),
       gap: 12,
     },
     paymentTypeButton: {
@@ -1485,8 +1497,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingVertical: normalize(17),
-      paddingHorizontal: normalize(17),
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(17),
       borderWidth: 1,
       borderRadius: 10,
       borderColor: colors.border,
@@ -1522,9 +1534,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
     },
     detailsContainer: {
-      marginVertical: 10,
-      paddingHorizontal: 17,
-      paddingVertical: 10,
+      marginVertical: normalizeSpacing(10),
+      paddingHorizontal: normalizeSpacing(17),
+      paddingVertical: normalizeSpacing(10),
       backgroundColor: colors.infoCardBackgroundColor,
       borderRadius: 8,
       borderWidth: 1,
@@ -1534,22 +1546,22 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       gap: 5,
     },
     balanceCard: {
-      paddingHorizontal: normalize(10),
-      paddingVertical: normalize(9),
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(9),
     },
     balanceLabel: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: "#000000",
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     balanceValue: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("900"),
     },
     warningContainer: {
-      marginVertical: 12,
-      padding: 10,
+      marginVertical: normalizeSpacing(12),
+      padding: normalizeSpacing(10),
       backgroundColor: "rgba(255, 0, 0, 0.03)",
       borderRadius: 6,
       borderWidth: 1,
@@ -1573,9 +1585,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     button: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 100,
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
       justifyContent: "center",
       alignContent: "center",
     },

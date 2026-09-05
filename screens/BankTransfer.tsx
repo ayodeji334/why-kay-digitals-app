@@ -483,7 +483,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { showSuccess, showError } from "../utlis/toast";
 import Clipboard from "@react-native-clipboard/clipboard";
 import InfoCard from "../components/InfoCard";
@@ -700,12 +704,15 @@ const BankTransferScreen = () => {
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
-    buttonWrapper: { marginTop: 10, paddingBottom: 20 },
+    buttonWrapper: {
+      marginTop: normalizeSpacing(10),
+      paddingBottom: normalizeSpacing(20),
+    },
     button: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 100,
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
       justifyContent: "center",
       alignContent: "center",
     },
@@ -715,14 +722,18 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       textAlign: "center",
     },
-    scrollView: { flex: 1, paddingHorizontal: 20 },
+    scrollView: { flex: 1, paddingHorizontal: normalizeSpacing(20) },
     emptyContainer: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      paddingHorizontal: 30,
+      paddingHorizontal: normalizeSpacing(30),
     },
-    emptyState: { alignItems: "center", paddingVertical: 0, marginTop: -150 },
+    emptyState: {
+      alignItems: "center",
+      paddingVertical: normalizeSpacing(0),
+      marginTop: normalizeSpacing(-150),
+    },
     emptyIcon: {
       width: 40,
       height: 40,
@@ -730,13 +741,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: "#F8F9FA",
       justifyContent: "center",
       alignItems: "center",
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
     },
     emptyTitle: {
       fontSize: normalize(20),
       fontFamily: getFontFamily("900"),
       color: colors.text,
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
       textAlign: "center",
     },
     emptyDescription: {
@@ -744,13 +755,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.text,
       textAlign: "center",
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
       // lineHeight: 16,
     },
     emptyButton: {
       backgroundColor: COLORS.primary,
-      paddingHorizontal: 44,
-      paddingVertical: 10,
+      paddingHorizontal: normalizeSpacing(44),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 800,
       width: "100%",
     },
@@ -759,12 +770,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(19),
       fontFamily: getFontFamily("700"),
     },
-    section: { marginBottom: 16 },
+    section: { marginBottom: normalizeSpacing(16) },
     sectionTitle: {
       fontSize: normalize(19),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
       // lineHeight: 22,
     },
     instructionText: {
@@ -775,19 +786,19 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     accountSection: {
       backgroundColor: colors.infoCardBackgroundColor,
       borderRadius: 12,
-      marginVertical: 24,
+      marginVertical: normalizeSpacing(24),
       borderWidth: 0.5,
       borderColor: colors.border,
       overflow: "hidden",
     },
     detailItem: {
-      paddingVertical: 12,
-      paddingHorizontal: 15,
+      paddingVertical: normalizeSpacing(12),
+      paddingHorizontal: normalizeSpacing(15),
       borderWidth: 0.5,
       borderColor: colors.border,
     },
     detailLabel: {
-      marginBottom: 2,
+      marginBottom: normalizeSpacing(2),
       fontSize: normalize(16),
       fontFamily: getFontFamily("700"),
       color: colors.text,
@@ -795,7 +806,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     copyableField: {
       flexDirection: "row",
       alignItems: "center",
-      paddingVertical: 4,
+      paddingVertical: normalizeSpacing(4),
       gap: 10,
     },
     rowIconButton: {

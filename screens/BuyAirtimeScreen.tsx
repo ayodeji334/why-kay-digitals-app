@@ -604,7 +604,11 @@ import {
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CustomLoading from "../components/CustomLoading";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -818,7 +822,7 @@ export default function BuyAirtimeScreen() {
           </AppText>
         )}
 
-        <View style={{ marginBottom: 10 }}>
+        <View style={{ marginBottom: normalizeSpacing(10) }}>
           <SavedBeneficiaries
             onRefetch={refetch}
             data={data ?? []}
@@ -836,7 +840,7 @@ export default function BuyAirtimeScreen() {
           />
         </View>
 
-        <View style={{ marginBottom: 20 }}>
+        <View style={{ marginBottom: normalizeSpacing(20) }}>
           <AppText style={styles.subHeader}>Select Network Provider</AppText>
           <View style={styles.networkRow}>
             {networks.map((item, index) => (
@@ -876,14 +880,19 @@ export default function BuyAirtimeScreen() {
         </View>
 
         <View style={styles.amountSection}>
-          <View style={{ marginBottom: 2, marginTop: -6 }}>
+          <View
+            style={{
+              marginBottom: normalizeSpacing(2),
+              marginTop: normalizeSpacing(-6),
+            }}
+          >
             <AppText style={styles.label}>Amount</AppText>
             <TextInput
               style={[
                 styles.input,
                 {
                   fontFamily: getFontFamily("800"),
-                  paddingVertical: normalize(14),
+                  paddingVertical: normalizeSpacing(14),
                   fontSize: normalize(26),
                 },
               ]}
@@ -989,26 +998,26 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background,
     },
     content: {
-      paddingHorizontal: 16,
-      paddingVertical: 10,
-      paddingBottom: 20,
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(10),
+      paddingBottom: normalizeSpacing(20),
     },
     header: {
       fontSize: normalize(24),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      marginBottom: 24,
+      marginBottom: normalizeSpacing(24),
       textAlign: "center",
     },
     balanceCard: {
-      paddingHorizontal: normalize(10),
-      paddingVertical: normalize(9),
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(9),
     },
     balanceLabel: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     balanceValue: {
       fontSize: normalize(18),
@@ -1018,16 +1027,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     subHeader: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
       color: colors.text,
     },
     networkRow: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
     networkButton: {
-      padding: 8,
+      padding: normalizeSpacing(8),
       borderWidth: 1,
       borderColor: colors.border,
       backgroundColor: "white",
@@ -1063,17 +1072,17 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       resizeMode: "cover",
     },
     amountSection: {
-      marginBottom: 24,
+      marginBottom: normalizeSpacing(24),
     },
     label: {
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
     },
     input: {
-      paddingVertical: normalize(18),
-      paddingHorizontal: normalize(18),
+      paddingVertical: normalizeSpacing(18),
+      paddingHorizontal: normalizeSpacing(18),
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.text,
@@ -1087,15 +1096,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 12,
-      paddingHorizontal: 16,
-      marginBottom: 8,
+      paddingHorizontal: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(8),
       height: 56,
     },
     currencySymbol: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       color: "#000",
-      marginRight: 8,
+      marginRight: normalizeSpacing(8),
     },
     amountInputWrapper: {
       flex: 1,
@@ -1104,14 +1113,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       flexWrap: "wrap",
       gap: 12,
-      marginTop: 16,
+      marginTop: normalizeSpacing(16),
     },
     quickAmountItem: {
       width: "31%",
     },
     quickAmountButton: {
-      paddingHorizontal: normalize(10),
-      paddingVertical: normalize(14),
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(14),
       borderWidth: 1,
       borderColor: colors.border,
       backgroundColor: colors.inputBackground,
@@ -1137,7 +1146,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     beneficiaryContainer: {
       flexDirection: "row",
       alignItems: "center",
-      marginBottom: 24,
+      marginBottom: normalizeSpacing(24),
     },
     checkbox: {
       width: 20,
@@ -1145,7 +1154,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: "#D1D5DB",
       borderRadius: 4,
-      marginRight: 12,
+      marginRight: normalizeSpacing(12),
       alignItems: "center",
       justifyContent: "center",
     },
@@ -1164,11 +1173,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
     },
     buttonWrapper: {
-      marginTop: 8,
+      marginTop: normalizeSpacing(8),
     },
     button: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 40,
       justifyContent: "center",
       alignContent: "center",
@@ -1184,14 +1193,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     errorText: {
       color: colors.error,
-      marginTop: 6,
+      marginTop: normalizeSpacing(6),
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      marginLeft: 4,
+      marginLeft: normalizeSpacing(4),
     },
     warningContainer: {
-      marginVertical: 12,
-      padding: 10,
+      marginVertical: normalizeSpacing(12),
+      padding: normalizeSpacing(10),
       backgroundColor: "rgba(255, 0, 0, 0.03)",
       borderRadius: 6,
       borderWidth: 1,

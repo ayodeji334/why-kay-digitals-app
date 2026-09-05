@@ -8,7 +8,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BVNForm from "../components/forms/BVNVerificationForm";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 // import { useUser } from "../stores/authSlice";
 import { COLORS } from "../constants/colors";
 import { AppText } from "../components/AppText";
@@ -71,38 +75,38 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollView: {
       flexGrow: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
       backgroundColor: colors.background,
     },
     subtitle: {
       fontSize: normalize(18),
       color: colors.text,
       fontFamily: getFontFamily(700),
-      paddingVertical: 20,
+      paddingVertical: normalizeSpacing(20),
     },
     formSection: {
-      marginBottom: 32,
+      marginBottom: normalizeSpacing(32),
     },
     infoSection: {
       backgroundColor: "#fff",
       borderRadius: 12,
-      paddingVertical: 20,
-      paddingHorizontal: 16,
-      marginBottom: 20,
+      paddingVertical: normalizeSpacing(20),
+      paddingHorizontal: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(20),
     },
     bulletText: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: "#666",
       // lineHeight: 20,
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
     },
     editButton: {
       backgroundColor: COLORS.primary,
-      paddingVertical: 12,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 80,
       alignItems: "center",
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
     },
     editButtonText: {
       color: "#FFF",

@@ -8,7 +8,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import {
   CommonActions,
   useNavigation,
@@ -153,7 +157,7 @@ export default function ConfirmTransactionScreen() {
 
         <View
           style={{
-            paddingTop: 20,
+            paddingTop: normalizeSpacing(20),
             flexDirection: "row",
             justifyContent: "center",
           }}
@@ -175,7 +179,7 @@ export default function ConfirmTransactionScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={{ marginTop: 40 }}
+          style={{ marginTop: normalizeSpacing(40) }}
           onPress={() => navigation.navigate("ChangeTransactionPin")}
         >
           <AppText style={[styles.buttonText, { color: COLORS.primary }]}>
@@ -196,9 +200,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background,
     },
     button: {
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
       backgroundColor: COLORS.secondary,
-      padding: 14,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(14),
       borderRadius: 80,
     },
     buttonText: {
@@ -209,10 +214,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollContainer: {
       flex: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     header: {
-      marginBottom: 23,
+      marginBottom: normalizeSpacing(23),
     },
     title: {
       fontSize: normalize(19),

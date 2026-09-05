@@ -12,7 +12,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { InfoCircle } from "iconsax-react-nativejs";
 import InfoCard from "../components/InfoCard";
 import { formatAmount } from "../libs/formatNumber";
@@ -181,30 +185,33 @@ const DepositScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
-  scrollContent: { paddingHorizontal: 20, paddingVertical: 10 },
+  scrollContent: {
+    paddingHorizontal: normalizeSpacing(20),
+    paddingVertical: normalizeSpacing(10),
+  },
   scrollCentered: {
     flexGrow: 1,
     justifyContent: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: normalizeSpacing(20),
   },
-  section: { marginTop: 0 },
+  section: { marginTop: normalizeSpacing(0) },
   sectionTitle: {
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#000",
-    marginBottom: 16,
+    marginBottom: normalizeSpacing(16),
   },
   errorText: {
     color: "red",
-    paddingVertical: 10,
+    paddingVertical: normalizeSpacing(10),
     fontSize: normalize(10),
   },
   amountInput: {
     borderWidth: 1,
     borderColor: "#E0E0E0",
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 18,
+    paddingHorizontal: normalizeSpacing(16),
+    paddingVertical: normalizeSpacing(18),
     fontSize: normalize(16),
     color: "#000",
     backgroundColor: "#F8F9FA",
@@ -217,16 +224,16 @@ const styles = StyleSheet.create({
     fontSize: normalize(28),
     fontFamily: getFontFamily("700"),
     color: COLORS.primary,
-    marginVertical: 20,
+    marginVertical: normalizeSpacing(20),
     textAlign: "center",
   },
-  progressContainer: { marginTop: 12 },
+  progressContainer: { marginTop: normalizeSpacing(12) },
   progressBar: {
     height: 6,
     backgroundColor: "#E5E7EB",
     borderRadius: 3,
     overflow: "hidden",
-    marginBottom: 8,
+    marginBottom: normalizeSpacing(8),
   },
   progressFill: { height: "100%", borderRadius: 3 },
   progressText: {
@@ -236,13 +243,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   bottomButtonWrapper: {
-    paddingHorizontal: 20,
-    paddingBottom: 30,
+    paddingHorizontal: normalizeSpacing(20),
+    paddingBottom: normalizeSpacing(30),
     backgroundColor: "#fff",
   },
   continueButton: {
     backgroundColor: COLORS.secondary,
-    paddingVertical: 16,
+    paddingVertical: normalizeSpacing(14),
     borderRadius: 89,
     alignItems: "center",
   },
@@ -255,7 +262,7 @@ const styles = StyleSheet.create({
   emptyState: {
     backgroundColor: "#EFF7EC",
     borderRadius: 12,
-    padding: 24,
+    padding: normalizeSpacing(24),
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#e9ecef",
@@ -265,7 +272,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(20),
     fontFamily: getFontFamily("800"),
     color: "#000",
-    marginBottom: 8,
+    marginBottom: normalizeSpacing(8),
     textAlign: "center",
   },
   emptyDescription: {
@@ -273,13 +280,13 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("400"),
     color: "#666",
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: normalizeSpacing(16),
     // lineHeight: 16,
   },
   emptyButton: {
     backgroundColor: COLORS.secondary,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: normalizeSpacing(20),
+    paddingVertical: normalizeSpacing(14),
     borderRadius: 110,
   },
   emptyButtonText: {

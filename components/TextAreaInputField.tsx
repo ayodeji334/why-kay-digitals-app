@@ -8,7 +8,12 @@ import {
 } from "react-native";
 import { Controller, Control, FieldValues } from "react-hook-form";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize, width } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  width,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
 
@@ -31,7 +36,7 @@ const TextAreaInput = ({
   const styles = makeStyles(colors);
 
   return (
-    <View style={{ marginVertical: 8 }}>
+    <View style={{ marginVertical: normalizeSpacing(8) }}>
       {label && <AppText style={styles.label}>{label}</AppText>}
       <Controller
         control={control}
@@ -70,14 +75,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     label: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("800"),
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
       color: colors.background,
     },
     textArea: {
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      padding: normalize(16),
+      padding: normalizeSpacing(16),
       fontSize: width * 0.032,
       backgroundColor: colors.inputBackground,
       minHeight: 120,
@@ -89,7 +94,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     errorText: {
       color: COLORS.error,
       fontSize: width * 0.028,
-      marginTop: 4,
+      marginTop: normalizeSpacing(4),
     },
   });
 

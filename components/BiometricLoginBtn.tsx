@@ -8,7 +8,11 @@ import {
 } from "react-native";
 import { FingerScan, Scan } from "iconsax-react-nativejs";
 import { useQueryClient } from "@tanstack/react-query";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "./AppText";
 import { useBiometricLogin } from "../hooks/useBiometricLogin";
 import { useAuthStore } from "../stores/authSlice";
@@ -140,7 +144,7 @@ export default BiometricLoginButton;
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     wrapper: {
-      marginBottom: 40,
+      marginBottom: normalizeSpacing(40),
       gap: 14,
     },
     dividerRow: {
@@ -163,7 +167,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       justifyContent: "center",
       alignItems: "center",
       gap: 8,
-      paddingVertical: normalize(16),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 30,
       borderWidth: 1,
       borderColor: colors.primary,

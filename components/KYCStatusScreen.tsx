@@ -1,7 +1,11 @@
 import React, { useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { normalize, getFontFamily } from "../constants/settings";
+import {
+  normalize,
+  getFontFamily,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { ShieldSearch, User } from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
@@ -23,7 +27,7 @@ export default function KYCStatusScreen() {
         style={{
           flex: 1,
           justifyContent: "space-between",
-          padding: 20,
+          padding: normalizeSpacing(20),
         }}
       >
         <View style={{ columnGap: 10, width: "100%" }}>
@@ -127,15 +131,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingHorizontal: normalizeSpacing(20),
+    paddingVertical: normalizeSpacing(30),
     alignItems: "center",
     justifyContent: "space-between",
     flex: 1,
   },
   headerSection: {
     alignItems: "center",
-    marginBottom: 22,
+    marginBottom: normalizeSpacing(22),
   },
   iconCircle: {
     width: 55,
@@ -144,13 +148,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#E8F0FE",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: normalizeSpacing(24),
   },
   emptyTitle: {
     fontSize: normalize(20),
     fontFamily: getFontFamily("800"),
     color: "#111827",
-    marginBottom: 0,
+    marginBottom: normalizeSpacing(0),
     textAlign: "center",
   },
   emptyDescription: {
@@ -159,14 +163,14 @@ const styles = StyleSheet.create({
     color: "#2e2f30ff",
     textAlign: "center",
     // lineHeight: 22,
-    paddingHorizontal: 10,
+    paddingHorizontal: normalizeSpacing(10),
   },
   requirementsCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 20,
-    padding: 20,
+    padding: normalizeSpacing(20),
     width: "100%",
-    marginBottom: 20,
+    marginBottom: normalizeSpacing(20),
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -177,7 +181,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(19),
     fontFamily: getFontFamily("800"),
     color: "#111827",
-    marginBottom: 20,
+    marginBottom: normalizeSpacing(20),
   },
   requirementRow: {
     flexDirection: "row",
@@ -189,7 +193,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 10,
+    marginRight: normalizeSpacing(10),
     backgroundColor: "#f6f6f6ff",
   },
   itemHeader: {
@@ -207,15 +211,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FEF3C7",
     borderRadius: 16,
-    padding: 16,
+    padding: normalizeSpacing(16),
     width: "100%",
-    marginBottom: 30,
+    marginBottom: normalizeSpacing(30),
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 4,
+    marginBottom: normalizeSpacing(4),
   },
   infoTextBold: {
     fontSize: normalize(20),
@@ -231,11 +235,11 @@ const styles = StyleSheet.create({
   buttonGroup: {
     width: "100%",
     gap: 12,
-    paddingBottom: 20,
+    paddingBottom: normalizeSpacing(20),
   },
   emptyButton: {
     width: "100%",
-    paddingVertical: 15,
+    paddingVertical: normalizeSpacing(14),
     borderRadius: 160,
     alignItems: "center",
     justifyContent: "center",
@@ -252,7 +256,7 @@ const styles = StyleSheet.create({
   },
   laterButton: {
     width: "100%",
-    paddingVertical: 15,
+    paddingVertical: normalizeSpacing(14),
     borderRadius: 160,
     alignItems: "center",
     borderWidth: 1,
@@ -262,7 +266,7 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("700"),
   },
   footerText: {
-    marginTop: 24,
+    marginTop: normalizeSpacing(24),
     fontSize: normalize(12),
     fontFamily: getFontFamily("400"),
     color: "#9CA3AF",

@@ -1,7 +1,11 @@
 import React, { Dispatch, SetStateAction } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
-import { normalize, getFontFamily } from "../constants/settings";
+import {
+  normalize,
+  getFontFamily,
+  normalizeSpacing,
+} from "../constants/settings";
 import CustomIcon from "../components/CustomIcon";
 import { CheckCircleIcon } from "../assets";
 import { AddCircle } from "iconsax-react-nativejs";
@@ -43,7 +47,7 @@ export default function BankAccountSelector({
                 <AppText style={styles.accountNumber}>{bankName}</AppText>
                 <AppText
                   style={{
-                    marginHorizontal: 2,
+                    marginHorizontal: normalizeSpacing(2),
                     textAlign: "center",
                     justifyContent: "center",
                   }}
@@ -72,16 +76,16 @@ export default function BankAccountSelector({
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
-    bankAccountSection: { marginTop: 14 },
+    bankAccountSection: { marginTop: normalizeSpacing(14) },
     sectionLabel: {
       fontSize: normalize(16),
       fontFamily: getFontFamily("800"),
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
       color: colors.text,
     },
     selectedAccount: {
       backgroundColor: colors.background,
-      padding: 16,
+      padding: normalizeSpacing(16),
       borderRadius: 8,
       borderWidth: 1,
       borderColor: "green",
@@ -103,14 +107,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
     },
     changeText: {
-      marginTop: 8,
+      marginTop: normalizeSpacing(8),
       color: COLORS.secondary,
       fontFamily: getFontFamily("700"),
     },
     addAccountButton: {
       borderWidth: 1,
       borderColor: "green",
-      padding: 14,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(14),
       borderRadius: 200,
       alignItems: "center",
       flexDirection: "row",

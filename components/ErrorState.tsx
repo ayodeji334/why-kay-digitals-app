@@ -1,6 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "./AppText";
 
 export default function ErrorState({
@@ -24,12 +28,12 @@ export default function ErrorState({
 
 const styles = StyleSheet.create({
   section: {
-    margin: 10,
+    margin: normalizeSpacing(10),
   },
   errorContainer: {
     backgroundColor: "#fef2f2",
     borderRadius: 12,
-    padding: 24,
+    padding: normalizeSpacing(24),
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#fecaca",
@@ -38,13 +42,13 @@ const styles = StyleSheet.create({
     fontSize: normalize(18),
     color: "#dc2626",
     fontFamily: getFontFamily("700"),
-    marginBottom: 12,
+    marginBottom: normalizeSpacing(12),
     textAlign: "center",
   },
   retryButton: {
     backgroundColor: "#dc2626",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: normalizeSpacing(16),
+    paddingVertical: normalizeSpacing(14),
     borderRadius: 20,
   },
   retryButtonText: {
@@ -56,7 +60,7 @@ const styles = StyleSheet.create({
   emptyState: {
     backgroundColor: "#f8f9fa",
     borderRadius: 12,
-    padding: 24,
+    padding: normalizeSpacing(24),
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#e9ecef",
@@ -66,20 +70,20 @@ const styles = StyleSheet.create({
     fontSize: normalize(17),
     fontFamily: getFontFamily("700"),
     color: "#333",
-    marginBottom: 8,
+    marginBottom: normalizeSpacing(8),
     textAlign: "center",
   },
   emptyDescription: {
     fontSize: normalize(18),
     color: "#666",
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: normalizeSpacing(16),
     // lineHeight: 16,
   },
   emptyButton: {
     backgroundColor: "#FFA726",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: normalizeSpacing(20),
+    paddingVertical: normalizeSpacing(14),
     borderRadius: 20,
   },
   emptyButtonText: {

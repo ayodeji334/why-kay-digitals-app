@@ -8,7 +8,11 @@ import {
   TextStyle,
   ViewStyle,
 } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
 
@@ -96,7 +100,7 @@ const TextInputField: React.FC<Props> = ({
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: {
-      marginBottom: 10,
+      marginBottom: normalizeSpacing(10),
     },
     disabled: {
       opacity: 0.6,
@@ -105,8 +109,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingHorizontal: normalize(16),
-      paddingVertical: normalize(16),
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(16),
       color: colors.text,
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),
@@ -118,15 +122,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     errorText: {
       color: colors.error,
-      marginTop: 6,
+      marginTop: normalizeSpacing(6),
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
-      marginLeft: 4,
+      marginLeft: normalizeSpacing(4),
     },
     label: {
       fontFamily: getFontFamily("800"),
       fontSize: normalize(17),
-      marginBottom: 2,
+      marginBottom: normalizeSpacing(2),
       color: colors.text,
     },
   });

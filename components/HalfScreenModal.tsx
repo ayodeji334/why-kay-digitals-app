@@ -7,7 +7,11 @@ import {
   Pressable,
 } from "react-native";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
 import { AppText } from "./AppText";
@@ -137,8 +141,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.inputBackground,
       borderTopRightRadius: 20,
       borderTopLeftRadius: 20,
-      padding: 24,
-      paddingBottom: 50,
+      padding: normalizeSpacing(24),
+      paddingBottom: normalizeSpacing(50),
       alignItems: "center",
       position: "relative",
     },
@@ -148,28 +152,28 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       right: 16,
       zIndex: 10,
       borderRadius: 50,
-      paddingVertical: 6,
-      paddingHorizontal: 12,
-      marginBottom: 20,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(20),
     },
     modalContent: {
       alignItems: "center",
       width: "100%",
-      paddingBottom: 20,
-      marginTop: 30,
+      paddingBottom: normalizeSpacing(20),
+      marginTop: normalizeSpacing(30),
     },
     iconContainer: {
       borderRadius: 45,
       justifyContent: "center",
       alignItems: "center",
-      marginBottom: 20,
-      padding: 10,
+      marginBottom: normalizeSpacing(20),
+      padding: normalizeSpacing(10),
     },
     title: {
       fontSize: normalize(20),
       fontFamily: getFontFamily("900"),
       color: colors.text,
-      paddingBottom: 18,
+      paddingBottom: normalizeSpacing(18),
       textAlign: "center",
     },
     description: {
@@ -177,16 +181,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.text,
       textAlign: "center",
-      marginBottom: 24,
+      marginBottom: normalizeSpacing(24),
       // lineHeight: 22,
     },
     button: {
-      paddingVertical: 14,
-      paddingHorizontal: 30,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(30),
       borderRadius: 100,
       width: "100%",
       alignItems: "center",
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
     },
     buttonText: {
       fontSize: normalize(18),

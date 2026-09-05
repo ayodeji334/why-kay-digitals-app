@@ -1,6 +1,10 @@
 import React, { Dispatch, SetStateAction } from "react";
 import { Modal, View, Text, TouchableOpacity } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { formatAmount } from "../libs/formatNumber";
 import CustomIcon from "./CustomIcon";
 import { DangerIcon } from "../assets";
@@ -31,27 +35,27 @@ export default function ConfirmationModal({
           backgroundColor: "rgba(0,0,0,0.5)",
           justifyContent: "center",
           alignItems: "center",
-          padding: 24,
+          padding: normalizeSpacing(24),
         }}
       >
         <View
           style={{
             backgroundColor: "#fff",
             borderRadius: 20,
-            paddingVertical: 30,
-            paddingHorizontal: 20,
+            paddingVertical: normalizeSpacing(30),
+            paddingHorizontal: normalizeSpacing(20),
             width: "100%",
             alignItems: "center",
           }}
         >
-          <View style={{ paddingBottom: 10 }}>
+          <View style={{ paddingBottom: normalizeSpacing(10) }}>
             <CustomIcon source={DangerIcon} size={35} />
           </View>
           <AppText
             style={{
               fontFamily: getFontFamily("800"),
               fontSize: normalize(23),
-              marginTop: 10,
+              marginTop: normalizeSpacing(10),
             }}
           >
             Confirm Transaction
@@ -59,7 +63,7 @@ export default function ConfirmationModal({
 
           <AppText
             style={{
-              marginTop: 10,
+              marginTop: normalizeSpacing(10),
               textAlign: "center",
               fontSize: normalize(18),
               fontFamily: getFontFamily(400),
@@ -77,9 +81,9 @@ export default function ConfirmationModal({
             style={{
               backgroundColor: COLORS.primary,
               width: "100%",
-              paddingVertical: 14,
+              paddingVertical: normalizeSpacing(14),
               borderRadius: 50,
-              marginTop: 20,
+              marginTop: normalizeSpacing(20),
             }}
           >
             <AppText
@@ -99,9 +103,9 @@ export default function ConfirmationModal({
             style={{
               backgroundColor: "#e8e8e8ff",
               width: "100%",
-              paddingVertical: 14,
+              paddingVertical: normalizeSpacing(14),
               borderRadius: 50,
-              marginTop: 10,
+              marginTop: normalizeSpacing(10),
             }}
           >
             <AppText

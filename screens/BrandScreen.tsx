@@ -12,7 +12,11 @@ import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { AppText } from "../components/AppText";
 import CountryPicker from "../components/CountryPicker";
@@ -148,7 +152,7 @@ export default function BrandsScreen() {
     return (
       <ActivityIndicator
         color={COLORS.primary}
-        style={{ marginVertical: 16 }}
+        style={{ marginVertical: normalizeSpacing(16) }}
       />
     );
   };
@@ -210,7 +214,7 @@ export default function BrandsScreen() {
           <ActivityIndicator
             color={COLORS.primary}
             size="small"
-            style={{ marginTop: 40 }}
+            style={{ marginTop: normalizeSpacing(40) }}
           />
         ) : (
           <FlatList
@@ -239,34 +243,34 @@ const CARD_GAP = 12;
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     safe: { flex: 1, backgroundColor: colors.background },
-    container: { flex: 1, paddingHorizontal: normalize(16) },
+    container: { flex: 1, paddingHorizontal: normalizeSpacing(16) },
     filterRow: {
-      marginTop: normalize(12),
-      marginBottom: normalize(10),
+      marginTop: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(10),
     },
     countryPickerWrap: {
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
       borderRadius: normalize(12),
       overflow: "hidden",
-      marginBottom: normalize(12),
+      marginBottom: normalizeSpacing(12),
     },
     searchBox: {
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: normalize(12),
-      paddingHorizontal: normalize(15),
-      marginBottom: normalize(14),
+      paddingHorizontal: normalizeSpacing(15),
+      marginBottom: normalizeSpacing(14),
     },
     searchInput: {
       fontSize: normalize(20),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      paddingVertical: normalize(15),
+      paddingVertical: normalizeSpacing(15),
     },
     listContent: {
-      paddingBottom: normalize(32),
-      paddingVertical: 22,
+      paddingBottom: normalizeSpacing(32),
+      paddingVertical: normalizeSpacing(22),
     },
     row: {
       gap: CARD_GAP,
@@ -277,7 +281,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: normalize(12),
-      padding: normalize(12),
+      padding: normalizeSpacing(12),
       alignItems: "center",
       backgroundColor: "#fff",
       gap: 8,
@@ -308,9 +312,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       textTransform: "uppercase",
     },
     emptyState: {
-      paddingTop: 60,
+      paddingTop: normalizeSpacing(60),
       alignItems: "center",
-      paddingHorizontal: 24,
+      paddingHorizontal: normalizeSpacing(24),
     },
     emptyText: {
       fontSize: normalize(19),

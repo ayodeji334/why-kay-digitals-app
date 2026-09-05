@@ -350,7 +350,11 @@ import {
   StatusBar,
 } from "react-native";
 import { ArrowDown } from "iconsax-react-nativejs";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
@@ -527,8 +531,8 @@ export default function ConversionQuote() {
         style={{ flex: 1 }}
         contentContainerStyle={{
           backgroundColor: colors.background,
-          paddingBottom: 20,
-          paddingHorizontal: 20,
+          paddingBottom: normalizeSpacing(20),
+          paddingHorizontal: normalizeSpacing(20),
           justifyContent: "space-between",
           flex: 1,
         }}
@@ -561,12 +565,12 @@ export default function ConversionQuote() {
               style={{
                 backgroundColor: colors.warningLight,
                 borderRadius: 2000,
-                padding: 3,
+                padding: normalizeSpacing(3),
                 shadowColor: colors.shadow,
                 shadowOpacity: 0.3,
                 shadowRadius: 6,
                 elevation: 3,
-                marginVertical: -20,
+                marginVertical: normalizeSpacing(-20),
                 zIndex: 1000,
               }}
             >
@@ -596,7 +600,7 @@ export default function ConversionQuote() {
             </View>
           </View>
 
-          <View style={{ paddingVertical: 4 }}>
+          <View style={{ paddingVertical: normalizeSpacing(4) }}>
             <View style={styles.detailsBox}>
               <View style={styles.detailRow}>
                 <AppText style={styles.detailLabel}>Conversion Rate</AppText>
@@ -686,7 +690,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderColor: colors.border,
       backgroundColor: colors.background,
     },
-    header: { alignItems: "center", marginBottom: 12 },
+    header: { alignItems: "center", marginBottom: normalizeSpacing(12) },
     expiredBox: {
       flexDirection: "row",
       alignItems: "flex-start",
@@ -694,8 +698,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderColor: colors.error,
       borderWidth: 0.5,
       borderRadius: 8,
-      padding: 10,
-      marginTop: 19,
+      padding: normalizeSpacing(10),
+      marginTop: normalizeSpacing(19),
       gap: 2,
     },
     expiredText: {
@@ -707,8 +711,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     assetBox: {
       backgroundColor: colors.inputBackground,
       borderRadius: 12,
-      padding: 12,
-      marginBottom: 6,
+      padding: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(6),
     },
     assetHeader: { flexDirection: "row", justifyContent: "space-between" },
     assetLabel: {
@@ -721,7 +725,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: 11,
       color: colors.textMuted,
     },
-    assetRow: { flexDirection: "row", alignItems: "center", marginTop: 8 },
+    assetRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: normalizeSpacing(8),
+    },
     assetIcon: {
       width: 30,
       height: 30,
@@ -741,7 +749,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("900"),
       fontSize: 20,
       color: colors.text,
-      marginLeft: 5,
+      marginLeft: normalizeSpacing(5),
     },
     assetAmount: { alignItems: "flex-end" },
     assetValue: {
@@ -753,13 +761,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     swapIcon: {
       backgroundColor: colors.primary,
       borderRadius: 24,
-      padding: 10,
+      padding: normalizeSpacing(10),
     },
-    detailsBox: { marginTop: 12 },
+    detailsBox: { marginTop: normalizeSpacing(12) },
     detailRow: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginVertical: 4,
+      marginVertical: normalizeSpacing(4),
     },
     detailLabel: {
       fontFamily: getFontFamily("700"),
@@ -775,21 +783,21 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     securityNote: {
       flexDirection: "row",
       alignItems: "flex-start",
-      marginTop: 8,
+      marginTop: normalizeSpacing(8),
     },
     securityText: {
       fontFamily: getFontFamily("700"),
       fontSize: normalize(17),
       color: colors.textMuted,
-      marginTop: 12,
+      marginTop: normalizeSpacing(12),
     },
-    buttonBox: { marginTop: 16 },
+    buttonBox: { marginTop: normalizeSpacing(16) },
     confirmButton: {
       backgroundColor: colors.primary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
       alignItems: "center",
-      marginBottom: 10,
+      marginBottom: normalizeSpacing(10),
     },
     confirmText: {
       color: "#fff",
@@ -800,7 +808,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     cancelButton: {
       borderColor: colors.primary,
       borderWidth: 1,
-      paddingVertical: 13,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
       alignItems: "center",
     },
@@ -814,7 +822,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
       fontSize: 11,
       color: colors.textMuted,
-      marginTop: 12,
+      marginTop: normalizeSpacing(12),
     },
   });
 

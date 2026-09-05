@@ -365,7 +365,11 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { Filter, DocumentDownload } from "iconsax-react-nativejs";
 import TransactionSectionList from "../components/TransactionList";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import CustomIcon from "../components/CustomIcon";
 import { NoResultIcon } from "../assets";
 import { SelectInput } from "../components/SelectInputField";
@@ -557,7 +561,7 @@ const TransactionHistoryScreen: React.FC = () => {
       {/* Transaction List — always mounted so RefreshControl (and its
           empty-state ListEmptyComponent) is available even with zero
           transactions. */}
-      <View style={{ flex: 1, paddingHorizontal: 17 }}>
+      <View style={{ flex: 1, paddingHorizontal: normalizeSpacing(17) }}>
         <TransactionSectionList
           transactions={transactions}
           refreshing={isRefetching}
@@ -575,7 +579,7 @@ const TransactionHistoryScreen: React.FC = () => {
         showCloseButton
         onClose={toggleFilterModal}
       >
-        <View style={{ marginVertical: 4 }}>
+        <View style={{ marginVertical: normalizeSpacing(4) }}>
           <AppText style={styles.modalLabel}>Category</AppText>
           <SelectInput
             onSelect={option =>
@@ -599,7 +603,7 @@ const TransactionHistoryScreen: React.FC = () => {
           />
         </View>
 
-        <View style={{ marginVertical: 4 }}>
+        <View style={{ marginVertical: normalizeSpacing(4) }}>
           <AppText style={styles.modalLabel}>Status</AppText>
           <SelectInput
             options={[
@@ -659,16 +663,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flexGrow: 1, backgroundColor: colors.background },
     topRow: {
-      paddingHorizontal: 20,
-      marginTop: 7,
-      marginBottom: 20,
+      paddingHorizontal: normalizeSpacing(20),
+      marginTop: normalizeSpacing(7),
+      marginBottom: normalizeSpacing(20),
       flexDirection: "row",
       alignItems: "center",
       gap: normalize(40),
     },
     iconButton: {
-      paddingVertical: 8,
-      paddingHorizontal: 20,
+      paddingVertical: normalizeSpacing(9),
+      paddingHorizontal: normalizeSpacing(20),
       borderRadius: 100,
       borderWidth: 1,
       flexDirection: "row",
@@ -683,13 +687,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
     },
     closeButton: {
       backgroundColor: COLORS.primary,
-      paddingVertical: 12,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 48,
-      marginTop: 15,
+      marginTop: normalizeSpacing(15),
     },
     closeButtonText: {
       textAlign: "center",
@@ -703,7 +707,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(22),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      marginVertical: 12,
+      marginVertical: normalizeSpacing(12),
     },
     emptyDescription: {
       fontSize: normalize(18),

@@ -735,7 +735,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { showError } from "../utlis/toast";
 import { SelectInput } from "../components/SelectInputField";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -798,7 +802,7 @@ const SmartCardValidationStatus = memo(
 
     return (
       <View style={styles.validationRow}>
-        <View style={{ paddingVertical: 5 }}>
+        <View style={{ paddingVertical: normalizeSpacing(5) }}>
           <AppText style={styles.detailsLabel}>Name</AppText>
           <AppText style={styles.validatingText}>{cardDetail.name}</AppText>
         </View>
@@ -1064,7 +1068,7 @@ export default function PayCableTVSubscriptionScreen() {
           hasInput={!!selectedNetwork && !!plan && smartcardNumber.length >= 9}
         />
 
-        <View style={{ marginBottom: 10 }}>
+        <View style={{ marginBottom: normalizeSpacing(10) }}>
           <SavedBeneficiaries
             onRefetch={refetch}
             data={data ?? []}
@@ -1082,7 +1086,7 @@ export default function PayCableTVSubscriptionScreen() {
           />
         </View>
 
-        <View style={{ marginBottom: 20 }}>
+        <View style={{ marginBottom: normalizeSpacing(20) }}>
           <AppText style={styles.subHeader}>Select Cable TV Provider</AppText>
           <View style={styles.networkRow}>
             {networks.map((item, index) => (
@@ -1191,9 +1195,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       paddingTop: StatusBar.currentHeight || 0,
     },
     validationRow: {
-      marginVertical: 10,
-      paddingHorizontal: 17,
-      paddingVertical: 10,
+      marginVertical: normalizeSpacing(10),
+      paddingHorizontal: normalizeSpacing(17),
+      paddingVertical: normalizeSpacing(10),
       backgroundColor: colors.background,
       borderRadius: 8,
       borderWidth: 1,
@@ -1207,9 +1211,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("800"),
     },
     cardSuccessRow: {
-      marginVertical: 10,
-      paddingHorizontal: 17,
-      paddingVertical: 10,
+      marginVertical: normalizeSpacing(10),
+      paddingHorizontal: normalizeSpacing(17),
+      paddingVertical: normalizeSpacing(10),
       backgroundColor: "#f9f9f9",
       borderRadius: 8,
       borderWidth: 1,
@@ -1232,20 +1236,20 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     content: {
       flexGrow: 1,
-      paddingHorizontal: 16,
-      paddingVertical: 30,
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(30),
     },
     subHeader: {
-      marginTop: 20,
+      marginTop: normalizeSpacing(20),
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
       color: colors.text,
     },
     networkRow: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
     networkButton: {
       borderWidth: 1,
@@ -1260,7 +1264,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     balanceValue: {
       fontSize: normalize(18),
@@ -1268,18 +1272,18 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     balanceCard: {
-      paddingHorizontal: normalize(10),
-      paddingVertical: normalize(9),
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(9),
     },
     loader: {
-      marginTop: 12,
+      marginTop: normalizeSpacing(12),
     },
     buttonWrapper: {
-      marginTop: 32,
+      marginTop: normalizeSpacing(32),
     },
     warningContainer: {
-      marginVertical: 12,
-      padding: 10,
+      marginVertical: normalizeSpacing(12),
+      padding: normalizeSpacing(10),
       backgroundColor: "rgba(255, 0, 0, 0.03)",
       borderRadius: 6,
       borderWidth: 1,
@@ -1320,7 +1324,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     beneficiaryContainer: {
       flexDirection: "row",
       alignItems: "center",
-      marginBottom: 24,
+      marginBottom: normalizeSpacing(24),
     },
     checkbox: {
       width: 20,
@@ -1328,7 +1332,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 4,
-      marginRight: 12,
+      marginRight: normalizeSpacing(12),
       alignItems: "center",
       justifyContent: "center",
     },
@@ -1348,16 +1352,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     errorText: {
       color: colors.error,
-      marginTop: 4,
-      marginBottom: 10,
+      marginTop: normalizeSpacing(4),
+      marginBottom: normalizeSpacing(10),
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
     },
     button: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 100,
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
       justifyContent: "center",
       alignContent: "center",
     },
@@ -1368,9 +1372,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       textAlign: "center",
     },
     detailsContainer: {
-      marginVertical: 10,
-      paddingHorizontal: 17,
-      paddingVertical: 10,
+      marginVertical: normalizeSpacing(10),
+      paddingHorizontal: normalizeSpacing(17),
+      paddingVertical: normalizeSpacing(10),
       backgroundColor: "#f9f9f9",
       borderRadius: 8,
       borderWidth: 1,

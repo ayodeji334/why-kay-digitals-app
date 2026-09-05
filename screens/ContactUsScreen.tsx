@@ -678,7 +678,11 @@ import {
   Message,
 } from "iconsax-react-nativejs";
 
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { AppText } from "../components/AppText";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -878,24 +882,24 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     container: {
       flexGrow: 1,
       backgroundColor: colors.background,
-      paddingBottom: 10,
+      paddingBottom: normalizeSpacing(10),
     },
     section: {
-      paddingHorizontal: 20,
-      marginBottom: 24,
+      paddingHorizontal: normalizeSpacing(20),
+      marginBottom: normalizeSpacing(24),
     },
     sectionTitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
     },
     hoursSection: {
-      marginTop: 16,
+      marginTop: normalizeSpacing(16),
     },
     hoursContainer: {
       backgroundColor: colors.inputBackground,
-      padding: 16,
+      padding: normalizeSpacing(16),
       borderRadius: 12,
       flex: 1,
       gap: 12,
@@ -905,8 +909,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     menuItem: {
       flexDirection: "row",
       alignItems: "flex-start",
-      padding: 12,
-      marginBottom: 8,
+      padding: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(8),
       backgroundColor: colors.inputBackground,
       gap: 14,
       borderWidth: 1,
@@ -930,22 +934,22 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(17),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      marginTop: 2,
+      marginTop: normalizeSpacing(2),
     },
     listContainer: {
-      marginTop: 4,
+      marginTop: normalizeSpacing(4),
     },
     listItem: {
       flexDirection: "row",
       alignItems: "flex-start",
       fontSize: normalize(17),
       fontFamily: getFontFamily("400"),
-      marginTop: 2,
+      marginTop: normalizeSpacing(2),
       color: colors.text,
     },
     bullet: {
       fontSize: normalize(16),
-      marginRight: 6,
+      marginRight: normalizeSpacing(6),
       color: "#6B7280",
     },
     listText: {
@@ -956,12 +960,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     contactButton: {
       backgroundColor: COLORS.primary,
-      marginHorizontal: 20,
-      marginTop: 20,
-      paddingVertical: 16,
+      marginHorizontal: normalizeSpacing(20),
+      marginTop: normalizeSpacing(20),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
       alignItems: "center",
-      marginBottom: 40,
+      marginBottom: normalizeSpacing(40),
     },
     contactButtonText: {
       color: "#fff",

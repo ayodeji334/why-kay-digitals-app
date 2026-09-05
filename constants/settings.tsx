@@ -28,11 +28,13 @@ const TABLET_BREAKPOINT = 600; // widely-used phone/tablet cutoff
 // factor rather than changing anything for iOS.
 const ANDROID_FONT_CORRECTION = 0.92;
 
+const getScale = () =>
+  width >= TABLET_BREAKPOINT
+    ? TABLET_SCALE
+    : Math.min(width / guidelineBaseWidth, PHONE_MAX_SCALE);
+
 export const normalize = (size: number) => {
-  const scale =
-    width >= TABLET_BREAKPOINT
-      ? TABLET_SCALE
-      : Math.min(width / guidelineBaseWidth, PHONE_MAX_SCALE);
+  const scale = getScale();
 
   const normalized = scale * (size - 2);
   const corrected =
@@ -42,6 +44,16 @@ export const normalize = (size: number) => {
 
   return PixelRatio.roundToNearestPixel(corrected);
 };
+
+// For padding/margin/gap — deliberately NOT built on normalize(): its
+// `size - 2` offset is a font-metric calibration that would turn
+// `padding: 0` into a small negative value and shrink small spacing values
+// far more (proportionally) than large ones. This scales spacing by the
+// same width-based ratio without that offset, and skips the Android
+// text-rendering correction (irrelevant to raw layout spacing) so 0 stays
+// 0 and the scaling stays linear across every value.
+export const normalizeSpacing = (size: number) =>
+  PixelRatio.roundToNearestPixel(getScale() * size);
 
 export const getFontFamily = (weight: string | number) => {
   const fontWeights: any = {

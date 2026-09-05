@@ -6,7 +6,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import TextInputField from "../TextInputField";
 import { COLORS } from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import { AxiosError } from "axios";
 import { showError } from "../../utlis/toast";
 import CustomLoading from "../CustomLoading";
@@ -82,13 +86,13 @@ export default ForgotPasswordForm;
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
+    paddingVertical: normalizeSpacing(20),
   },
   button: {
     backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
+    paddingVertical: normalizeSpacing(14),
     borderRadius: 100,
-    marginTop: 30,
+    marginTop: normalizeSpacing(30),
     alignItems: "center",
   },
   buttonText: {

@@ -165,7 +165,11 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ArrowLeft2, Message } from "iconsax-react-nativejs";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
 import { useLiveChat } from "../context/LiveChatProvider";
@@ -251,8 +255,8 @@ const makeScreenStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingHorizontal: 10,
-      paddingVertical: 12,
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(12),
       backgroundColor: colors.background,
     },
     title: {
@@ -260,16 +264,16 @@ const makeScreenStyles = (colors: ReturnType<typeof useColors>) =>
       textAlign: "center",
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      paddingVertical: 18,
+      paddingVertical: normalizeSpacing(18),
       color: colors.text,
     },
     backBtn: {
-      paddingVertical: 0,
+      paddingVertical: normalizeSpacing(14),
     },
     chatBtn: {
       flexDirection: "row",
-      paddingVertical: 5,
-      paddingHorizontal: 12,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(12),
       alignItems: "center",
       columnGap: 3,
       borderWidth: 1,
@@ -278,7 +282,7 @@ const makeScreenStyles = (colors: ReturnType<typeof useColors>) =>
       borderRadius: 20,
       justifyContent: "center",
       position: "relative",
-      marginHorizontal: 5,
+      marginHorizontal: normalizeSpacing(5),
     },
     chatText: {
       fontSize: normalize(18),

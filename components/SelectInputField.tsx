@@ -11,7 +11,11 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
 import { ArrowDown2 } from "iconsax-react-nativejs";
 import CustomIcon from "./CustomIcon";
@@ -147,7 +151,7 @@ export function SelectInput({
                     decimalPlace: 6,
                   })}{" "}
                   {selectedOption?.symbol}{" "}
-                  <AppText style={{ paddingLeft: 3 }}>
+                  <AppText style={{ paddingLeft: normalizeSpacing(3) }}>
                     (≈{" "}
                     {formatAmount(selectedOption?.network_charges_in_usd ?? 0, {
                       currency: "USD",
@@ -173,7 +177,7 @@ export function SelectInput({
             <View style={styles.modalContent}>
               <View
                 style={{
-                  marginBottom: 16,
+                  marginBottom: normalizeSpacing(16),
                   flexDirection: "row",
                   justifyContent: "space-between",
                   alignItems: "center",
@@ -274,7 +278,10 @@ export function SelectInput({
                                 })}{" "}
                                 {item?.symbol}{" "}
                                 <AppText
-                                  style={{ paddingLeft: 3, color: colors.text }}
+                                  style={{
+                                    paddingLeft: normalizeSpacing(3),
+                                    color: colors.text,
+                                  }}
                                 >
                                   (≈{" "}
                                   {formatAmount(
@@ -367,7 +374,12 @@ export function SelectInput({
                   );
                 }}
                 ListEmptyComponent={
-                  <View style={{ paddingVertical: 20, alignItems: "center" }}>
+                  <View
+                    style={{
+                      paddingVertical: normalizeSpacing(20),
+                      alignItems: "center",
+                    }}
+                  >
                     {loading ? (
                       <>
                         <ActivityIndicator
@@ -376,7 +388,7 @@ export function SelectInput({
                         />
                         <AppText
                           style={{
-                            marginTop: 8,
+                            marginTop: normalizeSpacing(8),
                             fontSize: normalize(14),
                             color: colors.text,
                           }}
@@ -432,11 +444,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingVertical: normalize(16),
-      paddingHorizontal: normalize(14),
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(14),
       justifyContent: "center",
-      marginBottom: 5,
-      minHeight: normalize(50),
+      marginBottom: normalizeSpacing(5),
+      minHeight: normalize(55),
     },
     selectedCryptoContainer: {
       flexDirection: "row",
@@ -444,7 +456,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       justifyContent: "space-between",
       flex: 1,
     },
-    selectedCryptoInfo: { flex: 1, marginLeft: 4 },
+    selectedCryptoInfo: { flex: 1, marginLeft: normalizeSpacing(4) },
     selectedCryptoName: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
@@ -466,9 +478,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       width: "100%",
       borderTopLeftRadius: 16,
       borderTopRightRadius: 16,
-      padding: 20,
+      padding: normalizeSpacing(20),
       maxHeight: "80%",
-      paddingBottom: 40,
+      paddingBottom: normalizeSpacing(40),
     },
     modalTitle: {
       fontFamily: getFontFamily("900"),
@@ -479,15 +491,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      padding: 12,
-      marginBottom: 16,
+      padding: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(16),
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),
       color: colors.text,
       backgroundColor: colors.inputBackground,
     },
     option: { borderBottomWidth: 1, borderBottomColor: colors.border },
-    optionContent: { padding: normalize(17), width: "100%" },
+    optionContent: { padding: normalizeSpacing(17), width: "100%" },
     cryptoRow: {
       flexDirection: "row",
       alignItems: "center",
@@ -508,7 +520,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     error: {
       color: colors.error,
-      marginBottom: 9,
+      marginBottom: normalizeSpacing(9),
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
     },

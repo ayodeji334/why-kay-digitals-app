@@ -12,7 +12,11 @@ import NumberInputField from "./NumberInputField";
 import InfoCard from "./InfoCard";
 import { AppText } from "./AppText";
 import CustomLoading from "./CustomLoading";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 
 const phoneSchema = yup.object({
@@ -117,9 +121,9 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: COLORS.secondary,
-    paddingVertical: 14,
+    paddingVertical: normalizeSpacing(14),
     borderRadius: 100,
-    marginTop: 30,
+    marginTop: normalizeSpacing(30),
     justifyContent: "center",
     alignContent: "center",
   },
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   backLink: {
-    marginTop: 16,
+    marginTop: normalizeSpacing(16),
     alignItems: "center",
   },
   backLinkText: {

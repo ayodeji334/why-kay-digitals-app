@@ -555,7 +555,11 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
 import { showError } from "../utlis/toast";
@@ -672,7 +676,10 @@ export default function SelfieConfirmationScreen() {
             </AppText>
           </View>
           <TouchableOpacity
-            style={[styles.confirmButton, { marginLeft: 0, width: "100%" }]}
+            style={[
+              styles.confirmButton,
+              { marginLeft: normalizeSpacing(0), width: "100%" },
+            ]}
             onPress={() => navigation.pop(2)}
           >
             <AppText style={styles.buttonText}>Continue</AppText>
@@ -712,27 +719,27 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     statusContent: {
       flex: 1,
       alignContent: "center",
       justifyContent: "space-between",
-      paddingBottom: 60,
-      paddingTop: 30,
+      paddingBottom: normalizeSpacing(60),
+      paddingTop: normalizeSpacing(30),
     },
     retakeButton: {
       backgroundColor: colors.error,
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
-      marginRight: 8,
+      marginRight: normalizeSpacing(8),
       alignItems: "center",
     },
     confirmButton: {
       backgroundColor: colors.primary,
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
-      marginLeft: 8,
+      marginLeft: normalizeSpacing(8),
       alignItems: "center",
     },
     buttonText: {
@@ -747,8 +754,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginTop: 24,
-      marginBottom: 12,
+      marginTop: normalizeSpacing(24),
+      marginBottom: normalizeSpacing(12),
       textAlign: "center",
     },
     statusDescription: {
@@ -756,7 +763,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
       textAlign: "center",
-      marginBottom: 40,
-      paddingHorizontal: 10,
+      marginBottom: normalizeSpacing(40),
+      paddingHorizontal: normalizeSpacing(10),
     },
   });

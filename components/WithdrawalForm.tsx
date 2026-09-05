@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 // import NumberInputField from "./NumberInputField";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { formatWithCommas } from "../screens/SwapCryptoScreen";
 import { AppText } from "./AppText";
 
@@ -10,7 +14,12 @@ export default function WithdrawalForm({ setValue }: any) {
 
   return (
     <View style={styles.amountBox}>
-      <View style={{ marginBottom: 2, marginTop: 10 }}>
+      <View
+        style={{
+          marginBottom: normalizeSpacing(2),
+          marginTop: normalizeSpacing(10),
+        }}
+      >
         <AppText style={styles.label}>Amount</AppText>
         <View style={styles.inputContainer}>
           <AppText style={styles.dollarSign}>₦</AppText>
@@ -40,16 +49,16 @@ export default function WithdrawalForm({ setValue }: any) {
 }
 
 const styles = StyleSheet.create({
-  amountBox: { marginTop: 24 },
+  amountBox: { marginTop: normalizeSpacing(24) },
   amountNote: {
     color: "#535353ff",
     fontSize: normalize(15),
     fontFamily: getFontFamily("700"),
-    marginBottom: 9,
-    marginTop: -10,
+    marginBottom: normalizeSpacing(9),
+    marginTop: normalizeSpacing(-10),
   },
   label: {
-    marginBottom: 6,
+    marginBottom: normalizeSpacing(6),
     fontSize: normalize(18),
     fontFamily: getFontFamily("700"),
     color: "#000000ff",
@@ -65,7 +74,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(16),
+    paddingVertical: normalizeSpacing(16),
     fontSize: normalize(26),
     fontFamily: getFontFamily("800"),
     color: "#000",
@@ -74,6 +83,6 @@ const styles = StyleSheet.create({
     fontSize: normalize(26),
     fontFamily: getFontFamily("800"),
     color: "#000",
-    paddingLeft: 15,
+    paddingLeft: normalizeSpacing(15),
   },
 });

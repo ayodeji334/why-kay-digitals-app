@@ -106,7 +106,11 @@
 import React from "react";
 import { View, Switch, StyleSheet, TouchableOpacity } from "react-native";
 import { AppText } from "./AppText";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { useColors } from "../hooks/useTheme";
 import { formatAmount } from "../libs/formatNumber";
@@ -192,23 +196,23 @@ export function FundingSourceSelector({
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     plainRow: {
-      paddingVertical: normalize(6),
-      marginTop: 8,
-      marginBottom: 8,
+      paddingVertical: normalizeSpacing(6),
+      marginTop: normalizeSpacing(8),
+      marginBottom: normalizeSpacing(8),
     },
     fundingSourceRow: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingVertical: normalize(9),
-      marginTop: 8,
-      marginBottom: 8,
+      paddingVertical: normalizeSpacing(9),
+      marginTop: normalizeSpacing(8),
+      marginBottom: normalizeSpacing(8),
     },
     balanceLabel: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     fundingSourceHint: {
       fontSize: normalize(18),

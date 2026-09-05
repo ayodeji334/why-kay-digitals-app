@@ -1,17 +1,20 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   View,
-  Text,
   TouchableOpacity,
   Modal,
   StyleSheet,
-  FlatList,
+  Animated,
 } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
-import { COLORS } from "../constants/colors";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
 import { Calendar } from "iconsax-react-nativejs";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface DatePickerFieldProps {
   label: string;
@@ -33,6 +36,95 @@ const months = [
   "November",
   "December",
 ];
+
+// Matches the classic UIDatePicker wheel: ~5 rows tall, with the middle
+// row framed by two hairlines and every other row fading toward the edges
+// as it scrolls past.
+const ITEM_HEIGHT = 40;
+const VISIBLE_ROWS = 5;
+const PICKER_HEIGHT = ITEM_HEIGHT * VISIBLE_ROWS;
+const SIDE_PADDING = (PICKER_HEIGHT - ITEM_HEIGHT) / 2;
+
+type WheelColumnProps = {
+  data: string[];
+  selectedIndex: number;
+  onSelectIndex: (index: number) => void;
+  styles: ReturnType<typeof makeStyles>;
+};
+
+// One scrollable wheel (day / month / year). Kept as its own component so
+// each column owns its own Animated.Value — the opacity/scale fade is
+// driven by that column's own scroll position relative to each row.
+const WheelColumn: React.FC<WheelColumnProps> = ({
+  data,
+  selectedIndex,
+  onSelectIndex,
+  styles,
+}) => {
+  const scrollY = useRef(
+    new Animated.Value(selectedIndex * ITEM_HEIGHT),
+  ).current;
+
+  return (
+    <Animated.FlatList
+      data={data}
+      keyExtractor={(item, index) => `${item}-${index}`}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.scrollContent}
+      snapToInterval={ITEM_HEIGHT}
+      decelerationRate="fast"
+      initialScrollIndex={selectedIndex}
+      getItemLayout={(_, index) => ({
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index,
+        index,
+      })}
+      onScroll={Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+        { useNativeDriver: true },
+      )}
+      scrollEventThrottle={16}
+      onMomentumScrollEnd={e => {
+        const index = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT);
+        onSelectIndex(Math.max(0, Math.min(data.length - 1, index)));
+      }}
+      renderItem={({ item, index }) => {
+        const inputRange = [
+          (index - 2) * ITEM_HEIGHT,
+          (index - 1) * ITEM_HEIGHT,
+          index * ITEM_HEIGHT,
+          (index + 1) * ITEM_HEIGHT,
+          (index + 2) * ITEM_HEIGHT,
+        ];
+        const opacity = scrollY.interpolate({
+          inputRange,
+          outputRange: [0.25, 0.55, 1, 0.55, 0.25],
+          extrapolate: "clamp",
+        });
+        const scale = scrollY.interpolate({
+          inputRange,
+          outputRange: [0.85, 0.93, 1, 0.93, 0.85],
+          extrapolate: "clamp",
+        });
+
+        return (
+          <Animated.View
+            style={[styles.scrollItem, { opacity, transform: [{ scale }] }]}
+          >
+            <AppText
+              style={[
+                styles.scrollText,
+                index === selectedIndex && styles.selectedText,
+              ]}
+            >
+              {item}
+            </AppText>
+          </Animated.View>
+        );
+      }}
+    />
+  );
+};
 
 const DatePicker: React.FC<DatePickerFieldProps> = ({
   label,
@@ -75,8 +167,18 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
     [value],
   );
 
+  const dayOptions = useMemo(
+    () => Array.from({ length: 31 }, (_, i) => String(i + 1)),
+    [],
+  );
+  const monthOptions = useMemo(() => months.map(m => m.slice(0, 3)), []);
+  const yearOptions = useMemo(
+    () => Array.from({ length: 100 }, (_, i) => String(1970 + i)),
+    [],
+  );
+
   return (
-    <View style={{ marginVertical: normalize(8) }}>
+    <View style={{ marginVertical: normalizeSpacing(8) }}>
       <AppText style={styles.label}>{label}</AppText>
       <TouchableOpacity
         style={styles.dateField}
@@ -87,135 +189,65 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
         <Calendar size={15} color={colors.text} />
       </TouchableOpacity>
 
-      <Modal visible={visible} transparent animationType="slide">
+      <Modal
+        visible={visible}
+        transparent
+        animationType="slide"
+        onRequestClose={toggle}
+      >
         <View style={styles.overlay}>
-          <View style={styles.modal}>
-            <View style={{ paddingBottom: 20 }}>
-              <AppText style={styles.modalTitle}>Select {label}</AppText>
-              <AppText
-                style={{ color: colors.text, fontFamily: getFontFamily(400) }}
-              >
-                Kindly scroll the date
-              </AppText>
+          <SafeAreaView edges={["bottom"]} style={styles.modal}>
+            <View style={styles.grabberWrap}>
+              <View style={styles.grabber} />
             </View>
+
+            <View style={styles.header}>
+              <TouchableOpacity onPress={toggle} hitSlop={10}>
+                <AppText style={styles.headerCancel}>Cancel</AppText>
+              </TouchableOpacity>
+              <AppText style={styles.headerTitle}>{label}</AppText>
+              <TouchableOpacity onPress={handleConfirm} hitSlop={10}>
+                <AppText style={styles.headerDone}>Done</AppText>
+              </TouchableOpacity>
+            </View>
+
             <View style={styles.scrollPickerRow}>
               <View style={styles.highlightBar} />
 
-              <FlatList
-                data={[...Array(31).keys()].map(i => i + 1)}
-                keyExtractor={item => item.toString()}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-                snapToInterval={40}
-                decelerationRate="fast"
-                initialScrollIndex={tempDate.getDate() - 1}
-                getItemLayout={(data, index) => ({
-                  length: 40,
-                  offset: 40 * index,
-                  index,
-                })}
-                onMomentumScrollEnd={e => {
-                  const index = Math.round(e.nativeEvent.contentOffset.y / 40);
+              <WheelColumn
+                data={dayOptions}
+                selectedIndex={tempDate.getDate() - 1}
+                onSelectIndex={index => {
                   const newDate = new Date(tempDate);
                   newDate.setDate(index + 1);
                   setTempDate(newDate);
                 }}
-                renderItem={({ item }) => (
-                  <View style={styles.scrollItem}>
-                    <AppText
-                      style={[
-                        styles.scrollText,
-                        item === tempDate.getDate() && styles.selectedText,
-                      ]}
-                    >
-                      {item}
-                    </AppText>
-                  </View>
-                )}
+                styles={styles}
               />
 
-              {/* Month Picker */}
-              <FlatList
-                data={months}
-                keyExtractor={item => item}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-                snapToInterval={40}
-                decelerationRate="fast"
-                initialScrollIndex={tempDate.getMonth()}
-                getItemLayout={(data, index) => ({
-                  length: 40,
-                  offset: 40 * index,
-                  index,
-                })}
-                onMomentumScrollEnd={e => {
-                  const index = Math.round(e.nativeEvent.contentOffset.y / 40);
+              <WheelColumn
+                data={monthOptions}
+                selectedIndex={tempDate.getMonth()}
+                onSelectIndex={index => {
                   const newDate = new Date(tempDate);
                   newDate.setMonth(index);
                   setTempDate(newDate);
                 }}
-                renderItem={({ item, index }) => (
-                  <View style={styles.scrollItem}>
-                    <AppText
-                      style={[
-                        styles.scrollText,
-                        index === tempDate.getMonth() && styles.selectedText,
-                      ]}
-                    >
-                      {item.slice(0, 3)}
-                    </AppText>
-                  </View>
-                )}
+                styles={styles}
               />
 
-              <FlatList
-                data={Array.from({ length: 100 }, (_, i) => 1970 + i)}
-                keyExtractor={item => item.toString()}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-                snapToInterval={40}
-                decelerationRate="fast"
-                initialScrollIndex={tempDate.getFullYear() - 1970}
-                getItemLayout={(data, index) => ({
-                  length: 40,
-                  offset: 40 * index,
-                  index,
-                })}
-                onMomentumScrollEnd={e => {
-                  const index = Math.round(e.nativeEvent.contentOffset.y / 40);
+              <WheelColumn
+                data={yearOptions}
+                selectedIndex={tempDate.getFullYear() - 1970}
+                onSelectIndex={index => {
                   const newDate = new Date(tempDate);
                   newDate.setFullYear(1970 + index);
                   setTempDate(newDate);
                 }}
-                renderItem={({ item }) => (
-                  <View style={styles.scrollItem}>
-                    <AppText
-                      style={[
-                        styles.scrollText,
-                        item === tempDate.getFullYear() && styles.selectedText,
-                      ]}
-                    >
-                      {item}
-                    </AppText>
-                  </View>
-                )}
+                styles={styles}
               />
             </View>
-
-            <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.cancelBtn} onPress={toggle}>
-                <AppText style={[styles.btnText, { color: colors.background }]}>
-                  Cancel
-                </AppText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.confirmBtn}
-                onPress={handleConfirm}
-              >
-                <AppText style={styles.btnText}>Confirm</AppText>
-              </TouchableOpacity>
-            </View>
-          </View>
+          </SafeAreaView>
         </View>
       </Modal>
     </View>
@@ -228,24 +260,24 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("800"),
       fontSize: normalize(18),
       color: colors.text,
-      marginTop: 6,
+      marginTop: normalizeSpacing(6),
     },
     highlightBar: {
       position: "absolute",
       top: "50%",
       left: 0,
       right: 0,
-      height: 50,
-      marginTop: -25,
-      borderTopWidth: 1,
-      borderBottomWidth: 1,
+      height: ITEM_HEIGHT,
+      marginTop: -ITEM_HEIGHT / 2,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderBottomWidth: StyleSheet.hairlineWidth,
       borderColor: colors.border,
       pointerEvents: "none",
     },
     dateField: {
       backgroundColor: "inherit",
-      paddingVertical: normalize(14),
-      paddingHorizontal: normalize(14),
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(14),
       borderRadius: 8,
       borderWidth: 1,
       borderColor: colors.border,
@@ -264,64 +296,67 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     modal: {
       backgroundColor: colors.inputBackground,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      padding: 24,
+      borderTopLeftRadius: 14,
+      borderTopRightRadius: 14,
+      paddingHorizontal: normalizeSpacing(16),
     },
-    modalTitle: {
-      fontSize: normalize(20),
-      fontFamily: getFontFamily("800"),
-      textAlign: "left",
+    grabberWrap: {
+      alignItems: "center",
+      paddingVertical: normalizeSpacing(8),
+    },
+    grabber: {
+      width: normalizeSpacing(36),
+      height: normalizeSpacing(5),
+      borderRadius: normalizeSpacing(3),
+      backgroundColor: colors.border,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingBottom: normalizeSpacing(12),
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: colors.border,
+      marginBottom: normalizeSpacing(4),
+    },
+    headerCancel: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.textMuted,
+    },
+    headerTitle: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
       color: colors.text,
+    },
+    headerDone: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("700"),
+      color: colors.primary,
     },
     scrollPickerRow: {
       flexDirection: "row",
       justifyContent: "space-around",
       alignItems: "center",
-      marginBottom: 16,
-      height: 120,
+      marginBottom: normalizeSpacing(8),
+      height: PICKER_HEIGHT,
     },
     scrollContent: {
-      paddingVertical: 40,
+      paddingVertical: SIDE_PADDING,
     },
     scrollItem: {
-      height: 40,
+      height: ITEM_HEIGHT,
       justifyContent: "center",
       alignItems: "center",
     },
     scrollText: {
-      fontSize: normalize(16),
-      fontFamily: getFontFamily("700"),
+      fontSize: normalize(21),
+      fontFamily: getFontFamily("400"),
       color: colors.textMuted,
     },
     selectedText: {
-      fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-    },
-    buttonRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      gap: 10,
-      marginBottom: 10,
-    },
-    cancelBtn: {
-      flex: 1,
-      backgroundColor: colors.text,
-      paddingVertical: 10,
-      borderRadius: 48,
-    },
-    confirmBtn: {
-      flex: 1,
-      backgroundColor: COLORS.primary,
-      paddingVertical: 10,
-      borderRadius: 48,
-    },
-    btnText: {
-      textAlign: "center",
-      fontSize: normalize(18),
-      fontFamily: getFontFamily("700"),
-      color: "white",
     },
   });
 

@@ -8,7 +8,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -70,8 +74,8 @@ export default function CreateSecurityPinScreen() {
               {
                 fontFamily: getFontFamily(400),
                 fontSize: normalize(19),
-                marginTop: 2,
-                marginLeft: 1,
+                marginTop: normalizeSpacing(2),
+                marginLeft: normalizeSpacing(1),
               },
             ]}
           >
@@ -104,9 +108,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background,
     },
     button: {
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
       backgroundColor: COLORS.secondary,
-      padding: 14,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(14),
       borderRadius: 80,
     },
     buttonText: {
@@ -117,10 +122,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollContainer: {
       flexGrow: 1,
-      padding: 20,
+      padding: normalizeSpacing(20),
     },
     header: {
-      marginBottom: 23,
+      marginBottom: normalizeSpacing(23),
     },
     title: {
       fontSize: normalize(22),

@@ -6,7 +6,11 @@ import {
   Animated,
   Easing,
 } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
 
@@ -105,24 +109,24 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background,
       justifyContent: "center",
       alignItems: "center",
-      padding: 24,
+      padding: normalizeSpacing(24),
     },
     card: {
       width: "100%",
       alignItems: "center",
-      marginTop: -200,
+      marginTop: normalizeSpacing(-200),
     },
     title: {
       fontSize: normalize(20),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginTop: 20,
+      marginTop: normalizeSpacing(20),
     },
     stepText: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("400"),
       color: colors.primary,
-      marginBottom: 24,
+      marginBottom: normalizeSpacing(24),
     },
     progressTrack: {
       width: "80%",
@@ -130,7 +134,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.border,
       borderRadius: 3,
       overflow: "hidden",
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
     },
     progressBar: {
       height: "100%",

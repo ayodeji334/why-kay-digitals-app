@@ -2,7 +2,11 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import VerificationForm from "../components/forms/VerificationForm";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import { maskNigerianPhoneNumber } from "../utils/phoneNumber";
@@ -53,8 +57,8 @@ export default function VerificationCodeScreen({ route }: any) {
               {
                 fontFamily: getFontFamily(400),
                 fontSize: normalize(18),
-                marginTop: 2,
-                marginLeft: 1,
+                marginTop: normalizeSpacing(2),
+                marginLeft: normalizeSpacing(1),
                 color: colors.text,
               },
             ]}
@@ -63,7 +67,7 @@ export default function VerificationCodeScreen({ route }: any) {
             <AppText
               style={{
                 fontFamily: getFontFamily("800"),
-                paddingHorizontal: 10,
+                paddingHorizontal: normalizeSpacing(10),
                 color: colors.text,
               }}
             >
@@ -88,10 +92,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollContainer: {
       flexGrow: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     header: {
-      marginBottom: 23,
+      marginBottom: normalizeSpacing(23),
     },
     title: {
       fontSize: normalize(21),

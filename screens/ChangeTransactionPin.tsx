@@ -9,7 +9,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import SetNewTransactionPinForm from "../components/forms/SetNewTransactionPinForm";
 import PasswordInputField from "../components/PasswordInputField";
 import { useForm } from "react-hook-form";
@@ -111,28 +115,28 @@ export default function ChangeTransactionPinScreen() {
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
-    scrollContainer: { flexGrow: 1, paddingHorizontal: 20 },
+    scrollContainer: { flexGrow: 1, paddingHorizontal: normalizeSpacing(20) },
     subtitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
     },
     input: {
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingHorizontal: 15,
-      paddingVertical: 12,
-      marginBottom: 15,
+      paddingHorizontal: normalizeSpacing(15),
+      paddingVertical: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(15),
       fontSize: normalize(16),
     },
     button: {
       backgroundColor: COLORS.primary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 100,
       alignItems: "center",
-      marginTop: 12,
+      marginTop: normalizeSpacing(12),
     },
     buttonText: {
       color: "#fff",

@@ -12,7 +12,11 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useNavigation } from "@react-navigation/native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomLoading from "../components/CustomLoading";
@@ -317,7 +321,7 @@ export default function CryptoSwapScreen() {
       >
         <View style={styles.container}>
           <View>
-            <View style={{ marginBottom: 4 }}>
+            <View style={{ marginBottom: normalizeSpacing(4) }}>
               <SelectInput
                 control={control}
                 name="from_asset"
@@ -338,7 +342,7 @@ export default function CryptoSwapScreen() {
               </AppText>
             </View>
 
-            <View style={{ marginVertical: 4 }}>
+            <View style={{ marginVertical: normalizeSpacing(4) }}>
               <SelectInput
                 control={control}
                 name="to_asset"
@@ -356,7 +360,7 @@ export default function CryptoSwapScreen() {
                 title="Select an asset"
               />
             </View>
-            <View style={{ marginVertical: 4 }}>
+            <View style={{ marginVertical: normalizeSpacing(4) }}>
               <AppText style={styles.label}>Amount (USD)</AppText>
               <Controller
                 control={control}
@@ -430,7 +434,7 @@ export default function CryptoSwapScreen() {
               </AppText>
             </TouchableOpacity>
 
-            <View style={{ paddingVertical: 20 }}>
+            <View style={{ paddingVertical: normalizeSpacing(20) }}>
               <AppText
                 style={{
                   color: colors.textMuted,
@@ -457,21 +461,21 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      padding: normalize(20),
+      padding: normalizeSpacing(20),
       backgroundColor: colors.background,
       justifyContent: "space-between",
-      paddingBottom: 10,
+      paddingBottom: normalizeSpacing(10),
     },
     walletBalance: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: normalize(4),
+      marginBottom: normalizeSpacing(4),
     },
     label: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      marginBottom: normalize(8),
+      marginBottom: normalizeSpacing(8),
       color: colors.text,
     },
     inputContainer: {
@@ -480,20 +484,20 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingHorizontal: normalize(16),
-      paddingVertical: 1,
-      marginBottom: normalize(10),
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(1),
+      marginBottom: normalizeSpacing(10),
       gap: 5,
     },
     dollarSign: {
       fontSize: normalize(23),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginRight: normalize(5),
+      marginRight: normalizeSpacing(5),
     },
     input: {
       flex: 1,
-      paddingVertical: normalize(12),
+      paddingVertical: normalizeSpacing(12),
       fontSize: normalize(22),
       fontFamily: getFontFamily("700"),
       color: colors.text,
@@ -511,40 +515,40 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.error,
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
-      marginBottom: normalize(10),
+      marginBottom: normalizeSpacing(10),
     },
     approx: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      marginBottom: normalize(9),
+      marginBottom: normalizeSpacing(9),
       color: colors.text,
     },
     balance: {
       fontSize: normalize(20),
       fontFamily: getFontFamily("800"),
-      marginBottom: normalize(4),
+      marginBottom: normalizeSpacing(4),
     },
     fee: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      marginBottom: normalize(4),
+      marginBottom: normalizeSpacing(4),
     },
     rate: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      marginBottom: normalize(4),
+      marginBottom: normalizeSpacing(4),
     },
     min: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("800"),
-      marginBottom: normalize(4),
+      marginBottom: normalizeSpacing(4),
       color: COLORS.primary,
     },
     note: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
       color: "#ffffff",
-      marginBottom: normalize(10),
+      marginBottom: normalizeSpacing(10),
     },
     ngn: {
       color: "#fff",
@@ -553,10 +557,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     button: {
       backgroundColor: COLORS.primary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 100,
       alignItems: "center",
-      marginTop: 20,
+      marginTop: normalizeSpacing(20),
     },
     buttonDisabled: {
       backgroundColor: "#cccccc",
@@ -570,12 +574,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     paymentContainer: {
       backgroundColor: COLORS.primary,
       borderRadius: 9,
-      marginVertical: 20,
-      padding: 14,
+      marginVertical: normalizeSpacing(20),
+      padding: normalizeSpacing(14),
     },
     warningContainer: {
-      marginTop: 12,
-      padding: 10,
+      marginTop: normalizeSpacing(12),
+      padding: normalizeSpacing(10),
       backgroundColor: "rgba(255, 0, 0, 0.03)",
       borderRadius: 6,
       borderWidth: 1,

@@ -300,7 +300,11 @@ import * as yup from "yup";
 import NumberInputField from "../NumberInputField";
 import CustomLoading from "../CustomLoading";
 import { COLORS } from "../../constants/colors";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import { showError, showSuccess } from "../../utlis/toast";
 import InfoCard from "../InfoCard";
 import { InfoCircle } from "iconsax-react-nativejs";
@@ -556,7 +560,7 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
           style={{
             justifyContent: "center",
             alignItems: "center",
-            paddingVertical: 14,
+            paddingVertical: normalizeSpacing(14),
           }}
         >
           <OtpInputField control={otpForm.control} name="otp" boxes={6} />
@@ -666,9 +670,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     button: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 100,
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
       justifyContent: "center",
       alignContent: "center",
     },
@@ -695,7 +699,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(17),
     },
     changeNumberLink: {
-      marginTop: 16,
+      marginTop: normalizeSpacing(16),
       alignItems: "center",
     },
     changeNumberText: {
@@ -704,8 +708,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.primaryLight,
     },
     helpLink: {
-      marginTop: 12,
-      marginBottom: 24,
+      marginTop: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(24),
     },
     helpText: {
       fontSize: normalize(17),

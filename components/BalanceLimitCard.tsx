@@ -1,7 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import BalanceCard from "./Dashboard/BalanceCard";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "./AppText";
@@ -87,9 +91,9 @@ export default function BalanceLimitCard({ walletSummary }: any) {
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     limitContainer: {
-      marginTop: 20,
+      marginTop: normalizeSpacing(20),
       backgroundColor: colors.infoCardBackgroundColor,
-      padding: 10,
+      padding: normalizeSpacing(10),
       borderRadius: 10,
     },
     limitHeader: {
@@ -111,7 +115,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       height: 4,
       backgroundColor: "#E5E7EB",
       borderRadius: 3,
-      marginTop: 18,
+      marginTop: normalizeSpacing(18),
     },
     progressBarFill: {
       height: 4,
@@ -121,7 +125,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     limitRange: {
       flexDirection: "row",
       justifyContent: "space-between",
-      marginTop: 4,
+      marginTop: normalizeSpacing(4),
     },
     limitValue: {
       fontFamily: getFontFamily("800"),

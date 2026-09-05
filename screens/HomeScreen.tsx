@@ -10,7 +10,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import ServicesSection from "../components/Dashboard/ServicesSection";
 import { ArrowRight2, Scan } from "iconsax-react-nativejs";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { useUser } from "../stores/authSlice";
 import AssetsSection from "../components/Dashboard/AssetsSection";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -124,8 +128,8 @@ const HomeScreen = () => {
               style={{
                 backgroundColor: COLORS.whiteBackground,
                 borderRadius: 20,
-                paddingHorizontal: 18,
-                paddingVertical: 7,
+                paddingHorizontal: normalizeSpacing(18),
+                paddingVertical: normalizeSpacing(7),
               }}
             > */}
             <ArrowRight2 size={normalize(20)} color="white" />
@@ -142,19 +146,23 @@ const HomeScreen = () => {
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
-    scrollContainer: { flex: 1, paddingHorizontal: 20, paddingBottom: 30 },
+    scrollContainer: {
+      flex: 1,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingBottom: normalizeSpacing(30),
+    },
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      paddingVertical: 20,
+      paddingVertical: normalizeSpacing(20),
     },
     headerLeft: { flexDirection: "row", alignItems: "center" },
     imageWrapper: {
       width: 40,
       height: 40,
       borderRadius: 25,
-      marginRight: 12,
+      marginRight: normalizeSpacing(12),
       overflow: "hidden",
       backgroundColor: colors.inputBackground,
     },
@@ -173,12 +181,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("800"),
       color: colors.text,
     },
-    cryptoSection: { marginBottom: 30 },
+    cryptoSection: { marginBottom: normalizeSpacing(30) },
     sectionHeader: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 30,
+      marginBottom: normalizeSpacing(30),
     },
     sectionTitle: {
       fontSize: normalize(19),
@@ -190,9 +198,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
       backgroundColor: COLORS.primary,
       borderRadius: 16,
-      padding: 18,
+      padding: normalizeSpacing(18),
       gap: 12,
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
     },
     verificationIcon: {
       borderRadius: 20,
@@ -200,7 +208,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       justifyContent: "center",
       alignItems: "center",
-      padding: 4,
+      padding: normalizeSpacing(4),
     },
     verificationText: {
       flex: 1,
@@ -214,7 +222,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     emptyState: {
       borderRadius: 12,
-      paddingHorizontal: 24,
+      paddingHorizontal: normalizeSpacing(24),
       alignItems: "center",
     },
     emptyIcon: {
@@ -224,7 +232,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: "#6c757d",
       justifyContent: "center",
       alignItems: "center",
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
     },
     emptyIconText: {
       color: "#fff",
@@ -242,13 +250,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily(400),
       color: "#666",
       textAlign: "center",
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
       // lineHeight: 16,
     },
     emptyButton: {
       backgroundColor: "#FFA726",
-      paddingHorizontal: 20,
-      paddingVertical: 10,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 20,
     },
     emptyButtonText: {

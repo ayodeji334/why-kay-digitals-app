@@ -167,7 +167,11 @@ import TransactionHistoryScreen from "../screens/TransactionHistory";
 import RatesScreen from "../screens/Rates";
 import WalletScreen from "../screens/WalletScreen";
 import CustomHeader from "../components/CustomHeader";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { useColors } from "../hooks/useTheme";
 import { useUser } from "../stores/authSlice";
 import HalfScreenModal from "../components/HalfScreenModal";
@@ -214,7 +218,7 @@ export default function AppTabs() {
           // },
           tabBarStyle: {
             height: tabBarHeight,
-            paddingTop: 4,
+            paddingTop: normalizeSpacing(4),
             paddingBottom: insets.bottom || 4, // fall back to a small pad if no inset (e.g. older devices)
             backgroundColor: colors.background,
             borderTopColor: colors.tabTopBorderLight,
@@ -227,7 +231,7 @@ export default function AppTabs() {
           headerTitleStyle: {
             fontFamily: getFontFamily(700),
             fontSize: normalize(17),
-            padding: 0,
+            padding: normalizeSpacing(0),
             color: colors.text,
           },
           tabBarLabelStyle: {

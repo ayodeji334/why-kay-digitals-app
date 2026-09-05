@@ -11,7 +11,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { COLORS } from "../constants/colors";
 import { InfoCircle } from "iconsax-react-nativejs";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "../components/AppText";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
 
@@ -88,7 +92,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      paddingVertical: 20,
+      paddingVertical: normalizeSpacing(20),
     },
     loaderContainer: {
       position: "absolute",
@@ -102,7 +106,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background, // semi-transparent background
     },
     loadingText: {
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
       fontSize: 16,
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -111,17 +115,17 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      paddingHorizontal: 30,
-      paddingVertical: 20,
+      paddingHorizontal: normalizeSpacing(30),
+      paddingVertical: normalizeSpacing(20),
     },
     errorIconContainer: {
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
     },
     errorTitle: {
       fontSize: normalize(20),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 10,
+      marginBottom: normalizeSpacing(10),
       textAlign: "center",
     },
     errorText: {
@@ -129,13 +133,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.text,
       textAlign: "center",
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
       // lineHeight: 22,
     },
     retryButton: {
       backgroundColor: COLORS.primary,
-      paddingHorizontal: 24,
-      paddingVertical: 12,
+      paddingHorizontal: normalizeSpacing(24),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 80,
     },
     retryButtonText: {

@@ -193,7 +193,7 @@ import CryptoWalletSection from "../components/wallet/CryptoWalletSection";
 import FiatWalletSection from "../components/wallet/FiatWalletSection";
 import TabSwitcher, { TabOption } from "../components/TabSwitcher";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
-import { normalize } from "../constants/settings";
+import { normalizeSpacing } from "../constants/settings";
 
 type WalletTab = "crypto" | "fiat";
 
@@ -248,11 +248,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background,
     },
     tabContainer: {
-      paddingHorizontal: normalize(20),
+      paddingHorizontal: normalizeSpacing(20),
     },
     tabSwitcher: {
       backgroundColor: colors.inputBackground,
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
     },
     activeTab: {
       backgroundColor: COLORS.primary,
@@ -262,7 +262,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "white",
     },
     scrollContainer: {
-      paddingHorizontal: normalize(20),
-      paddingTop: 20,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingTop: normalizeSpacing(20),
     },
   });

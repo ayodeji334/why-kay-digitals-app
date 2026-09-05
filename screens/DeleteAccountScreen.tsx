@@ -8,7 +8,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import HalfScreenModal from "../components/HalfScreenModal";
 import { removeItem } from "../utlis/storage";
 import { showError } from "../utlis/toast";
@@ -123,7 +127,7 @@ export default function DeleteAccountScreen() {
         contentContainerStyle={styles.contentContainer}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
         ListHeaderComponent={
-          <View style={{ marginBottom: 20 }}>
+          <View style={{ marginBottom: normalizeSpacing(20) }}>
             <AppText style={styles.subtitle}>
               Deleting your account will remove all your data permanently. This
               action cannot be undone. Please let us know the reason for leaving
@@ -202,8 +206,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background,
     },
     contentContainer: {
-      paddingHorizontal: 20,
-      paddingBottom: 40,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingBottom: normalizeSpacing(40),
     },
     subtitle: {
       fontSize: normalize(18),
@@ -215,8 +219,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingVertical: 12,
-      paddingHorizontal: 15,
+      paddingVertical: normalizeSpacing(12),
+      paddingHorizontal: normalizeSpacing(15),
       backgroundColor: colors.inputBackground,
     },
     reasonText: {
@@ -228,9 +232,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      padding: 12,
+      padding: normalizeSpacing(12),
       backgroundColor: colors.inputBackground,
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
       textAlignVertical: "top",
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
@@ -239,10 +243,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     deleteButton: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 38,
       alignItems: "center",
-      marginTop: 40,
+      marginTop: normalizeSpacing(40),
     },
     deleteButtonText: {
       color: "white",

@@ -428,7 +428,11 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import CustomIcon from "../CustomIcon";
 import {
@@ -651,7 +655,7 @@ const ServicesSection = () => {
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
-    container: { flex: 1, marginBottom: 20 },
+    container: { flex: 1, marginBottom: normalizeSpacing(20) },
     servicesGrid: {
       flexDirection: "row",
       flexWrap: "wrap",
@@ -663,14 +667,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       minWidth: "30%",
       alignItems: "center",
       backgroundColor: colors.infoCardBackgroundColor,
-      paddingVertical: normalize(15),
+      paddingVertical: normalizeSpacing(15),
       borderRadius: 10,
       justifyContent: "space-between",
     },
     iconContainer: {
       width: 40,
       height: 40,
-      padding: 10,
+      padding: normalizeSpacing(10),
       borderRadius: 25,
       justifyContent: "center",
       alignItems: "center",

@@ -7,7 +7,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import WalletDetails from "./WalletAddress";
@@ -166,9 +170,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     actionsRow: {
       flexDirection: "row",
-      paddingHorizontal: 20,
-      paddingTop: 14,
-      paddingBottom: 30,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingTop: normalizeSpacing(14),
+      paddingBottom: normalizeSpacing(30),
       backgroundColor: colors.background,
       columnGap: 17,
       borderTopWidth: 1,
@@ -179,8 +183,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: COLORS.primary,
       gap: 6,
       opacity: 1,
-      paddingHorizontal: normalize(14),
-      paddingVertical: normalize(12),
+      paddingHorizontal: normalizeSpacing(14),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 340,
       flex: 1,
     },
@@ -200,27 +204,27 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
-      padding: 18,
+      padding: normalizeSpacing(18),
       borderBottomWidth: 1,
       borderColor: "#d6d6db",
     },
     centerContainer: {
       alignItems: "center",
-      paddingVertical: 20,
-      paddingHorizontal: 18,
+      paddingVertical: normalizeSpacing(20),
+      paddingHorizontal: normalizeSpacing(18),
       minHeight: "100%",
       justifyContent: "space-between",
       gap: 10,
     },
     section: {
       alignItems: "center",
-      paddingTop: 20,
-      paddingHorizontal: 18,
+      paddingTop: normalizeSpacing(20),
+      paddingHorizontal: normalizeSpacing(18),
     },
     qrContainer: {
       width: 250,
       height: 250,
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
       justifyContent: "center",
       alignItems: "center",
       borderColor: "#470505ff",

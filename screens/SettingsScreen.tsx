@@ -9,7 +9,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import React, { useMemo, useState } from "react";
 import { ArrowRight2, Message, Notification } from "iconsax-react-nativejs";
 import DeviceInfo from "react-native-device-info";
@@ -86,7 +90,7 @@ const MenuItem = ({
     >
       <View
         style={{
-          marginRight: 10,
+          marginRight: normalizeSpacing(10),
           backgroundColor: bgColor,
           height: 32,
           width: 32,
@@ -172,7 +176,12 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
       >
-        <View style={[styles.profileSection, { marginVertical: 20 }]}>
+        <View
+          style={[
+            styles.profileSection,
+            { marginVertical: normalizeSpacing(20) },
+          ]}
+        >
           <View
             style={{
               flexDirection: "row",
@@ -244,8 +253,8 @@ export default function SettingsScreen() {
               style={{
                 backgroundColor: COLORS.primary,
                 borderRadius: 900,
-                paddingHorizontal: 15,
-                paddingVertical: 7,
+                paddingHorizontal: normalizeSpacing(15),
+                paddingVertical: normalizeSpacing(7),
                 flexDirection: "row",
                 alignItems: "center",
                 gap: 3,
@@ -265,7 +274,7 @@ export default function SettingsScreen() {
           </View>
         )}
 
-        <Section title="Settings" style={{ marginTop: 20 }}>
+        <Section title="Settings" style={{ marginTop: normalizeSpacing(20) }}>
           <MenuItem
             title="Profile"
             onPress={() => navigation.navigate("Profile" as never)}
@@ -343,7 +352,7 @@ export default function SettingsScreen() {
             }
           />
         </Section>
-        <View style={{ paddingVertical: 20 }}>
+        <View style={{ paddingVertical: normalizeSpacing(20) }}>
           <AppText style={styles.versionText}>Version {appVersion}</AppText>
         </View>
 
@@ -373,24 +382,24 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      paddingBottom: 30,
+      paddingBottom: normalizeSpacing(30),
     },
     versionText: {
       textAlign: "center",
       color: "#888",
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
     },
     scrollContainer: {
       flexGrow: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     imageWrapper: {
       width: 50,
       height: 50,
       borderRadius: 25,
-      marginRight: 12,
+      marginRight: normalizeSpacing(12),
       overflow: "hidden",
       backgroundColor: "#f0f0f0",
     },
@@ -403,7 +412,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
       backgroundColor: colors.infoCardBackgroundColor,
       borderRadius: 16,
-      padding: 18,
+      padding: normalizeSpacing(18),
       gap: 12,
     },
     verificationIcon: {
@@ -412,7 +421,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       justifyContent: "center",
       alignItems: "center",
-      padding: 7,
+      padding: normalizeSpacing(7),
     },
     verificationText: {
       flex: 1,
@@ -429,12 +438,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     section: {
-      marginBottom: 24,
+      marginBottom: normalizeSpacing(24),
     },
     sectionTitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
       color: colors.textMuted,
     },
     profileSection: {
@@ -444,15 +453,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignContent: "center",
     },
     email: {
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
       fontSize: normalize(17),
       fontFamily: getFontFamily("400"),
       color: colors.text,
     },
     editButton: {
       backgroundColor: "#F0FDF4",
-      paddingHorizontal: 16,
-      paddingVertical: 7,
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 60,
       flexDirection: "row",
       gap: 1,
@@ -468,12 +477,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(14),
       fontFamily: getFontFamily("700"),
       color: COLORS.gray,
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
     kycButton: {
       backgroundColor: COLORS.whiteBackground,
-      paddingHorizontal: 16,
-      paddingVertical: 8,
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 6,
       alignSelf: "flex-start",
     },
@@ -486,8 +495,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      paddingVertical: 12,
-      paddingHorizontal: 4,
+      paddingVertical: normalizeSpacing(12),
+      paddingHorizontal: normalizeSpacing(4),
       borderBottomWidth: 0.5,
       borderColor: colors.border,
     },
@@ -503,7 +512,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(16),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      marginTop: 2,
+      marginTop: normalizeSpacing(2),
     },
     arrow: {
       fontSize: normalize(18),
@@ -513,6 +522,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     divider: {
       height: 1,
       backgroundColor: "#D2D2D2",
-      marginVertical: 16,
+      marginVertical: normalizeSpacing(16),
     },
   });

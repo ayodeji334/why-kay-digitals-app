@@ -12,7 +12,11 @@ import { COLORS } from "../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { showSuccess } from "../utlis/toast";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { useAuthStore } from "../stores/authSlice";
 import CustomIcon from "../components/CustomIcon";
 import { CopyIcon, DeleteIcon } from "../assets";
@@ -56,7 +60,7 @@ export default function ProfileScreen() {
         <View
           style={{
             gap: 2,
-            paddingLeft: 10,
+            paddingLeft: normalizeSpacing(10),
           }}
         >
           <AppText style={styles.fieldLabel}>{label}</AppText>
@@ -163,12 +167,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.background,
     },
     copyButton: {
-      marginLeft: 10,
-      padding: 6,
+      marginLeft: normalizeSpacing(10),
+      padding: normalizeSpacing(6),
     },
     header: {
-      paddingHorizontal: 20,
-      paddingVertical: 16,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingVertical: normalizeSpacing(16),
       borderBottomWidth: 1,
       borderBottomColor: COLORS.lightGray,
     },
@@ -180,21 +184,21 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollView: {
       flex: 1,
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     profileHeader: {
       alignItems: "center",
-      padding: 20,
-      marginBottom: 20,
+      padding: normalizeSpacing(20),
+      marginBottom: normalizeSpacing(20),
     },
     imageWrapper: {
       width: 90,
       height: 90,
       borderRadius: 2500,
-      marginRight: 12,
+      marginRight: normalizeSpacing(12),
       overflow: "hidden",
       backgroundColor: "#f0f0f0",
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
     },
     profileImage: {
       width: "100%",
@@ -218,14 +222,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderRadius: 10,
       borderWidth: 0.5,
       borderColor: colors.border,
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
     },
     fieldContainer: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      paddingVertical: 16,
-      paddingHorizontal: 10,
+      paddingVertical: normalizeSpacing(16),
+      paddingHorizontal: normalizeSpacing(10),
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
       gap: 10,
@@ -246,8 +250,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     editButton: {
       backgroundColor: COLORS.secondary,
-      marginTop: 20,
-      paddingVertical: 14,
+      marginTop: normalizeSpacing(20),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 38,
       alignItems: "center",
     },
@@ -257,9 +261,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
     },
     deleteButton: {
-      marginTop: 12,
-      marginBottom: 30,
-      paddingVertical: 14,
+      marginTop: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(30),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 38,
       alignItems: "center",
       borderWidth: 1,

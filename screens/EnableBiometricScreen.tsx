@@ -298,7 +298,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { FingerScan } from "iconsax-react-nativejs";
 import DeviceInfo from "react-native-device-info";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import BiometricService, { BiometryTypes } from "../services/Biometrcs";
 import { showError, showSuccess } from "../utlis/toast";
@@ -570,7 +574,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flex: 1,
       alignItems: "center",
       justifyContent: "space-between",
-      paddingHorizontal: 20,
+      paddingHorizontal: normalizeSpacing(20),
     },
     textContainer: {
       width: "100%",
@@ -581,7 +585,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: "#F5F5F5",
       alignItems: "center",
       justifyContent: "center",
-      padding: 29,
+      padding: normalizeSpacing(29),
       position: "relative",
     },
     enabledBadge: {
@@ -589,8 +593,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       top: 5,
       right: -5,
       backgroundColor: COLORS.primary,
-      paddingHorizontal: 8,
-      paddingVertical: 2,
+      paddingHorizontal: normalizeSpacing(8),
+      paddingVertical: normalizeSpacing(2),
       borderRadius: 10,
     },
     enabledBadgeText: {
@@ -600,7 +604,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     buttonContainer: {
       width: "100%",
-      paddingBottom: 30,
+      paddingBottom: normalizeSpacing(30),
     },
     description: {
       fontFamily: getFontFamily("400"),
@@ -612,10 +616,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     primaryButton: {
       width: "100%",
       backgroundColor: COLORS.secondary,
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 92,
       alignItems: "center",
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
     },
     primaryButtonText: {
       color: "#fff",
@@ -624,7 +628,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     secondaryButton: {
       width: "100%",
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
       alignItems: "center",
       backgroundColor: COLORS.lightGray,

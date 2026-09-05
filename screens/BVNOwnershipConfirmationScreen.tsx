@@ -2,7 +2,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, View, StyleSheet } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { useColors } from "../hooks/useTheme";
 import BVNOwnershipForm from "../components/BVNOwnershipForm";
 
@@ -36,12 +40,12 @@ export default function BVNOwnershipConfirmationScreen() {
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
-    scrollView: { flex: 1, paddingHorizontal: 20 },
+    scrollView: { flex: 1, paddingHorizontal: normalizeSpacing(20) },
     subtitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      marginTop: 16,
+      marginTop: normalizeSpacing(16),
       lineHeight: normalize(25),
     },
     maskedPhone: {
@@ -49,6 +53,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     formSection: {
-      marginTop: 24,
+      marginTop: normalizeSpacing(24),
     },
   });

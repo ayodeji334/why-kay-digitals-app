@@ -10,7 +10,11 @@ import {
 import { ArrowLeft2 } from "iconsax-react-nativejs";
 import { SelectInput } from "../components/SelectInputField";
 import { COLORS } from "../constants/colors";
-import { normalize, getFontFamily } from "../constants/settings";
+import {
+  normalize,
+  getFontFamily,
+  normalizeSpacing,
+} from "../constants/settings";
 import useAxios from "../hooks/useAxios";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -238,7 +242,7 @@ export default function BankAccountModal({
         <ScrollView
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
-          style={{ flex: 1, paddingHorizontal: 16 }}
+          style={{ flex: 1, paddingHorizontal: normalizeSpacing(16) }}
         >
           <SelectInput
             label="Select Bank"
@@ -300,7 +304,7 @@ export default function BankAccountModal({
               {validating ? "Please wait..." : "Save Recipient"}
             </AppText>
           </TouchableOpacity>
-          <View style={{ marginVertical: 30 }}>
+          <View style={{ marginVertical: normalizeSpacing(30) }}>
             <SavedBeneficiaries
               data={data ?? []}
               isLoading={isLoading}
@@ -336,9 +340,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     header: {
       flexDirection: "row",
       alignItems: "center",
-      paddingHorizontal: 16,
-      marginBottom: 26,
-      paddingVertical: 10,
+      paddingHorizontal: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(26),
+      paddingVertical: normalizeSpacing(10),
     },
     title: {
       flex: 1,
@@ -346,15 +350,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginRight: 24,
+      marginRight: normalizeSpacing(24),
     },
     inputContainer: {
-      marginTop: 20,
+      marginTop: normalizeSpacing(20),
     },
     label: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("800"),
-      marginBottom: 3,
+      marginBottom: normalizeSpacing(3),
       color: colors.text,
     },
     // input: {
@@ -369,8 +373,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingHorizontal: 16,
-      paddingVertical: normalize(16),
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(16),
       color: colors.text,
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),
@@ -382,16 +386,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     errorText: {
       color: colors.error,
-      marginTop: 6,
+      marginTop: normalizeSpacing(6),
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
-      marginLeft: 4,
+      marginLeft: normalizeSpacing(4),
     },
     button: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: normalize(16),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 100,
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
     },
     buttonText: {
       color: "#fff",
@@ -402,6 +406,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     text: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
-      marginTop: 5,
+      marginTop: normalizeSpacing(5),
     },
   });

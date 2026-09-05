@@ -13,7 +13,11 @@ import {
   Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import CustomLoading from "../components/CustomLoading";
 import { COLORS } from "../constants/colors";
 import { useAssets } from "../hooks/useAssets";
@@ -322,8 +326,8 @@ const CryptoWalletScreen = () => {
           style={{
             fontSize: normalize(20),
             fontFamily: getFontFamily("400"),
-            marginVertical: normalize(7),
-            paddingVertical: 5,
+            marginVertical: normalizeSpacing(7),
+            paddingVertical: normalizeSpacing(5),
             color: colors.text,
           }}
         >
@@ -331,7 +335,10 @@ const CryptoWalletScreen = () => {
           listed here. Kindly reach out to us through our support channel.
           <Text
             onPress={handleWhatsApp}
-            style={{ color: colors.primaryLight, paddingHorizontal: 8 }}
+            style={{
+              color: colors.primaryLight,
+              paddingHorizontal: normalizeSpacing(8),
+            }}
           >
             {" "}
             Click here
@@ -418,11 +425,14 @@ export default CryptoWalletScreen;
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
-    searchContainer: { paddingHorizontal: 16, paddingVertical: 12 },
+    searchContainer: {
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(12),
+    },
     searchInput: {
       backgroundColor: colors.inputBackground,
-      paddingVertical: normalize(12),
-      paddingHorizontal: normalize(18),
+      paddingVertical: normalizeSpacing(12),
+      paddingHorizontal: normalizeSpacing(18),
       borderRadius: 100,
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
@@ -431,21 +441,21 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
     },
     listContent: {
-      paddingHorizontal: 16,
+      paddingHorizontal: normalizeSpacing(16),
       flexGrow: 1,
     },
     emptyContainer: {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      paddingHorizontal: 30,
+      paddingHorizontal: normalizeSpacing(30),
     },
     emptyTitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily(800),
       color: colors.text,
       textAlign: "center",
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
     emptySubtitle: {
       fontSize: normalize(16),
@@ -457,12 +467,17 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(16),
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
     cryptoLeft: { flexDirection: "row", alignItems: "center" },
-    assetIcon: { width: 30, height: 30, borderRadius: 20, marginRight: 12 },
+    assetIcon: {
+      width: 30,
+      height: 30,
+      borderRadius: 20,
+      marginRight: normalizeSpacing(12),
+    },
     cryptoInfo: { flexDirection: "column" },
     cryptoName: {
       fontSize: normalize(16),

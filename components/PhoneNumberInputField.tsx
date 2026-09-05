@@ -11,7 +11,11 @@ import {
   TextInputProps,
 } from "react-native";
 import { Controller, Control, UseFormTrigger } from "react-hook-form";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { CountryCode, parsePhoneNumberFromString } from "libphonenumber-js";
 
 import CustomIcon from "./CustomIcon";
@@ -337,7 +341,7 @@ const PhoneNumberInputField: React.FC<Props> = ({
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
-    container: { marginBottom: 10 },
+    container: { marginBottom: normalizeSpacing(10) },
     row: { flexDirection: "row", alignItems: "center", gap: 10 },
     countryBox: {
       flexDirection: "row",
@@ -345,8 +349,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingHorizontal: 10,
-      paddingVertical: normalize(16),
+      paddingHorizontal: normalizeSpacing(10),
+      paddingVertical: normalizeSpacing(16),
       backgroundColor: colors.background,
     },
     countryCode: {
@@ -359,8 +363,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingHorizontal: 16,
-      paddingVertical: normalize(16),
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(16),
       color: colors.text,
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),
@@ -369,15 +373,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     errorBorder: { borderColor: colors.error, borderWidth: 1 },
     errorText: {
       color: colors.error,
-      marginTop: 6,
+      marginTop: normalizeSpacing(6),
       fontFamily: getFontFamily("700"),
       fontSize: normalize(17),
-      marginLeft: 4,
+      marginLeft: normalizeSpacing(4),
     },
     label: {
       fontFamily: getFontFamily("800"),
       fontSize: normalize(17),
-      marginBottom: 1,
+      marginBottom: normalizeSpacing(1),
       color: colors.text,
     },
     overlay: {
@@ -388,15 +392,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     modalContainer: {
       flex: 1,
       backgroundColor: colors.background,
-      paddingVertical: 26,
-      paddingHorizontal: 18,
-      marginTop: 40,
+      paddingVertical: normalizeSpacing(26),
+      paddingHorizontal: normalizeSpacing(18),
+      marginTop: normalizeSpacing(40),
       maxHeight: "80%",
       borderTopRightRadius: 12,
       borderTopLeftRadius: 12,
     },
     modalHeader: {
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
@@ -411,12 +415,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(17),
       borderWidth: 1,
       borderColor: colors.border,
-      padding: normalize(14),
+      padding: normalizeSpacing(14),
       borderRadius: 8,
-      marginBottom: 10,
+      marginBottom: normalizeSpacing(10),
     },
     countryRow: {
-      paddingVertical: normalize(14),
+      paddingVertical: normalizeSpacing(14),
       borderBottomWidth: 0.5,
       borderBottomColor: colors.border,
       flexDirection: "row",

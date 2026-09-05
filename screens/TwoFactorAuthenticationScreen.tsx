@@ -10,7 +10,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import QRCode from "react-native-qrcode-svg";
 import { useNavigation } from "@react-navigation/native";
 import { FingerScan } from "iconsax-react-nativejs";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
@@ -285,8 +289,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     scrollContent: {
       flexGrow: 1,
-      paddingHorizontal: 20,
-      paddingBottom: 30,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingBottom: normalizeSpacing(30),
     },
     content: {
       flex: 1,
@@ -295,19 +299,19 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     introContainer: {
       alignItems: "center",
       gap: 20,
-      marginTop: 40,
+      marginTop: normalizeSpacing(40),
     },
     enabledContainer: {
       alignItems: "center",
       gap: 20,
-      marginTop: 40,
+      marginTop: normalizeSpacing(40),
     },
     iconContainer: {
       borderRadius: 40,
       backgroundColor: "#F5F5F5",
       alignItems: "center",
       justifyContent: "center",
-      padding: 30,
+      padding: normalizeSpacing(30),
       position: "relative",
     },
     enabledBadge: {
@@ -315,8 +319,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       top: -5,
       right: -5,
       backgroundColor: COLORS.primary,
-      paddingHorizontal: 8,
-      paddingVertical: 2,
+      paddingHorizontal: normalizeSpacing(8),
+      paddingVertical: normalizeSpacing(2),
       borderRadius: 10,
     },
     enabledBadgeText: {
@@ -332,7 +336,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       // lineHeight: 24,
     },
     qrContainer: {
-      marginVertical: 20,
+      marginVertical: normalizeSpacing(20),
       alignItems: "center",
       gap: 12,
     },
@@ -341,28 +345,28 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      paddingHorizontal: 10,
+      paddingHorizontal: normalizeSpacing(10),
     },
     manualSetupContainer: {
       width: "100%",
       backgroundColor: colors.inputBackground,
       borderRadius: 12,
-      padding: 16,
+      padding: normalizeSpacing(16),
       gap: 4,
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
     },
     row: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
       columnGap: 10,
     },
     setupLabel: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 2,
+      marginBottom: normalizeSpacing(2),
     },
     setupValue: {
       fontSize: normalize(18),
@@ -372,13 +376,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     buttonContainer: {
       width: "100%",
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
       gap: 12,
     },
     primaryButton: {
       width: "100%",
       backgroundColor: COLORS.secondary,
-      paddingVertical: 16,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 92,
       alignItems: "center",
     },
@@ -392,7 +396,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     secondaryButton: {
       width: "100%",
-      paddingVertical: 14,
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
       alignItems: "center",
       backgroundColor: COLORS.lightGray,

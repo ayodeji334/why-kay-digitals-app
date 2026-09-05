@@ -10,7 +10,11 @@ import {
 import CustomLoading from "../components/CustomLoading";
 import { useQuery } from "@tanstack/react-query";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SelectInput } from "../components/SelectInputField";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
@@ -242,7 +246,7 @@ export default function CryptoRatesScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 16 }}
+        contentContainerStyle={{ paddingHorizontal: normalizeSpacing(16) }}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         refreshControl={
@@ -290,7 +294,7 @@ export default function CryptoRatesScreen() {
           activeTabTextStyle={styles.activeTabText}
         />
 
-        <View style={{ marginTop: 20 }}>
+        <View style={{ marginTop: normalizeSpacing(20) }}>
           <SelectInput
             label="Coin"
             options={cryptoOptions}
@@ -300,7 +304,12 @@ export default function CryptoRatesScreen() {
             value={selectedCrypto}
           />
 
-          <View style={{ marginBottom: 2, marginTop: 10 }}>
+          <View
+            style={{
+              marginBottom: normalizeSpacing(2),
+              marginTop: normalizeSpacing(10),
+            }}
+          >
             <AppText style={styles.label}>Amount</AppText>
             <View style={styles.inputContainer}>
               <AppText style={styles.dollarSign}>$</AppText>
@@ -328,7 +337,7 @@ export default function CryptoRatesScreen() {
             </View>
           </View>
 
-          <View style={{ marginVertical: 12 }}>
+          <View style={{ marginVertical: normalizeSpacing(12) }}>
             <AppText style={styles.label}>Expected Amount</AppText>
             <View style={styles.rateBox}>
               <AppText style={styles.dollarSign}>₦</AppText>
@@ -414,15 +423,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     center: { flex: 1, justifyContent: "center", alignItems: "center" },
     tabs: {
       flexDirection: "row",
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
       backgroundColor: "#F3F4F6",
-      padding: 5,
+      padding: normalizeSpacing(5),
       borderRadius: 1000,
       top: -15,
     },
     tabSwitcher: {
       backgroundColor: colors.inputBackground,
-      marginVertical: 10,
+      marginVertical: normalizeSpacing(10),
     },
     activeTab: {
       backgroundColor: COLORS.primary,
@@ -431,14 +440,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     activeTabText: {
       color: "white",
     },
-    tab: { flex: 1, padding: 9, alignItems: "center" },
+    tab: { flex: 1, padding: normalizeSpacing(9), alignItems: "center" },
     inactiveTabText: {
       color: "#000",
       fontFamily: getFontFamily("800"),
       fontSize: normalize(16),
     },
     label: {
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -456,11 +465,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(21),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      paddingLeft: 15,
+      paddingLeft: normalizeSpacing(15),
     },
     input: {
       flex: 1,
-      paddingVertical: normalize(12),
+      paddingVertical: normalizeSpacing(12),
       fontSize: normalize(23),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -475,9 +484,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     // },
     infoContainer: {
       backgroundColor: colors.infoCardBackgroundColor,
-      padding: 12,
+      padding: normalizeSpacing(12),
       borderRadius: 8,
-      marginVertical: 12,
+      marginVertical: normalizeSpacing(12),
       borderWidth: 1,
       borderColor: colors.border,
     },
@@ -485,7 +494,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
     infoLabel: {
       fontSize: normalize(18),
@@ -498,8 +507,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     rateBreakdownRow: {
-      marginTop: 8,
-      paddingTop: 8,
+      marginTop: normalizeSpacing(8),
+      paddingTop: normalizeSpacing(8),
       borderTopWidth: 1,
       borderTopColor: colors.border,
     },
@@ -511,8 +520,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       textAlign: "center",
     },
     coinEquivalentContainer: {
-      marginTop: 8,
-      padding: 8,
+      marginTop: normalizeSpacing(8),
+      padding: normalizeSpacing(8),
       backgroundColor: "rgba(232, 158, 0, 0.1)",
       borderRadius: 6,
       alignItems: "center",
@@ -526,7 +535,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      padding: 12,
+      padding: normalizeSpacing(12),
       backgroundColor: "#fff",
       borderWidth: 1,
       borderColor: "#D1D5DB",
@@ -537,16 +546,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: "#D1D5DB",
       borderRadius: 8,
-      marginTop: 4,
+      marginTop: normalizeSpacing(4),
     },
     dropdownItem: {
-      padding: 12,
+      padding: normalizeSpacing(12),
       borderBottomWidth: 1,
       borderBottomColor: "#E5E7EB",
     },
     rateBox: {
       backgroundColor: colors.background,
-      paddingVertical: normalize(12),
+      paddingVertical: normalizeSpacing(12),
       borderRadius: 8,
       borderWidth: 1,
       borderColor: colors.border,
@@ -556,14 +565,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(24),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      paddingLeft: 2,
+      paddingLeft: normalizeSpacing(2),
     },
     tradeButton: {
       backgroundColor: COLORS.secondary,
-      padding: 14,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(14),
       borderRadius: 120,
       alignItems: "center",
-      marginVertical: 16,
+      marginVertical: normalizeSpacing(16),
     },
     tradeButtonText: {
       color: "#fff",
@@ -573,7 +583,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     bottomNav: {
       flexDirection: "row",
       justifyContent: "space-around",
-      paddingVertical: 12,
+      paddingVertical: normalizeSpacing(12),
       borderTopWidth: 1,
       borderTopColor: "#E5E7EB",
       backgroundColor: "#fff",

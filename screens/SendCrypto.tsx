@@ -938,7 +938,11 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useNavigation, RouteProp, useRoute } from "@react-navigation/native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomLoading from "../components/CustomLoading";
@@ -1385,7 +1389,10 @@ export default function SendScreen() {
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: normalizeSpacing(40),
+        }}
         refreshControl={
           <RefreshControl refreshing={isFetching} onRefresh={onRefresh} />
         }
@@ -1623,17 +1630,17 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      paddingHorizontal: normalize(20),
+      paddingHorizontal: normalizeSpacing(20),
       backgroundColor: colors.background,
     },
     scrollContainer: {
       flex: 1,
-      paddingVertical: 20,
+      paddingVertical: normalizeSpacing(20),
       backgroundColor: colors.background,
     },
     linkContainer: {
-      marginBottom: 20,
-      padding: 12,
+      marginBottom: normalizeSpacing(20),
+      padding: normalizeSpacing(12),
       backgroundColor: colors.inputBackground,
       borderRadius: 8,
       borderWidth: 1,
@@ -1658,14 +1665,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     label: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
-      marginBottom: 3,
+      marginBottom: normalizeSpacing(3),
       color: colors.text,
     },
     error: {
       color: colors.error,
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
-      marginBottom: 10,
+      marginBottom: normalizeSpacing(10),
     },
     inputContainer: {
       flexDirection: "row",
@@ -1673,21 +1680,21 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 8,
-      paddingHorizontal: normalize(16),
-      marginBottom: 10,
+      paddingHorizontal: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(10),
       gap: 5,
     },
     feeBreakdownContainer: {
       backgroundColor: colors.inputBackground,
       borderRadius: 12,
-      padding: 16,
+      padding: normalizeSpacing(16),
       gap: 10,
     },
     feeBreakdownTitle: {
       color: colors.text,
       fontFamily: getFontFamily("800"),
       fontSize: 13,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     feeRow: {
       flexDirection: "row",
@@ -1714,8 +1721,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     feeWarning: {
       backgroundColor: "#3a1a1a",
       borderRadius: 8,
-      padding: 10,
-      marginTop: 4,
+      padding: normalizeSpacing(10),
+      marginTop: normalizeSpacing(4),
     },
     feeWarningText: {
       color: colors.error,
@@ -1726,11 +1733,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(24),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      marginRight: normalize(5),
+      marginRight: normalizeSpacing(5),
     },
     input: {
       flex: 1,
-      paddingVertical: normalize(12),
+      paddingVertical: normalizeSpacing(12),
       fontSize: normalize(22),
       fontFamily: getFontFamily("800"),
       color: colors.text,
@@ -1738,15 +1745,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     approx: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      marginBottom: normalize(6),
+      marginBottom: normalizeSpacing(6),
       color: COLORS.primary,
     },
     walletBalance: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      marginBottom: 4,
-      paddingBottom: 1,
+      marginBottom: normalizeSpacing(4),
+      paddingBottom: normalizeSpacing(1),
     },
     walletAddressRow: {
       flexDirection: "row",
@@ -1754,16 +1761,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       gap: 10,
     },
     scanButton: {
-      padding: 9,
+      padding: normalizeSpacing(9),
       borderRadius: 10,
       backgroundColor: COLORS.primary,
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
       justifyContent: "center",
       alignItems: "center",
     },
     warningContainer: {
-      marginVertical: 12,
-      padding: 10,
+      marginVertical: normalizeSpacing(12),
+      padding: normalizeSpacing(10),
       backgroundColor: "rgba(255, 0, 0, 0.03)",
       borderRadius: 6,
       borderWidth: 1,
@@ -1776,10 +1783,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       textAlign: "center",
     },
     button: {
-      paddingVertical: normalize(14),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 100,
       alignItems: "center",
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
     },
     buttonText: {
       color: "#fff",
@@ -1791,8 +1798,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       top: 50,
       right: 20,
       backgroundColor: COLORS.primary,
-      paddingHorizontal: 20,
-      paddingVertical: 7,
+      paddingHorizontal: normalizeSpacing(20),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 20,
     },
     closeScannerText: {

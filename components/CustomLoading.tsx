@@ -2,6 +2,7 @@ import React from "react";
 import { View, Modal, ActivityIndicator, StyleSheet } from "react-native";
 import { useColors } from "../hooks/useTheme";
 
+import { normalizeSpacing } from "../constants/settings";
 type CustomLoadingProps = {
   loading: boolean;
   color?: string;
@@ -37,7 +38,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     loaderContainer: {
       backgroundColor: "white",
-      padding: 10,
+      padding: normalizeSpacing(10),
       borderRadius: 10,
       alignItems: "center",
     },

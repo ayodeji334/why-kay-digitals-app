@@ -358,7 +358,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { showSuccess } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
@@ -528,7 +532,9 @@ const ReferralAndEarnScreen: React.FC = () => {
           </View>
         </View> */}
 
-        <View style={[styles.section, { marginVertical: 30 }]}>
+        <View
+          style={[styles.section, { marginVertical: normalizeSpacing(30) }]}
+        >
           <AppText
             style={[styles.sectionTitle, { fontFamily: getFontFamily("800") }]}
           >
@@ -587,16 +593,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     content: {
       flex: 1,
-      padding: 20,
+      padding: normalizeSpacing(20),
     },
     section: {
-      padding: 0,
+      padding: normalizeSpacing(0),
     },
     sectionTitle: {
       fontSize: normalize(17),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      marginBottom: 13,
+      marginBottom: normalizeSpacing(13),
     },
     referralCodeContainer: {
       borderWidth: 1,
@@ -605,7 +611,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       justifyContent: "space-between",
       alignItems: "center",
       borderRadius: 10,
-      paddingVertical: 20,
+      paddingVertical: normalizeSpacing(20),
       backgroundColor: colors.inputBackground,
     },
     referralCodeInfo: {
@@ -616,7 +622,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(25),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     referralActions: {
       flexDirection: "row",
@@ -625,11 +631,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     referralButton: {
       flexDirection: "row",
       alignItems: "center",
-      paddingHorizontal: 12,
-      paddingVertical: 8,
+      paddingHorizontal: normalizeSpacing(12),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 8,
       gap: 6,
-      marginTop: 10,
+      marginTop: normalizeSpacing(10),
     },
     referralButtonText: {
       fontSize: normalize(18),
@@ -642,14 +648,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
       backgroundColor: COLORS.primary,
       borderRadius: 10,
-      padding: 16,
-      marginTop: 12,
+      padding: normalizeSpacing(16),
+      marginTop: normalizeSpacing(12),
     },
     pointsLabel: {
       fontSize: normalize(14),
       fontFamily: getFontFamily("400"),
       color: "#fff",
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     pointsValue: {
       fontSize: normalize(20),
@@ -662,16 +668,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       backgroundColor: colors.inputBackground,
-      padding: 5,
+      padding: normalizeSpacing(5),
     },
     stepCard: {
-      padding: 10,
+      padding: normalizeSpacing(10),
     },
     stepTitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
     },
     stepDescription: {
       fontSize: normalize(18),
@@ -684,14 +690,14 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 12,
-      padding: 16,
-      marginBottom: 10,
+      padding: normalizeSpacing(16),
+      marginBottom: normalizeSpacing(10),
     },
     redeemBannerTitle: {
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
     },
     redeemBannerText: {
       fontSize: normalize(17),
@@ -704,8 +710,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: COLORS.secondary,
-      marginVertical: 20,
-      paddingVertical: normalize(16),
+      marginVertical: normalizeSpacing(20),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 40,
       gap: 8,
     },

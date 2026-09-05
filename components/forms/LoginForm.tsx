@@ -7,7 +7,11 @@ import TextInputField from "../TextInputField";
 import PasswordInputField from "../PasswordInputField";
 import { COLORS } from "../../constants/colors";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { showError } from "../../utlis/toast";
 import { AxiosError } from "axios";
@@ -166,13 +170,13 @@ export default LoginForm;
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: {
-      paddingVertical: 20,
+      paddingVertical: normalizeSpacing(20),
     },
     button: {
       backgroundColor: COLORS.secondary,
-      paddingVertical: normalize(16),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 100,
-      marginTop: 30,
+      marginTop: normalizeSpacing(30),
       justifyContent: "center",
       alignContent: "center",
     },
@@ -189,7 +193,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
     },
     link: {
-      paddingVertical: 10,
+      paddingVertical: normalizeSpacing(10),
       fontFamily: getFontFamily("700"),
       fontSize: normalize(18),
       color: colors.primaryLight,

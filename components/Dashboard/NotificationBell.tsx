@@ -26,7 +26,7 @@ const NotificationBell = () => {
       onPress={() => navigation.navigate("Notifications" as never)}
       style={styles.notificationButton}
     >
-      <Notification size={20} color="#333" />
+      <Notification size={17} color="#333" />
       {hasUnread && <View style={styles.redDot} />}
     </TouchableOpacity>
   );
@@ -43,8 +43,8 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
   },
   notificationButton: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#BBBBBB",

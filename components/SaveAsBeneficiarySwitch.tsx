@@ -1,7 +1,11 @@
 import React from "react";
 import { View, Switch, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
 
@@ -42,16 +46,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginTop: 15,
-      marginBottom: 20,
-      paddingHorizontal: 4,
-      paddingVertical: 5,
+      marginTop: normalizeSpacing(15),
+      marginBottom: normalizeSpacing(20),
+      paddingHorizontal: normalizeSpacing(4),
+      paddingVertical: normalizeSpacing(5),
     },
     switchLabel: {
       fontSize: normalize(18),
       color: colors.text,
       fontFamily: getFontFamily("800"),
-      marginBottom: 6,
+      marginBottom: normalizeSpacing(6),
     },
   });
 

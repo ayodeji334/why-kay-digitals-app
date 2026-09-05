@@ -9,7 +9,11 @@ import {
   Pressable,
   Platform,
 } from "react-native";
-import { getFontFamily, normalize } from "../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../constants/settings";
 import { COLORS } from "../constants/colors";
 import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
@@ -81,7 +85,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
           {/* {showCloseButton && (
             <TouchableOpacity
               activeOpacity={0.9}
-              style={[styles.closeButton, { marginTop: 20 }]}
+              style={[styles.closeButton, { marginTop: normalizeSpacing(20) }]}
               onPress={onClose}
             >
               <AppText style={styles.closeButtonText}>Close</AppText>
@@ -104,12 +108,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.inputBackground,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
-      padding: 24,
+      padding: normalizeSpacing(24),
     },
     modalTitle: {
       fontSize: normalize(19),
       fontFamily: getFontFamily("800"),
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
       color: colors.text,
     },
     closeButton: {
@@ -118,9 +122,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       right: 16,
       zIndex: 10,
       borderRadius: 50,
-      paddingVertical: 6,
-      paddingHorizontal: 12,
-      marginBottom: 20,
+      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(12),
+      marginBottom: normalizeSpacing(20),
     },
     closeButtonText: {
       textAlign: "center",

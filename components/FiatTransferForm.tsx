@@ -1,7 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import { Controller } from "react-hook-form";
-import { normalize, getFontFamily } from "../constants/settings";
+import {
+  normalize,
+  getFontFamily,
+  normalizeSpacing,
+} from "../constants/settings";
 import { SelectInput } from "./SelectInputField";
 import TextInputField from "./TextInputField";
 import { formatWithCommas, parseToNumber } from "../screens/SwapCryptoScreen";
@@ -40,7 +44,7 @@ export default function TransferForm({
       />
 
       {type === "crypto" && (
-        <View style={{ marginVertical: 4 }}>
+        <View style={{ marginVertical: normalizeSpacing(4) }}>
           <SelectInput
             control={control}
             name="asset_id"
@@ -52,7 +56,7 @@ export default function TransferForm({
         </View>
       )}
 
-      <View style={{ marginVertical: 4 }}>
+      <View style={{ marginVertical: normalizeSpacing(4) }}>
         <AppText style={styles.label}>
           Amount in {type === "fiat" ? "Naira (₦)" : "Dollars (USD)"}
         </AppText>
@@ -86,7 +90,7 @@ export default function TransferForm({
       </View>
 
       {type === "fiat" && (
-        <View style={{ marginVertical: 4 }}>
+        <View style={{ marginVertical: normalizeSpacing(4) }}>
           <TextInputField
             label="Narration"
             control={control}
@@ -100,11 +104,11 @@ export default function TransferForm({
 }
 
 const styles = StyleSheet.create({
-  form: { marginVertical: 10 },
+  form: { marginVertical: normalizeSpacing(10) },
   label: {
     fontFamily: getFontFamily("700"),
     fontSize: normalize(18),
-    marginBottom: 4,
+    marginBottom: normalizeSpacing(4),
   },
   inputContainer: {
     flexDirection: "row",
@@ -112,19 +116,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: normalize(8),
-    paddingHorizontal: normalize(16),
-    marginBottom: normalize(10),
+    paddingHorizontal: normalizeSpacing(16),
+    marginBottom: normalizeSpacing(10),
     gap: 5,
   },
   dollarSign: {
     fontSize: normalize(26),
     fontFamily: getFontFamily("700"),
     color: "#000",
-    marginRight: normalize(5),
+    marginRight: normalizeSpacing(5),
   },
   input: {
     flex: 1,
-    paddingVertical: normalize(16),
+    paddingVertical: normalizeSpacing(16),
     fontSize: normalize(26),
     fontFamily: getFontFamily("700"),
     color: "#000",

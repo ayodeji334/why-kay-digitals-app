@@ -7,7 +7,11 @@ import {
   Image,
 } from "react-native";
 import ErrorState from "../ErrorState";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import { formatAmount } from "../../libs/formatNumber";
 import { COLORS } from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
@@ -177,13 +181,13 @@ const AssetsSection = () => {
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     section: {
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
     },
     sectionHeader: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 20,
+      marginBottom: normalizeSpacing(20),
     },
     sectionTitle: {
       fontSize: normalize(18),
@@ -194,8 +198,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1,
       borderColor: colors.primaryLight,
       borderRadius: 200,
-      paddingHorizontal: normalize(29),
-      paddingVertical: normalize(9),
+      paddingHorizontal: normalizeSpacing(29),
+      paddingVertical: normalizeSpacing(8),
     },
     sellAllText: {
       color: colors.primaryLight,
@@ -208,9 +212,9 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     assetCard: {
       backgroundColor: "#EFF7EC",
       borderRadius: 12,
-      paddingHorizontal: 16,
-      paddingVertical: 9,
-      marginRight: 12,
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(9),
+      marginRight: normalizeSpacing(12),
       minWidth: 200,
     },
     assetHeader: {
@@ -223,7 +227,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderRadius: 20,
       justifyContent: "center",
       alignItems: "center",
-      marginRight: 10,
+      marginRight: normalizeSpacing(10),
     },
     assetSymbol: {
       color: "#fff",
@@ -245,7 +249,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: "#000",
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     assetBalance: {
       fontSize: normalize(18),
@@ -261,7 +265,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       color: "#666",
-      marginBottom: 4,
+      marginBottom: normalizeSpacing(4),
     },
     assetValue: {
       fontSize: normalize(18),
@@ -275,7 +279,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     loadingContainer: {
       backgroundColor: "#f8f9fa",
       borderRadius: 12,
-      padding: 24,
+      padding: normalizeSpacing(24),
       alignItems: "center",
     },
     loadingText: {
@@ -294,13 +298,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(14),
       color: colors.error,
       fontFamily: getFontFamily("400"),
-      marginBottom: 12,
+      marginBottom: normalizeSpacing(12),
       textAlign: "center",
     },
     retryButton: {
       backgroundColor: colors.error,
-      paddingHorizontal: 16,
-      paddingVertical: 8,
+      paddingHorizontal: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 20,
     },
     retryButtonText: {
@@ -312,7 +316,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     emptyState: {
       backgroundColor: colors.background,
       borderRadius: 12,
-      padding: 24,
+      padding: normalizeSpacing(24),
       alignItems: "center",
       borderWidth: 1,
       borderColor: "#4A9237",
@@ -321,7 +325,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("800"),
       color: colors.text,
-      marginBottom: 8,
+      marginBottom: normalizeSpacing(8),
       textAlign: "center",
     },
     emptyDescription: {
@@ -329,13 +333,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
       textAlign: "center",
-      marginBottom: 16,
+      marginBottom: normalizeSpacing(16),
       // lineHeight: 16,
     },
     emptyButton: {
       backgroundColor: COLORS.secondary,
-      paddingHorizontal: 30,
-      paddingVertical: 8,
+      paddingHorizontal: normalizeSpacing(30),
+      paddingVertical: normalizeSpacing(14),
       borderRadius: 20,
     },
     emptyButtonText: {

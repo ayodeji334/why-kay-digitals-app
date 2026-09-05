@@ -5,7 +5,11 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import PasswordInputField from "../PasswordInputField";
 import { COLORS } from "../../constants/colors";
-import { getFontFamily, normalize } from "../../constants/settings";
+import {
+  getFontFamily,
+  normalize,
+  normalizeSpacing,
+} from "../../constants/settings";
 import CustomLoading from "../CustomLoading";
 import { AxiosError } from "axios";
 import { showError, showSuccess } from "../../utlis/toast";
@@ -102,13 +106,13 @@ export default ChangePasswordForm;
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
+    paddingVertical: normalizeSpacing(20),
   },
   button: {
     backgroundColor: COLORS.secondary,
-    paddingVertical: normalize(14),
+    paddingVertical: normalizeSpacing(14),
     borderRadius: 100,
-    marginTop: 30,
+    marginTop: normalizeSpacing(30),
     alignItems: "center",
   },
   buttonText: {
