@@ -161,18 +161,16 @@ export default function IdentityVerificationScreen() {
             </TouchableOpacity>
           </View>
         ) : ( */}
-        <>
-          <AppText style={styles.subtitle}>
-            We'll authenticate your National Identification Number (NIN) by
-            matching it with a live selfie for secure identity verification.
-            This process ensures regulatory compliance and account security.
-          </AppText>
+        <AppText style={styles.subtitle}>
+          We'll authenticate your National Identification Number (NIN) by
+          matching it with the details attached to your Bank Verfication Number
+          (BVN) for secure identity verification. This process ensures
+          regulatory compliance and account security.
+        </AppText>
 
-          <View style={styles.formSection}>
-            <NINVerificationForm />
-          </View>
-        </>
-        {/* )} */}
+        <View style={styles.formSection}>
+          <NINVerificationForm />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

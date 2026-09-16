@@ -61,7 +61,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
         }}
       >
         {IconComponent}
-        <View style={{ flex: 1, gap: 4 }}>
+        <View style={{ flex: 1, gap: 10 }}>
           <AppText style={[styles.title]}>{title}</AppText>
           {typeof description === "string" ? (
             <AppText style={styles.description}>{description}</AppText>

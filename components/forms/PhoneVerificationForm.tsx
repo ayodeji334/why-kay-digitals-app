@@ -307,7 +307,7 @@ import {
 } from "../../constants/settings";
 import { showError, showSuccess } from "../../utlis/toast";
 import InfoCard from "../InfoCard";
-import { InfoCircle } from "iconsax-react-nativejs";
+import { InfoCircle, Whatsapp } from "iconsax-react-nativejs";
 import { useAuthStore } from "../../stores/authSlice";
 import useAxios from "../../hooks/useAxios";
 import { useNavigation } from "@react-navigation/native";
@@ -382,6 +382,11 @@ const otpSchema = yup.object({
     .length(6, "Code must be 6 digits"),
 });
 
+// Fixed, independent of however long the backend keeps the OTP itself
+// valid (expiresAt) — this is just "how long before you can ask for
+// another one", the standard resend-cooldown pattern.
+const RESEND_COOLDOWN_SECONDS = 60;
+
 type VerificationStep = "phone" | "otp";
 
 interface PhoneNumberFormProps {
@@ -400,6 +405,19 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
   const [resendCooldown, setResendCooldown] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Which channel the current code was actually sent through (mirrors the
+  // backend's own response rather than assuming) — drives both the display
+  // text and which number handleResend re-sends to. The backend has no
+  // separate "whatsappNumber" field — switching channel just re-points
+  // `phone` itself at whatever number the user entered for WhatsApp, since
+  // it might differ from the SIM they're verifying via SMS.
+  const [channel, setChannel] = useState<"sms" | "whatsapp">("sms");
+  // Two SMS attempts (the initial send + one resend) without success is the
+  // signal to offer WhatsApp as a fallback delivery channel.
+  const [smsAttemptCount, setSmsAttemptCount] = useState(0);
+  const [showWhatsAppInput, setShowWhatsAppInput] = useState(false);
+  const canOfferWhatsApp = channel === "sms" && smsAttemptCount >= 2;
+
   const setStep = (next: VerificationStep) => {
     setStepState(next);
     onStepChange?.(next);
@@ -409,30 +427,24 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
 
   const styles = makeStyles(colors);
 
-  // Drives the countdown off the OTP's actual server-issued expiry instead
-  // of a fixed local timer, so it can't drift out of sync with when the
-  // code the user actually holds stops being valid.
-  const startResendCooldown = (expiresAt: string) => {
+  const startResendCooldown = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
 
-    const secondsUntilExpiry = () =>
-      Math.max(
-        0,
-        Math.round((new Date(expiresAt).getTime() - Date.now()) / 1000),
-      );
-
-    setResendCooldown(secondsUntilExpiry());
+    setResendCooldown(RESEND_COOLDOWN_SECONDS);
 
     intervalRef.current = setInterval(() => {
-      const remaining = secondsUntilExpiry();
-      setResendCooldown(remaining);
-
-      if (remaining <= 0 && intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
+      setResendCooldown(prev => {
+        if (prev <= 1) {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
   };
 
@@ -456,24 +468,38 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
     defaultValues: { otp: "" },
   });
 
+  const whatsappForm = useForm({
+    resolver: yupResolver(phoneSchema),
+    mode: "onChange",
+    defaultValues: { phoneNumber: "" },
+  });
+
   const onSubmitPhone = async (data: any) => {
     try {
+      // `channel` here is the user's own choice from the SMS/WhatsApp
+      // toggle on this screen, made before the code is ever sent — not
+      // just the after-the-fact fallback for when SMS hasn't worked.
       const response = await post("/auth/phone-otp/send", {
         phone: data.phoneNumber,
+        channel,
       });
       const result = response.data?.data;
 
       setPhoneNumber(result?.phoneNumber ?? data.phoneNumber);
       setOtpUuid(result?.uuid ?? null);
+      const confirmedChannel = result?.channel === "whatsapp" ? "whatsapp" : "sms";
+      setChannel(confirmedChannel);
+      setSmsAttemptCount(confirmedChannel === "sms" ? 1 : 0);
+      setShowWhatsAppInput(false);
       setStep("otp");
 
-      if (result?.expiresAt) {
-        startResendCooldown(result.expiresAt);
-      }
+      startResendCooldown();
 
       showSuccess(
         response.data?.message ??
-          "A verification code has been sent to your phone",
+          `A verification code has been sent to your phone${
+            confirmedChannel === "whatsapp" ? " via WhatsApp" : ""
+          }`,
       );
     } catch (err: any) {
       if (err instanceof AxiosError) {
@@ -522,19 +548,25 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
     }
   };
 
+  // Re-sends through whichever channel most recently succeeded — once the
+  // user has switched to WhatsApp, "Resend code" keeps using WhatsApp
+  // rather than silently falling back to SMS.
   const handleResend = async () => {
     if (resendCooldown > 0) return;
 
     try {
       const response = await post("/auth/phone-otp/send", {
         phone: phoneNumber,
+        channel,
       });
       const result = response.data?.data;
 
       setOtpUuid(result?.uuid ?? null);
 
-      if (result?.expiresAt) {
-        startResendCooldown(result.expiresAt);
+      startResendCooldown();
+
+      if (channel === "sms") {
+        setSmsAttemptCount(count => count + 1);
       }
 
       otpForm.reset();
@@ -553,6 +585,42 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
     }
   };
 
+  // Sends the OTP to a (possibly different) WhatsApp number instead of the
+  // SMS-registered one, once SMS delivery hasn't worked after a couple of
+  // tries.
+  const handleSendViaWhatsApp = whatsappForm.handleSubmit(async data => {
+    try {
+      const response = await post("/auth/phone-otp/send", {
+        phone: data.phoneNumber,
+        channel: "whatsapp",
+      });
+      const result = response.data?.data;
+
+      setOtpUuid(result?.uuid ?? null);
+      setChannel("whatsapp");
+      setPhoneNumber(result?.phoneNumber ?? data.phoneNumber);
+      setShowWhatsAppInput(false);
+      otpForm.reset();
+      setStep("otp");
+
+      startResendCooldown();
+
+      showSuccess(
+        response.data?.message ??
+          "A verification code has been sent to your WhatsApp number",
+      );
+    } catch (err: any) {
+      if (err instanceof AxiosError) {
+        const errorMessage =
+          err.response?.data?.message ??
+          "Unable to send a code via WhatsApp at the moment";
+        showError(errorMessage);
+      } else {
+        showError("An unexpected error occurred. Please try again.");
+      }
+    }
+  });
+
   if (step === "otp") {
     return (
       <View style={styles.form}>
@@ -567,7 +635,8 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
         </View>
 
         <AppText style={styles.instruction}>
-          We sent a code to {phoneNumber}.{" "}
+          We sent a code to {phoneNumber}
+          {channel === "whatsapp" ? " via WhatsApp" : ""}.{" "}
           {resendCooldown > 0 ? (
             <AppText style={styles.resendDisabled}>
               Resend code in {resendCooldown}s
@@ -578,6 +647,25 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
             </AppText>
           )}
         </AppText>
+
+        {canOfferWhatsApp && !showWhatsAppInput && (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.whatsappPrompt}
+            onPress={() => {
+              whatsappForm.setValue("phoneNumber", phoneNumber, {
+                shouldValidate: true,
+              });
+              setShowWhatsAppInput(true);
+              setStep("phone");
+            }}
+          >
+            <Whatsapp size={18} color={colors.primary} variant="Bold" />
+            <AppText style={styles.whatsappPromptText}>
+              Still not getting it? Get your code on WhatsApp instead
+            </AppText>
+          </TouchableOpacity>
+        )}
 
         <InfoCard
           IconComponent={<InfoCircle size={17} />}
@@ -617,6 +705,59 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
     );
   }
 
+  if (showWhatsAppInput) {
+    return (
+      <View style={styles.form}>
+        <PhoneNumberInputField
+          label="WhatsApp Number"
+          control={whatsappForm.control}
+          name="phoneNumber"
+          placeholder="Enter WhatsApp number"
+          maxLength={11}
+          disableCodeSelector={true}
+        />
+
+        <InfoCard
+          IconComponent={<Whatsapp size={17} />}
+          title="Get your code on WhatsApp"
+          description={[
+            "We'll send a new verification code to this number via WhatsApp.",
+            "It can be different from the phone number you're verifying — enter whichever number has WhatsApp on it.",
+          ]}
+        />
+
+        <TouchableOpacity
+          disabled={
+            !whatsappForm.formState.isValid ||
+            whatsappForm.formState.isSubmitting
+          }
+          activeOpacity={0.8}
+          style={styles.whatsappButton}
+          onPress={handleSendViaWhatsApp}
+        >
+          <AppText style={styles.buttonText}>
+            {whatsappForm.formState.isSubmitting
+              ? "Sending…"
+              : "Send Code via WhatsApp"}
+          </AppText>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.changeNumberLink}
+          onPress={() => {
+            setShowWhatsAppInput(false);
+            setStep("otp");
+          }}
+        >
+          <AppText style={styles.changeNumberText}>Back</AppText>
+        </TouchableOpacity>
+
+        <CustomLoading loading={whatsappForm.formState.isSubmitting} />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.form}>
       {/* <NumberInputField
@@ -631,10 +772,29 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
         label="Phone Number"
         control={phoneForm.control}
         name="phoneNumber"
-        // excludedCountryCodes={["US", "GB", "CN"]}
         placeholder="Enter phone number"
         maxLength={11}
+        disableCodeSelector={true}
       />
+
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={styles.whatsappPrompt}
+        onPress={() =>
+          setChannel(prev => (prev === "whatsapp" ? "sms" : "whatsapp"))
+        }
+      >
+        <Whatsapp
+          size={18}
+          color={colors.primary}
+          variant={channel === "whatsapp" ? "Bold" : "Outline"}
+        />
+        <AppText style={styles.whatsappPromptText}>
+          {channel === "whatsapp"
+            ? "Send code via SMS instead"
+            : "Send code via WhatsApp instead"}
+        </AppText>
+      </TouchableOpacity>
 
       <InfoCard
         IconComponent={<InfoCircle size={17} />}
@@ -655,7 +815,13 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
         style={styles.button}
         onPress={phoneForm.handleSubmit(onSubmitPhone)}
       >
-        <AppText style={styles.buttonText}>Continue</AppText>
+        <AppText style={styles.buttonText}>
+          {phoneForm.formState.isSubmitting
+            ? "Sending…"
+            : channel === "whatsapp"
+            ? "Send Code via WhatsApp"
+            : "Send Code via SMS"}
+        </AppText>
       </TouchableOpacity>
 
       <CustomLoading loading={phoneForm.formState.isSubmitting} />
@@ -697,6 +863,27 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "#999",
       fontFamily: getFontFamily("700"),
       fontSize: normalize(17),
+    },
+    whatsappPrompt: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      marginTop: normalizeSpacing(14),
+    },
+    whatsappPromptText: {
+      color: colors.primary,
+      fontFamily: getFontFamily("700"),
+      fontSize: normalize(18),
+      textAlign: "center",
+    },
+    whatsappButton: {
+      backgroundColor: colors.primary,
+      paddingVertical: normalizeSpacing(14),
+      borderRadius: 100,
+      marginTop: normalizeSpacing(12),
+      justifyContent: "center",
+      alignContent: "center",
     },
     changeNumberLink: {
       marginTop: normalizeSpacing(16),

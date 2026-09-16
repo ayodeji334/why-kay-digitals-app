@@ -12,6 +12,7 @@ import { AppText } from "../components/AppText";
 import BiometricLoginButton from "../components/BiometricLoginBtn";
 import { useBiometricLogin } from "../hooks/useBiometricLogin";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import LiveChatButton from "../components/LiveChatButton";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -81,6 +82,7 @@ export default function LoginScreen() {
           </AppText>
         </View>
       </ScrollView>
+      <LiveChatButton />
     </SafeAreaView>
   );
 }

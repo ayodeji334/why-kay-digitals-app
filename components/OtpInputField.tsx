@@ -188,8 +188,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     container: {
       flexDirection: "row",
       gap: 10,
-      alignItems: "flex-start",
-      justifyContent: "flex-start",
+      alignItems: "center",
+      justifyContent: "center",
     },
     box: {
       width: normalize(48),

@@ -99,7 +99,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     activeTabText: {
       color: colors.text,
-      fontWeight: getFontFamily(800),
+      fontFamily: getFontFamily(800),
       textTransform: "capitalize",
     },
   });

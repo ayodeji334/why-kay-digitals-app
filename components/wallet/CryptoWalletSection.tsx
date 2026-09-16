@@ -742,7 +742,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       overflow: "hidden",
     },
     generateButton: {
-      paddingVertical: normalizeSpacing(14),
+      paddingVertical: normalizeSpacing(10),
       paddingHorizontal: normalizeSpacing(19),
       borderRadius: 30,
       borderColor: colors.border,

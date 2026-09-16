@@ -70,17 +70,17 @@ const AssetsSection = () => {
     refetchIntervalInBackground: true,
   });
 
-  const filteredAssets = useMemo(() => {
-    if (!Array.isArray(assets) || assets.length === 0) {
-      return [];
-    }
+  // const filteredAssets = useMemo(() => {
+  //   if (!Array.isArray(assets) || assets.length === 0) {
+  //     return [];
+  //   }
 
-    return [...assets].sort((a, b) => {
-      const aPrice = Number(a?.market_current_value) || 0;
-      const bPrice = Number(b?.market_current_value) || 0;
-      return bPrice - aPrice;
-    });
-  }, [assets]);
+  //   // return [...assets].sort((a, b) => {
+  //   //   const aPrice = Number(a?.market_current_value) || 0;
+  //   //   const bPrice = Number(b?.market_current_value) || 0;
+  //   //   return bPrice - aPrice;
+  //   // });
+  // }, [assets]);
 
   if (isLoading) {
     return <LoadingState message="Loading assets market rates..." />;
@@ -113,14 +113,14 @@ const AssetsSection = () => {
         )}
       </View>
 
-      {filteredAssets.length > 0 ? (
+      {assets.length > 0 ? (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.assetsList}
         >
-          {filteredAssets.map((asset: any) => (
+          {assets.map((asset: any) => (
             <View key={asset.uuid} style={styles.assetCard}>
               <View style={styles.assetHeader}>
                 {asset.logo_url && (

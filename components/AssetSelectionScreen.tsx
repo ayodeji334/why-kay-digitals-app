@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
-  Text,
   FlatList,
   TouchableOpacity,
   Image,
@@ -92,8 +91,6 @@ const AssetSelectionScreen = ({
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
       <StatusBar barStyle="dark-content" />
-
-      {/* ✅ Animated wrapper for the whole screen */}
       <Animated.View
         style={{ flex: 1, transform: [{ translateX: slideAnim }] }}
       >

@@ -86,9 +86,11 @@ const NINVerificationForm = () => {
         IconComponent={<InfoCircle color={COLORS.primary} size={18} />}
         title="Why NIN Verification is Required?"
         description={[
-          "NIN verification helps us comply with national identity regulations and maintain the highest security standards for your account.",
-          "It ensures proper identity validation and prevents fraudulent activities on your account.",
-          "Verified accounts enjoy enhanced security features and complete access to all platform services.",
+          "Verification helps us confirm that you are the rightful account holder and provides access to Whykay’s verified services",
+          "Need help? Contact our support team",
+          // "NIN verification helps us comply with national identity regulations and maintain the highest security standards for your account.",
+          // "It ensures proper identity validation and prevents fraudulent activities on your account.",
+          // "Verified accounts enjoy enhanced security features and complete access to all platform services.",
         ]}
       />
 

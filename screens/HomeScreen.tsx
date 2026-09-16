@@ -107,7 +107,7 @@ const HomeScreen = () => {
 
         <FiatWalletBalanceCard />
 
-        <AssetsSection />
+        {/* <AssetsSection /> */}
 
         {!hasCompleteVerification && (
           <Pressable

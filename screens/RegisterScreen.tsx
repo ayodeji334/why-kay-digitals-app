@@ -21,6 +21,7 @@ import RegisterForm, {
 import { AppText } from "../components/AppText";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
 import { useCallback, useRef, useState } from "react";
+import LiveChatButton from "../components/LiveChatButton";
 
 export default function RegisterScreen() {
   const colors = useColors();
@@ -106,6 +107,8 @@ export default function RegisterScreen() {
           </AppText>
         </View>
       </ScrollView>
+
+      <LiveChatButton />
     </SafeAreaView>
   );
 }

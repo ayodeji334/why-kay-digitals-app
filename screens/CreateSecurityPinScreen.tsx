@@ -20,6 +20,7 @@ import * as yup from "yup";
 import OtpInputField from "../components/OtpInputField";
 import { AppText } from "../components/AppText";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import LiveChatButton from "../components/LiveChatButton";
 
 type FormData = {
   pin: string;
@@ -97,6 +98,8 @@ export default function CreateSecurityPinScreen() {
           <AppText style={styles.buttonText}>Continue</AppText>
         </TouchableOpacity>
       </ScrollView>
+
+      <LiveChatButton />
     </SafeAreaView>
   );
 }

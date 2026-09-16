@@ -27,6 +27,7 @@ import { AppText } from "../components/AppText";
 import { useBiometricPromptStore } from "../stores/biometricPromptSlice";
 import { refreshBiometricState } from "../stores/biometricSlice";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import LiveChatButton from "../components/LiveChatButton";
 
 type FormData = {
   pin: string;
@@ -135,6 +136,8 @@ export default function ConfirmSecurityPinScreen() {
       </ScrollView>
 
       <CustomLoading loading={isLoading} />
+
+      <LiveChatButton />
     </SafeAreaView>
   );
 }

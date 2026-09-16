@@ -17,6 +17,7 @@ import {
   normalizeSpacing,
 } from "../constants/settings";
 import { AppText } from "../components/AppText";
+import LiveChatButton from "../components/LiveChatButton";
 import { PRIVACY_WEB_URL, TERMS_WEB_URL } from "../config";
 
 const { height: screenHeight } = Dimensions.get("window");

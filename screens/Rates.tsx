@@ -50,8 +50,6 @@ export default function CryptoRatesScreen() {
     },
   });
 
-  console.log(data);
-
   const handleVerifyNow = () => {
     setShowPhoneModal(false);
     navigation.navigate("PhoneNumberVerification" as never);
@@ -258,6 +256,14 @@ export default function CryptoRatesScreen() {
           />
         }
       >
+        <TouchableOpacity
+          onPress={() => navigation.navigate("RateMarket" as never)}
+          activeOpacity={0.8}
+          style={styles.marketLink}
+        >
+          <AppText style={styles.marketLinkText}>View Market Table</AppText>
+        </TouchableOpacity>
+
         {/* {(["sell", "buy"] as TradeTab[]).map(tab => (
             <TouchableOpacity
               key={tab}
@@ -428,6 +434,16 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       padding: normalizeSpacing(5),
       borderRadius: 1000,
       top: -15,
+    },
+    marketLink: {
+      alignSelf: "flex-end",
+      marginTop: normalizeSpacing(12),
+    },
+    marketLinkText: {
+      color: COLORS.primary,
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("700"),
+      textDecorationLine: "underline",
     },
     tabSwitcher: {
       backgroundColor: colors.inputBackground,

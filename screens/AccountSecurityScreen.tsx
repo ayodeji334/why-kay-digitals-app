@@ -22,6 +22,8 @@ import {
   KeyIcon,
   PadlockIcon,
   ShieldCheckIcon,
+  EmailIcon,
+  CallIcon,
 } from "../assets";
 import CustomIcon from "../components/CustomIcon";
 import { AppText } from "../components/AppText";
@@ -124,6 +126,18 @@ export default function AccountSecurityScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={{ marginTop: normalizeSpacing(20) }}>
+          <MenuItem
+            title="Update Email"
+            subtitle="Change the email address linked to your account"
+            onPress={() => navigation.navigate("ChangeEmail" as never)}
+            IconComponent={<CustomIcon source={EmailIcon} size={20} />}
+          />
+          <MenuItem
+            title="Update Phone Number"
+            subtitle="Change the phone number linked to your account"
+            onPress={() => navigation.navigate("ChangePhoneNumber" as never)}
+            IconComponent={<CustomIcon source={CallIcon} size={20} />}
+          />
           <MenuItem
             title="Change Password"
             subtitle="Update your login password to keep your account secure"

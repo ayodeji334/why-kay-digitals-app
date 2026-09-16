@@ -177,6 +177,7 @@ import { useUser } from "../stores/authSlice";
 import HalfScreenModal from "../components/HalfScreenModal";
 import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import RateMarketScreen from "../screens/RateMarketScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -308,7 +309,7 @@ export default function AppTabs() {
         />
         <Tab.Screen
           name="Rates"
-          component={RatesScreen}
+          component={RateMarketScreen}
           listeners={{
             tabPress: guardTabPress,
           }}

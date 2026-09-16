@@ -15,6 +15,7 @@ export interface AccountTier {
       deposit: TierLimit;
       single_withdrawal: TierLimit;
       daily_withdrawal: TierLimit;
+      monthly_deposit: TierLimit;
     };
     crypto: {
       transfer: TierLimit;

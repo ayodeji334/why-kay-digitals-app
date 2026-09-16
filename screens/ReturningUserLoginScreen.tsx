@@ -14,6 +14,7 @@ import BiometricLoginButton from "../components/BiometricLoginBtn";
 import { useBiometricLogin } from "../hooks/useBiometricLogin";
 import { capitalizeFirst } from "../libs/helpers";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import LiveChatButton from "../components/LiveChatButton";
 
 export default function ReturningUserLoginScreen() {
   const navigation = useNavigation();
@@ -85,6 +86,8 @@ export default function ReturningUserLoginScreen() {
           </AppText>
         </View>
       </ScrollView>
+
+      <LiveChatButton />
     </SafeAreaView>
   );
 }

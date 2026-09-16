@@ -1,11 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  StatusBar,
   Platform,
   UIManager,
   LayoutAnimation,
@@ -50,18 +48,25 @@ export const mapTierToDisplay = (
       items: [
         {
           name: "Single Withdrawal Limit",
-          value: tier.limits.fiat.single_withdrawal.formatted,
+          value: tier?.limits?.fiat.single_withdrawal?.formatted ?? 0,
         },
         {
           name: "Daily Withdrawal Limit",
-          value: tier.limits.fiat.daily_withdrawal.formatted,
+          value: tier?.limits?.fiat?.daily_withdrawal?.formatted ?? 0,
+        },
+        {
+          name: "Monthly Withdrawal Limit",
+          value: tier?.limits?.fiat?.monthly_deposit?.formatted ?? 0,
         },
       ],
     },
     {
       category: "Fiat Deposit",
       items: [
-        { name: "Deposit Limit", value: tier.limits.fiat.deposit.formatted },
+        {
+          name: "Deposit Limit",
+          value: tier?.limits?.fiat?.deposit?.formatted ?? 0,
+        },
       ],
     },
     {
@@ -69,10 +74,10 @@ export const mapTierToDisplay = (
       items: [
         {
           name: "Transfer Limit",
-          value: tier.limits.crypto.transfer.formatted,
+          value: tier?.limits?.crypto?.transfer?.formatted ?? 0,
         },
-        { name: "Buy Limit", value: tier.limits.crypto.buy.formatted },
-        { name: "Sell", value: tier.limits.crypto.sell.formatted },
+        { name: "Buy Limit", value: tier?.limits?.crypto?.buy?.formatted ?? 0 },
+        { name: "Sell", value: tier?.limits?.crypto?.sell?.formatted ?? 0 },
       ],
     },
     {
@@ -80,7 +85,7 @@ export const mapTierToDisplay = (
       items: [
         {
           name: "Utility Bills Limit",
-          value: tier.limits.utility_bills.formatted,
+          value: tier?.limits?.utility_bills?.formatted ?? 0,
         },
       ],
     },
@@ -96,6 +101,8 @@ const AccountLimitsScreen = () => {
   const styles = makeStyles(colors);
 
   const { data: rawTiers, isLoading, isError, refetch } = useAccountTiers();
+
+  console.log(rawTiers);
 
   const accountTiers = useMemo(
     () =>

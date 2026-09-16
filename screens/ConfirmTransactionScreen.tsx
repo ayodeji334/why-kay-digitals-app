@@ -15,6 +15,7 @@ import {
 } from "../constants/settings";
 import {
   CommonActions,
+  useFocusEffect,
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
@@ -22,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import OtpInputField from "../components/OtpInputField";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import CustomLoading from "../components/CustomLoading";
 import useAxios from "../hooks/useAxios";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,6 +31,11 @@ import { showError } from "../utlis/toast";
 import { AxiosError } from "axios";
 import { AppText } from "../components/AppText";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import StepUpVerificationModal, {
+  StepUpResult,
+} from "../components/StepUpVerificationModal";
+import { useStepUpAvailability } from "../hooks/useStepUpAvailability";
+import { HIGH_VALUE_WITHDRAWAL_THRESHOLD } from "../constants/transactionLimits";
 
 type FormData = {
   pin: string;
@@ -47,7 +53,7 @@ export default function ConfirmTransactionScreen() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const route: any = useRoute();
   const queryClient = useQueryClient();
-  const { payload } = route.params;
+  const { payload, highValueWithdrawalThreshold } = route.params;
   const { control, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: { pin: "" },
@@ -55,7 +61,53 @@ export default function ConfirmTransactionScreen() {
   const colors = useColors();
   const styles = makeStyles(colors);
 
-  const handleContinue = async (values: FormData) => {
+  // WithdrawalScreen forwards the real threshold from the wallet summary
+  // (`high_value_withdrawal_threshold`) — only fall back to the static
+  // default if a caller didn't pass one (e.g. summary hadn't loaded yet).
+  // Either way this is UI-only: the backend enforces the real limit
+  // itself regardless of what this screen decides to show.
+  const stepUpThreshold =
+    highValueWithdrawalThreshold ?? HIGH_VALUE_WITHDRAWAL_THRESHOLD;
+
+  // Only fiat withdrawal has a step-up requirement — the backend's
+  // authenticator_code/biometric_* fields are specific to
+  // POST /transactions/withdrawal, not the other transaction types this
+  // same confirmation screen is reused for (crypto swap, gift cards, ...).
+  const isWithdrawal = payload?.type === "WITHDRAWAL";
+  const requiresStepUpByAmount =
+    isWithdrawal && Number(payload?.amount) > stepUpThreshold;
+
+  // The backend also requires step-up once a withdrawal trips
+  // max_daily_withdrawals_before_step_up or withdrawal_velocity_window_minutes
+  // (see wallet summary) — neither of those can be evaluated client-side
+  // (no count of today's withdrawals or last-withdrawal timestamp is
+  // exposed), so this starts as just the amount check and flips on
+  // reactively if the submission itself comes back flagged as needing it.
+  const [requiresStepUp, setRequiresStepUp] = useState(requiresStepUpByAmount);
+
+  const { hasAnyStepUpMethod } = useStepUpAvailability();
+
+  // Snapshot of the PIN the user entered when step-up was triggered —
+  // held only long enough to resume submission once the modal (or an
+  // Account Security detour) hands back a verified factor.
+  const [pendingPin, setPendingPin] = useState<string | null>(null);
+  const [showStepUpModal, setShowStepUpModal] = useState(false);
+  // True while the user has been sent to Account Security to set up an
+  // authenticator or biometrics — re-checked on refocus so the modal
+  // reopens automatically once they actually have one, without requiring
+  // an extra "Continue" tap.
+  const [awaitingStepUpSetup, setAwaitingStepUpSetup] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (awaitingStepUpSetup && hasAnyStepUpMethod) {
+        setAwaitingStepUpSetup(false);
+        setShowStepUpModal(true);
+      }
+    }, [awaitingStepUpSetup, hasAnyStepUpMethod]),
+  );
+
+  const submitTransaction = async (pin: string, stepUp?: StepUpResult) => {
     try {
       setIsLoading(true);
 
@@ -64,8 +116,9 @@ export default function ConfirmTransactionScreen() {
       console.log(rest);
 
       const response = await post(url, {
-        transaction_pin: values.pin,
+        transaction_pin: pin,
         ...rest,
+        ...(stepUp ?? {}),
       });
 
       queryClient.invalidateQueries({ queryKey: ["fiat-balance"] });
@@ -116,17 +169,55 @@ export default function ConfirmTransactionScreen() {
       }
     } catch (err) {
       if (err instanceof AxiosError) {
-        console.log(err?.response?.status);
-        if (err.response?.status == 500) {
-          return showError("Something went wrong");
-        } else {
-          showError(err.response?.data?.message || "Something went wrong");
-        }
+        console.log(err?.response?.data);
+        const backendRequiresStepUp =
+          err.response?.data?.data?.requires_step_up === true;
+
         // showError(err.response?.data?.message || "Something went wrong");
+
+        if (backendRequiresStepUp) {
+          setRequiresStepUp(true);
+          setPendingPin(pin);
+          setTimeout(() => setShowStepUpModal(true), 600);
+          return;
+        }
+
+        showError(err.response?.data?.message || "Something went wrong");
+      } else {
+        return showError("Something went wrong. Please try again later");
       }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleContinue = (values: FormData) => {
+    if (requiresStepUp) {
+      setPendingPin(values.pin);
+      setShowStepUpModal(true);
+      return;
+    }
+
+    submitTransaction(values.pin);
+  };
+
+  const handleStepUpVerified = (stepUp: StepUpResult) => {
+    setShowStepUpModal(false);
+    if (pendingPin) {
+      submitTransaction(pendingPin, stepUp);
+    }
+    setPendingPin(null);
+  };
+
+  const handleStepUpClose = () => {
+    setShowStepUpModal(false);
+    setPendingPin(null);
+  };
+
+  const handleStepUpSetupRequired = () => {
+    setShowStepUpModal(false);
+    setAwaitingStepUpSetup(true);
+    navigation.navigate("AccountSecurity" as never);
   };
 
   return (
@@ -189,6 +280,18 @@ export default function ConfirmTransactionScreen() {
       </ScrollView>
 
       <CustomLoading loading={isLoading} />
+
+      {requiresStepUp && (
+        <StepUpVerificationModal
+          visible={showStepUpModal}
+          amount={Number(payload?.amount) || 0}
+          accountNumber={payload?.account_number ?? ""}
+          threshold={stepUpThreshold}
+          onClose={handleStepUpClose}
+          onVerified={handleStepUpVerified}
+          onSetUpRequired={handleStepUpSetupRequired}
+        />
+      )}
     </SafeAreaView>
   );
 }

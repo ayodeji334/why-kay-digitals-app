@@ -55,11 +55,7 @@ const HalfScreenModal = ({
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           {showCloseButton && (
-            <Pressable
-              style={styles.closeButton}
-              hitSlop={100}
-              onPress={onClose}
-            >
+            <Pressable style={styles.closeButton} onPress={onClose}>
               <CustomIcon
                 source={CloseIcon}
                 color={COLORS.primary}
@@ -148,8 +144,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     closeButton: {
       position: "absolute",
-      top: 16,
-      right: 16,
+      top: 10,
+      right: 10,
       zIndex: 10,
       borderRadius: 50,
       paddingVertical: normalizeSpacing(14),

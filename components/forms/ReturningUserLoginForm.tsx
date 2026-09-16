@@ -15,13 +15,12 @@ import CustomLoading from "../CustomLoading";
 import { showError } from "../../utlis/toast";
 import { AxiosError } from "axios";
 import useAxios from "../../hooks/useAxios";
-import { useAuthStore, useUser } from "../../stores/authSlice";
-import { OneSignal } from "react-native-onesignal";
+import { useUser } from "../../stores/authSlice";
 import { AppText } from "../AppText";
-import { useBiometricPromptStore } from "../../stores/biometricPromptSlice";
-import { refreshBiometricState } from "../../stores/biometricSlice";
+import { useCompleteLogin } from "../../hooks/useCompleteLogin";
 import { useColors } from "../../hooks/useTheme";
-import DeviceInfo from "react-native-device-info";
+import { getDeviceMeta } from "../../utlis/device";
+import { resolveDefaultDeviceVerificationOption } from "../../utlis/deviceVerification";
 
 const loginSchema = yup.object().shape({
   password: yup.string().required("Password is required"),
@@ -33,12 +32,10 @@ type ReturningUserLoginFormInputs = {
 
 const ReturningUserLoginForm: React.FC = () => {
   const { post } = useAxios();
-  const setToken = useAuthStore(state => state.setToken);
-  const setUser = useAuthStore(state => state.setUser);
   const userDetail = useUser();
-  const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
+  const completeLogin = useCompleteLogin();
   const colors = useColors();
   const styles = makeStyles(colors);
 
@@ -51,34 +48,68 @@ const ReturningUserLoginForm: React.FC = () => {
     try {
       setLoading(true);
 
-      const userOneSignalID = await OneSignal.User.getOnesignalId();
+      const deviceMeta = await getDeviceMeta();
 
       const res = await post("/auth/login", {
         login: userDetail?.email || userDetail?.username,
         password,
-        device_id: userOneSignalID,
-        device_name: DeviceInfo.getModel() ?? null,
+        ...deviceMeta,
       });
 
-      const { auth, user } = res.data?.data ?? {};
+      const data = res.data?.data ?? {};
+
+      // Password was correct, but this device hasn't been seen before —
+      // the backend has already emailed/pushed a "new device" alert and is
+      // holding the real session pending a selfie or OTP challenge.
+      if (data.requiresDeviceVerification) {
+        const login = userDetail?.email || userDetail?.username;
+        const screenName =
+          resolveDefaultDeviceVerificationOption(login) === "selfie"
+            ? "DeviceSelfieVerification"
+            : "DeviceOtpVerification";
+
+        navigation.navigate(
+          screenName as never,
+          {
+            verificationToken: data.verificationToken,
+            deviceId: data.deviceId ?? deviceMeta.device_id,
+            login,
+          } as never,
+        );
+        return;
+      }
+
+      // Password was correct, but the email hasn't been verified yet — the
+      // backend has already sent a fresh code and is withholding the real
+      // session until it's confirmed.
+      if (data.is_email_verified === false) {
+        showError(
+          res.data?.message ??
+            "Please verify your email before logging in. Code has been sent to your email.",
+        );
+
+        navigation.navigate(
+          "VerifyCode" as never,
+          {
+            email: data.email ?? userDetail?.email ?? userDetail?.username,
+          } as never,
+        );
+        return;
+      }
+
+      const { auth, user } = data;
       if (!auth?.accessToken || !auth?.refreshToken || !user) {
         throw new Error("Invalid login response");
       }
 
-      setToken(auth.accessToken, auth.refreshToken);
-      setUser(user);
-
-      await useBiometricPromptStore.getState().hydrate();
-      await refreshBiometricState();
-
-      setIsAuthenticated(true);
+      await completeLogin(auth, user);
     } catch (err: any) {
+      console.log(err?.response);
       if (err instanceof AxiosError) {
         const errorMessage =
           err.response?.data?.message ?? "Unable to login. Please try again.";
         showError(errorMessage);
       } else {
-        console.error("Unexpected login error:", err);
         showError("An unexpected error occurred. Please try again.");
       }
     } finally {

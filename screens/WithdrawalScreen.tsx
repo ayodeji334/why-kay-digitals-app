@@ -33,6 +33,7 @@ import InfoCard from "../components/InfoCard";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { HIGH_VALUE_WITHDRAWAL_THRESHOLD } from "../constants/transactionLimits";
 
 export default function WithdrawScreen() {
   const { apiGet } = useAxios();
@@ -58,6 +59,13 @@ export default function WithdrawScreen() {
   const dailyLimit = walletSummary?.daily_limit ?? 1000000;
   const singleLimit = walletSummary?.single_limit ?? 1000000;
   const todayVolume = walletSummary?.total_fiat_transfer_today ?? 0;
+  // The backend now returns the real threshold above which a withdrawal
+  // needs an authenticator code or biometric signature — fall back to the
+  // client-side default only if it's missing (e.g. summary hasn't loaded
+  // yet), never treat the fallback as authoritative.
+  const highValueWithdrawalThreshold =
+    walletSummary?.high_value_withdrawal_threshold ??
+    HIGH_VALUE_WITHDRAWAL_THRESHOLD;
 
   // Fetch withdrawal fee from backend
   const { data: withdrawalChargeData, refetch } = useQuery({
@@ -194,7 +202,10 @@ export default function WithdrawScreen() {
       return;
     }
 
-    navigation.navigate("ConfirmTransaction" as never, { payload });
+    navigation.navigate("ConfirmTransaction" as never, {
+      payload,
+      highValueWithdrawalThreshold,
+    });
   };
 
   const handleProceed = () => {
@@ -202,6 +213,7 @@ export default function WithdrawScreen() {
     setLoading(false);
     navigation.navigate("ConfirmTransaction" as never, {
       payload: pendingPayload,
+      highValueWithdrawalThreshold,
     });
   };
 

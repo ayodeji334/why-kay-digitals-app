@@ -272,8 +272,8 @@ const makeScreenStyles = (colors: ReturnType<typeof useColors>) =>
     },
     chatBtn: {
       flexDirection: "row",
-      paddingVertical: normalizeSpacing(14),
-      paddingHorizontal: normalizeSpacing(12),
+      paddingVertical: normalizeSpacing(13),
+      paddingHorizontal: normalizeSpacing(19),
       alignItems: "center",
       columnGap: 3,
       borderWidth: 1,

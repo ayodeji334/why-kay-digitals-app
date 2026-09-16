@@ -16,15 +16,12 @@ import CustomLoading from "../CustomLoading";
 import { showError } from "../../utlis/toast";
 import { AxiosError } from "axios";
 import useAxios from "../../hooks/useAxios";
-import { useAuthStore } from "../../stores/authSlice";
-import { OneSignal } from "react-native-onesignal";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppText } from "../AppText";
-import { refreshBiometricState } from "../../stores/biometricSlice";
-import { useBiometricPromptStore } from "../../stores/biometricPromptSlice";
-import { useBiometricLogin } from "../../hooks/useBiometricLogin";
+import { useCompleteLogin } from "../../hooks/useCompleteLogin";
 import { useColors } from "../../hooks/useTheme";
-import DeviceInfo from "react-native-device-info";
+import { getDeviceMeta } from "../../utlis/device";
+import { resolveDefaultDeviceVerificationOption } from "../../utlis/deviceVerification";
 
 const loginSchema = yup.object().shape({
   login: yup.string().required("Email or Username is required"),
@@ -39,12 +36,9 @@ type LoginFormInputs = {
 const LoginForm: React.FC = () => {
   const { post } = useAxios();
   const queryClient = useQueryClient();
-  const setToken = useAuthStore(state => state.setToken);
-  const setUser = useAuthStore(state => state.setUser);
-  const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
   const navigation: any = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
-  const { clearBiometricsIfDifferentUser } = useBiometricLogin();
+  const completeLogin = useCompleteLogin();
   const colors = useColors();
   const styles = makeStyles(colors);
 
@@ -56,58 +50,59 @@ const LoginForm: React.FC = () => {
     try {
       setLoading(true);
 
-      const userOneSignalID = await OneSignal.User.getOnesignalId();
+      const deviceMeta = await getDeviceMeta();
 
       const res = await post("/auth/login", {
         login,
         password,
-        device_id: userOneSignalID,
-        device_name: DeviceInfo.getModel() ?? null,
+        ...deviceMeta,
       });
 
-      if (res?.data?.data?.is_email_verified) {
-        showError(
-          "Please verify your email before logging in. Code has been sent to your email.",
-        );
+      const data = res.data?.data ?? {};
+
+      // Password was correct, but this device hasn't been seen before —
+      // the backend has already emailed/pushed a "new device" alert and is
+      // holding the real session pending a selfie or OTP challenge.
+      if (data.requiresDeviceVerification) {
+        const screenName =
+          resolveDefaultDeviceVerificationOption(login) === "selfie"
+            ? "DeviceSelfieVerification"
+            : "DeviceOtpVerification";
 
         navigation.navigate(
-          "VerifyCode" as never,
-          { email: res?.data?.data?.email ?? "" } as never,
+          screenName as never,
+          {
+            verificationToken: data.verificationToken,
+            deviceId: data.deviceId ?? deviceMeta.device_id,
+            login,
+          } as never,
         );
         return;
       }
 
-      const { auth, user } = res.data?.data ?? {};
-
-      if (!auth && !res?.data?.data?.is_email_verified) {
+      // Password was correct, but the email hasn't been verified yet — the
+      // backend has already sent a fresh code and is withholding the real
+      // session until it's confirmed.
+      if (data.is_email_verified === false) {
         showError(
-          "Please verify your email before logging in. Code has been sent to your email.",
+          res.data?.message ??
+            "Please verify your email before logging in. Code has been sent to your email.",
         );
 
         navigation.navigate(
           "VerifyCode" as never,
-          { email: res?.data?.data?.email ?? "" } as never,
+          { email: data.email ?? login } as never,
         );
         return;
       }
+
+      const { auth, user } = data;
 
       if (!auth?.accessToken || !auth?.refreshToken || !user) {
         throw new Error("Invalid login response");
       }
 
-      // fetch wallets
-      queryClient.prefetchQuery({ queryKey: ["assets"] });
-      queryClient.prefetchQuery({ queryKey: ["banks"] });
-      queryClient.prefetchQuery({ queryKey: ["supported-pairs"] });
-
-      setToken(auth.accessToken, auth.refreshToken);
-      setUser(user);
-
-      await clearBiometricsIfDifferentUser(user.uuid);
-      await useBiometricPromptStore.getState().hydrate();
-      await refreshBiometricState();
-
-      setIsAuthenticated(true);
+      await completeLogin(auth, user);
     } catch (err: any) {
       if (err instanceof AxiosError) {
         const errorMessage =

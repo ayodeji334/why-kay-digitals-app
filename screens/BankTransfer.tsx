@@ -676,10 +676,15 @@ const BankTransferScreen = () => {
             IconComponent={<InfoCircle size={18} />}
             title="Important Notes:"
             description={[
-              "Transfers typically reflect within 5-10 minutes",
-              "A transaction fee will be deducted from your wallet balance for each deposit",
-              "If payment is made using a name that does not match your registered details, the funds will be held for 5 business days for review before a refund is processed.",
-              "Deposits into your account attract a processing fee of 1% of the transaction amount, capped at a maximum of ₦2,000 for transaction of ₦200,000 and above",
+              "Payments must be made using the same name registered on your Whykay account",
+              "⁠Transfers typically reflect in your account within 5–10 minutes.",
+              "⁠A transaction fee will be deducted from your wallet balance for each deposit.",
+              "⁠Deposits attract a 1% processing fee, capped at a maximum of ₦2,000 for transactions of ₦200,000 and above.",
+              "⁠If a payment is made using a name that does not match your registered account details, the funds will be placed on hold for 7 business days for review. If the payment cannot be verified, a refund will be processed.",
+              // "Transfers typically reflect within 5-10 minutes",
+              // "A transaction fee will be deducted from your wallet balance for each deposit",
+              // "If payment is made using a name that does not match your registered details, the funds will be held for 5 business days for review before a refund is processed.",
+              // "Deposits into your account attract a processing fee of 1% of the transaction amount, capped at a maximum of ₦2,000 for transaction of ₦200,000 and above",
             ]}
           />
 

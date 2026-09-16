@@ -43,6 +43,7 @@ interface Props {
   onChangeText?: (val: string) => void;
   defaultCountryCode?: CountryCode;
   excludedCountryCodes?: string[];
+  disableCodeSelector?: boolean;
 }
 
 const PhoneNumberInputField: React.FC<Props> = ({
@@ -60,6 +61,7 @@ const PhoneNumberInputField: React.FC<Props> = ({
   onChangeText,
   defaultCountryCode = "NG",
   excludedCountryCodes = [],
+  disableCodeSelector = false,
 }) => {
   // const { data: allCountries } = useCountries();
   const [modalVisible, setModalVisible] = useState(false);
@@ -140,6 +142,7 @@ const PhoneNumberInputField: React.FC<Props> = ({
       <View style={styles.row}>
         <TouchableOpacity
           activeOpacity={0.8}
+          disabled={disableCodeSelector}
           style={[styles.countryBox, error && styles.errorBorder]}
           onPress={() => setModalVisible(true)}
         >

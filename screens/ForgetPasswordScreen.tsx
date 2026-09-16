@@ -9,6 +9,7 @@ import {
 } from "../constants/settings";
 import { AppText } from "../components/AppText";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import LiveChatButton from "../components/LiveChatButton";
 
 export default function ForgetPasswordScreen() {
   const colors = useColors();
@@ -42,6 +43,8 @@ export default function ForgetPasswordScreen() {
 
         <ForgotPasswordForm />
       </ScrollView>
+
+      <LiveChatButton />
     </SafeAreaView>
   );
 }

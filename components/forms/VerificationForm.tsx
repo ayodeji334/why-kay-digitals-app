@@ -201,6 +201,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
 import { normalizeNigerianPhoneNumber } from "../../utils/phoneNumber";
+import { useCompleteLogin } from "../../hooks/useCompleteLogin";
 
 const otpSchema = yup.object().shape({
   otp: yup
@@ -236,6 +237,7 @@ const VerificationForm = ({
 }) => {
   const navigation: any = useNavigation();
   const { post } = useAxios();
+  const completeLogin = useCompleteLogin();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { control, handleSubmit, watch } = useForm<FormData>({
     resolver: yupResolver(otpSchema),
@@ -302,6 +304,11 @@ const VerificationForm = ({
 
       if (onVerified) {
         onVerified({ user, token, refreshToken });
+      } else if (user?.has_set_transaction_pin) {
+        // Already has a transaction PIN (e.g. re-verifying an email on an
+        // existing account) — nothing left to set up, so log them straight
+        // in instead of sending them through CreatePin again.
+        await completeLogin({ accessToken: token, refreshToken }, user);
       } else {
         // Default destination, unchanged from the original email flow.
         // See the onVerified comment above re: the phone flow.

@@ -25,7 +25,12 @@ import type {
 } from "react-native-vision-camera-face-detector";
 import { Worklets } from "react-native-worklets-core";
 import Svg, { Ellipse, Mask, Rect } from "react-native-svg";
-import { CloseCircle, TickCircle } from "iconsax-react-nativejs";
+import {
+  CloseCircle,
+  TickCircle,
+  EyeSlash,
+  ArrowSwapVertical,
+} from "iconsax-react-nativejs";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   getFontFamily,
@@ -39,7 +44,7 @@ import { useColors } from "../hooks/useTheme";
 const { width, height } = Dimensions.get("window");
 
 // The captured photo is never shown while the challenge is in progress —
-// only a description of what to do (align/blink/turn). Once blink + turn
+// only a description of what to do (align/blink/gesture). Once blink + nod
 // both pass, the photo appears on a review screen where the user decides
 // to submit ("Looks Good") or start over ("Retake") — nothing is sent to
 // the backend automatically.
@@ -48,7 +53,7 @@ type LivenessStep =
   | "position"
   | "capturing"
   | "blink"
-  | "turn"
+  | "gesture"
   | "success"
   | "failed";
 
@@ -65,12 +70,12 @@ const EYES_OPEN_THRESHOLD = 0.6;
 // "closed" reading is allowed to last before it must reopen rejects that
 // without punishing a genuine, even deliberately slow, blink.
 const MAX_BLINK_DURATION_MS = 1000;
-const YAW_TURN_THRESHOLD = 18; // degrees off-center to count as "turned"
-const YAW_CENTER_THRESHOLD = 10; // degrees to count as "back to center"
-// Same idea as MAX_BLINK_DURATION_MS — a real head turn-and-back reads as
-// a smooth, bounded motion; an object waved in front of the camera to
-// spoof the yaw angle doesn't need to be nearly this patient.
-const MAX_TURN_DURATION_MS = 3500;
+const PITCH_NOD_THRESHOLD = 12; // degrees off-center to count as "nodded"
+const PITCH_CENTER_THRESHOLD = 6; // degrees to count as "back to center"
+// Same idea as MAX_BLINK_DURATION_MS — a real nod-and-back reads as a
+// smooth, bounded motion; an object waved in front of the camera to spoof
+// the pitch angle doesn't need to be nearly this patient.
+const MAX_NOD_DURATION_MS = 3000;
 // How far the face's center may drift from the frame's center, as a
 // fraction of the frame's own dimensions, before it no longer counts as
 // "well positioned". Smaller = stricter alignment required.
@@ -79,7 +84,12 @@ const CENTER_TOLERANCE = 0.18;
 // photo auto-captures — long enough for the camera's auto-exposure/focus
 // to settle and for the position to be a deliberate hold, not a pass-through.
 const POSITION_STABLE_MS = 900;
-const STEP_TIMEOUT_MS = 12000;
+// Only guards the "align your face" step — a genuinely absent/never-aligning
+// face is the one case worth timing out on. Blink and gesture (nod) have no
+// timeout at all: once the user has reached either, they stay there for as
+// long as it takes, rather than being bounced back to realignment (and
+// losing the already-captured photo) just for taking a while.
+const POSITION_TIMEOUT_MS = 12000;
 const FRAME_SAMPLE_MS = 100; // ~10fps is plenty for these thresholds
 const CAPTURE_TIMEOUT_MS = 5000;
 const MAX_CAPTURE_ATTEMPTS = 3;
@@ -96,7 +106,7 @@ const faceDetectionOptions: FaceDetectionOptions = {
 type Props = {
   // LivenessCheck now owns the capture. It hands back the final base64
   // image — taken automatically the moment the face is aligned, before the
-  // blink/turn challenge even starts — rather than a bare "you passed"
+  // blink/gesture challenge even starts — rather than a bare "you passed"
   // signal. If the challenge isn't completed, onSuccess is never called and
   // no request is made.
   onSuccess: (base64Image: string) => void;
@@ -180,8 +190,8 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 // A short, active challenge run on the live front camera — align your
-// face (auto-captured the instant you're aligned), blink, then turn your
-// head. The captured photo is the only image ever sent to the backend; the
+// face (auto-captured the instant you're aligned), blink, then nod. The
+// captured photo is the only image ever sent to the backend; the
 // challenge just gates whether that photo is allowed to be submitted.
 function LivenessCheckInner({ onSuccess, onCancel }: Props) {
   const device = useCameraDevice("front");
@@ -220,8 +230,8 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
   const eyesClosedAtRef = useRef<number | null>(null);
   const blinkDetectedRef = useRef(false);
   const positionSinceRef = useRef<number | null>(null);
-  const turnedRef = useRef(false);
-  const turnedAtRef = useRef<number | null>(null);
+  const gestureConfirmedRef = useRef(false);
+  const gestureConfirmedAtRef = useRef<number | null>(null);
   const lastProcessedAtRef = useRef(0);
 
   const stepRef = useRef(step);
@@ -240,7 +250,7 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
     clearStepTimeout();
     timeoutHandleRef.current = setTimeout(() => {
       setStep("failed");
-    }, STEP_TIMEOUT_MS);
+    }, POSITION_TIMEOUT_MS);
   }, [clearStepTimeout]);
 
   // Camera permission was already granted on the previous (SelfieVerification)
@@ -268,11 +278,10 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
     };
   }, []);
 
-  // Timeout only applies to steps where the user has something to actively
-  // do (align, blink, turn). Capturing/success/failed are either momentary
-  // or driven by an explicit button.
+  // Only "position" times out — blink and gesture have no time limit at
+  // all (see POSITION_TIMEOUT_MS).
   useEffect(() => {
-    if (step === "position" || step === "blink" || step === "turn") {
+    if (step === "position") {
       armStepTimeout();
     } else {
       clearStepTimeout();
@@ -285,8 +294,8 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
     eyesClosedAtRef.current = null;
     blinkDetectedRef.current = false;
     positionSinceRef.current = null;
-    turnedRef.current = false;
-    turnedAtRef.current = null;
+    gestureConfirmedRef.current = false;
+    gestureConfirmedAtRef.current = null;
   }, []);
 
   // Auto-capture — fires the instant the face has been centered and stable
@@ -353,7 +362,7 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
       if (
         currentStep !== "position" &&
         currentStep !== "blink" &&
-        currentStep !== "turn"
+        currentStep !== "gesture"
       ) {
         return;
       }
@@ -370,14 +379,16 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
           positionSinceRef.current = null;
           return;
         }
-        // Something (a hand, an object) has fully blocked or confused the
-        // detector mid-challenge. Previously this was silently ignored,
-        // which combined with the "eyes closed" reading a hand produces
-        // (see below) meant covering the camera and uncovering it could
-        // slip past the blink/turn checks without the user ever actually
-        // blinking or turning their head. Treat total face loss here the
-        // same as losing centering: the whole challenge restarts.
-        setStep("position");
+
+        // Blink and gesture: never force a full restart (losing the
+        // already-captured photo and re-alignment) over momentary tracking
+        // loss. Nodding in particular can legitimately drop tracking for a
+        // frame or two, and blinking can too if the eyes are hard to read
+        // for an instant. Just wait for the face to reappear — the
+        // duration bounds below (MAX_BLINK_DURATION_MS / MAX_NOD_DURATION_MS),
+        // re-checked once a face is visible again, are what actually guard
+        // against someone using this gap to fake the gesture with a hand
+        // or a static photo.
         return;
       }
 
@@ -427,12 +438,12 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
         return;
       }
 
-      if (!isCentered) {
-        // Lost the face mid-challenge — restart from positioning. The photo
-        // already taken stays valid; only the live challenge restarts.
-        setStep("position");
-        return;
-      }
+      // Blink and gesture don't re-check centering at all past this point —
+      // nodding by definition moves the face away from dead-center, and
+      // requiring it to stay centered while nodding fought the gesture
+      // itself, bouncing the user back to realignment for doing exactly
+      // what was asked. The gesture-specific checks below (angle
+      // thresholds, duration bounds) are what actually gate completion.
 
       if (currentStep === "blink") {
         const eyesOpenScore = Math.min(
@@ -465,35 +476,41 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
         }
 
         if (blinkDetectedRef.current) {
-          turnedRef.current = false;
-          turnedAtRef.current = null;
-          setStep("turn");
+          gestureConfirmedRef.current = false;
+          gestureConfirmedAtRef.current = null;
+          setStep("gesture");
         }
         return;
       }
 
-      if (currentStep === "turn") {
-        const yaw = face.yawAngle ?? 0;
+      if (currentStep === "gesture") {
+        const pitch = face.pitchAngle ?? 0;
 
         if (
-          turnedRef.current &&
-          turnedAtRef.current !== null &&
-          now - turnedAtRef.current > MAX_TURN_DURATION_MS
+          gestureConfirmedRef.current &&
+          gestureConfirmedAtRef.current !== null &&
+          now - gestureConfirmedAtRef.current > MAX_NOD_DURATION_MS
         ) {
-          // Took too long to return to center after "turning" — same
-          // reasoning as the blink timeout: a plausible head turn is a
-          // single smooth motion, not an indefinitely held pose. Require
-          // a fresh, properly-timed turn instead.
-          turnedRef.current = false;
-          turnedAtRef.current = null;
+          // Took too long to return to center after nodding — same
+          // reasoning as the blink timeout: a plausible nod is a single
+          // smooth motion, not an indefinitely held pose. Require a
+          // fresh, properly-timed nod instead.
+          gestureConfirmedRef.current = false;
+          gestureConfirmedAtRef.current = null;
         }
 
-        if (!turnedRef.current && Math.abs(yaw) > YAW_TURN_THRESHOLD) {
-          turnedRef.current = true;
-          turnedAtRef.current = now;
+        if (
+          !gestureConfirmedRef.current &&
+          Math.abs(pitch) > PITCH_NOD_THRESHOLD
+        ) {
+          gestureConfirmedRef.current = true;
+          gestureConfirmedAtRef.current = now;
           return;
         }
-        if (turnedRef.current && Math.abs(yaw) < YAW_CENTER_THRESHOLD) {
+        if (
+          gestureConfirmedRef.current &&
+          Math.abs(pitch) < PITCH_CENTER_THRESHOLD
+        ) {
           // Challenge fully passed — hand the decision to the user instead
           // of auto-submitting. onSuccess only fires once they explicitly
           // tap "Looks good" (handleLooksGood).
@@ -585,7 +602,7 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
     );
   }
 
-  // Blink + turn both passed on-device — that's liveness, not identity
+  // Blink + nod both passed on-device — that's liveness, not identity
   // verification — the backend still has to check the photo against the
   // BVN record, so this screen deliberately never claims "Verified"; that
   // word is only earned once the API call in SelfieConfirmation actually
@@ -650,8 +667,8 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
     blink: {
       primary: "Blink your eyes",
     },
-    turn: {
-      primary: "Turn your head to the side",
+    gesture: {
+      primary: "Nod your head",
       secondary: "Then look forward again",
     },
   };
@@ -664,7 +681,7 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
   const ovalRx = width * 0.32;
   const ovalRy = height * 0.22;
   // Ramanujan's ellipse-circumference approximation — used to turn the
-  // oval outline into a "filling up" progress ring across blink/turn,
+  // oval outline into a "filling up" progress ring across blink/gesture,
   // similar to the reference design's partial ring.
   const ovalCircumference =
     Math.PI *
@@ -672,7 +689,7 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
       Math.sqrt((3 * ovalRx + ovalRy) * (ovalRx + 3 * ovalRy)));
   const stepProgress: Partial<Record<LivenessStep, number>> = {
     blink: 0.55,
-    turn: 0.9,
+    gesture: 0.9,
   };
   const progress = stepProgress[step] ?? 0;
 
@@ -732,6 +749,32 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
         />
       </Svg>
 
+      {/* A small icon "pinned" to the top edge of the outline, showing
+          what to do at a glance rather than relying on the reader to
+          parse the text banner below. Only shown for the two active
+          gestures — position/capturing already have the ring animation
+          as their own feedback. */}
+      {/* {(step === "blink" || step === "gesture") && (
+        <View
+          style={[
+            styles.gestureAvatarWrap,
+            { top: ovalCy - ovalRy - normalizeSpacing(28) },
+          ]}
+        >
+          <View style={styles.gestureAvatarBadge}>
+            {step === "blink" ? (
+              <EyeSlash size={26} color={colors.primary} variant="Bold" />
+            ) : (
+              <ArrowSwapVertical
+                size={26}
+                color={colors.primary}
+                variant="Bold"
+              />
+            )}
+          </View>
+        </View>
+      )} */}
+
       <View style={styles.bannerContainer}>
         <AppText style={styles.bannerPrimary}>{banner.primary}</AppText>
         {banner.secondary && (
@@ -740,12 +783,6 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
       </View>
 
       <View style={styles.footer}>
-        {/* <View style={styles.soundHint}>
-          <VolumeHigh size={14} color={colors.textMuted} variant="Bold" />
-          <AppText style={styles.soundHintText}>
-            Turn on sound to hear voice instructions
-          </AppText>
-        </View> */}
         <TouchableOpacity style={styles.secondaryButton} onPress={onCancel}>
           <AppText style={styles.secondaryButtonText}>Cancel</AppText>
         </TouchableOpacity>
@@ -767,10 +804,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderRadius: Math.min(width * 0.32, height * 0.22),
       backgroundColor: colors.background,
     },
-    // Centers within the space above the footer, not the whole screen —
-    // plain flex centering here would put the content below true center,
-    // since the eye reads "center" relative to the visible area above the
-    // absolutely-positioned buttons, not the full container height.
     centeredContent: {
       flex: 1,
       alignItems: "center",
@@ -792,6 +825,22 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       textAlign: "center",
       lineHeight: 22,
+    },
+    gestureAvatarWrap: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      alignItems: "center",
+    },
+    gestureAvatarBadge: {
+      width: normalizeSpacing(56),
+      height: normalizeSpacing(56),
+      borderRadius: normalizeSpacing(28),
+      backgroundColor: colors.background,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 2,
+      borderColor: colors.primary,
     },
     bannerContainer: {
       position: "absolute",
@@ -816,8 +865,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       textAlign: "center",
     },
-    // Sits a bit higher than flush with the bottom edge, leaving breathing
-    // room below the buttons instead of crowding the screen's bottom.
     footer: {
       position: "absolute",
       bottom: 64,
