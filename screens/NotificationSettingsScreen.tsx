@@ -49,7 +49,11 @@ export default function NotificationSettingsScreen() {
 
   const getOneSignalPlayerId = async (): Promise<string | null> => {
     try {
-      const subscriptionId = OneSignal.User.getOnesignalId();
+      // getOnesignalId() returns a Promise<string | null> — without the
+      // await, `subscriptionId` was the Promise object itself (always
+      // truthy), so `?? null` never fired and the backend was sent a
+      // serialized Promise instead of the real subscription id.
+      const subscriptionId = await OneSignal.User.getOnesignalId();
       return subscriptionId ?? null;
     } catch {
       return null;

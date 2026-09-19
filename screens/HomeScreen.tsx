@@ -16,7 +16,7 @@ import {
   normalizeSpacing,
 } from "../constants/settings";
 import { useUser } from "../stores/authSlice";
-import AssetsSection from "../components/Dashboard/AssetsSection";
+// import AssetsSection from "../components/Dashboard/AssetsSection";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import AdvertsBanner from "../components/AdvertsBanner";
@@ -107,6 +107,8 @@ const HomeScreen = () => {
 
         <FiatWalletBalanceCard />
 
+        <AdvertsBanner />
+
         {/* <AssetsSection /> */}
 
         {!hasCompleteVerification && (
@@ -137,7 +139,6 @@ const HomeScreen = () => {
         )}
 
         <ServicesSection />
-        <AdvertsBanner />
       </ScrollView>
     </SafeAreaView>
   );

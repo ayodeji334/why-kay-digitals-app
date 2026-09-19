@@ -1228,7 +1228,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       justifyContent: "flex-end",
     },
     modalSheet: {
-      backgroundColor: "#fff",
+      backgroundColor: colors.inputBackground,
       borderTopLeftRadius: 22,
       borderTopRightRadius: 22,
       paddingHorizontal: normalizeSpacing(20),
@@ -1239,7 +1239,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       width: 40,
       height: 4,
       borderRadius: 2,
-      backgroundColor: "#fff",
+      backgroundColor: colors.border,
       alignSelf: "center",
       marginBottom: normalizeSpacing(12),
     },

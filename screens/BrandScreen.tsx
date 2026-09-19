@@ -283,7 +283,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderRadius: normalize(12),
       padding: normalizeSpacing(12),
       alignItems: "center",
-      backgroundColor: "#fff",
+      backgroundColor: colors.surface,
       gap: 8,
     },
     brandLogo: {

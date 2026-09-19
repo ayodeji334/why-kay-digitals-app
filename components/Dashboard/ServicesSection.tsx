@@ -31,14 +31,21 @@ import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
 import { usePhoneVerification } from "../../hooks/usePhoneVerification";
 import HalfScreenModal from "../HalfScreenModal";
+import { useUser } from "../../stores/authSlice";
+import { useLiveChat } from "../../context/LiveChatProvider";
 
 const ServicesSection = () => {
   const queryClient = useQueryClient();
   const navigation: any = useNavigation();
   const colors = useColors();
   const styles = makeStyles(colors);
+  const user = useUser();
   const { isPhoneVerified } = usePhoneVerification();
+  const { openLiveChat } = useLiveChat();
   const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [showSuspendedModal, setShowSuspendedModal] = useState(false);
+
+  const isSuspended = user?.status === "SUSPEND";
 
   const mainServices: Array<{
     id: number;
@@ -137,6 +144,11 @@ const ServicesSection = () => {
     );
   };
 
+  const handleOpenSupportChat = () => {
+    setShowSuspendedModal(false);
+    openLiveChat();
+  };
+
   // const handleNavigation = (service: (typeof mainServices)[0]) => {
   //   if (!service.screenName) {
   //     Alert.alert(
@@ -166,6 +178,11 @@ const ServicesSection = () => {
   // };
 
   const handleNavigation = (service: (typeof mainServices)[0]) => {
+    if (isSuspended) {
+      setShowSuspendedModal(true);
+      return;
+    }
+
     if (!isPhoneVerified) {
       setShowPhoneModal(true);
       return;
@@ -236,6 +253,18 @@ const ServicesSection = () => {
         actionButton={handleVerifyNow}
         secondaryButtonText="Maybe later"
         secondaryAction={() => setShowPhoneModal(false)}
+        showCloseButton
+      />
+
+      <HalfScreenModal
+        isVisible={showSuspendedModal}
+        onClose={() => setShowSuspendedModal(false)}
+        title="Account Suspended"
+        description="Your account has been suspended. Please contact support for help getting this resolved."
+        buttonText="Chat with Support"
+        actionButton={handleOpenSupportChat}
+        secondaryButtonText="Cancel"
+        secondaryAction={() => setShowSuspendedModal(false)}
         showCloseButton
       />
     </>

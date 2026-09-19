@@ -27,11 +27,18 @@ export const formatAmount = (
     currency = "NGN",
     decimalPlace,
     shorten = false,
+    // Ceiling on how many decimals natural-decimals mode is allowed to use
+    // (ignored when `decimalPlace` is explicit). Lets a caller show a value
+    // exactly as received — no padding a whole number to "x.00" — while
+    // still rounding an overly-precise one down to a sane number of places,
+    // e.g. 1000 -> "1,000", 1230.4578 -> "1,230.46" with maxDecimalPlace: 2.
+    maxDecimalPlace = 20,
   }: {
     isDivideValue?: boolean;
     currency?: string;
     decimalPlace?: number;
     shorten?: boolean;
+    maxDecimalPlace?: number;
   } = {},
 ): string => {
   if (isDivideValue) {
@@ -60,9 +67,12 @@ export const formatAmount = (
       : `${value.toFixed(decimalPlace)}${suffix}`;
   }
 
-  // Unspecified -> however many decimals the number actually has.
-  // Cap at 20: Intl throws a RangeError above that.
-  const digits = Math.min(decimalPlace ?? naturalDecimals(amount), 20);
+  // Unspecified -> however many decimals the number actually has, capped
+  // at maxDecimalPlace (itself capped at 20: Intl throws a RangeError above that).
+  const digits = Math.min(
+    decimalPlace ?? naturalDecimals(amount),
+    Math.min(maxDecimalPlace, 20),
+  );
 
   const locale = currency === "NGN" ? "en-NG" : "en-US";
   return new Intl.NumberFormat(locale, {

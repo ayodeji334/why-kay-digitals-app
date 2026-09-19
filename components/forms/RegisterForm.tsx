@@ -548,6 +548,7 @@ import EmailInputField from "../EmailInputField";
 import { OneSignal } from "react-native-onesignal";
 import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
+import { getDeviceMeta } from "../../utlis/device";
 
 export interface RegisterFormHandle {
   refetchHeardAboutOptions: () => void;
@@ -715,10 +716,13 @@ const RegisterForm = forwardRef<RegisterFormHandle>((_, ref) => {
   }, [debouncedUsername, apiGet, setError, clearErrors]);
 
   const handleRegister = async (values: any) => {
-    const userOneSignalID = await OneSignal.User.getOnesignalId();
+    const deviceMeta = await getDeviceMeta();
     try {
       setLoading(true);
-      await post("/auth/register", { ...values, device_id: userOneSignalID });
+      await post("/auth/register", {
+        ...values,
+        ...deviceMeta,
+      });
       showSuccess("Registration successful! Please verify your email.");
       navigation.navigate(
         "VerifyCode" as never,

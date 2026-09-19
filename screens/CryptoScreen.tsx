@@ -235,7 +235,7 @@ const CryptoWalletScreen = () => {
   }, []);
 
   const handleWhatsApp = () => {
-    Linking.openURL("https://wa.me/07018607772");
+    Linking.openURL("https://wa.me/2347018607772");
     // navigation.navigate("ContactUs");
   };
 

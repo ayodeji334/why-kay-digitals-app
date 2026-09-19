@@ -613,6 +613,9 @@ export default function BrandDetailScreen() {
     value: offer.offerId,
   }));
 
+  console.log(offers);
+  console.log(brand);
+
   const handleSelectOffer = useCallback(
     async (offerOrId: GiftCardOffer | string) => {
       const offer =
@@ -834,11 +837,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     lockedBadge: {
-      fontSize: normalize(18),
+      fontSize: normalize(15),
       fontFamily: getFontFamily("700"),
-      color: "white",
-      backgroundColor: colors.infoCardBackgroundColor,
-      paddingHorizontal: normalizeSpacing(10),
+      color: colors.text,
+      backgroundColor: colors.successLight,
+      paddingHorizontal: normalizeSpacing(13),
       paddingVertical: normalizeSpacing(3),
       borderRadius: 20,
     },

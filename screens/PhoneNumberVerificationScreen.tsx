@@ -140,7 +140,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       marginBottom: normalizeSpacing(32),
     },
     infoSection: {
-      backgroundColor: "#fff",
+      backgroundColor: colors.surface,
       borderRadius: 12,
       paddingVertical: normalizeSpacing(20),
       paddingHorizontal: normalizeSpacing(16),

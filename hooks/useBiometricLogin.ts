@@ -138,7 +138,10 @@ export const useBiometricLogin = () => {
 
       if (!keyId) return null;
 
-      const userOneSignalID = await OneSignal.User.getOnesignalId();
+      // getOnesignalId() is the OneSignal *user* id, not the per-device
+      // push subscription id the backend's device_id needs to match what
+      // OneSignal shows for this device.
+      const devicePushSubscriptionId = await OneSignal.User.getOnesignalId();
       const payload = `${userUuid ?? "login"}|${Date.now()}`;
 
       const { success, signature } = await rnBiometrics.createSignature({
@@ -156,7 +159,7 @@ export const useBiometricLogin = () => {
         key_id: Number(keyId),
         payload,
         signature,
-        device_id: userOneSignalID,
+        device_id: devicePushSubscriptionId,
         device_name: DeviceInfo.getModel() ?? null,
       });
 

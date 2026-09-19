@@ -174,7 +174,6 @@
 //   return client;
 // }
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import { getItem, setItem, removeItem } from "../utlis/storage";
 import { useAuthStore } from "../stores/authSlice";
 import { BASE_URL } from "../config";
 
@@ -231,7 +230,12 @@ export function createAxiosClient(): AxiosInstance {
       isRefreshing = true;
 
       try {
-        const refreshToken = await getItem("refresh_token");
+        // The refresh token lives in useAuthStore (persisted under the
+        // "auth-storage" key by zustand/persist) — it was never actually
+        // written to a separate "refresh_token" MMKV key, so reading from
+        // that key here always came back empty and force-logged everyone
+        // out the first time their access token expired.
+        const refreshToken = useAuthStore.getState().refreshToken;
         if (!refreshToken) throw new Error("No refresh token");
 
         const res = await axios.post(`${BASE_URL}/auth/refresh`, {
@@ -245,9 +249,12 @@ export function createAxiosClient(): AxiosInstance {
 
         if (!newAccessToken) throw new Error("Refresh failed");
 
-        // Persist the rotated tokens
-        await setItem("refresh_token", newRefreshToken ?? refreshToken);
-        useAuthStore.getState().setToken(newAccessToken, newRefreshToken);
+        // Fall back to the old refresh token when the backend doesn't
+        // rotate it on every refresh — otherwise this would null it out
+        // in the store and break the very next refresh.
+        useAuthStore
+          .getState()
+          .setToken(newAccessToken, newRefreshToken ?? refreshToken);
 
         // Resolve every request that was queued during the refresh
         failedRequestsQueue.forEach(p => p.resolve(newAccessToken));
@@ -259,7 +266,6 @@ export function createAxiosClient(): AxiosInstance {
       } catch (e) {
         failedRequestsQueue.forEach(p => p.reject(e)); // <-- queued requests no longer hang forever
         failedRequestsQueue = [];
-        await removeItem("refresh_token");
         useAuthStore.getState().logout();
         return Promise.reject(e);
       } finally {

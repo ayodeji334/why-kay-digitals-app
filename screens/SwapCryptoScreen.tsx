@@ -307,12 +307,12 @@ export default function CryptoSwapScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: "white" }}
+      style={{ flex: 1, backgroundColor: colors.background }}
       edges={["right", "left"]}
     >
       <ScrollView
         contentContainerStyle={{
-          backgroundColor: "white",
+          backgroundColor: colors.background,
           flexGrow: 1,
         }}
         refreshControl={

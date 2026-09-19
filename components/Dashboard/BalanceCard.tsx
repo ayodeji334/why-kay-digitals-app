@@ -275,6 +275,7 @@ import { PlusCircleIcon, ArrowDownLeftIcon } from "../../assets";
 import { ArrowRight2, Eye, EyeSlash } from "iconsax-react-nativejs";
 import { useAuthStore, useUser } from "../../stores/authSlice";
 import { AppText } from "../AppText";
+import { useLiveChat } from "../../context/LiveChatProvider";
 
 interface BalanceCardProps {
   balance?: number;
@@ -298,12 +299,36 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
   const setIsShowBalance = useAuthStore(state => state.setIsShowBalance);
   const user = useUser();
   const isPhoneVerified = !!user?.phone_verified_at;
+  const isSuspended = user?.status === "SUSPEND";
+  const { openLiveChat } = useLiveChat();
   const [depositModalVisible, setDepositModalVisible] = useState(false);
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
   const [phoneModalVisible, setPhoneModalVisible] = useState(false);
+  const [suspendedModalVisible, setSuspendedModalVisible] = useState(false);
   const navigation: any = useNavigation();
 
+  const handleSeeTransactionsPress = () => {
+    if (isSuspended) {
+      setSuspendedModalVisible(true);
+      return;
+    }
+    if (!isPhoneVerified) {
+      setPhoneModalVisible(true);
+      return;
+    }
+    navigation.navigate("Transactions" as never);
+  };
+
+  const handleOpenSupportChat = () => {
+    setSuspendedModalVisible(false);
+    openLiveChat();
+  };
+
   const handleDepositPress = () => {
+    if (isSuspended) {
+      setSuspendedModalVisible(true);
+      return;
+    }
     if (!isPhoneVerified) {
       setPhoneModalVisible(true);
       return;
@@ -312,6 +337,10 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
   };
 
   const handleWithdrawPress = () => {
+    if (isSuspended) {
+      setSuspendedModalVisible(true);
+      return;
+    }
     if (!isPhoneVerified) {
       setPhoneModalVisible(true);
       return;
@@ -338,7 +367,7 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         <AppText style={styles.availableBalance}>{title}</AppText>
         {showTransactionsButton && (
           <TouchableOpacity
-            onPress={() => navigation.navigate("Transactions" as never)}
+            onPress={handleSeeTransactionsPress}
             activeOpacity={0.9}
             style={styles.seeTransaction}
           >
@@ -458,6 +487,18 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
         actionButton={handleVerifyNow}
         secondaryButtonText="Maybe later"
         secondaryAction={() => setPhoneModalVisible(false)}
+        showCloseButton
+      />
+
+      <HalfScreenModal
+        isVisible={suspendedModalVisible}
+        onClose={() => setSuspendedModalVisible(false)}
+        title="Account Suspended"
+        description="Your account has been suspended. Please contact support for help getting this resolved."
+        buttonText="Chat with Support"
+        actionButton={handleOpenSupportChat}
+        secondaryButtonText="Cancel"
+        secondaryAction={() => setSuspendedModalVisible(false)}
         showCloseButton
       />
     </ImageBackground>

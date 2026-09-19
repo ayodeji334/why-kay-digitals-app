@@ -49,11 +49,9 @@ export default function RateMarketScreen() {
 
   const assets = Array.isArray(data) ? data : [];
 
+  // Viewing rates is available to everyone — only actually trading (buy/sell)
+  // requires a verified phone number, checked in handleTradeAction instead.
   const handleAssetPress = (asset: any) => {
-    if (!isPhoneVerified) {
-      setShowPhoneModal(true);
-      return;
-    }
     setSelectedAsset(asset);
   };
 
@@ -64,6 +62,12 @@ export default function RateMarketScreen() {
 
   const handleTradeAction = (action: "buy" | "sell") => {
     if (!selectedAsset) return;
+
+    if (!isPhoneVerified) {
+      setSelectedAsset(null);
+      setShowPhoneModal(true);
+      return;
+    }
 
     const intent: TradeIntent = {
       assetId: selectedAsset.uuid,
@@ -79,7 +83,11 @@ export default function RateMarketScreen() {
   };
 
   if (isLoading) {
-    return <LoadingState message="Loading market rates..." />;
+    return (
+      <SafeAreaView edges={["right", "left"]} style={styles.container}>
+        <LoadingState message="Loading market rates..." />
+      </SafeAreaView>
+    );
   }
 
   if (!assets.length && isError && error) {
@@ -96,8 +104,12 @@ export default function RateMarketScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <View>
-        <AppText style={styles.note}>
+        {/* <AppText style={styles.note}>
           Rates are quoted in Nigerian Naira (₦) per $1 USD equivalent.
+        </AppText> */}
+
+        <AppText style={styles.note}>
+          Rates are shown as $1 USD to its Naira (₦) equivalent.
         </AppText>
 
         {assets.length > 0 && (
@@ -113,21 +125,21 @@ export default function RateMarketScreen() {
             </AppText>
             <AppText
               style={[
-                { marginLeft: 70 },
+                { marginLeft: 20 },
                 styles.tableHeaderText,
                 styles.rateColumn,
               ]}
             >
-              BUY
+              WE BUY
             </AppText>
             <AppText
               style={[
-                { marginRight: 15 },
+                { marginRight: 10 },
                 styles.tableHeaderText,
                 styles.rateColumn,
               ]}
             >
-              SELL
+              WE SELL
             </AppText>
           </View>
         )}
@@ -199,7 +211,7 @@ export default function RateMarketScreen() {
               >
                 {formatAmount(Number(asset.buy_rate ?? 0), {
                   currency: "NGN",
-                  decimalPlace: 0,
+                  maxDecimalPlace: 2,
                 })}
               </AppText>
             </View>
@@ -216,7 +228,7 @@ export default function RateMarketScreen() {
               >
                 {formatAmount(Number(asset.sell_rate ?? 0), {
                   currency: "NGN",
-                  decimalPlace: 0,
+                  maxDecimalPlace: 2,
                 })}
               </AppText>
             </View>
@@ -343,7 +355,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       paddingVertical: normalizeSpacing(14),
       paddingHorizontal: normalizeSpacing(14),
       marginBottom: normalizeSpacing(10),
-      gap: 30,
+      gap: 40,
     },
     assetColumn: {
       flex: 1.5,

@@ -161,7 +161,6 @@ const HelpSupportScreen: React.FC = () => {
               "Saturday: 9am - 6pm",
               "Sunday: Closed",
             ]}
-            onPress={handleInstagram}
             IconComponent={Clock}
             showArrow={false}
           />
