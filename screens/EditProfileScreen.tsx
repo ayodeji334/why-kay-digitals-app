@@ -129,7 +129,9 @@ export default function EditProfileScreen() {
       }
     } catch (error: any) {
       console.log("Upload error:", error.response?.data || error.message);
-      showError("An error occurred. Please try again.");
+      showError(
+        error.response?.data?.message ?? "An error occurred. Please try again.",
+      );
     } finally {
       setLoading(false);
     }

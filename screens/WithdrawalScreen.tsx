@@ -34,6 +34,9 @@ import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import { HIGH_VALUE_WITHDRAWAL_THRESHOLD } from "../constants/transactionLimits";
+import { useUser } from "../stores/authSlice";
+import { useLiveChat } from "../context/LiveChatProvider";
+import HalfScreenModal from "../components/HalfScreenModal";
 
 export default function WithdrawScreen() {
   const { apiGet } = useAxios();
@@ -46,8 +49,12 @@ export default function WithdrawScreen() {
   const [pendingPayload, setPendingPayload] = useState<any>(null);
   const [accountDetails, setAccountDetails] = useState<any>(null);
   const [amountFormated, setAmount] = useState("");
+  const [showSuspendedModal, setShowSuspendedModal] = useState(false);
   const colors = useColors();
   const styles = makeStyles(colors);
+  const user = useUser();
+  const { openLiveChat } = useLiveChat();
+  const isSuspended = user?.status === "SUSPEND";
 
   const {
     isLoading,
@@ -255,6 +262,7 @@ export default function WithdrawScreen() {
     !isBalanceSufficient ||
     exceedsDailyLimit ||
     exceedsMonthlyLimit ||
+    isSuspended ||
     isSubmitting;
 
   const onRefresh = useCallback(() => {
@@ -264,6 +272,17 @@ export default function WithdrawScreen() {
   }, [refetchWallet, refetchBanks, refetch]);
 
   useFocusEffect(onRefresh);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isSuspended) setShowSuspendedModal(true);
+    }, [isSuspended]),
+  );
+
+  const handleOpenSupportChat = () => {
+    setShowSuspendedModal(false);
+    openLiveChat();
+  };
 
   useResetFormOnMount(reset, { amount: 0 }, () => {
     setAccountDetails(null);
@@ -485,6 +504,18 @@ export default function WithdrawScreen() {
         handleProceed={handleProceed}
         setShowConfirmModal={setShowConfirmModal}
         showConfirmModal={showConfirmModal && amount > 50000}
+      />
+
+      <HalfScreenModal
+        isVisible={showSuspendedModal}
+        onClose={() => setShowSuspendedModal(false)}
+        title="Account Suspended"
+        description="Your account has been suspended. Please contact support for help getting this resolved."
+        buttonText="Chat with Support"
+        actionButton={handleOpenSupportChat}
+        secondaryButtonText="Cancel"
+        secondaryAction={() => setShowSuspendedModal(false)}
+        showCloseButton
       />
     </SafeAreaView>
   );

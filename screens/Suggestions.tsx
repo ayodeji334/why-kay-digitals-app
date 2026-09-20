@@ -68,7 +68,10 @@ const SuggestionScreen = () => {
       );
     },
     onError: (error: any) => {
-      showError("Failed to submit suggestion. Please try again.");
+      showError(
+        error?.response?.data?.message ??
+          "Failed to submit suggestion. Please try again.",
+      );
     },
   });
 
@@ -259,7 +262,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     footer: {
       padding: normalizeSpacing(20),
-      paddingBottom: Platform.OS === "ios" ? 8 : 20,
+      paddingBottom: 30,
     },
     //   submitBtn: {
     //     backgroundColor: COLORS.primary,

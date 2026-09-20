@@ -178,7 +178,6 @@ import HalfScreenModal from "../components/HalfScreenModal";
 import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import RateMarketScreen from "../screens/RateMarketScreen";
-import { useLiveChat } from "../context/LiveChatProvider";
 
 const Tab = createBottomTabNavigator();
 
@@ -186,42 +185,23 @@ export default function AppTabs() {
   const colors = useColors();
   const user = useUser();
   const navigation: any = useNavigation();
-  const { openLiveChat } = useLiveChat();
   const [showPhoneModal, setShowPhoneModal] = useState(false);
-  const [showSuspendedModal, setShowSuspendedModal] = useState(false);
   const insets = useSafeAreaInsets();
 
   const TAB_BAR_BASE_HEIGHT = Platform.OS === "ios" ? 55 : 60;
   const tabBarHeight = TAB_BAR_BASE_HEIGHT + insets.bottom;
 
   const isPhoneVerified = !!user?.phone_verified_at;
-  const isSuspended = user?.status === "SUSPEND";
 
-  // Suspension blocks every tab, including Home — checked first since it
-  // overrides everything else. Phone verification is a narrower gate on
-  // top of that, only for tabs that let the user move money/trade.
-  const guardTabPress = (e: any) => {
-    if (isSuspended) {
-      e.preventDefault();
-      setShowSuspendedModal(true);
-    }
-  };
-
+  // Suspended users can still see and use every tab (deposit, buy/sell,
+  // other services) — withdrawal is blocked directly on the withdrawal
+  // screens instead. Phone verification remains a gate on tabs that let
+  // the user move money/trade.
   const guardTradeTabPress = (e: any) => {
-    if (isSuspended) {
-      e.preventDefault();
-      setShowSuspendedModal(true);
-      return;
-    }
     if (!isPhoneVerified) {
       e.preventDefault();
       setShowPhoneModal(true);
     }
-  };
-
-  const handleOpenSupportChat = () => {
-    setShowSuspendedModal(false);
-    openLiveChat();
   };
 
   const handleVerifyNow = () => {
@@ -340,9 +320,6 @@ export default function AppTabs() {
         <Tab.Screen
           name="Rates"
           component={RateMarketScreen}
-          listeners={{
-            tabPress: guardTabPress,
-          }}
           options={{
             tabBarIcon: ({ color, size, focused }) => (
               <PercentageCircle
@@ -359,9 +336,6 @@ export default function AppTabs() {
         <Tab.Screen
           name="Settings"
           component={SettingsScreen}
-          listeners={{
-            tabPress: guardTabPress,
-          }}
           options={{
             tabBarIcon: ({ color, size, focused }) => (
               <Setting
@@ -390,18 +364,6 @@ export default function AppTabs() {
         actionButton={handleVerifyNow}
         secondaryButtonText="Maybe later"
         secondaryAction={() => setShowPhoneModal(false)}
-        showCloseButton
-      />
-
-      <HalfScreenModal
-        isVisible={showSuspendedModal}
-        onClose={() => setShowSuspendedModal(false)}
-        title="Account Suspended"
-        description="Your account has been suspended. Please contact support for help getting this resolved."
-        buttonText="Chat with Support"
-        actionButton={handleOpenSupportChat}
-        secondaryButtonText="Cancel"
-        secondaryAction={() => setShowSuspendedModal(false)}
         showCloseButton
       />
     </>

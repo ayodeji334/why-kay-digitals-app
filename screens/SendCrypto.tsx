@@ -922,7 +922,13 @@
 //       fontFamily: getFontFamily("700"),
 //     },
 //   });
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   TextInput,
@@ -937,7 +943,12 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { useNavigation, RouteProp, useRoute } from "@react-navigation/native";
+import {
+  useNavigation,
+  RouteProp,
+  useRoute,
+  useFocusEffect,
+} from "@react-navigation/native";
 import {
   getFontFamily,
   normalize,
@@ -952,6 +963,9 @@ import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import TextInputField from "../components/TextInputField";
 import NoWallet from "../components/NoWallet";
 import InfoCard from "../components/InfoCard";
+import HalfScreenModal from "../components/HalfScreenModal";
+import { useUser } from "../stores/authSlice";
+import { useLiveChat } from "../context/LiveChatProvider";
 import { InfoCircle, ScanBarcode } from "iconsax-react-nativejs";
 import {
   Camera,
@@ -1035,9 +1049,24 @@ export default function SendScreen() {
   const isProcessingRef = useRef(false);
   const [displayAmount, setDisplayAmount] = useState("");
   const [showScanner, setShowScanner] = useState(false);
+  const [showSuspendedModal, setShowSuspendedModal] = useState(false);
   const device = useCameraDevice("back");
   const colors = useColors();
   const styles = makeStyles(colors);
+  const user = useUser();
+  const { openLiveChat } = useLiveChat();
+  const isSuspended = user?.status === "SUSPEND";
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isSuspended) setShowSuspendedModal(true);
+    }, [isSuspended]),
+  );
+
+  const handleOpenSupportChat = () => {
+    setShowSuspendedModal(false);
+    openLiveChat();
+  };
 
   const { data: livePrice } = useMarketPrice(selectedAssetUuid);
 
@@ -1599,17 +1628,23 @@ export default function SendScreen() {
             <TouchableOpacity
               hitSlop={9}
               activeOpacity={0.89}
-              disabled={withdrawalStatus.hasIssue || isPending}
+              disabled={withdrawalStatus.hasIssue || isPending || isSuspended}
               style={[
                 styles.button,
                 {
                   backgroundColor:
-                    withdrawalStatus.hasIssue || isPending
+                    withdrawalStatus.hasIssue || isPending || isSuspended
                       ? COLORS.fadePrimary
                       : COLORS.secondary,
                 },
               ]}
-              onPress={handleSubmit(onSubmit)}
+              onPress={() => {
+                if (isSuspended) {
+                  setShowSuspendedModal(true);
+                  return;
+                }
+                handleSubmit(onSubmit)();
+              }}
             >
               {isPending ? (
                 <ActivityIndicator color="#fff" size={10} />
@@ -1622,6 +1657,18 @@ export default function SendScreen() {
       </ScrollView>
 
       <CustomLoading loading={isFetching} />
+
+      <HalfScreenModal
+        isVisible={showSuspendedModal}
+        onClose={() => setShowSuspendedModal(false)}
+        title="Account Suspended"
+        description="Your account has been suspended. Please contact support for help getting this resolved."
+        buttonText="Chat with Support"
+        actionButton={handleOpenSupportChat}
+        secondaryButtonText="Cancel"
+        secondaryAction={() => setShowSuspendedModal(false)}
+        showCloseButton
+      />
     </SafeAreaView>
   );
 }

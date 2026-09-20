@@ -131,8 +131,6 @@ import ErrorState from "./ErrorState";
 import LoadingState from "./LoadingState";
 import HalfScreenModal from "./HalfScreenModal";
 import { usePhoneVerification } from "../hooks/usePhoneVerification";
-import { useUser } from "../stores/authSlice";
-import { useLiveChat } from "../context/LiveChatProvider";
 
 type Banner = {
   id: number;
@@ -157,11 +155,7 @@ const AdvertsBanner = () => {
   const { apiGet } = useAxios();
 
   const { isPhoneVerified } = usePhoneVerification();
-  const user = useUser();
-  const isSuspended = user?.status === "SUSPEND";
-  const { openLiveChat } = useLiveChat();
   const [showPhoneModal, setShowPhoneModal] = useState(false);
-  const [showSuspendedModal, setShowSuspendedModal] = useState(false);
 
   const flatListRef = useRef<FlatList>(null);
   const currentIndexRef = useRef(0); // avoids stale closures inside the interval
@@ -227,17 +221,8 @@ const AdvertsBanner = () => {
     );
   };
 
-  const handleOpenSupportChat = () => {
-    setShowSuspendedModal(false);
-    openLiveChat();
-  };
-
   const handleBannerPress = (banner: Banner) => {
     if (banner.linking_type === "internal") {
-      if (isSuspended) {
-        setShowSuspendedModal(true);
-        return;
-      }
       if (!isPhoneVerified) {
         setShowPhoneModal(true);
         return;
@@ -299,18 +284,6 @@ const AdvertsBanner = () => {
         actionButton={handleVerifyNow}
         secondaryButtonText="Maybe later"
         secondaryAction={() => setShowPhoneModal(false)}
-        showCloseButton
-      />
-
-      <HalfScreenModal
-        isVisible={showSuspendedModal}
-        onClose={() => setShowSuspendedModal(false)}
-        title="Account Suspended"
-        description="Your account has been suspended. Please contact support for help getting this resolved."
-        buttonText="Chat with Support"
-        actionButton={handleOpenSupportChat}
-        secondaryButtonText="Cancel"
-        secondaryAction={() => setShowSuspendedModal(false)}
         showCloseButton
       />
     </View>

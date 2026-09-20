@@ -308,10 +308,6 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
   const navigation: any = useNavigation();
 
   const handleSeeTransactionsPress = () => {
-    if (isSuspended) {
-      setSuspendedModalVisible(true);
-      return;
-    }
     if (!isPhoneVerified) {
       setPhoneModalVisible(true);
       return;
@@ -325,10 +321,6 @@ const BalanceCard: React.FC<BalanceCardProps> = ({
   };
 
   const handleDepositPress = () => {
-    if (isSuspended) {
-      setSuspendedModalVisible(true);
-      return;
-    }
     if (!isPhoneVerified) {
       setPhoneModalVisible(true);
       return;

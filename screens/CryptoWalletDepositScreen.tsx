@@ -23,13 +23,33 @@ import { AxiosError } from "axios";
 import { showError } from "../utlis/toast";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import HalfScreenModal from "../components/HalfScreenModal";
+import { useUser } from "../stores/authSlice";
+import { useLiveChat } from "../context/LiveChatProvider";
 
 const CryptoWalletDepositScreen = () => {
   const route: any = useRoute();
   const navigation = useNavigation<any>();
   const [refreshing, setRefreshing] = useState(false);
+  const [showSuspendedModal, setShowSuspendedModal] = useState(false);
   const colors = useColors();
   const styles = makeStyles(colors);
+  const user = useUser();
+  const { openLiveChat } = useLiveChat();
+  const isSuspended = user?.status === "SUSPEND";
+
+  const handleOpenSupportChat = () => {
+    setShowSuspendedModal(false);
+    openLiveChat();
+  };
+
+  const guardedNavigate = (fn: () => void) => () => {
+    if (isSuspended) {
+      setShowSuspendedModal(true);
+      return;
+    }
+    fn();
+  };
 
   const {
     data: { wallets },
@@ -69,8 +89,8 @@ const CryptoWalletDepositScreen = () => {
     {
       label: "Buy",
       icon: <ArrowDown size={16} color={COLORS.primary} />,
-      onPress: () =>
-        asset &&
+      onPress: guardedNavigate(() => {
+        if (!asset) return;
         navigation.navigate("BuyCrypto", {
           intent: {
             assetId: asset.uuid,
@@ -79,13 +99,14 @@ const CryptoWalletDepositScreen = () => {
             source: "wallets",
             amount: 0,
           },
-        }),
+        });
+      }),
     },
     {
       label: "Sell",
       icon: <ArrowUp size={16} color={COLORS.primary} />,
-      onPress: () =>
-        asset &&
+      onPress: guardedNavigate(() => {
+        if (!asset) return;
         navigation.navigate("SellCrypto", {
           intent: {
             assetId: asset.uuid,
@@ -94,13 +115,14 @@ const CryptoWalletDepositScreen = () => {
             source: "wallets",
             amount: 0,
           },
-        }),
+        });
+      }),
     },
     {
       label: "Withdraw",
       icon: <Send size={16} color={COLORS.primary} />,
-      onPress: () =>
-        asset &&
+      onPress: guardedNavigate(() => {
+        if (!asset) return;
         navigation.navigate("WithdrawalCrypto", {
           intent: {
             assetId: asset.uuid,
@@ -109,14 +131,18 @@ const CryptoWalletDepositScreen = () => {
             source: "wallets",
             amount: 0,
           },
-        }),
+        });
+      }),
     },
     {
       label: "Swap",
       icon: (
         <CustomIcon source={RefreshIcon} size={10} color={COLORS.primary} />
       ),
-      onPress: () => asset && navigation.navigate("SwapCrypto"),
+      onPress: guardedNavigate(() => {
+        if (!asset) return;
+        navigation.navigate("SwapCrypto");
+      }),
     },
   ];
 
@@ -156,6 +182,18 @@ const CryptoWalletDepositScreen = () => {
           </TouchableOpacity>
         ))}
       </View>
+
+      <HalfScreenModal
+        isVisible={showSuspendedModal}
+        onClose={() => setShowSuspendedModal(false)}
+        title="Account Suspended"
+        description="Your account has been suspended. Please contact support for help getting this resolved."
+        buttonText="Chat with Support"
+        actionButton={handleOpenSupportChat}
+        secondaryButtonText="Cancel"
+        secondaryAction={() => setShowSuspendedModal(false)}
+        showCloseButton
+      />
     </SafeAreaView>
   );
 };

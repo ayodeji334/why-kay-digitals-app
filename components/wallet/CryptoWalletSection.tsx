@@ -34,12 +34,24 @@ import { TradeIntent } from "../../libs/types";
 import { AppText } from "../AppText";
 import CustomLoading from "../CustomLoading";
 import { useColors } from "../../hooks/useTheme";
+import HalfScreenModal from "../HalfScreenModal";
+import { useUser } from "../../stores/authSlice";
+import { useLiveChat } from "../../context/LiveChatProvider";
 
 const CryptoWalletSection = () => {
   const [showAddAssetWalletModal, setShowAddAssetWalletModal] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showSuspendedModal, setShowSuspendedModal] = useState(false);
   const colors = useColors();
   const styles = makeStyles(colors);
+  const user = useUser();
+  const { openLiveChat } = useLiveChat();
+  const isSuspended = user?.status === "SUSPEND";
+
+  const handleOpenSupportChat = () => {
+    setShowSuspendedModal(false);
+    openLiveChat();
+  };
 
   // The asset the user picked, waiting for the modal to finish dismissing.
   // Using a ref (not state) because it shouldn't trigger a re-render.
@@ -131,6 +143,10 @@ const CryptoWalletSection = () => {
 
   // Navigation helpers
   const navigateTrade = (action: TradeIntent["action"]) => {
+    if (isSuspended && action !== "deposit") {
+      setShowSuspendedModal(true);
+      return;
+    }
     navigation.navigate("SelectAsset", {
       action,
       source: "home",
@@ -204,7 +220,13 @@ const CryptoWalletSection = () => {
               <ActionCard
                 title="Swap"
                 source={icons.swap}
-                onPress={() => navigation.navigate("SwapCrypto")}
+                onPress={() => {
+                  if (isSuspended) {
+                    setShowSuspendedModal(true);
+                    return;
+                  }
+                  navigation.navigate("SwapCrypto");
+                }}
               />
             </View>
 
@@ -309,6 +331,18 @@ const CryptoWalletSection = () => {
       {/* {isGenerating && ( */}
       <CustomLoading loading={isGenerating} />
       {/* )} */}
+
+      <HalfScreenModal
+        isVisible={showSuspendedModal}
+        onClose={() => setShowSuspendedModal(false)}
+        title="Account Suspended"
+        description="Your account has been suspended. Please contact support for help getting this resolved."
+        buttonText="Chat with Support"
+        actionButton={handleOpenSupportChat}
+        secondaryButtonText="Cancel"
+        secondaryAction={() => setShowSuspendedModal(false)}
+        showCloseButton
+      />
     </View>
   );
 };
