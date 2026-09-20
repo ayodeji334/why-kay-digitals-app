@@ -382,6 +382,7 @@ import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
 import LoadingState from "../components/LoadingState";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useAuthStore } from "../stores/authSlice";
 
 export const EmptyTransactionState: React.FC = () => {
   const colors = useColors();
@@ -414,6 +415,7 @@ const defaultFilter: FilterType = {
 
 const TransactionHistoryScreen: React.FC = () => {
   const { apiGet } = useAxios();
+  const refreshUser = useAuthStore(state => state.refreshUser);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [filters, setFilters] = useState<FilterType>(defaultFilter);
   const [filterQuery, setFilterQuery] = useState<FilterType>(defaultFilter);
@@ -565,7 +567,10 @@ const TransactionHistoryScreen: React.FC = () => {
         <TransactionSectionList
           transactions={transactions}
           refreshing={isRefetching}
-          onRefresh={refetch}
+          onRefresh={() => {
+            refetch();
+            refreshUser();
+          }}
           onLoadMore={() =>
             hasNextPage && !isFetchingNextPage && fetchNextPage()
           }

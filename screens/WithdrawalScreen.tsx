@@ -34,7 +34,7 @@ import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import { HIGH_VALUE_WITHDRAWAL_THRESHOLD } from "../constants/transactionLimits";
-import { useUser } from "../stores/authSlice";
+import { useAuthStore, useUser } from "../stores/authSlice";
 import { useLiveChat } from "../context/LiveChatProvider";
 import HalfScreenModal from "../components/HalfScreenModal";
 
@@ -54,6 +54,7 @@ export default function WithdrawScreen() {
   const styles = makeStyles(colors);
   const user = useUser();
   const { openLiveChat } = useLiveChat();
+  const refreshUser = useAuthStore(state => state.refreshUser);
   const isSuspended = user?.status === "SUSPEND";
 
   const {
@@ -273,10 +274,24 @@ export default function WithdrawScreen() {
 
   useFocusEffect(onRefresh);
 
+  // Re-pull the user's status on every focus so a just-reactivated account
+  // (unsuspended by an admin) isn't stuck seeing stale "suspended" state.
   useFocusEffect(
     useCallback(() => {
-      if (isSuspended) setShowSuspendedModal(true);
-    }, [isSuspended]),
+      let active = true;
+
+      (async () => {
+        await refreshUser();
+        if (!active) return;
+        const stillSuspended =
+          useAuthStore.getState().user?.status === "SUSPEND";
+        setShowSuspendedModal(stillSuspended);
+      })();
+
+      return () => {
+        active = false;
+      };
+    }, [refreshUser]),
   );
 
   const handleOpenSupportChat = () => {

@@ -24,6 +24,7 @@ interface AuthState {
   logout: () => void;
   clearAuth: () => void;
   initializeAuth: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   setHasHydrated: () => void;
 }
 
@@ -107,6 +108,29 @@ export const useAuthStore = create<AuthState>()(
           }
         } catch {
           get().logout();
+        }
+      },
+
+      // Best-effort refresh of the current user (e.g. to pick up an admin
+      // un-suspending the account) — unlike initializeAuth, a failure here
+      // must NOT log the user out, since they're still validly authenticated.
+      refreshUser: async () => {
+        const { token } = get();
+        if (!token) return;
+
+        try {
+          const res = await axios.get(`${BASE_URL}/users/current-user`, {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 8000,
+          });
+
+          if (res.status === 200 && res.data?.success) {
+            set(state => ({
+              user: { ...(state.user ?? {}), ...res.data.data },
+            }));
+          }
+        } catch {
+          // ignore — keep last known user state
         }
       },
 
@@ -222,4 +246,5 @@ export const useAuthActions = () =>
     setIsShowBalance: state.setIsShowBalance,
     logout: state.logout,
     clearAuth: state.clearAuth,
+    refreshUser: state.refreshUser,
   }));

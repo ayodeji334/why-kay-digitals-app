@@ -14,9 +14,11 @@ import CustomLoading from "../CustomLoading";
 import FiatWalletBalanceCard from "./FiatWalletBalanceCard";
 import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
+import { useAuthStore } from "../../stores/authSlice";
 
 const FiatWalletSection = () => {
   const { apiGet } = useAxios();
+  const refreshUser = useAuthStore(state => state.refreshUser);
 
   const fetchTransactions = async ({ pageParam = 1 }) => {
     const params: any = {
@@ -59,7 +61,10 @@ const FiatWalletSection = () => {
   const transactions = useMemo(() => {
     return data?.pages.flatMap(page => page.data) ?? [];
   }, [data?.pages]);
-  const handleRefresh = () => refetch();
+  const handleRefresh = () => {
+    refetch();
+    refreshUser();
+  };
 
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();

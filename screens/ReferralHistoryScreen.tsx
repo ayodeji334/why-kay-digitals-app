@@ -838,6 +838,7 @@ const ReferralHistoryScreen: React.FC = () => {
   const colors = useColors();
   const styles = makeStyles(colors);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshUser = useAuthStore(state => state.refreshUser);
 
   const { data, isLoading, refetch } = useQuery<ReferralResponse>({
     queryKey: ["referralHistory"],
@@ -853,7 +854,7 @@ const ReferralHistoryScreen: React.FC = () => {
   const onRefresh = async () => {
     setIsRefreshing(true);
     try {
-      await refetch();
+      await Promise.all([refetch(), refreshUser()]);
     } catch (err) {
       if (err instanceof AxiosError) {
         showError(

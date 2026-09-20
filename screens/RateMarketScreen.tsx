@@ -29,6 +29,7 @@ import useAxios from "../hooks/useAxios";
 import { useColors } from "../hooks/useTheme";
 import { usePhoneVerification } from "../hooks/usePhoneVerification";
 import { TradeIntent } from "../libs/types";
+import { useAuthStore } from "../stores/authSlice";
 
 export default function RateMarketScreen() {
   const { apiGet } = useAxios();
@@ -36,6 +37,7 @@ export default function RateMarketScreen() {
   const styles = makeStyles(colors);
   const navigation: any = useNavigation();
   const { isPhoneVerified } = usePhoneVerification();
+  const refreshUser = useAuthStore(state => state.refreshUser);
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [showPhoneModal, setShowPhoneModal] = useState(false);
 
@@ -46,6 +48,11 @@ export default function RateMarketScreen() {
       return res?.data?.data ?? [];
     },
   });
+
+  const onRefresh = () => {
+    refetch();
+    refreshUser();
+  };
 
   const assets = Array.isArray(data) ? data : [];
 
@@ -150,7 +157,7 @@ export default function RateMarketScreen() {
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={refetch}
+            onRefresh={onRefresh}
             tintColor={COLORS.primary}
             colors={[COLORS.primary]}
           />

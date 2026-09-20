@@ -513,6 +513,7 @@ const BankTransferScreen = () => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const user = useAuthStore(state => state.user);
+  const refreshUser = useAuthStore(state => state.refreshUser);
   const navigation: any = useNavigation();
   const colors = useColors();
   const styles = makeStyles(colors);
@@ -538,7 +539,7 @@ const BankTransferScreen = () => {
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      await refetch();
+      await Promise.all([refetch(), refreshUser()]);
     } finally {
       setRefreshing(false);
     }

@@ -15,14 +15,14 @@ import {
   normalize,
   normalizeSpacing,
 } from "../constants/settings";
-import { useUser } from "../stores/authSlice";
+import { useAuthStore, useUser } from "../stores/authSlice";
 // import AssetsSection from "../components/Dashboard/AssetsSection";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import AdvertsBanner from "../components/AdvertsBanner";
 import NotificationBell from "../components/Dashboard/NotificationBell";
 import FiatWalletBalanceCard from "../components/wallet/FiatWalletBalanceCard";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useFiatBalance } from "../hooks/useFiatBalance";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppText } from "../components/AppText";
@@ -35,6 +35,7 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const { refetch, isRefetching } = useFiatBalance();
   const queryClient = useQueryClient();
+  const refreshUser = useAuthStore(state => state.refreshUser);
   const styles = makeStyles(colors);
   const resolvedTheme = useResolvedTheme();
 
@@ -66,6 +67,13 @@ const HomeScreen = () => {
     queryClient.invalidateQueries({ queryKey: ["rates"] });
   });
 
+  // Picks up an admin un-suspending (or suspending) the account without
+  // requiring the user to log out and back in.
+  const handleRefresh = useCallback(() => {
+    refetch();
+    refreshUser();
+  }, [refetch, refreshUser]);
+
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <StatusBar
@@ -76,7 +84,7 @@ const HomeScreen = () => {
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+          <RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />
         }
       >
         <View style={styles.header}>

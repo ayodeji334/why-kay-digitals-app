@@ -94,6 +94,7 @@ export const mapTierToDisplay = (
 
 const AccountLimitsScreen = () => {
   const user = useAuthStore(state => state.user);
+  const refreshUser = useAuthStore(state => state.refreshUser);
   const navigation = useNavigation();
   const [expandedTiers, setExpandedTiers] = useState<string[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -120,11 +121,11 @@ const AccountLimitsScreen = () => {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await refetch();
+      await Promise.all([refetch(), refreshUser()]);
     } finally {
       setRefreshing(false);
     }
-  }, [refetch]);
+  }, [refetch, refreshUser]);
 
   const toggleTier = (tierId: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);

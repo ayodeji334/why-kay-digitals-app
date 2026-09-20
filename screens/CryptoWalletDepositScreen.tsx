@@ -24,7 +24,7 @@ import { showError } from "../utlis/toast";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import HalfScreenModal from "../components/HalfScreenModal";
-import { useUser } from "../stores/authSlice";
+import { useAuthStore, useUser } from "../stores/authSlice";
 import { useLiveChat } from "../context/LiveChatProvider";
 
 const CryptoWalletDepositScreen = () => {
@@ -36,6 +36,7 @@ const CryptoWalletDepositScreen = () => {
   const styles = makeStyles(colors);
   const user = useUser();
   const { openLiveChat } = useLiveChat();
+  const refreshUser = useAuthStore(state => state.refreshUser);
   const isSuspended = user?.status === "SUSPEND";
 
   const handleOpenSupportChat = () => {

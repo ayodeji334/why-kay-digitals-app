@@ -290,10 +290,10 @@
 //         amount,
 //         assetDetails.rates.buy,
 //       );
-//     } else if (assetDetails?.buy_rate) {
-//       acknowledgedBuyRateRef.current = parseFloat(assetDetails.buy_rate);
+//     } else if (assetDetails?.sell_rate) {
+//       acknowledgedBuyRateRef.current = parseFloat(assetDetails.sell_rate);
 //     }
-//   }, [assetDetails?.rates?.buy, assetDetails?.buy_rate, amount]);
+//   }, [assetDetails?.rates?.buy, assetDetails?.sell_rate, amount]);
 
 //   useEffect(() => {
 //     if (Number(marketPrice) > 0) {
@@ -372,7 +372,7 @@
 //       const buyRateData = latestRates.rates?.buy ?? null;
 //       const currentBuyRate = buyRateData
 //         ? resolveRateFromCategories(values.amount, buyRateData)
-//         : parseFloat(latestRates.buy_rate ?? "0");
+//         : parseFloat(latestRates.sell_rate ?? "0");
 
 //       const usedBuyRate = acknowledgedBuyRateRef.current;
 //       const usedMarketPrice = acknowledgedMarketPriceRef.current;
@@ -585,7 +585,7 @@
 //                   <AppText style={styles.balance}>
 //                     {formatAmount(
 //                       feeBreakdown?.currentBuyRate ??
-//                         assetDetails?.buy_rate ??
+//                         assetDetails?.sell_rate ??
 //                         0,
 //                     )}
 //                     /$
@@ -844,7 +844,7 @@
 // //       const buyRateData = latestRates.rates?.buy ?? null;
 // //       const currentBuyRate = buyRateData
 // //         ? resolveRateFromCategories(values.amount, buyRateData)
-// //         : parseFloat(latestRates.buy_rate ?? "0");
+// //         : parseFloat(latestRates.sell_rate ?? "0");
 
 // //       const usedBuyRate = acknowledgedBuyRateRef.current;
 // //       const usedMarketPrice = acknowledgedMarketPriceRef.current;
@@ -920,7 +920,7 @@
 // //   //     }
 
 // //   //     // parse latest values
-// //   //     const currentBuyRate = parseFloat(latestRates.buy_rate ?? "0");
+// //   //     const currentBuyRate = parseFloat(latestRates.sell_rate ?? "0");
 // //   //     const currentMarketPrice = parseFloat(
 // //   //       latestRates.market_current_value ?? "0",
 // //   //     );
@@ -993,9 +993,9 @@
 // //   //       return;
 // //   //     }
 
-// //   //     const currentBuyRate = parseFloat(latestRates.buy_rate ?? "0");
+// //   //     const currentBuyRate = parseFloat(latestRates.sell_rate ?? "0");
 // //   //     const usedBuyRate = parseFloat(
-// //   //       feeBreakdown?.currentBuyRate ?? assetDetails?.buy_rate ?? "0",
+// //   //       feeBreakdown?.currentBuyRate ?? assetDetails?.sell_rate ?? "0",
 // //   //     );
 
 // //   //     if (currentBuyRate > 0 && currentBuyRate !== usedBuyRate) {
@@ -1106,11 +1106,11 @@
 // //   // }, [intent?.amount]);
 
 // //   // useEffect(() => {
-// //   //   if (assetDetails?.buy_rate && marketPrice > 0 && assetDetails) {
+// //   //   if (assetDetails?.sell_rate && marketPrice > 0 && assetDetails) {
 // //   //     const recalculated = calculateFeeBreakdown(
 // //   //       amount,
 // //   //       marketPrice,
-// //   //       feeBreakdown?.currentBuyRate ?? parseFloat(assetDetails.buy_rate),
+// //   //       feeBreakdown?.currentBuyRate ?? parseFloat(assetDetails.sell_rate),
 // //   //       assetDetails.symbol ?? "",
 // //   //     );
 // //   //     setAssetValueEquivalent(recalculated.assetValueEquivalent);
@@ -1118,7 +1118,7 @@
 // //   //     setNgnAmount(recalculated.ngnAmount);
 // //   //   }
 // //   // }, [
-// //   //   assetDetails?.buy_rate,
+// //   //   assetDetails?.sell_rate,
 // //   //   amount,
 // //   //   feeBreakdown?.currentBuyRate,
 // //   //   marketPrice,
@@ -1131,10 +1131,10 @@
 // //         amount,
 // //         assetDetails.rates.buy,
 // //       );
-// //     } else if (assetDetails?.buy_rate) {
-// //       acknowledgedBuyRateRef.current = parseFloat(assetDetails.buy_rate);
+// //     } else if (assetDetails?.sell_rate) {
+// //       acknowledgedBuyRateRef.current = parseFloat(assetDetails.sell_rate);
 // //     }
-// //   }, [assetDetails?.rates?.buy, assetDetails?.buy_rate, amount]);
+// //   }, [assetDetails?.rates?.buy, assetDetails?.sell_rate, amount]);
 
 // //   useEffect(() => {
 // //     if (Number(marketPrice) > 0) {
@@ -1288,7 +1288,7 @@
 // //                   <AppText style={styles.balance}>
 // //                     {formatAmount(
 // //                       feeBreakdown?.currentBuyRate ??
-// //                         assetDetails?.buy_rate ??
+// //                         assetDetails?.sell_rate ??
 // //                         0,
 // //                     )}
 // //                     /$
@@ -1624,6 +1624,7 @@ import { useColors } from "../hooks/useTheme";
 import { useCryptoLimits } from "../hooks/useCryptoLimits";
 import { useServiceCharges } from "../hooks/useServiceCharges";
 import NoWallet from "../components/NoWallet";
+import { useAuthStore } from "../stores/authSlice";
 
 type CryptoBuyScreenParams = {
   CryptoBuy: {
@@ -1702,6 +1703,7 @@ export default function CryptoBuyScreen() {
   const { fiatBalance } = useFiatBalance();
   const { minBuyAmount } = useCryptoLimits();
   const { getCharge, refetch: refetchServiceCharges } = useServiceCharges();
+  const refreshUser = useAuthStore(state => state.refreshUser);
   const buyFeeCharge = getCharge("crypto_buy_fee");
 
   // ASSUMPTION: backend returns buy_fee as a percentage number (e.g. "1.8"
@@ -1822,29 +1824,29 @@ export default function CryptoBuyScreen() {
   );
 
   useEffect(() => {
-    if (!assetDetails?.rates?.buy || Number(marketPrice) <= 0) return;
+    if (!assetDetails?.rates?.sell || Number(marketPrice) <= 0) return;
     if (rateOverriddenRef.current) return;
 
     const effectiveRate = resolveRateFromCategories(
       amount,
-      assetDetails.rates.buy,
+      assetDetails.rates.sell,
     );
     if (!effectiveRate || effectiveRate <= 0) return;
 
     recalculate(amount, Number(marketPrice), effectiveRate);
-  }, [assetDetails?.rates?.buy, amount, marketPrice, recalculate]);
+  }, [assetDetails?.rates?.sell, amount, marketPrice, recalculate]);
 
   // Effect: seed acknowledged refs
   useEffect(() => {
-    if (assetDetails?.rates?.buy && amount >= 0) {
+    if (assetDetails?.rates?.sell && amount >= 0) {
       acknowledgedBuyRateRef.current = resolveRateFromCategories(
         amount,
-        assetDetails.rates.buy,
+        assetDetails.rates?.sell,
       );
-    } else if (assetDetails?.buy_rate) {
-      acknowledgedBuyRateRef.current = parseFloat(assetDetails.buy_rate);
+    } else if (assetDetails?.sell_rate) {
+      acknowledgedBuyRateRef.current = parseFloat(assetDetails.sell_rate);
     }
-  }, [assetDetails?.rates?.buy, assetDetails?.buy_rate, amount]);
+  }, [assetDetails?.rates?.sell, assetDetails?.sell_rate, amount]);
 
   useEffect(() => {
     if (Number(marketPrice) > 0) {
@@ -1891,10 +1893,10 @@ export default function CryptoBuyScreen() {
         latestRates.market_current_value ?? "0",
       );
 
-      const buyRateData = latestRates.rates?.buy ?? null;
+      const buyRateData = latestRates.rates?.sell ?? null;
       const currentBuyRate = buyRateData
         ? resolveRateFromCategories(values.amount, buyRateData)
-        : parseFloat(latestRates.buy_rate ?? "0");
+        : parseFloat(latestRates.sell_rate ?? "0");
 
       const usedBuyRate = acknowledgedBuyRateRef.current;
       const usedMarketPrice = acknowledgedMarketPriceRef.current;
@@ -1970,7 +1972,7 @@ export default function CryptoBuyScreen() {
   const onRefresh = async () => {
     setRefreshing(true);
     rateOverriddenRef.current = false;
-    await Promise.all([refetch(), refetchServiceCharges()]);
+    await Promise.all([refetch(), refetchServiceCharges(), refreshUser()]);
     setRefreshing(false);
   };
 
@@ -2147,7 +2149,7 @@ export default function CryptoBuyScreen() {
 
                 {!errors.amount && !hasInsufficientBalance && (
                   <AppText style={styles.approx}>
-                    Approximately {assetValueEquivalent} {assetDetails?.symbo}
+                    Approximately {assetValueEquivalent} {assetDetails?.symbol}
                   </AppText>
                 )}
 
@@ -2191,7 +2193,7 @@ export default function CryptoBuyScreen() {
                     <AppText style={styles.balance}>
                       {formatAmount(
                         feeBreakdown?.currentBuyRate ??
-                          assetDetails?.buy_rate ??
+                          assetDetails?.sell_rate ??
                           0,
                       )}
                       /$

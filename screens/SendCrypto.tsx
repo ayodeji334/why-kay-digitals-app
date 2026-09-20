@@ -964,7 +964,7 @@ import TextInputField from "../components/TextInputField";
 import NoWallet from "../components/NoWallet";
 import InfoCard from "../components/InfoCard";
 import HalfScreenModal from "../components/HalfScreenModal";
-import { useUser } from "../stores/authSlice";
+import { useAuthStore, useUser } from "../stores/authSlice";
 import { useLiveChat } from "../context/LiveChatProvider";
 import { InfoCircle, ScanBarcode } from "iconsax-react-nativejs";
 import {
@@ -1055,12 +1055,27 @@ export default function SendScreen() {
   const styles = makeStyles(colors);
   const user = useUser();
   const { openLiveChat } = useLiveChat();
+  const refreshUser = useAuthStore(state => state.refreshUser);
   const isSuspended = user?.status === "SUSPEND";
 
+  // Re-pull the user's status on every focus so a just-reactivated account
+  // (unsuspended by an admin) isn't stuck seeing stale "suspended" state.
   useFocusEffect(
     useCallback(() => {
-      if (isSuspended) setShowSuspendedModal(true);
-    }, [isSuspended]),
+      let active = true;
+
+      (async () => {
+        await refreshUser();
+        if (!active) return;
+        const stillSuspended =
+          useAuthStore.getState().user?.status === "SUSPEND";
+        setShowSuspendedModal(stillSuspended);
+      })();
+
+      return () => {
+        active = false;
+      };
+    }, [refreshUser]),
   );
 
   const handleOpenSupportChat = () => {

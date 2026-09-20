@@ -35,7 +35,7 @@ import { AppText } from "../AppText";
 import CustomLoading from "../CustomLoading";
 import { useColors } from "../../hooks/useTheme";
 import HalfScreenModal from "../HalfScreenModal";
-import { useUser } from "../../stores/authSlice";
+import { useAuthStore, useUser } from "../../stores/authSlice";
 import { useLiveChat } from "../../context/LiveChatProvider";
 
 const CryptoWalletSection = () => {
@@ -154,6 +154,8 @@ const CryptoWalletSection = () => {
     } as TradeIntent);
   };
 
+  const refreshUser = useAuthStore(state => state.refreshUser);
+
   const handleNavigateWallet = (item: any) => {
     navigation.navigate("CryptoWalletDeposit", {
       crypto: { ...item, uuid: item.asset_id },
@@ -178,7 +180,10 @@ const CryptoWalletSection = () => {
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={refetch}
+            onRefresh={() => {
+              refetch();
+              refreshUser();
+            }}
             colors={colors.primary ? [colors.primary] : [COLORS.primary]}
           />
         }
@@ -245,7 +250,13 @@ const CryptoWalletSection = () => {
                   <AppText style={styles.generateButtonText}>Refresh</AppText>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setShowAddAssetWalletModal(true)}
+                  onPress={() => {
+                    if (isSuspended) {
+                      setShowSuspendedModal(true);
+                      return;
+                    }
+                    setShowAddAssetWalletModal(true);
+                  }}
                   activeOpacity={0.68}
                   style={styles.generateButton}
                 >

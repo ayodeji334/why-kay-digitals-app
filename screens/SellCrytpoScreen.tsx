@@ -255,44 +255,44 @@ export default function CryptoSellScreen() {
 
   // Effect: recalculate on amount / market price / sell rate change
   // useEffect(() => {
-  //   if (!assetDetails?.sell_rate || Number(marketPrice) <= 0) return;
+  //   if (!assetDetails?.buy_rate || Number(marketPrice) <= 0) return;
   //   if (rateOverriddenRef.current) return; // onSubmit owns the rate — don't overwrite
 
-  //   const sellRate = parseFloat(assetDetails.sell_rate);
+  //   const sellRate = parseFloat(assetDetails.buy_rate);
   //   if (!sellRate || sellRate <= 0) return;
 
   //   recalculate(amount, Number(marketPrice), sellRate);
-  // }, [assetDetails?.sell_rate, amount, marketPrice, recalculate]);
+  // }, [assetDetails?.buy_rate, amount, marketPrice, recalculate]);
   useEffect(() => {
-    if (!assetDetails?.rates?.sell || Number(marketPrice) <= 0) return;
+    if (!assetDetails?.rates?.buy || Number(marketPrice) <= 0) return;
     if (rateOverriddenRef.current) return;
 
     const effectiveRate = resolveRateFromCategories(
       amount,
-      assetDetails.rates.sell,
+      assetDetails.rates.buy,
     );
 
     if (!effectiveRate || effectiveRate <= 0) return;
 
     recalculate(amount, Number(marketPrice), effectiveRate);
-  }, [assetDetails?.rates?.sell, amount, marketPrice, recalculate]);
+  }, [assetDetails?.rates?.buy, amount, marketPrice, recalculate]);
 
   // Effect: seed acknowledged refs on mount
   // useEffect(() => {
-  //   if (assetDetails?.sell_rate) {
-  //     acknowledgedSellRateRef.current = parseFloat(assetDetails.sell_rate);
+  //   if (assetDetails?.buy_rate) {
+  //     acknowledgedSellRateRef.current = parseFloat(assetDetails.buy_rate);
   //   }
-  // }, [assetDetails?.sell_rate]);
+  // }, [assetDetails?.buy_rate]);
   useEffect(() => {
-    if (assetDetails?.rates?.sell && amount >= 0) {
+    if (assetDetails?.rates?.buy && amount >= 0) {
       acknowledgedSellRateRef.current = resolveRateFromCategories(
         amount,
-        assetDetails.rates.sell,
+        assetDetails.rates.buy,
       );
-    } else if (assetDetails?.sell_rate) {
-      acknowledgedSellRateRef.current = parseFloat(assetDetails.sell_rate);
+    } else if (assetDetails?.buy_rate) {
+      acknowledgedSellRateRef.current = parseFloat(assetDetails.buy_rate);
     }
-  }, [assetDetails?.rates?.sell, assetDetails?.sell_rate, amount]);
+  }, [assetDetails?.rates?.buy, assetDetails?.buy_rate, amount]);
 
   useEffect(() => {
     if (Number(marketPrice) > 0) {
@@ -370,10 +370,10 @@ export default function CryptoSellScreen() {
       );
 
       // Resolve the effective sell rate from categories based on the entered amount
-      const sellRateData = latestRates.rates?.sell ?? null;
+      const sellRateData = latestRates.rates?.buy ?? null;
       const currentSellRate = sellRateData
         ? resolveRateFromCategories(values.amount, sellRateData)
-        : parseFloat(latestRates.sell_rate ?? "0");
+        : parseFloat(latestRates.buy_rate ?? "0");
 
       // Resolve what rate was used when the screen last calculated
       const usedSellRate = acknowledgedSellRateRef.current;
@@ -451,9 +451,9 @@ export default function CryptoSellScreen() {
   };
 
   const isRateUnavailable = useMemo(() => {
-    const sellRate = parseFloat(assetDetails?.sell_rate ?? "0");
-    return !assetDetails?.rates?.sell || !sellRate || sellRate <= 0;
-  }, [assetDetails?.rates?.sell, assetDetails?.sell_rate]);
+    const sellRate = parseFloat(assetDetails?.buy_rate ?? "0");
+    return !assetDetails?.rates?.buy || !sellRate || sellRate <= 0;
+  }, [assetDetails?.rates?.buy, assetDetails?.buy_rate]);
 
   if (isLoading) {
     return (
@@ -600,7 +600,6 @@ export default function CryptoSellScreen() {
                         Wallet Balance, Exchange Rate & Fee Breakdown
                       </AppText>
 
-                      {/* Wallet balance */}
                       <View
                         style={{
                           flexDirection: "row",
@@ -642,7 +641,6 @@ export default function CryptoSellScreen() {
                         }}
                       />
 
-                      {/* Rate */}
                       <View
                         style={{
                           flexDirection: "row",
@@ -686,7 +684,6 @@ export default function CryptoSellScreen() {
                         </AppText>
                       </View>
 
-                      {/* Fee breakdown — only show when amount is entered */}
                       {feeBreakdown && amount > 0 && (
                         <>
                           <View

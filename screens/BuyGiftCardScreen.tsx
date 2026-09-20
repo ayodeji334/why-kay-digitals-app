@@ -32,6 +32,7 @@ import CountryPicker from "../components/CountryPicker";
 import { Country } from "../libs/types";
 import { SelectInput } from "../components/SelectInputField";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
+import { useAuthStore } from "../stores/authSlice";
 
 interface GiftCardOffer {
   offerId: string;
@@ -295,6 +296,7 @@ export default function BuyGiftCardScreen() {
   const { apiGet } = useAxios();
   const navigation: any = useNavigation();
   const { fiatBalance } = useFiatBalance();
+  const refreshUser = useAuthStore(state => state.refreshUser);
 
   const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<Country | undefined>();
@@ -461,7 +463,7 @@ export default function BuyGiftCardScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await loadOffers();
+      await Promise.all([loadOffers(), refreshUser()]);
       if (selectedOffer) {
         const res = await apiGet("/gift-cards/latest-rate");
         setExchangeRate(parseFloat(res?.data?.data?.buy_rate ?? "0"));
@@ -471,7 +473,7 @@ export default function BuyGiftCardScreen() {
     } finally {
       setRefreshing(false);
     }
-  }, [loadOffers, selectedOffer]);
+  }, [loadOffers, selectedOffer, refreshUser]);
 
   // Submit
   // Re-fetches the rate at submission time and only interrupts the user if

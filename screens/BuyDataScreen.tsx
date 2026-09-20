@@ -506,6 +506,7 @@ import { useFiatBalance } from "../hooks/useFiatBalance";
 import { useColors } from "../hooks/useTheme";
 import { usePointsBalance } from "../hooks/usePointBalance";
 import { FundingSourceSelector } from "../components/FundSourceSelector";
+import { useAuthStore } from "../stores/authSlice";
 
 const schema = yup.object({
   phone: yup
@@ -529,6 +530,7 @@ const formatPhoneNumber = (phone: string) => {
 };
 
 export default function BuyDataScreen() {
+  const refreshUser = useAuthStore(state => state.refreshUser);
   const { fiatBalance, refetch: refetchBalance } = useFiatBalance();
   const {
     pointsBalance,
@@ -610,11 +612,16 @@ export default function BuyDataScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await Promise.all([refetchBalance?.(), refetchPoints?.(), refetch()]);
+      await Promise.all([
+        refetchBalance?.(),
+        refetchPoints?.(),
+        refetch(),
+        refreshUser(),
+      ]);
     } finally {
       setRefreshing(false);
     }
-  }, [refetchBalance, refetchPoints, refetch]);
+  }, [refetchBalance, refetchPoints, refetch, refreshUser]);
 
   const onSubmit = async (values: any) => {
     try {
