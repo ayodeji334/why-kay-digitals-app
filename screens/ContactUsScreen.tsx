@@ -66,12 +66,12 @@ const MenuItem: React.FC<MenuItemProps> = ({
   onPress,
   showSwitch = false,
   isDangerous = false,
-  color = "#000",
   IconComponent = ArrowRight2,
   showArrow = true,
 }) => {
   const colors = useColors();
   const styles = makeStyles(colors);
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -95,7 +95,6 @@ const MenuItem: React.FC<MenuItemProps> = ({
         >
           {title}
         </AppText>
-        {/* Subtitle handling: string or array */}
         {typeof subtitle === "string" ? (
           <AppText style={styles.menuItemSubtitle}>{subtitle}</AppText>
         ) : Array.isArray(subtitle) ? (
