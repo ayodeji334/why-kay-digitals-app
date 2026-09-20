@@ -95,7 +95,7 @@
 //   return {
 //     assetValueEquivalent: coinAmount.toFixed(8),
 //     ngnAmount:
-//       buyRate > 0 ? formatAmount(totalCostNgn, { decimalPlace: 2 }) : "0.00",
+//       buyRate > 0 ? formatAmount(totalCostNgn, { maxDecimalPlace: 2 }) : "0.00",
 //     feeBreakdown: {
 //       grossUsd: amount,
 //       coinAmount: coinAmount.toFixed(8),
@@ -127,7 +127,7 @@
 // //   return {
 // //     assetValueEquivalent: coinAmount.toFixed(8),
 // //     ngnAmount:
-// //       buyRate > 0 ? formatAmount(totalCostNgn, { decimalPlace: 2 }) : "0.00",
+// //       buyRate > 0 ? formatAmount(totalCostNgn, { maxDecimalPlace: 2 }) : "0.00",
 // //     feeBreakdown: {
 // //       grossUsd: amount,
 // //       coinAmount: coinAmount.toFixed(8),
@@ -226,7 +226,7 @@
 //     if (amount > fiatBalance) {
 //       return `Insufficient balance. Your total balance is ${formatAmount(
 //         fiatBalance,
-//         { currency: "NGN", decimalPlace: 2 },
+//         { currency: "NGN", maxDecimalPlace: 2 },
 //       )}`;
 //     }
 
@@ -234,7 +234,7 @@
 //       fiatBalance / (1 + (feeBreakdown?.isStablecoin ? 0 : 0.001));
 //     return `You can only buy up to ${formatAmount(maxBuyable, {
 //       currency: "NGN",
-//       decimalPlace: 2,
+//       maxDecimalPlace: 2,
 //     })} with your current balance (including charges).`;
 //   }, [hasInsufficientBalance, fiatBalance, feeBreakdown, amount]);
 
@@ -568,7 +568,7 @@
 //                   <AppText style={styles.balance}>
 //                     {formatAmount(fiatBalance, {
 //                       currency: "NGN",
-//                       decimalPlace: 2,
+//                       maxDecimalPlace: 2,
 //                     })}
 //                   </AppText>
 //                 </View>
@@ -625,7 +625,7 @@
 //                         {feeBreakdown.coinAmount} {assetDetails?.symbol} (≈{" "}
 //                         {formatAmount(feeBreakdown.grossUsd, {
 //                           currency: "USD",
-//                           decimalPlace: 2,
+//                           maxDecimalPlace: 2,
 //                         })}
 //                         )
 //                       </AppText>
@@ -698,7 +698,7 @@
 //                       <AppText style={[styles.balance]}>
 //                         {formatAmount(
 //                           Number(feeBreakdown.totalCostUsd ?? 100),
-//                           { currency: "USD", decimalPlace: 2 },
+//                           { currency: "USD", maxDecimalPlace: 2 },
 //                         )}
 //                       </AppText>
 //                     </View>
@@ -1378,7 +1378,7 @@
 // //                           Number(feeBreakdown.totalCostUsd ?? 100),
 // //                           {
 // //                             currency: "USD",
-// //                             decimalPlace: 3,
+// //                             maxDecimalPlace: 3,
 // //                           },
 // //                         )}
 // //                       </AppText>
@@ -1677,7 +1677,7 @@ export function calculateBuyFeeBreakdown(
   return {
     assetValueEquivalent: coinAmount.toFixed(8),
     ngnAmount:
-      buyRate > 0 ? formatAmount(totalCostNgn, { decimalPlace: 2 }) : "0.00",
+      buyRate > 0 ? formatAmount(totalCostNgn, { maxDecimalPlace: 2 }) : "0.00",
     feeBreakdown: {
       grossUsd: amount,
       coinAmount: coinAmount.toFixed(8),
@@ -1791,7 +1791,7 @@ export default function CryptoBuyScreen() {
         fiatBalance,
         {
           currency: "NGN",
-          decimalPlace: 2,
+          maxDecimalPlace: 2,
         },
       )}`;
     }
@@ -1800,7 +1800,7 @@ export default function CryptoBuyScreen() {
       fiatBalance / (1 + (feeBreakdown?.isStablecoin ? 0 : buyFeeRate));
     return `You can only buy up to ${formatAmount(maxBuyable, {
       currency: "NGN",
-      decimalPlace: 2,
+      maxDecimalPlace: 2,
     })} with your current balance (including charges).`;
   }, [hasInsufficientBalance, fiatBalance, feeBreakdown, amount, buyFeeRate]);
 
@@ -2174,7 +2174,7 @@ export default function CryptoBuyScreen() {
                     <AppText style={styles.balance}>
                       {formatAmount(fiatBalance, {
                         currency: "NGN",
-                        decimalPlace: 2,
+                        maxDecimalPlace: 2,
                       })}
                     </AppText>
                   </View>
@@ -2210,6 +2210,7 @@ export default function CryptoBuyScreen() {
                         Number(feeBreakdown?.marketCurrentPrice) || 0,
                         {
                           currency: "USD",
+                          maxDecimalPlace: 2,
                         },
                       )}
                       /{assetDetails?.symbol}
@@ -2233,7 +2234,7 @@ export default function CryptoBuyScreen() {
                           {feeBreakdown.coinAmount} {assetDetails?.symbol} (≈{" "}
                           {formatAmount(feeBreakdown.grossUsd, {
                             currency: "USD",
-                            decimalPlace: 2,
+                            maxDecimalPlace: 2,
                           })}
                           )
                         </AppText>
@@ -2297,7 +2298,7 @@ export default function CryptoBuyScreen() {
                             Number(feeBreakdown.totalCostUsd ?? 100),
                             {
                               currency: "USD",
-                              decimalPlace: 2,
+                              maxDecimalPlace: 2,
                             },
                           )}
                         </AppText>

@@ -93,12 +93,14 @@ function calculateSellFeeBreakdown(
 
   return {
     assetValueEquivalent: coinAmount.toFixed(8),
-    ngnAmount: sellRate > 0 ? formatAmount(ngnValue) : "0.00",
+    ngnAmount:
+      sellRate > 0 ? formatAmount(ngnValue, { maxDecimalPlace: 2 }) : "0.00",
     feeBreakdown: {
       coinAmount: coinAmount.toFixed(8),
       grossUsd: amount,
       netAmountUsd: amount.toFixed(2),
-      netNgn: sellRate > 0 ? formatAmount(ngnValue) : "0.00",
+      netNgn:
+        sellRate > 0 ? formatAmount(ngnValue, { maxDecimalPlace: 2 }) : "0.00",
       currentSellRate: sellRate,
       currentMarketPrice: marketPrice,
     },
@@ -148,7 +150,7 @@ export default function CryptoSellScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [feeBreakdown, setFeeBreakdown] = useState<any>(null);
   const [assetValueEquivalent, setAssetValueEquivalent] = useState<any>(0);
-  const [ngnAmount, setNgnAmount] = useState("0.00");
+  const [ngnAmount, setNgnAmount] = useState("0");
 
   const acknowledgedSellRateRef = useRef<number>(0);
   const acknowledgedMarketPriceRef = useRef<number>(0);
@@ -235,7 +237,7 @@ export default function CryptoSellScreen() {
     }
     return `You can only sell ${formatAmount(maxSellableUsd, {
       currency: "USD",
-      decimalPlace: 4,
+      maxDecimalPlace: 4,
     })} of your balance`;
   }, [maxSellableUsd, amount, assetDetails, balanceUsd]);
 
@@ -627,7 +629,7 @@ export default function CryptoSellScreen() {
                         <AppText style={styles.balance}>
                           {formatAmount(
                             Number(assetDetails?.balance) * marketPrice || 0,
-                            { currency: "USD", decimalPlace: 2 },
+                            { currency: "USD", maxDecimalPlace: 2 },
                           )}
                         </AppText>
                       </View>
@@ -714,6 +716,7 @@ export default function CryptoSellScreen() {
                               (≈{" "}
                               {formatAmount(feeBreakdown?.grossUsd, {
                                 currency: "USD",
+                                maxDecimalPlace: 2,
                               })}
                               )
                             </AppText>

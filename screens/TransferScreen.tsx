@@ -227,6 +227,9 @@ export default function TransferScreen() {
   const todayVolume = walletSummary?.total_fiat_transfer_today ?? 0;
   const fiatBalance = walletSummary?.withdrawable_balance ?? 0;
   const cryptoLimit = walletSummary?.daily_crypto_transfer_limit ?? 0;
+  // null means the current tier has no monthly cap
+  const monthlyLimit = walletSummary?.monthly_limit ?? null;
+  const monthVolume = walletSummary?.total_fiat_transfers_this_month ?? 0;
 
   const selectedCryptoWallet = useMemo(
     () => userWallets.find(w => w.asset_id === assetId),
@@ -237,6 +240,11 @@ export default function TransferScreen() {
     if (activeTab !== "fiat" || !amount || !dailyLimit) return false;
     return amount + todayVolume > dailyLimit;
   }, [activeTab, amount, dailyLimit, todayVolume]);
+
+  const exceedsMonthlyLimit = useMemo(() => {
+    if (activeTab !== "fiat" || !amount || !monthlyLimit) return false;
+    return amount + monthVolume > monthlyLimit;
+  }, [activeTab, amount, monthlyLimit, monthVolume]);
 
   const hasInsufficientBalance = useMemo(() => {
     if (!amount) return false;
@@ -255,6 +263,7 @@ export default function TransferScreen() {
       isSubmitting ||
       hasInsufficientBalance ||
       exceedsDailyLimit ||
+      exceedsMonthlyLimit ||
       amount <= 0 ||
       isChecking ||
       !usernameIsValid,
@@ -263,6 +272,7 @@ export default function TransferScreen() {
       isSubmitting,
       hasInsufficientBalance,
       exceedsDailyLimit,
+      exceedsMonthlyLimit,
       amount,
       isChecking,
       usernameIsValid,
@@ -437,6 +447,34 @@ export default function TransferScreen() {
           </View>
         )}
 
+        {activeTab === "fiat" && monthlyLimit && (
+          <View style={styles.limitContainer}>
+            <View style={styles.limitHeader}>
+              <AppText style={styles.limitLabel}>
+                Monthly Limit: {formatAmount(monthlyLimit)}
+              </AppText>
+            </View>
+            <View style={styles.progressBarBackground}>
+              <View
+                style={[
+                  styles.progressBarFill,
+                  {
+                    width: `${Math.min((monthVolume / monthlyLimit) * 100, 100)}%`,
+                  },
+                ]}
+              />
+            </View>
+            <View style={styles.limitRange}>
+              <AppText style={styles.limitValue}>
+                {formatAmount(monthVolume, { decimalPlace: 2 }) ?? "0"}
+              </AppText>
+              <AppText style={styles.limitValue}>
+                {formatAmount(monthlyLimit, { decimalPlace: 2 }) ?? "0"}
+              </AppText>
+            </View>
+          </View>
+        )}
+
         {/* key forces the entire form to remount on tab change,
             clearing all field state and keyboard focus cleanly  */}
         <View key={activeTab} style={styles.form}>
@@ -532,21 +570,37 @@ export default function TransferScreen() {
           </View>
         )}
 
-        {!exceedsDailyLimit && hasInsufficientBalance && !!assetId && (
+        {!exceedsDailyLimit && exceedsMonthlyLimit && (
           <View style={styles.warningContainer}>
             <AppText style={styles.warningText}>
-              You do not have enough balance to complete this transfer.
+              This amount exceeds your monthly transfer limit of{" "}
+              {formatAmount(monthlyLimit ?? 0)}. Please reduce the amount or
+              upgrade your limit.
             </AppText>
           </View>
         )}
 
-        {!exceedsDailyLimit && hasInsufficientBalance && !!amount && (
-          <View style={styles.warningContainer}>
-            <AppText style={styles.warningText}>
-              You do not have enough balance to complete this transfer.
-            </AppText>
-          </View>
-        )}
+        {!exceedsDailyLimit &&
+          !exceedsMonthlyLimit &&
+          hasInsufficientBalance &&
+          !!assetId && (
+            <View style={styles.warningContainer}>
+              <AppText style={styles.warningText}>
+                You do not have enough balance to complete this transfer.
+              </AppText>
+            </View>
+          )}
+
+        {!exceedsDailyLimit &&
+          !exceedsMonthlyLimit &&
+          hasInsufficientBalance &&
+          !!amount && (
+            <View style={styles.warningContainer}>
+              <AppText style={styles.warningText}>
+                You do not have enough balance to complete this transfer.
+              </AppText>
+            </View>
+          )}
 
         <TouchableOpacity
           activeOpacity={0.9}

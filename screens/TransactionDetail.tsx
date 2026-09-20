@@ -212,14 +212,14 @@ const TransactionDetailScreen = () => {
       ? ["failed", "pending"].includes(transaction.status?.toLowerCase())
         ? formatAmount(transaction?.meta?.amount_in_usd ?? 0, {
             currency: transaction?.currency || "USD",
-            decimalPlace: 2,
+            maxDecimalPlace: 2,
           })
         : `${transaction?.meta?.amount || 0} ${
             transaction?.meta?.asset_symbol ?? ""
           }`
       : formatAmount(transaction?.amount ?? 0, {
           currency: transaction?.currency || "NGN",
-          decimalPlace: 2,
+          maxDecimalPlace: 2,
         });
   }, [transaction]);
 
@@ -344,7 +344,7 @@ const TransactionDetailScreen = () => {
               transaction.meta.offer_snapshot.send.currencyDivisor,
             {
               currency: transaction.meta.offer_snapshot.send.currency,
-              decimalPlace: 2,
+              maxDecimalPlace: 2,
             },
           ),
         });
@@ -386,11 +386,11 @@ const TransactionDetailScreen = () => {
         value: isCrypto
           ? formatAmount(transaction?.meta?.amount_in_usd || 0, {
               currency: "USD",
-              decimalPlace: 2,
+              maxDecimalPlace: 2,
             })
           : formatAmount(transaction?.amount || 0, {
               currency: "NGN",
-              decimalPlace: 2,
+              maxDecimalPlace: 2,
             }),
       },
       category === "CRYPTO_SELL"
@@ -399,14 +399,14 @@ const TransactionDetailScreen = () => {
             label: "Fee",
             value: formatAmount(transaction?.fee, {
               currency: isCrypto ? "USD" : "NGN",
-              decimalPlace: isCrypto ? 4 : 2,
+              maxDecimalPlace: isCrypto ? 4 : 2,
             }),
           },
       {
         label: "Net Amount",
         value: formatAmount(transaction?.net_amount, {
           currency: isCrypto ? "USD" : "NGN",
-          decimalPlace: 2,
+          maxDecimalPlace: 2,
         }),
       },
       transaction?.meta?.exchange_rate
@@ -415,7 +415,7 @@ const TransactionDetailScreen = () => {
             value:
               formatAmount(transaction?.meta?.exchange_rate, {
                 currency: "NGN",
-                decimalPlace: 2,
+                maxDecimalPlace: 2,
               }) + "/$",
           }
         : null,
@@ -726,11 +726,11 @@ const TransactionDetailScreen = () => {
               transaction?.medium?.toUpperCase() === "CRYPTO"
                 ? formatAmount(transaction?.meta?.amount_in_usd || 0, {
                     currency: "USD",
-                    decimalPlace: 2,
+                    maxDecimalPlace: 2,
                   })
                 : formatAmount(transaction?.amount || 0, {
                     currency: "NGN",
-                    decimalPlace: 2,
+                    maxDecimalPlace: 2,
                   })
             }
           />
@@ -742,7 +742,7 @@ const TransactionDetailScreen = () => {
                   transaction?.medium?.toUpperCase() === "CRYPTO"
                     ? "USD"
                     : "NGN",
-                decimalPlace:
+                maxDecimalPlace:
                   transaction?.medium?.toUpperCase() === "CRYPTO" ? 4 : 2,
               })}
             />
@@ -752,7 +752,7 @@ const TransactionDetailScreen = () => {
             value={formatAmount(transaction?.net_amount, {
               currency:
                 transaction?.medium?.toUpperCase() === "CRYPTO" ? "USD" : "NGN",
-              decimalPlace: 2,
+              maxDecimalPlace: 2,
             })}
           />
           {transaction?.meta?.exchange_rate && (
@@ -761,7 +761,7 @@ const TransactionDetailScreen = () => {
               value={
                 formatAmount(transaction?.meta?.exchange_rate, {
                   currency: "NGN",
-                  decimalPlace: 2,
+                  maxDecimalPlace: 2,
                 }) + "/$"
               }
             />
@@ -872,7 +872,7 @@ const TransactionDetailScreen = () => {
                       {
                         currency:
                           transaction?.meta?.offer_snapshot?.send?.currency,
-                        decimalPlace: 2,
+                        maxDecimalPlace: 2,
                       },
                     )}
                   />

@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   StyleSheet,
   ViewStyle,
-  StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
@@ -20,8 +19,7 @@ import {
 } from "../constants/settings";
 import { EmptyTransactionState } from "../screens/TransactionHistory";
 import { AppText } from "./AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useColors } from "../hooks/useTheme";
 
 interface TransactionSectionListProps {
   transactions: any[];
@@ -99,12 +97,12 @@ const TransactionItem = ({ item }: any) => {
               ? `+ ${
                   item?.medium.toUpperCase() === "CRYPTO"
                     ? formatNumber(item?.amount)
-                    : formatAmount(item?.amount, { decimalPlace: 2 })
+                    : formatAmount(item?.amount, { maxDecimalPlace: 2 })
                 }`
               : `- ${
                   item?.medium.toUpperCase() === "CRYPTO"
                     ? formatNumber(item?.amount)
-                    : formatAmount(item?.amount, { decimalPlace: 2 })
+                    : formatAmount(item?.amount, { maxDecimalPlace: 2 })
                 }`}
           </AppText>
         </View>

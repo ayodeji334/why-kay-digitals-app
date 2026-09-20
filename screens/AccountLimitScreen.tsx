@@ -56,7 +56,7 @@ export const mapTierToDisplay = (
         },
         {
           name: "Monthly Withdrawal Limit",
-          value: tier?.limits?.fiat?.monthly_deposit?.formatted ?? 0,
+          value: tier?.limits?.fiat?.monthly_withdrawal?.formatted ?? 0,
         },
       ],
     },
@@ -101,8 +101,6 @@ const AccountLimitsScreen = () => {
   const styles = makeStyles(colors);
 
   const { data: rawTiers, isLoading, isError, refetch } = useAccountTiers();
-
-  console.log(rawTiers);
 
   const accountTiers = useMemo(
     () =>

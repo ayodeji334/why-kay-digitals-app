@@ -18,6 +18,12 @@ export default function BalanceLimitCard({ walletSummary }: any) {
       ? walletSummary.total_fiat_transfer_today / walletSummary.daily_limit
       : 0;
 
+  const monthlyProgress =
+    walletSummary && walletSummary.monthly_limit
+      ? walletSummary.total_withdrawals_this_month /
+        walletSummary.monthly_limit
+      : 0;
+
   const colors = useColors();
   const styles = makeStyles(colors);
 
@@ -84,6 +90,43 @@ export default function BalanceLimitCard({ walletSummary }: any) {
           </AppText>
         </View>
       </View>
+
+      {!!walletSummary?.monthly_limit && (
+        <View style={styles.limitContainer}>
+          <View style={styles.limitHeader}>
+            <AppText style={styles.limitLabel}>
+              Monthly Limit: ₦
+              {walletSummary?.monthly_limit?.toLocaleString() || "0"}
+            </AppText>
+          </View>
+
+          <View style={styles.progressBarBackground}>
+            <View
+              style={[
+                styles.progressBarFill,
+                {
+                  width: `${Math.min(monthlyProgress * 100, 100)}%`,
+                },
+              ]}
+            />
+          </View>
+
+          <View style={styles.limitRange}>
+            <AppText style={styles.limitValue}>
+              ₦
+              {walletSummary?.total_withdrawals_this_month
+                ? walletSummary?.total_withdrawals_this_month?.toLocaleString()
+                : "0"}
+            </AppText>
+            <AppText style={styles.limitValue}>
+              ₦
+              {walletSummary?.monthly_limit
+                ? walletSummary?.monthly_limit?.toLocaleString()
+                : "0"}
+            </AppText>
+          </View>
+        </View>
+      )}
     </>
   );
 }

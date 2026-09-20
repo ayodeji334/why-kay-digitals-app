@@ -772,6 +772,8 @@ export default function FundBettingAccountScreen() {
     refetchOnWindowFocus: true,
   });
 
+  console.log(providers);
+
   const {
     data: beneficiaries,
     isLoading: isLoadingSavedData,

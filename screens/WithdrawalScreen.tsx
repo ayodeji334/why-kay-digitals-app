@@ -59,6 +59,9 @@ export default function WithdrawScreen() {
   const dailyLimit = walletSummary?.daily_limit ?? 1000000;
   const singleLimit = walletSummary?.single_limit ?? 1000000;
   const todayVolume = walletSummary?.total_fiat_transfer_today ?? 0;
+  // null means the current tier has no monthly cap
+  const monthlyLimit = walletSummary?.monthly_limit ?? null;
+  const monthVolume = walletSummary?.total_withdrawals_this_month ?? 0;
   // The backend now returns the real threshold above which a withdrawal
   // needs an authenticator code or biometric signature — fall back to the
   // client-side default only if it's missing (e.g. summary hasn't loaded
@@ -161,6 +164,11 @@ export default function WithdrawScreen() {
     return amount + todayVolume > dailyLimit;
   }, [amount, dailyLimit, todayVolume]);
 
+  const exceedsMonthlyLimit = useMemo(() => {
+    if (!amount || !monthlyLimit) return false;
+    return amount + monthVolume > monthlyLimit;
+  }, [amount, monthlyLimit, monthVolume]);
+
   const { data: banksData, refetch: refetchBanks } = useQuery({
     queryKey: ["banks"],
     queryFn: async () => {
@@ -172,6 +180,8 @@ export default function WithdrawScreen() {
     },
     staleTime: 800000,
   });
+
+  console.log(banksData);
 
   const bankOptions: any = useMemo(() => {
     if (Array.isArray(banksData)) {
@@ -244,6 +254,7 @@ export default function WithdrawScreen() {
     amount < 100 ||
     !isBalanceSufficient ||
     exceedsDailyLimit ||
+    exceedsMonthlyLimit ||
     isSubmitting;
 
   const onRefresh = useCallback(() => {
@@ -372,6 +383,16 @@ export default function WithdrawScreen() {
               This amount exceeds your daily transfer limit of{" "}
               {formatAmount(walletSummary?.daily_limit ?? 0)}. Please reduce the
               amount or upgrade your limit.
+            </AppText>
+          </View>
+        )}
+
+        {isBalanceSufficient && !exceedsDailyLimit && exceedsMonthlyLimit && (
+          <View style={styles.warningContainer}>
+            <AppText style={styles.warningText}>
+              This amount exceeds your monthly withdrawal limit of{" "}
+              {formatAmount(monthlyLimit ?? 0)}. Please reduce the amount or
+              upgrade your limit.
             </AppText>
           </View>
         )}
