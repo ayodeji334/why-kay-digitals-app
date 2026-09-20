@@ -1788,7 +1788,12 @@ export default function CryptoBuyScreen() {
   const insufficientBalanceMessage = useMemo(() => {
     if (!hasInsufficientBalance || !amount || !fiatBalance) return null;
 
-    if (amount > fiatBalance) {
+    // Compare like units: amount is USD, so it must be converted to NGN
+    // before comparing against fiatBalance (previously compared directly,
+    // which meant this branch could never trigger). This distinguishes
+    // "can't afford even before fees" from "fees push it just over".
+    const rawCostNgn = amount * (feeBreakdown?.currentBuyRate ?? 0);
+    if (rawCostNgn > fiatBalance) {
       return `Insufficient balance. Your total balance is ${formatAmount(
         fiatBalance,
         {
@@ -1824,8 +1829,24 @@ export default function CryptoBuyScreen() {
   );
 
   useEffect(() => {
-    if (!assetDetails?.rates?.sell || Number(marketPrice) <= 0) return;
-    if (rateOverriddenRef.current) return;
+    if (Number(marketPrice) <= 0) return;
+
+    // Once a rate drift has been reviewed, keep recalculating against that
+    // reviewed rate as the amount keeps changing — freezing here (as before)
+    // meant hasInsufficientBalance stopped tracking the typed amount.
+    if (rateOverriddenRef.current) {
+      if (acknowledgedBuyRateRef.current > 0) {
+        recalculate(
+          amount,
+          Number(marketPrice),
+          acknowledgedBuyRateRef.current,
+        );
+      }
+
+      return;
+    }
+
+    if (!assetDetails?.rates?.sell) return;
 
     const effectiveRate = resolveRateFromCategories(
       amount,

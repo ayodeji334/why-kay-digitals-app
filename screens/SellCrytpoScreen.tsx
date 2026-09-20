@@ -264,8 +264,24 @@ export default function CryptoSellScreen() {
   //   recalculate(amount, Number(marketPrice), sellRate);
   // }, [assetDetails?.buy_rate, amount, marketPrice, recalculate]);
   useEffect(() => {
-    if (!assetDetails?.rates?.buy || Number(marketPrice) <= 0) return;
-    if (rateOverriddenRef.current) return;
+    if (Number(marketPrice) <= 0) return;
+
+    // Once a rate drift has been reviewed, keep recalculating against that
+    // reviewed rate as the amount keeps changing — freezing here (as before)
+    // meant hasInsufficientBalance stopped tracking the typed amount.
+    if (rateOverriddenRef.current) {
+      if (acknowledgedSellRateRef.current > 0) {
+        recalculate(
+          amount,
+          Number(marketPrice),
+          acknowledgedSellRateRef.current,
+        );
+      }
+
+      return;
+    }
+
+    if (!assetDetails?.rates?.buy) return;
 
     const effectiveRate = resolveRateFromCategories(
       amount,
