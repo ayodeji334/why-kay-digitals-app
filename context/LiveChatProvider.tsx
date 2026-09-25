@@ -23,8 +23,6 @@ export const LiveChatProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const user = useAuthStore(s => s.user);
 
-  console.log("LiveChatProvider user:", user); // Debugging line
-
   const [widgetVisible, setWidgetVisible] = useState(false);
   const [emailPromptVisible, setEmailPromptVisible] = useState(false);
   const [guestEmail, setGuestEmail] = useState<string | null>(null);

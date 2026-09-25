@@ -240,8 +240,21 @@ export function SelectInput({
 
                           <View style={styles.cryptoInfo}>
                             <AppText style={styles.optionName}>
-                              {`${item.label}`}
+                              {`${item.symbol}`}
                             </AppText>
+                            {item?.symbol && (
+                              <AppText
+                                style={[
+                                  styles.optionPrice,
+                                  {
+                                    fontSize: normalize(17),
+                                    fontFamily: getFontFamily("400"),
+                                  },
+                                ]}
+                              >
+                                {`${item.label}`}
+                              </AppText>
+                            )}
                             {item?.market_value ? (
                               <AppText style={styles.optionPrice}>
                                 {formatAmount(item.market_value, {
@@ -499,7 +512,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.inputBackground,
     },
     option: { borderBottomWidth: 1, borderBottomColor: colors.border },
-    optionContent: { padding: normalizeSpacing(17), width: "100%" },
+    optionContent: { padding: normalizeSpacing(14), width: "100%" },
     cryptoRow: {
       flexDirection: "row",
       alignItems: "center",

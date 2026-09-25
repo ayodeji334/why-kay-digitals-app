@@ -45,7 +45,15 @@ const ServicesSection = () => {
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [showSuspendedModal, setShowSuspendedModal] = useState(false);
 
+  const [showTierModal, setShowTierModal] = useState(false);
+
   const isSuspended = user?.status === "SUSPEND";
+  const isTierOne = user?.tier_level === "TIER_1";
+
+  const handleUpgradeTier = () => {
+    setShowTierModal(false);
+    setTimeout(() => navigation.navigate("Verification" as never), 600);
+  };
 
   const mainServices: Array<{
     id: number;
@@ -188,6 +196,11 @@ const ServicesSection = () => {
       return;
     }
 
+    if (service.screenName === "BuyGiftCard" && isTierOne) {
+      setShowTierModal(true);
+      return;
+    }
+
     if (!service.screenName) {
       Alert.alert(
         "Coming Soon",
@@ -265,6 +278,18 @@ const ServicesSection = () => {
         actionButton={handleOpenSupportChat}
         secondaryButtonText="Cancel"
         secondaryAction={() => setShowSuspendedModal(false)}
+        showCloseButton
+      />
+
+      <HalfScreenModal
+        isVisible={showTierModal}
+        onClose={() => setShowTierModal(false)}
+        title="Upgrade Required"
+        description="Buying gift cards isn't available on your current account tier. Upgrade your account to unlock this service."
+        buttonText="Upgrade Account"
+        actionButton={handleUpgradeTier}
+        secondaryButtonText="Maybe later"
+        secondaryAction={() => setShowTierModal(false)}
         showCloseButton
       />
     </>

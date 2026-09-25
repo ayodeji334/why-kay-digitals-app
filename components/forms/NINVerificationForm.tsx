@@ -12,6 +12,7 @@ import {
   normalizeSpacing,
 } from "../../constants/settings";
 import useAxios from "../../hooks/useAxios";
+import { LONG_REQUEST_TIMEOUT_MS } from "../../api/axios";
 import { showError, showSuccess } from "../../utlis/toast";
 import InfoCard from "../InfoCard";
 import { InfoCircle } from "iconsax-react-nativejs";
@@ -50,7 +51,9 @@ const NINVerificationForm = () => {
     try {
       setLoading(true);
 
-      const response = await post("/kyc/verify-nin", data);
+      const response = await post("/kyc/verify-nin", data, {
+        timeout: LONG_REQUEST_TIMEOUT_MS,
+      });
 
       navigation.goBack();
 

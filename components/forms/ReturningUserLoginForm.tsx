@@ -104,7 +104,6 @@ const ReturningUserLoginForm: React.FC = () => {
 
       await completeLogin(auth, user);
     } catch (err: any) {
-      console.log(err?.response);
       if (err instanceof AxiosError) {
         const errorMessage =
           err.response?.data?.message ?? "Unable to login. Please try again.";

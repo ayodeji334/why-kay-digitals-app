@@ -562,6 +562,7 @@ import {
 } from "../constants/settings";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
+import { LONG_REQUEST_TIMEOUT_MS } from "../api/axios";
 import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 import { CloseCircle, TickCircle } from "iconsax-react-nativejs";
@@ -624,6 +625,7 @@ export default function SelfieConfirmationScreen() {
       const response = await axiosInstance.post(
         "/kyc/verify-bvn-selfie",
         payload,
+        { timeout: LONG_REQUEST_TIMEOUT_MS },
       );
 
       setStatus("success");

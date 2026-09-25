@@ -26,6 +26,7 @@ import OtpInputField from "../components/OtpInputField";
 import { useCallback, useState } from "react";
 import CustomLoading from "../components/CustomLoading";
 import useAxios from "../hooks/useAxios";
+import { useIdempotencyKey } from "../hooks/useIdempotencyKey";
 import { useQueryClient } from "@tanstack/react-query";
 import { showError } from "../utlis/toast";
 import { AxiosError } from "axios";
@@ -47,6 +48,8 @@ const schema = yup.object().shape({
 
 export default function ConfirmTransactionScreen() {
   const { post, apiGet } = useAxios();
+  const { paymentRequestConfig, settleIdempotencyKey, handleUnknownOutcome } =
+    useIdempotencyKey();
   const resolvedTheme = useResolvedTheme();
 
   const navigation: any = useNavigation();
@@ -113,13 +116,16 @@ export default function ConfirmTransactionScreen() {
 
       const { url, ...rest } = payload;
 
-      console.log(rest);
-
-      const response = await post(url, {
-        transaction_pin: pin,
-        ...rest,
-        ...(stepUp ?? {}),
-      });
+      const response = await post(
+        url,
+        {
+          transaction_pin: pin,
+          ...rest,
+          ...(stepUp ?? {}),
+        },
+        paymentRequestConfig(),
+      );
+      settleIdempotencyKey();
 
       queryClient.invalidateQueries({ queryKey: ["fiat-balance"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
@@ -168,6 +174,8 @@ export default function ConfirmTransactionScreen() {
         });
       }
     } catch (err) {
+      settleIdempotencyKey(err);
+      if (handleUnknownOutcome(err)) return;
       if (err instanceof AxiosError) {
         console.log(err?.response?.data);
         const backendRequiresStepUp =

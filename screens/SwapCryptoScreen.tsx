@@ -193,10 +193,12 @@ export default function CryptoSwapScreen() {
       .filter((asset: any) => allowedSymbols.includes(asset.symbol))
       .map((option: any) => ({
         ...option,
-        label: option.symbol,
+        label: option.name,
         value: option.id,
       }));
   }, [assets, availableConversions]);
+
+  console.log(options);
 
   const toAsset = options.find((opt: any) => opt.value === toAssetId);
   const balance = Number(fromAsset?.balance ?? 0);

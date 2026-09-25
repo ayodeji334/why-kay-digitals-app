@@ -358,6 +358,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
+import { useIdempotencyKey } from "../hooks/useIdempotencyKey";
 import CustomLoading from "../components/CustomLoading";
 import { useMutation } from "@tanstack/react-query";
 import { formatNumber } from "../libs/formatNumber";
@@ -369,6 +370,8 @@ import { useColors, useResolvedTheme } from "../hooks/useTheme";
 export default function ConversionQuote() {
   const route = useRoute();
   const { post } = useAxios();
+  const { paymentRequestConfig, settleIdempotencyKey, handleUnknownOutcome } =
+    useIdempotencyKey();
   const navigation: any = useNavigation();
   const { quote: initialQuote }: any = route.params;
   const [quote, setQuote] = useState(initialQuote);
@@ -453,12 +456,15 @@ export default function ConversionQuote() {
 
   const confirmMutation = useMutation({
     mutationFn: async () => {
-      const response = await post("crypto/confirm-quote", {
-        quote_uuid: quote?.uuid,
-      });
+      const response = await post(
+        "crypto/confirm-quote",
+        { quote_uuid: quote?.uuid },
+        paymentRequestConfig(),
+      );
       return response;
     },
     onSuccess: response => {
+      settleIdempotencyKey();
       isConfirmedRef.current = true;
       const transaction = response?.data?.data ?? {};
       setTimeRemaining(0);
@@ -476,6 +482,8 @@ export default function ConversionQuote() {
       }
     },
     onError: (error: any) => {
+      settleIdempotencyKey(error);
+      if (handleUnknownOutcome(error)) return;
       showError(
         error?.response?.data?.message ??
           "Confirmation failed. Please try again.",

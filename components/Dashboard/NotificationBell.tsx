@@ -4,6 +4,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { Notification } from "iconsax-react-nativejs";
 import useAxios from "../../hooks/useAxios";
+import { AppText } from "../AppText";
+import { getFontFamily, normalize } from "../../constants/settings";
 
 const NotificationBell = () => {
   const navigation = useNavigation();
@@ -26,8 +28,20 @@ const NotificationBell = () => {
       onPress={() => navigation.navigate("Notifications" as never)}
       style={styles.notificationButton}
     >
-      <Notification size={17} color="#333" />
-      {hasUnread && <View style={styles.redDot} />}
+      <Notification size={22} color="#333" />
+      {hasUnread && (
+        <View style={styles.redDot}>
+          <AppText
+            style={{
+              fontSize: normalize(14),
+              color: "white",
+              fontFamily: getFontFamily("800"),
+            }}
+          >
+            {data?.unread_count}
+          </AppText>
+        </View>
+      )}
     </TouchableOpacity>
   );
 };
@@ -35,16 +49,18 @@ const NotificationBell = () => {
 const styles = StyleSheet.create({
   redDot: {
     position: "absolute",
-    right: 9,
-    top: 6,
-    width: 8,
-    height: 8,
-    borderRadius: 34,
+    right: 5,
+    top: 4,
+    width: 15,
+    height: 15,
+    borderRadius: 340,
     backgroundColor: "red",
+    justifyContent: "center",
+    alignItems: "center",
   },
   notificationButton: {
-    width: 35,
-    height: 35,
+    width: 39,
+    height: 39,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#BBBBBB",

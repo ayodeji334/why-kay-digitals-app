@@ -612,7 +612,13 @@ const RegisterForm = forwardRef<RegisterFormHandle>((_, ref) => {
   const colors = useColors();
   const styles = makeStyles(colors);
 
-  const { control, handleSubmit, setError, clearErrors } = useForm<any>({
+  const {
+    control,
+    handleSubmit,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = useForm<any>({
     resolver: yupResolver(registerSchema),
     mode: "onChange",
   });
@@ -753,7 +759,9 @@ const RegisterForm = forwardRef<RegisterFormHandle>((_, ref) => {
       {checkingUsername && (
         <AppText style={styles.checkingText}>Checking availability...</AppText>
       )}
-      {!checkingUsername && usernameStatus.message && (
+      {/* The input already renders field errors (e.g. "Username is already
+          taken"), so only show the status line when there isn't one. */}
+      {!checkingUsername && usernameStatus.message && !errors.username && (
         <AppText
           style={[
             styles.checkingText,

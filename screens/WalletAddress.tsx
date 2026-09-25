@@ -587,6 +587,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
   const styles = makeStyles(colors);
 
   const handleGenerateWallet = async () => {
+    if (isGenerating) return;
     setIsGenerating(true);
     try {
       const res = await apiGet(

@@ -324,7 +324,7 @@ const CryptoWalletScreen = () => {
         />
         <Text
           style={{
-            fontSize: normalize(20),
+            fontSize: normalize(18),
             fontFamily: getFontFamily("400"),
             marginVertical: normalizeSpacing(7),
             paddingVertical: normalizeSpacing(5),

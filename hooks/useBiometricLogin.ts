@@ -6,15 +6,18 @@ import { storage, STORAGE_KEYS } from "../utlis/storage";
 import { OneSignal } from "react-native-onesignal";
 import { useAuthStore } from "../stores/authSlice";
 import DeviceInfo from "react-native-device-info";
+import { fetchBiometricChallenge } from "../utlis/biometricChallenge";
 
+// Biometrics only: allowing the device PIN/pattern here would make
+// "biometric" login only as strong as the lock-screen PIN.
 const rnBiometrics = new ReactNativeBiometrics({
-  allowDeviceCredentials: true, // true = also allow PIN/pattern fallback
+  allowDeviceCredentials: false,
 });
 
 export type BiometryLabel = "Face ID" | "Touch ID" | "Biometrics" | null;
 
 export const useBiometricLogin = () => {
-  const { post } = useAxios();
+  const { post, client } = useAxios();
   const [biometryLabel, setBiometryLabel] = useState<BiometryLabel>(null);
   const [isReady, setIsReady] = useState(false); // sensor + registered key present
   const [isBusy, setIsBusy] = useState(false);
@@ -142,7 +145,12 @@ export const useBiometricLogin = () => {
       // push subscription id the backend's device_id needs to match what
       // OneSignal shows for this device.
       const devicePushSubscriptionId = await OneSignal.User.getOnesignalId();
-      const payload = `${userUuid ?? "login"}|${Date.now()}`;
+      // Sign a server-issued one-time challenge so the signature can't be
+      // replayed. Legacy timestamp payload only while the endpoint rolls out.
+      const challenge = await fetchBiometricChallenge(client, keyId, "login");
+      const payload = challenge
+        ? `login|${challenge}`
+        : `${userUuid ?? "login"}|${Date.now()}`;
 
       const { success, signature } = await rnBiometrics.createSignature({
         promptMessage: `Log in with ${biometryLabel ?? "biometrics"}`,
@@ -166,8 +174,6 @@ export const useBiometricLogin = () => {
       // return verified;
       const data = response?.data ?? null;
 
-      console.log("Biometric Logic. Data: ", data);
-
       // if (!data?.verified) {
       //   if (data?.is_locked) {
       //     showError(
@@ -181,7 +187,6 @@ export const useBiometricLogin = () => {
 
       return data;
     } catch (err) {
-      console.error("Biometric login failed:", err);
       showError("Biometric login failed. Use your password instead.");
       return false;
     } finally {

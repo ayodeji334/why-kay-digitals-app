@@ -816,11 +816,6 @@ export default function BuyAirtimeScreen() {
           placeholder="Phone Number"
           label="Phone Number"
         />
-        {errors.phone && (
-          <AppText style={styles.errorText}>
-            {errors.phone.message as string}
-          </AppText>
-        )}
 
         <View style={{ marginBottom: normalizeSpacing(10) }}>
           <SavedBeneficiaries

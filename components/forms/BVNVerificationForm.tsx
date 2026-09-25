@@ -14,6 +14,7 @@ import { showError } from "../../utlis/toast";
 import InfoCard from "../InfoCard";
 import { InfoCircle } from "iconsax-react-nativejs";
 import useAxios from "../../hooks/useAxios";
+import { LONG_REQUEST_TIMEOUT_MS } from "../../api/axios";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../AppText";
 import { AxiosError } from "axios";
@@ -44,7 +45,9 @@ const BVNForm = () => {
 
   const onSubmit = async (data: any) => {
     try {
-      await post("/kyc/check-bvn-usability", data);
+      await post("/kyc/check-bvn-usability", data, {
+        timeout: LONG_REQUEST_TIMEOUT_MS,
+      });
 
       // reset();
 

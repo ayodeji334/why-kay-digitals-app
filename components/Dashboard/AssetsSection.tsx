@@ -66,8 +66,7 @@ const AssetsSection = () => {
         throw error;
       }
     },
-    refetchInterval: 5000,
-    refetchIntervalInBackground: true,
+    refetchIntervalInBackground: false,
   });
 
   // const filteredAssets = useMemo(() => {

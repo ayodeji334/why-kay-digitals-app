@@ -173,9 +173,19 @@
 
 //   return client;
 // }
+import { getDeviceId } from "../utlis/device";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { useAuthStore } from "../stores/authSlice";
 import { BASE_URL } from "../config";
+
+// Short enough that a stalled request fails while the user is still on the
+// screen; longer calls opt in per request.
+export const REQUEST_TIMEOUT_MS = 30_000;
+// Money-moving submits go through payment/crypto providers. They carry an
+// Idempotency-Key, so retrying after a timeout is safe once the backend dedupes.
+export const PAYMENT_TIMEOUT_MS = 60_000;
+// KYC checks call identity vendors, and selfie/profile uploads send large images.
+export const LONG_REQUEST_TIMEOUT_MS = 120_000;
 
 let isRefreshing = false;
 let failedRequestsQueue: {
@@ -186,7 +196,7 @@ let failedRequestsQueue: {
 export function createAxiosClient(): AxiosInstance {
   const client = axios.create({
     baseURL: BASE_URL,
-    timeout: 180000,
+    timeout: REQUEST_TIMEOUT_MS,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -238,9 +248,15 @@ export function createAxiosClient(): AxiosInstance {
         const refreshToken = useAuthStore.getState().refreshToken;
         if (!refreshToken) throw new Error("No refresh token");
 
-        const res = await axios.post(`${BASE_URL}/auth/refresh`, {
-          refresh_token: refreshToken,
-        });
+        // The backend only honours a refresh token from the device it was issued
+        // to, so the stable device id is sent with it.
+        const deviceId = await getDeviceId();
+
+        const res = await axios.post(
+          `${BASE_URL}/auth/refresh`,
+          { refresh_token: refreshToken, device_id: deviceId },
+          { timeout: 15_000 },
+        );
 
         const newAccessToken =
           res.data?.data?.access_token ?? res.data?.data?.auth?.accessToken;

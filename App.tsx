@@ -4,7 +4,7 @@ import NavigationRoot from "./navigation/Navigation";
 import SplashScreen from "./screens/SplashScreen";
 import ToastHost from "./components/ToastHost";
 import { useEffect, useState } from "react";
-import { useAuthStore } from "./stores/authSlice";
+import { authHydration, useAuthStore } from "./stores/authSlice";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./libs/queryClient";
 import { OneSignal, LogLevel } from "react-native-onesignal";
@@ -84,7 +84,10 @@ function MainApp() {
   useEffect(() => {
     const initializeApp = async () => {
       // Auth first — the prompt store keys off user.uuid, so it can't
-      // hydrate until the user record is in the store.
+      // hydrate until the user record is in the store. The session itself is
+      // read from the Keychain asynchronously, so wait for it first — checking
+      // auth before it loads would see no token and log the user out.
+      await authHydration;
       await initializeAuth();
 
       await Promise.all([

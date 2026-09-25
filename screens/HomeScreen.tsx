@@ -16,7 +16,6 @@ import {
   normalizeSpacing,
 } from "../constants/settings";
 import { useAuthStore, useUser } from "../stores/authSlice";
-// import AssetsSection from "../components/Dashboard/AssetsSection";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { COLORS } from "../constants/colors";
 import AdvertsBanner from "../components/AdvertsBanner";

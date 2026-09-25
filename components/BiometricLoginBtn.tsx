@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { FingerScan, Scan } from "iconsax-react-nativejs";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigation } from "@react-navigation/native";
 import {
   getFontFamily,
   normalize,
@@ -22,6 +23,7 @@ import { useColors } from "../hooks/useTheme";
 
 const BiometricLoginButton = () => {
   const queryClient = useQueryClient();
+  const navigation: any = useNavigation();
   const colors = useColors();
   const styles = makeStyles(colors);
   const user = useAuthStore(state => state.user);
@@ -59,12 +61,10 @@ const BiometricLoginButton = () => {
 
     // setIsAuthenticated(true);
 
-    if (!auth && updatedUser.is_email_verified) {
+    if (updatedUser.is_email_verified) {
       showError(
         "Please verify your email before logging in. Code has been sent to your email.",
       );
-
-      console.log("Navigating to VerifyCode with email:", updatedUser.email);
 
       navigation.navigate(
         "VerifyCode" as never,

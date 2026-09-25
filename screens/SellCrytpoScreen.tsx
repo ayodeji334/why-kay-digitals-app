@@ -42,6 +42,7 @@ import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import { buildCryptoAmountSchema } from "./BuyCryptoScreen";
 import { useCryptoLimits } from "../hooks/useCryptoLimits";
+import { useServiceCharges } from "../hooks/useServiceCharges";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -83,24 +84,45 @@ const STABLECOINS = ["USDT"];
 //     .required("Amount is required"),
 // });
 
+const DEFAULT_SELL_FEE_RATE = 0.001; // fallback decimal rate (0.1%) if backend charge isn't loaded yet
+
+/**
+ * The platform fee is charged on top of the amount being sold: the user is paid
+ * the full `amount` in NGN, and `amount + fee` worth of coin is debited from
+ * their wallet.
+ *
+ * @param sellFeeRate Decimal fee rate, e.g. 0.018 for 1.8%.
+ */
 function calculateSellFeeBreakdown(
   amount: number,
   marketPrice: number,
   sellRate: number,
+  isStablecoin = false,
+  sellFeeRate = DEFAULT_SELL_FEE_RATE,
 ) {
-  const coinAmount = amount / marketPrice;
+  const coinAmount = marketPrice > 0 ? amount / marketPrice : 0;
+  const platformFeeUsd = isStablecoin ? 0 : amount * sellFeeRate;
+  const platformFeeCoin = isStablecoin ? 0 : coinAmount * sellFeeRate;
+  const totalDebitUsd = amount + platformFeeUsd;
+  const totalDebitCoin = coinAmount + platformFeeCoin;
   const ngnValue = sellRate > 0 ? amount * sellRate : 0;
 
   return {
-    assetValueEquivalent: coinAmount.toFixed(8),
+    assetValueEquivalent: totalDebitCoin.toFixed(8),
     ngnAmount:
       sellRate > 0 ? formatAmount(ngnValue, { maxDecimalPlace: 2 }) : "0.00",
     feeBreakdown: {
       coinAmount: coinAmount.toFixed(8),
       grossUsd: amount,
+      platformFeeUsd,
+      platformFeeCoin: platformFeeCoin.toFixed(8),
+      totalDebitUsd,
+      totalDebitCoin: totalDebitCoin.toFixed(8),
       netAmountUsd: amount.toFixed(2),
       netNgn:
         sellRate > 0 ? formatAmount(ngnValue, { maxDecimalPlace: 2 }) : "0.00",
+      isStablecoin,
+      sellFeeRate,
       currentSellRate: sellRate,
       currentMarketPrice: marketPrice,
     },
@@ -138,6 +160,15 @@ export default function CryptoSellScreen() {
   const { apiGet } = useAxios();
   const { intent } = route.params;
   const { minSellAmount } = useCryptoLimits();
+  const { getCharge, refetch: refetchServiceCharges } = useServiceCharges();
+  const sellFeeCharge = getCharge("crypto_sell_fee");
+
+  // Same convention as crypto_buy_fee: backend returns a percentage (e.g. "1.8").
+  const sellFeeRate = useMemo(() => {
+    const raw =
+      sellFeeCharge?.value != null ? parseFloat(sellFeeCharge.value) : null;
+    return raw != null && !isNaN(raw) ? raw / 100 : DEFAULT_SELL_FEE_RATE;
+  }, [sellFeeCharge]);
 
   const selectedAssetUuid = intent.assetId ?? "";
 
@@ -206,21 +237,16 @@ export default function CryptoSellScreen() {
     [feeBreakdown?.currentMarketPrice, assetDetails?.market_current_value],
   );
 
-  const FEE_RATE = useMemo(
-    () => 0.001 * Number(assetDetails?.balance ?? "0"),
-    [assetDetails?.balance],
-  );
-
   const balanceUsd = useMemo(
     () => Number(assetDetails?.balance ?? "0") * Number(marketPrice),
     [assetDetails?.balance, marketPrice],
   );
 
+  // amount + fee must fit in the balance, so max amount = balance / (1 + rate)
   const maxSellableUsd = useMemo(() => {
     if (isStablecoin) return balanceUsd;
-    const feeUsd = FEE_RATE * Number(marketPrice);
-    return balanceUsd - feeUsd;
-  }, [balanceUsd, FEE_RATE, marketPrice, isStablecoin]);
+    return balanceUsd / (1 + sellFeeRate);
+  }, [balanceUsd, sellFeeRate, isStablecoin]);
 
   const hasInsufficientBalance = useMemo(() => {
     if (!amount || !assetDetails) return false;
@@ -232,12 +258,12 @@ export default function CryptoSellScreen() {
     if (amount > balanceUsd) {
       return `Insufficient balance. Your total balance is worth ${formatAmount(
         balanceUsd,
-        { currency: "USD" },
+        { currency: "USD", maxDecimalPlace: 2 },
       )}`;
     }
     return `You can only sell ${formatAmount(maxSellableUsd, {
       currency: "USD",
-      maxDecimalPlace: 4,
+      maxDecimalPlace: 3,
     })} of your balance`;
   }, [maxSellableUsd, amount, assetDetails, balanceUsd]);
 
@@ -245,12 +271,18 @@ export default function CryptoSellScreen() {
 
   const recalculate = useCallback(
     (amt: number, price: number, rate: number) => {
-      const result = calculateSellFeeBreakdown(amt, price, rate);
+      const result = calculateSellFeeBreakdown(
+        amt,
+        price,
+        rate,
+        isStablecoin,
+        sellFeeRate,
+      );
       setAssetValueEquivalent(result.assetValueEquivalent);
       setFeeBreakdown({ ...result.feeBreakdown });
       setNgnAmount(result.ngnAmount);
     },
-    [],
+    [isStablecoin, sellFeeRate],
   );
 
   // Effect: recalculate on amount / market price / sell rate change
@@ -462,7 +494,7 @@ export default function CryptoSellScreen() {
   const onRefresh = async () => {
     setRefreshing(true);
     rateOverriddenRef.current = false;
-    await refetch();
+    await Promise.all([refetch(), refetchServiceCharges()]);
     setRefreshing(false);
   };
 
@@ -584,11 +616,14 @@ export default function CryptoSellScreen() {
                       )
                     )}
 
-                    {!errors.amount && !hasInsufficientBalance && (
-                      <AppText style={styles.approx}>
-                        Approximately {assetValueEquivalent} {symbol}
-                      </AppText>
-                    )}
+                    {amount > 0 &&
+                      !errors.amount &&
+                      !hasInsufficientBalance && (
+                        <AppText style={styles.approx}>
+                          Approximately {assetValueEquivalent} {symbol} will be
+                          debited from your wallet
+                        </AppText>
+                      )}
                   </>
                 )}
 
@@ -725,8 +760,8 @@ export default function CryptoSellScreen() {
                               You Sell:
                             </AppText>
                             <AppText style={styles.balance}>
-                              {feeBreakdown?.coinAmount} {assetDetails?.symbol}{" "}
-                              (≈{" "}
+                              {feeBreakdown?.totalDebitCoin}{" "}
+                              {assetDetails?.symbol} (≈{" "}
                               {formatAmount(feeBreakdown?.grossUsd, {
                                 currency: "USD",
                                 maxDecimalPlace: 2,
@@ -734,6 +769,55 @@ export default function CryptoSellScreen() {
                               )
                             </AppText>
                           </View>
+
+                          {/* {!feeBreakdown.isStablecoin && (
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <AppText style={styles.balance}>
+                                Platform Fee (
+                                {+(feeBreakdown.sellFeeRate * 100).toFixed(2)}
+                                %):
+                              </AppText>
+                              <AppText style={styles.balance}>
+                                +{feeBreakdown.platformFeeCoin}{" "}
+                                {assetDetails?.symbol} (≈{" "}
+                                {formatAmount(feeBreakdown.platformFeeUsd, {
+                                  currency: "USD",
+                                  maxDecimalPlace: 2,
+                                })}
+                                )
+                              </AppText>
+                            </View>
+                          )}
+
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <AppText
+                              style={[
+                                styles.balance,
+                                { fontFamily: getFontFamily("800") },
+                              ]}
+                            >
+                              Total Debit:
+                            </AppText>
+                            <AppText style={styles.balance}>
+                              {feeBreakdown.totalDebitCoin}{" "}
+                              {assetDetails?.symbol} (≈{" "}
+                              {formatAmount(feeBreakdown.totalDebitUsd, {
+                                currency: "USD",
+                                maxDecimalPlace: 2,
+                              })}
+                              )
+                            </AppText>
+                          </View> */}
 
                           <View
                             style={{

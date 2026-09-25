@@ -25,6 +25,7 @@ import CustomLoading from "../components/CustomLoading";
 import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useUser } from "../stores/authSlice";
 
 export default function ChangeTransactionPinScreen() {
   const [step, setStep] = useState<"password" | "newPin">("password");
@@ -32,6 +33,15 @@ export default function ChangeTransactionPinScreen() {
   const [loading, setIsLoading] = useState<boolean>(false);
   const colors = useColors();
   const styles = makeStyles(colors);
+  const user = useUser();
+
+  const maskEmail = (email?: string) => {
+    if (!email || !email.includes("@")) return "your registered email address";
+    const [name, domain] = email.split("@");
+    return `${name.slice(0, 2)}${"*".repeat(
+      Math.max(name.length - 2, 1),
+    )}@${domain}`;
+  };
 
   const loginSchema = yup.object().shape({
     password: yup.string().required("Password is required"),
@@ -96,10 +106,22 @@ export default function ChangeTransactionPinScreen() {
 
         {step === "newPin" && (
           <View>
-            <AppText style={styles.subtitle}>
+            {/* <AppText style={styles.subtitle}>
               Your transaction PIN is a 4-digit code used to authorize payments
               and sensitive actions on your account. Changing your PIN helps
               keep your money and data safe.
+            </AppText> */}
+            <AppText
+              style={{
+                color: colors.text,
+                fontFamily: getFontFamily("700"),
+                fontSize: normalize(17),
+                marginBottom: normalizeSpacing(10),
+              }}
+            >
+              We sent a 6-digit token to your email address (
+              {maskEmail(user?.email)}). Enter it below. If you don't see it,
+              check your spam or junk folder.
             </AppText>
 
             <SetNewTransactionPinForm />

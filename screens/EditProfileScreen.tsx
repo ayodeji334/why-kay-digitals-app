@@ -26,6 +26,7 @@ import { useNavigation } from "@react-navigation/native";
 // import PhoneNumberInputField from "../components/PhoneNumberInputField";
 // import parsePhoneNumberFromString from "libphonenumber-js";
 import useAxios from "../hooks/useAxios";
+import { LONG_REQUEST_TIMEOUT_MS } from "../api/axios";
 import { AppText } from "../components/AppText";
 import { DEFAULT_IMAGE } from "./SettingsScreen";
 import { useColors } from "../hooks/useTheme";
@@ -115,10 +116,14 @@ export default function EditProfileScreen() {
       //   }
       // }
 
-      const response = await patch("/users/update-user-profile", {
-        ...data,
-        // profile_picture_url: uploadedImageUrl,
-      });
+      const response = await patch(
+        "/users/update-user-profile",
+        {
+          ...data,
+          // profile_picture_url: uploadedImageUrl,
+        },
+        { timeout: LONG_REQUEST_TIMEOUT_MS },
+      );
 
       if (response.data?.success) {
         setUser(response.data?.data);

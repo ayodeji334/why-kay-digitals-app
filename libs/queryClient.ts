@@ -11,7 +11,9 @@ export const queryClient = new QueryClient({
       refetchOnMount: true,
     },
     mutations: {
-      retry: 1,
+      // Never auto-retry writes: a request that timed out may have succeeded on
+      // the server, and retrying it can move money twice.
+      retry: 0,
     },
   },
 });

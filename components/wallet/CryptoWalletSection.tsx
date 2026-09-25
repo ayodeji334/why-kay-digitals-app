@@ -107,7 +107,7 @@ const CryptoWalletSection = () => {
   // Wallet generation
   const handleGenerateWallet = useCallback(
     async (assetId: string) => {
-      if (!assetId) return;
+      if (!assetId || isGenerating) return;
       setIsGenerating(true);
       try {
         await apiGet(`wallets/user/${assetId}/generate-wallet`);
@@ -120,7 +120,7 @@ const CryptoWalletSection = () => {
         setIsGenerating(false);
       }
     },
-    [apiGet, refetch],
+    [apiGet, refetch, isGenerating],
   );
 
   // User picked an asset: just close the modal and remember the choice.

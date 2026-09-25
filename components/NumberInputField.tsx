@@ -27,6 +27,7 @@ interface Props {
   style?: TextStyle;
   containerStyle?: ViewStyle;
   placeholderTextColor?: string;
+  secureTextEntry?: boolean;
 }
 
 const NumberInputField: React.FC<Props> = ({
@@ -39,6 +40,7 @@ const NumberInputField: React.FC<Props> = ({
   maxLength,
   style,
   placeholderTextColor = "#aeaeaeff",
+  secureTextEntry = false,
 }) => {
   const colors = useColors();
   const styles = makeStyles(colors);
@@ -61,6 +63,7 @@ const NumberInputField: React.FC<Props> = ({
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}
             keyboardType="numeric"
+            secureTextEntry={secureTextEntry}
             onBlur={onBlur}
             maxFontSizeMultiplier={1}
             allowFontScaling={false}

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ScrollView,
   RefreshControl,
-  StatusBar,
   TouchableOpacity,
   StyleSheet,
   View,
@@ -44,8 +43,10 @@ interface ValidationState {
   isValid: boolean | null;
 }
 
-export function useUsernameValidation(
-  username: string,
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export function useEmailValidation(
+  email: string,
   setError: UseFormSetError<any>,
   clearErrors: UseFormClearErrors<any>,
   debounceMs = 600,
@@ -56,12 +57,12 @@ export function useUsernameValidation(
   });
   const { post } = useAxios();
 
-  const trimmed = username?.trim() ?? "";
+  const trimmed = email?.trim() ?? "";
 
   useEffect(() => {
-    if (trimmed.length < 3) {
+    if (!EMAIL_REGEX.test(trimmed)) {
       setState({ isChecking: false, isValid: null });
-      clearErrors("username");
+      clearErrors("email");
       return;
     }
 
@@ -73,8 +74,8 @@ export function useUsernameValidation(
     const timer = setTimeout(async () => {
       try {
         const { data } = await post(
-          "/users/user/validate-username",
-          { username: trimmed },
+          "/users/user/validate-email",
+          { email: trimmed },
           { signal: controller.signal },
         );
 
@@ -82,12 +83,12 @@ export function useUsernameValidation(
 
         if (data.success) {
           setState({ isChecking: false, isValid: true });
-          clearErrors("username");
+          clearErrors("email");
         } else {
           setState({ isChecking: false, isValid: false });
-          setError("username", {
+          setError("email", {
             type: "manual",
-            message: "Username cannot be verified",
+            message: "No account was found with that email",
           });
         }
       } catch (err: any) {
@@ -98,9 +99,9 @@ export function useUsernameValidation(
         )
           return;
         setState({ isChecking: false, isValid: false });
-        setError("username", {
+        setError("email", {
           type: "manual",
-          message: "Could not verify username",
+          message: "Could not verify email",
         });
       }
     }, debounceMs);
@@ -114,7 +115,7 @@ export function useUsernameValidation(
 
   const reset = useCallback(() => {
     setState({ isChecking: false, isValid: null });
-    clearErrors("username");
+    clearErrors("email");
   }, [clearErrors]);
 
   return { ...state, validate: undefined, reset };
@@ -123,10 +124,10 @@ export function useUsernameValidation(
 export type TransferTab = "fiat" | "crypto";
 
 const base = {
-  username: yup
+  email: yup
     .string()
-    .min(3, "Username must be at least 3 characters")
-    .required("Username is required"),
+    .email("Enter a valid email address")
+    .required("Recipient email is required"),
   amount: yup
     .number()
     .typeError("Enter a valid amount")
@@ -174,7 +175,7 @@ export default function TransferScreen() {
     formState: { isValid, isSubmitting, errors },
   } = useForm<any>({
     resolver: yupResolver(getTransferSchema(activeTab)),
-    defaultValues: { username: "", amount: 0, description: "", asset_id: "" },
+    defaultValues: { email: "", amount: 0, description: "", asset_id: "" },
     mode: "onChange",
   });
 
@@ -184,7 +185,7 @@ export default function TransferScreen() {
     setDisplayAmount("");
     resetUsernameValidation();
     reset(
-      { username: "", amount: 0, description: "", asset_id: "" },
+      { email: "", amount: 0, description: "", asset_id: "" },
       {
         keepErrors: false,
         keepDirty: false,
@@ -194,7 +195,7 @@ export default function TransferScreen() {
     );
   };
 
-  const username = watch("username");
+  const email = watch("email");
   const amount = watch("amount") || 0;
   const assetId = watch("asset_id");
 
@@ -202,14 +203,14 @@ export default function TransferScreen() {
     isChecking,
     isValid: usernameIsValid,
     reset: resetUsernameValidation,
-  } = useUsernameValidation(username, setError, clearErrors);
+  } = useEmailValidation(email, setError, clearErrors);
 
   const userWallets: any[] = useMemo(() => {
     if (!wallets || wallets.length === 0) return [];
     return wallets
       .map((asset: any) => ({
         ...asset,
-        label: `${asset?.name} (${asset?.symbol})`,
+        label: `${asset?.name}`,
         value: asset.asset_id ?? asset.uuid ?? "",
         symbol: asset.symbol ?? "",
         logo_url: asset.logo ?? "",
@@ -283,7 +284,7 @@ export default function TransferScreen() {
   const onSubmit = (values: any) => {
     if (activeTab === "fiat") {
       const payload = {
-        username: values.username,
+        email: values.email,
         amount: Number(values.amount),
         description: values.description,
         type: "TRANSFER",
@@ -302,7 +303,7 @@ export default function TransferScreen() {
 
     navigation.navigate("ConfirmTransaction", {
       payload: {
-        username: values.username,
+        email: values.email,
         amount: Number(values.amount),
         asset_id: values.asset_id,
         type: "CRYPTO_TRANSFER",
@@ -321,7 +322,7 @@ export default function TransferScreen() {
     { value: "fiat", label: "Fiat" },
   ];
 
-  useResetFormOnMount(reset, { amount: 0, username: "", assetId: "" }, () => {
+  useResetFormOnMount(reset, { amount: 0, email: "", assetId: "" }, () => {
     setDisplayAmount("");
   });
 
@@ -459,7 +460,10 @@ export default function TransferScreen() {
                 style={[
                   styles.progressBarFill,
                   {
-                    width: `${Math.min((monthVolume / monthlyLimit) * 100, 100)}%`,
+                    width: `${Math.min(
+                      (monthVolume / monthlyLimit) * 100,
+                      100,
+                    )}%`,
                   },
                 ]}
               />
@@ -479,23 +483,25 @@ export default function TransferScreen() {
             clearing all field state and keyboard focus cleanly  */}
         <View key={activeTab} style={styles.form}>
           <TextInputField
-            label="Username"
+            label="Recipient Email"
             control={control}
-            name="username"
-            placeholder="Enter recipient username"
+            name="email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            placeholder="Enter recipient email address"
           />
 
           {isChecking && (
             <View style={styles.usernameStatus}>
               <AppText style={styles.usernameChecking}>
-                Validating username…
+                Validating email…
               </AppText>
             </View>
           )}
 
           {!isChecking && usernameIsValid === true && (
             <View style={styles.usernameStatus}>
-              <AppText style={styles.usernameValid}>✓ Username found</AppText>
+              <AppText style={styles.usernameValid}>Account found</AppText>
             </View>
           )}
 

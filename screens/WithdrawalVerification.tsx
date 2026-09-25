@@ -319,9 +319,6 @@ export default function WithdrawalVerificationScreen({ route }: any) {
           name="token"
           placeholder="Enter your token"
         />
-        {errors.token && (
-          <AppText style={styles.errorText}>{errors.token.message}</AppText>
-        )}
 
         {/* PIN input */}
         <OtpInputField
@@ -331,9 +328,6 @@ export default function WithdrawalVerificationScreen({ route }: any) {
           boxes={4}
           label="Transaction PIN"
         />
-        {errors.pin && (
-          <AppText style={styles.errorText}>{errors.pin.message}</AppText>
-        )}
 
         <TouchableOpacity
           activeOpacity={0.8}

@@ -7,6 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { AxiosError } from "axios";
 import { useAuthStore } from "../stores/authSlice";
 import useAxios from "../hooks/useAxios";
+import { LONG_REQUEST_TIMEOUT_MS } from "../api/axios";
 import { showError, showSuccess } from "../utlis/toast";
 import NumberInputField from "./NumberInputField";
 import InfoCard from "./InfoCard";
@@ -51,7 +52,9 @@ const BVNOwnershipForm = ({ bvn }: BVNOwnershipFormProps) => {
 
   const onSubmit = async (data: any) => {
     try {
-      const response = await post("/kyc/verify-bvn-ownership", data);
+      const response = await post("/kyc/verify-bvn-ownership", data, {
+        timeout: LONG_REQUEST_TIMEOUT_MS,
+      });
       setUser(response.data?.data?.user);
 
       showSuccess("BVN verified successfully");

@@ -30,14 +30,17 @@ import { useColors } from "../hooks/useTheme";
 import { useStepUpAvailability } from "../hooks/useStepUpAvailability";
 import { storage, STORAGE_KEYS } from "../utlis/storage";
 import { showError } from "../utlis/toast";
+import useAxios from "../hooks/useAxios";
+import { fetchBiometricChallenge } from "../utlis/biometricChallenge";
 
 // Same instance shape as useBiometricLogin's — createSignature() is what
 // forces the OS Face ID/Touch ID prompt and only succeeds if it passes.
 // A second instance here (rather than reusing useBiometricLogin's) keeps
 // this modal from accidentally going through that hook's login-specific
 // endpoint call.
+// Biometrics only — the device PIN must not be able to approve a withdrawal.
 const rnBiometrics = new ReactNativeBiometrics({
-  allowDeviceCredentials: true,
+  allowDeviceCredentials: false,
 });
 
 export type StepUpResult =
@@ -92,6 +95,7 @@ export default function StepUpVerificationModal({
   onVerified,
   onSetUpRequired,
 }: Props) {
+  const { client } = useAxios();
   const colors = useColors();
   const styles = makeStyles(colors);
   const { hasAuthenticator, hasBiometric, biometryLabel, hasAnyStepUpMethod } =
@@ -137,7 +141,16 @@ export default function StepUpVerificationModal({
       setIsVerifyingBiometric(true);
       setMode("biometric");
 
-      const payload = `withdrawal|${amount}|${accountNumber}|${Date.now()}`;
+      // Bind the signature to this withdrawal and a server-issued one-time
+      // challenge. Legacy timestamp payload only while the endpoint rolls out.
+      const challenge = await fetchBiometricChallenge(
+        client,
+        keyId,
+        "withdrawal",
+      );
+      const payload = `withdrawal|${amount}|${accountNumber}|${
+        challenge ?? Date.now()
+      }`;
 
       const { success, signature } = await rnBiometrics.createSignature({
         promptMessage: `Confirm with ${biometryLabel ?? "biometrics"}`,

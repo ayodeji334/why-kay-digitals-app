@@ -487,7 +487,8 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
 
       setPhoneNumber(result?.phoneNumber ?? data.phoneNumber);
       setOtpUuid(result?.uuid ?? null);
-      const confirmedChannel = result?.channel === "whatsapp" ? "whatsapp" : "sms";
+      const confirmedChannel =
+        result?.channel === "whatsapp" ? "whatsapp" : "sms";
       setChannel(confirmedChannel);
       setSmsAttemptCount(confirmedChannel === "sms" ? 1 : 0);
       setShowWhatsAppInput(false);
@@ -777,25 +778,6 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
         disableCodeSelector={true}
       />
 
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={styles.whatsappPrompt}
-        onPress={() =>
-          setChannel(prev => (prev === "whatsapp" ? "sms" : "whatsapp"))
-        }
-      >
-        <Whatsapp
-          size={18}
-          color={colors.primary}
-          variant={channel === "whatsapp" ? "Bold" : "Outline"}
-        />
-        <AppText style={styles.whatsappPromptText}>
-          {channel === "whatsapp"
-            ? "Send code via SMS instead"
-            : "Send code via WhatsApp instead"}
-        </AppText>
-      </TouchableOpacity>
-
       <InfoCard
         IconComponent={<InfoCircle size={17} />}
         title="Why is this needed?"
@@ -821,6 +803,25 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
             : channel === "whatsapp"
             ? "Send Code via WhatsApp"
             : "Send Code via SMS"}
+        </AppText>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={styles.whatsappPrompt}
+        onPress={() =>
+          setChannel(prev => (prev === "whatsapp" ? "sms" : "whatsapp"))
+        }
+      >
+        <Whatsapp
+          size={18}
+          color={colors.primary}
+          variant={channel === "whatsapp" ? "Bold" : "Outline"}
+        />
+        <AppText style={styles.whatsappPromptText}>
+          {channel === "whatsapp"
+            ? "Send code via SMS instead"
+            : "Send code via WhatsApp instead"}
         </AppText>
       </TouchableOpacity>
 

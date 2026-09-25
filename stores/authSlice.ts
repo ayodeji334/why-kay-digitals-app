@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import axios from "axios";
-import { getItem, setItem, removeItem } from "../utlis/storage";
+import { secureStateStorage } from "../utlis/secureStorage";
 import { BASE_URL } from "../config";
+import { OneSignal } from "react-native-onesignal";
 
 interface AuthState {
   token: string | null;
@@ -27,6 +28,31 @@ interface AuthState {
   refreshUser: () => Promise<void>;
   setHasHydrated: () => void;
 }
+
+// Fields that must never be written to device storage, even the Keychain. Everything
+// else on the user object is display or status data.
+const SENSITIVE_USER_FIELDS = [
+  "bvn", "nin", "date_of_birth", "dob", "phone_number", "phone", "address",
+  "street", "city", "state", "postal_code", "next_of_kin", "security_pin",
+  "password", "two_factor_secret", "two_factor_recovery_codes", "selfie_url",
+  "bvn_verification_data", "nin_verification_data",
+];
+
+const persistableUser = (user: any | null) => {
+  if (!user || typeof user !== "object") return user;
+  const safe: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(user)) {
+    if (!SENSITIVE_USER_FIELDS.includes(key)) safe[key] = value;
+  }
+  return safe;
+};
+
+// Secure storage is async, so the persisted session isn't in the store yet
+// when it's created. Await this before reading the token at app start.
+let resolveAuthHydration: () => void = () => {};
+export const authHydration = new Promise<void>(resolve => {
+  resolveAuthHydration = resolve;
+});
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -69,6 +95,13 @@ export const useAuthStore = create<AuthState>()(
         set({ isGoogleAuthenticatorEnabled: enabled }),
 
       logout: () => {
+        // Detach this phone's push subscription from the signed-out account: OneSignal
+        // then issues a fresh anonymous id, so the next person to log in here can't
+        // share (and receive) the previous account's notifications.
+        try {
+          OneSignal.logout();
+        } catch {}
+
         set({
           token: null,
           refreshToken: null,
@@ -189,18 +222,8 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
 
-      storage: createJSONStorage(() => ({
-        getItem: key => {
-          const value = getItem(key);
-          return value ?? null;
-        },
-        setItem: (key, value) => {
-          setItem(key, value);
-        },
-        removeItem: key => {
-          removeItem(key);
-        },
-      })),
+      // Tokens + profile live in the Keychain/Keystore, not plaintext MMKV.
+      storage: createJSONStorage(() => secureStateStorage),
 
       /**
        * Persist ONLY what is needed
@@ -208,7 +231,10 @@ export const useAuthStore = create<AuthState>()(
       partialize: state => ({
         token: state.token,
         refreshToken: state.refreshToken,
-        user: state.user,
+        // Identity and contact details are not kept on disk: they are re-fetched from
+        // the backend at launch (initializeAuth), and only the display fields the UI
+        // needs for its first paint are persisted.
+        user: persistableUser(state.user),
         isBiometricEnabled: state.isBiometricEnabled,
         isGoogleAuthenticatorEnabled: state.isGoogleAuthenticatorEnabled,
         isShowBalance: state.isShowBalance, // now persists across restarts
@@ -222,6 +248,8 @@ export const useAuthStore = create<AuthState>()(
             state?.setHasHydrated();
             console.log("hydration finished");
           }
+          // Resolve on success and on error so app start never hangs.
+          resolveAuthHydration();
         };
       },
     },

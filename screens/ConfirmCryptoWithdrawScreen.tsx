@@ -25,6 +25,7 @@ import { useState } from "react";
 import CustomLoading from "../components/CustomLoading";
 import OtpInputField from "../components/OtpInputField";
 import useAxios from "../hooks/useAxios";
+import { useIdempotencyKey } from "../hooks/useIdempotencyKey";
 import { AxiosError } from "axios";
 import { showError } from "../utlis/toast";
 import NumberInputField from "../components/NumberInputField";
@@ -54,6 +55,8 @@ type FormData = {
 
 export default function ConfirmCryptoWithdrawScreen() {
   const { post, apiGet } = useAxios();
+  const { paymentRequestConfig, settleIdempotencyKey, handleUnknownOutcome } =
+    useIdempotencyKey();
   const navigation: any = useNavigation();
   const route: any = useRoute();
   const [isLoading, setIsLoading] = useState(false);
@@ -66,23 +69,24 @@ export default function ConfirmCryptoWithdrawScreen() {
     defaultValues: { token: "", pin: "", googleCode: "" },
   });
 
-  console.log(payload);
-
   const onSubmit = async (values: FormData) => {
     try {
       setIsLoading(true);
 
       const { url, ...rest } = payload;
 
-      console.log(rest);
-
-      const response = await post("crypto/user/confirm-withdrawal", {
-        email,
-        verification_token: values.token,
-        transaction_pin: values.pin,
-        google_2fa_code: values.googleCode,
-        ...rest,
-      });
+      const response = await post(
+        "crypto/user/confirm-withdrawal",
+        {
+          email,
+          verification_token: values.token,
+          transaction_pin: values.pin,
+          google_2fa_code: values.googleCode,
+          ...rest,
+        },
+        paymentRequestConfig(),
+      );
+      settleIdempotencyKey();
 
       apiGet("walelts/crypto/refresh");
 
@@ -114,6 +118,8 @@ export default function ConfirmCryptoWithdrawScreen() {
         });
       });
     } catch (err) {
+      settleIdempotencyKey(err);
+      if (handleUnknownOutcome(err)) return;
       const errorMessage =
         err instanceof AxiosError
           ? err.response?.data?.message || "Verification failed. Try again."

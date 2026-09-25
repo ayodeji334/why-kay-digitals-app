@@ -1,5 +1,5 @@
-import React, { use, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -13,7 +13,7 @@ import CustomLoading from "../CustomLoading";
 import { AxiosError } from "axios";
 import { showError, showSuccess } from "../../utlis/toast";
 import useAxios from "../../hooks/useAxios";
-import OtpInputField from "../OtpInputField";
+import NumberInputField from "../NumberInputField";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../AppText";
 
@@ -44,6 +44,7 @@ const SetNewTransactionPinForm: React.FC<any> = () => {
   const navigation = useNavigation();
   const { patch } = useAxios();
   const [loading, setIsLoading] = useState<boolean>(false);
+
   const { control, handleSubmit, reset } =
     useForm<SetNewTransactionPinFormInputs>({
       resolver: yupResolver(loginSchema),
@@ -74,28 +75,30 @@ const SetNewTransactionPinForm: React.FC<any> = () => {
 
   return (
     <View style={styles.container}>
-      <OtpInputField
+      <NumberInputField
         control={control}
         name="token"
-        isSecuredText={false}
-        boxes={6}
         label="Token"
+        placeholder="Enter 6-digit token"
+        maxLength={6}
       />
 
-      <OtpInputField
+      <NumberInputField
         control={control}
         name="new_pin"
-        isSecuredText={true}
-        boxes={4}
         label="New Pin"
+        placeholder="Enter 4-digit pin"
+        maxLength={4}
+        secureTextEntry
       />
 
-      <OtpInputField
+      <NumberInputField
         control={control}
         name="confirm_pin"
-        isSecuredText={true}
-        boxes={4}
         label="Confirm New Pin"
+        placeholder="Re-enter new pin"
+        maxLength={4}
+        secureTextEntry
       />
 
       <TouchableOpacity

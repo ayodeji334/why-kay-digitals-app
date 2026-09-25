@@ -94,11 +94,15 @@ android {
         }
 
         release {
-            if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
-                storeFile file(MYAPP_UPLOAD_STORE_FILE)
-                storePassword MYAPP_UPLOAD_STORE_PASSWORD
-                keyAlias MYAPP_UPLOAD_KEY_ALIAS
-                keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+            // Read from ~/.gradle/gradle.properties, falling back to env vars (CI).
+            def signingValue = { String name ->
+                project.findProperty(name) ?: System.getenv(name)
+            }
+            if (signingValue('MYAPP_UPLOAD_STORE_FILE')) {
+                storeFile file(signingValue('MYAPP_UPLOAD_STORE_FILE'))
+                storePassword signingValue('MYAPP_UPLOAD_STORE_PASSWORD')
+                keyAlias signingValue('MYAPP_UPLOAD_KEY_ALIAS')
+                keyPassword signingValue('MYAPP_UPLOAD_KEY_PASSWORD')
             }
         }
     }

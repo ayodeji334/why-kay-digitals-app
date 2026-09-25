@@ -8,8 +8,9 @@ import {
 import { COLORS } from "../constants/colors";
 import CustomIcon from "./CustomIcon";
 import { WalletIcon } from "../assets";
+import { AxiosError } from "axios";
 import useAxios from "../hooks/useAxios";
-import { showSuccess } from "../utlis/toast";
+import { showError, showSuccess } from "../utlis/toast";
 import { SelectInput } from "./SelectInputField";
 import { AppText } from "./AppText";
 
@@ -32,11 +33,21 @@ const NoWalletAddress: React.FC<NoWalletAddressProps> = ({
   const { apiGet } = useAxios();
 
   const handleGenerateWallet = async () => {
+    if (isGenerating) return;
     setIsGenerating(true);
     try {
       await apiGet(`wallets/user/${selectedAssetUuid}/generate-wallet-address`);
       showSuccess("Wallet Address created!");
       onSuccess();
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        showError(
+          err.response?.data?.message ??
+            "Cannot generate wallet address at the moment",
+        );
+      } else {
+        showError("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsGenerating(false);
     }
