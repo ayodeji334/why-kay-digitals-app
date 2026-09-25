@@ -37,6 +37,13 @@ import CustomModal from "../components/CustomModal";
 
 const APP_NAME = "WHYKAY";
 const RECEIPT_CARD_WIDTH = 340;
+const RECEIPT_LOGO = require("../assets/logo.webp");
+// Watermark grid: logo tile size and the gap between tiles (points).
+const WATERMARK_TILE = 40;
+const WATERMARK_GAP = 44;
+// The pattern layer overhangs the card on every side so the rotated grid
+// still covers the corners.
+const WATERMARK_OVERHANG = 140;
 const SUPPORT_EMAIL = "support@whykay.net";
 const SUPPORT_PHONE = "+234800 000 0000";
 
@@ -144,6 +151,18 @@ const TransactionDetailScreen = () => {
   const colors = useColors();
   const resolvedTheme = useResolvedTheme();
   const styles = makeStyles(colors);
+
+  // Enough rows/columns of logo tiles to cover the rotated pattern layer for
+  // the receipt's current height.
+  const watermarkGrid = useMemo(() => {
+    const step = WATERMARK_TILE + WATERMARK_GAP;
+    const height = (receiptSize?.height ?? 900) + WATERMARK_OVERHANG * 2;
+    const width = RECEIPT_CARD_WIDTH + WATERMARK_OVERHANG * 2;
+    return {
+      rows: Array.from({ length: Math.ceil(height / step) + 1 }, (_, i) => i),
+      cols: Array.from({ length: Math.ceil(width / step) + 1 }, (_, i) => i),
+    };
+  }, [receiptSize?.height]);
 
   const handleReceiptLayout = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout;
@@ -907,8 +926,35 @@ const TransactionDetailScreen = () => {
           style={styles.receiptCard}
           onLayout={handleReceiptLayout}
         >
+          {/* Faint diagonal logo pattern behind the whole receipt */}
+          <View style={styles.receiptWatermark} pointerEvents="none">
+            {watermarkGrid.rows.map(row => (
+              <View
+                key={row}
+                style={[
+                  styles.receiptWatermarkRow,
+                  row % 2 === 1 && styles.receiptWatermarkRowOffset,
+                ]}
+              >
+                {watermarkGrid.cols.map(col => (
+                  <Image
+                    key={col}
+                    source={RECEIPT_LOGO}
+                    style={styles.receiptWatermarkLogo}
+                    fadeDuration={0}
+                  />
+                ))}
+              </View>
+            ))}
+          </View>
+
           {/* Header */}
           <View style={styles.receiptHeader}>
+            <Image
+              source={RECEIPT_LOGO}
+              style={styles.receiptHeaderLogo}
+              // fadeDuration={0}
+            />
             <AppText style={styles.receiptAppName}>{APP_NAME}</AppText>
           </View>
 
@@ -1222,14 +1268,48 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: "#F0F0F0",
     },
     receiptHeader: {
-      backgroundColor: COLORS.primary,
+      backgroundColor: colors.primary,
       paddingVertical: normalizeSpacing(12),
       paddingHorizontal: normalizeSpacing(20),
+      flexDirection: "row",
       alignItems: "center",
+      justifyContent: "center",
+      gap: 10,
+    },
+    receiptHeaderLogo: {
+      width: 32,
+      height: 32,
+      // borderRadius: 7,
+      // borderWidth: 1.5,
+      // borderColor: "rgba(255,255,255,0.85)",
+    },
+    receiptWatermark: {
+      position: "absolute",
+      top: -WATERMARK_OVERHANG,
+      bottom: -WATERMARK_OVERHANG,
+      left: -WATERMARK_OVERHANG,
+      right: -WATERMARK_OVERHANG,
+      opacity: 0.07,
+      transform: [{ rotate: "-24deg" }],
+      rowGap: WATERMARK_GAP,
+      justifyContent: "center",
+    },
+    receiptWatermarkRow: {
+      flexDirection: "row",
+      columnGap: WATERMARK_GAP,
+    },
+    // Stagger alternate rows by half a step for a brick-style pattern.
+    receiptWatermarkRowOffset: {
+      marginLeft: (WATERMARK_TILE + WATERMARK_GAP) / 2,
+    },
+    receiptWatermarkLogo: {
+      width: WATERMARK_TILE,
+      height: WATERMARK_TILE,
+      borderRadius: 9,
     },
     receiptAppName: {
       fontFamily: getFontFamily(900),
-      fontSize: 16,
+      fontSize: 15,
       color: "white",
       letterSpacing: 0.5,
     },
@@ -1260,7 +1340,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     receiptRows: {
       marginHorizontal: normalizeSpacing(14),
       marginBottom: normalizeSpacing(12),
-      backgroundColor: "#F9FAFB",
+      backgroundColor: "rgba(243,244,246,0.55)",
       borderRadius: 12,
       paddingVertical: normalizeSpacing(4),
       paddingHorizontal: normalizeSpacing(12),
@@ -1290,7 +1370,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       paddingVertical: normalizeSpacing(12),
       paddingHorizontal: normalizeSpacing(20),
       alignItems: "center",
-      backgroundColor: "#FAFAFA",
+      backgroundColor: "rgba(250,250,250,0.7)",
       gap: 3,
     },
     receiptFooterText: {

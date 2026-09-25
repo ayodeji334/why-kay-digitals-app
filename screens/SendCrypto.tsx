@@ -284,7 +284,7 @@ export default function SendScreen() {
         label: `${chain?.chain} (${chain.chain_type?.toUpperCase()})`,
         value: chain?.chain,
         network_charges: chain?.withdraw_fee,
-        symbol: assetDetails?.symbol,
+        // symbol: assetDetails?.symbol,
         network_charges_in_usd: chain?.withdraw_fee * marketPrice,
       }));
   }, [assetDetails?.available_chains, marketPrice]);

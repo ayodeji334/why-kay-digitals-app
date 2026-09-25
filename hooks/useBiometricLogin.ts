@@ -104,6 +104,8 @@ export const useBiometricLogin = () => {
         payload,
         signature,
         device_id: devicePushSubscriptionId,
+        // Stable hardware id: the backend binds the session's refresh token to it.
+        hardware_device_id: await DeviceInfo.getUniqueId(),
         device_name: DeviceInfo.getModel() ?? null,
       });
 

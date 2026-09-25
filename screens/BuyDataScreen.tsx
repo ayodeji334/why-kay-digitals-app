@@ -26,7 +26,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import NumberInputField from "../components/NumberInputField";
 import useAxios from "../hooks/useAxios";
-import { formatAmount } from "../libs/formatNumber";
+// import { formatAmount } from "../libs/formatNumber";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import SavedBeneficiaries from "../components/banks/SavedBeneficiaries";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
@@ -334,6 +334,7 @@ export default function BuyDataScreen() {
             value: plan.item_code,
             balance: plan.amount,
             validity_period: plan?.validity_period,
+            // symbol: `${plan.biller_name} Plan`,
           }))}
           placeholder={
             isLoading ? "Loading network plans..." : "Select Data Plan"

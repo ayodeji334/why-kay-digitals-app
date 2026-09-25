@@ -239,22 +239,30 @@ export function SelectInput({
                           )}
 
                           <View style={styles.cryptoInfo}>
-                            <AppText style={styles.optionName}>
-                              {`${item.symbol}`}
-                            </AppText>
-                            {item?.symbol && (
-                              <AppText
-                                style={[
-                                  styles.optionPrice,
-                                  {
-                                    fontSize: normalize(17),
-                                    fontFamily: getFontFamily("400"),
-                                  },
-                                ]}
-                              >
+                            {item?.label && (
+                              <AppText style={styles.optionName}>
                                 {`${item.label}`}
                               </AppText>
                             )}
+                            {item?.symbol && (
+                              <AppText style={styles.optionName}>
+                                {`${item.symbol}`}
+                              </AppText>
+                            )}
+                            {/* {item?.label &&
+                              label?.toLowerCase() !== "asset networks" && (
+                                <AppText
+                                  style={[
+                                    styles.optionPrice,
+                                    {
+                                      fontSize: normalize(17),
+                                      fontFamily: getFontFamily("400"),
+                                    },
+                                  ]}
+                                >
+                                  {`${item.label}`}
+                                </AppText>
+                              )} */}
                             {item?.market_value ? (
                               <AppText style={styles.optionPrice}>
                                 {formatAmount(item.market_value, {

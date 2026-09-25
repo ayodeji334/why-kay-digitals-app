@@ -210,7 +210,7 @@ export default function TransferScreen() {
     return wallets
       .map((asset: any) => ({
         ...asset,
-        label: `${asset?.name}`,
+        label: `${asset?.name} (${asset?.symbol})`,
         value: asset.asset_id ?? asset.uuid ?? "",
         symbol: asset.symbol ?? "",
         logo_url: asset.logo ?? "",
@@ -448,7 +448,7 @@ export default function TransferScreen() {
           </View>
         )}
 
-        {activeTab === "fiat" && monthlyLimit && (
+        {/* {activeTab === "fiat" && monthlyLimit && (
           <View style={styles.limitContainer}>
             <View style={styles.limitHeader}>
               <AppText style={styles.limitLabel}>
@@ -477,7 +477,7 @@ export default function TransferScreen() {
               </AppText>
             </View>
           </View>
-        )}
+        )} */}
 
         {/* key forces the entire form to remount on tab change,
             clearing all field state and keyboard focus cleanly  */}

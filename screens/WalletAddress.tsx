@@ -1,8 +1,3 @@
-//               Important:
-//               • Send only the supported cryptocurrency to this address
-//               • Sending the wrong asset or network may result in permanent loss
-//               • This address is unique to your wallet
-
 import React, { useState, useMemo, useRef } from "react";
 import {
   View,
@@ -214,6 +209,8 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
     }
   };
 
+  console.log(wallet.chains);
+
   return (
     <SafeAreaView style={styles.container} edges={["left"]}>
       <ScrollView
@@ -280,10 +277,17 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
             <SelectInput
               options={(Array.isArray(wallet?.chains) ? wallet.chains : [])
                 .filter((chain: any) => chain.deposit_enabled)
-                .map((chain: any) => ({
-                  label: `${chain?.chain} (${chain.chain_type?.toUpperCase()})`,
-                  value: chain?.chain,
-                }))}
+                .map((chain: any) => {
+                  console.log(chain);
+
+                  return {
+                    label: `${
+                      chain?.chain
+                    } (${chain.chain_type?.toUpperCase()})`,
+                    value: chain?.chain,
+                    // symbol: chain?.chain,
+                  };
+                })}
               placeholder="Select a network."
               title="Select a network"
               value={selectedNetwork}
@@ -564,7 +568,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     modalLabel: {
       fontSize: normalize(18),
-      fontFamily: getFontFamily("900"),
+      fontFamily: getFontFamily("800"),
       color: "black",
       marginBottom: normalizeSpacing(6),
     },
