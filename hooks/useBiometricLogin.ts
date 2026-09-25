@@ -6,6 +6,7 @@ import { storage, STORAGE_KEYS } from "../utlis/storage";
 import { OneSignal } from "react-native-onesignal";
 import { useAuthStore } from "../stores/authSlice";
 import DeviceInfo from "react-native-device-info";
+import { getReadableDeviceName } from "../utlis/device";
 import { fetchBiometricChallenge } from "../utlis/biometricChallenge";
 
 // Biometrics only: allowing the device PIN/pattern here would make
@@ -99,6 +100,8 @@ export const useBiometricLogin = () => {
 
       setIsBusy(true);
 
+      const deviceName = await getReadableDeviceName();
+
       const response = await post("/auth/biometrics/login", {
         key_id: Number(keyId),
         payload,
@@ -106,7 +109,7 @@ export const useBiometricLogin = () => {
         device_id: devicePushSubscriptionId,
         // Stable hardware id: the backend binds the session's refresh token to it.
         hardware_device_id: await DeviceInfo.getUniqueId(),
-        device_name: DeviceInfo.getModel() ?? null,
+        device_name: deviceName,
       });
 
       const data = response?.data ?? null;

@@ -223,11 +223,12 @@ const CryptoWalletScreen = () => {
         />
         <Text
           style={{
-            fontSize: normalize(18),
+            fontSize: normalize(20),
             fontFamily: getFontFamily("400"),
             marginVertical: normalizeSpacing(7),
             paddingVertical: normalizeSpacing(5),
             color: colors.text,
+            lineHeight: 18,
           }}
         >
           Below are the supported assets. If the asset you want to trade is not

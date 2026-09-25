@@ -16,6 +16,7 @@ import OtpInputField from "../components/OtpInputField";
 import CustomLoading from "../components/CustomLoading";
 import { useColors } from "../hooks/useTheme";
 import useAxios from "../hooks/useAxios";
+import { getDeviceLabel } from "../utlis/device";
 import { useCountdown } from "../hooks/useCountdown";
 import { useCompleteLogin } from "../hooks/useCompleteLogin";
 import { useBlockGoBack } from "../hooks/useBlockGoBack";
@@ -145,7 +146,7 @@ export default function DeviceOtpVerificationScreen() {
 
       const res = await post(
         "/auth/device/verify-otp",
-        { device_id: deviceId, code },
+        { device_id: deviceId, code, ...(await getDeviceLabel()) },
         authHeader,
       );
 

@@ -8,6 +8,7 @@ import {
 } from "../constants/settings";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
+import { getDeviceLabel } from "../utlis/device";
 import { LONG_REQUEST_TIMEOUT_MS } from "../api/axios";
 import { showError } from "../utlis/toast";
 import { CloseCircle, TickCircle } from "iconsax-react-nativejs";
@@ -81,7 +82,11 @@ export default function DeviceSelfieResultScreen() {
 
       const res = await post(
         "/auth/device/verify-selfie",
-        { image: base64Image, device_id: deviceId },
+        {
+          image: base64Image,
+          device_id: deviceId,
+          ...(await getDeviceLabel()),
+        },
         {
           headers: { Authorization: `Bearer ${verificationToken}` },
           timeout: LONG_REQUEST_TIMEOUT_MS,

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   Share as RNShare,
+  Image,
 } from "react-native";
 import {
   getFontFamily,
@@ -24,7 +25,9 @@ import { WalletIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
 import { AxiosError } from "axios";
 import { AppText } from "../components/AppText";
-import Svg, { Defs, Pattern, Circle, Rect } from "react-native-svg";
+import LogoPatternBackground, {
+  BRAND_LOGO,
+} from "../components/LogoPatternBackground";
 import { captureRef } from "react-native-view-shot";
 import ShareLib from "react-native-share";
 import { useColors } from "../hooks/useTheme";
@@ -32,24 +35,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const APP_NAME = "WHYKAY";
 const SHARE_CARD_WIDTH = 340;
-
-export const CardPatternBackground = () => (
-  <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
-    <Defs>
-      <Pattern
-        id="cardDots"
-        x="0"
-        y="0"
-        width="22"
-        height="22"
-        patternUnits="userSpaceOnUse"
-      >
-        <Circle cx="3" cy="3" r="1.5" fill={COLORS.primary} opacity={0.32} />
-      </Pattern>
-    </Defs>
-    <Rect x="0" y="0" width="100%" height="100%" fill="url(#cardDots)" />
-  </Svg>
-);
 
 interface Wallet {
   id: string;
@@ -403,8 +388,14 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
       {walletDetail?.address && (
         <View style={styles.shareCardOffscreen} pointerEvents="none">
           <View ref={shareCardRef} collapsable={false} style={styles.shareCard}>
-            <CardPatternBackground />
+            {/* Same faint logo pattern as the transaction receipt */}
+            <LogoPatternBackground />
             <View style={styles.shareHeader}>
+              <Image
+                source={BRAND_LOGO}
+                style={styles.shareHeaderLogo}
+                fadeDuration={0}
+              />
               <AppText style={styles.shareAppName}>{APP_NAME}</AppText>
             </View>
             <View style={styles.shareBody}>
@@ -677,7 +668,17 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: COLORS.primary,
       paddingVertical: normalizeSpacing(16),
       paddingHorizontal: normalizeSpacing(20),
+      flexDirection: "row",
       alignItems: "center",
+      justifyContent: "center",
+      gap: 10,
+    },
+    shareHeaderLogo: {
+      width: 30,
+      height: 30,
+      // borderRadius: 7,
+      // borderWidth: 1.5,
+      // borderColor: "rgba(255,255,255,0.85)",
     },
     shareAppName: {
       fontFamily: getFontFamily(900),
@@ -725,7 +726,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     shareField: {
       width: "100%",
-      backgroundColor: "#F7F7F7",
+      backgroundColor: "rgba(243,244,246,0.55)",
       borderRadius: 10,
       paddingVertical: normalizeSpacing(10),
       paddingHorizontal: normalizeSpacing(12),
@@ -757,7 +758,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     shareDescription: {
       fontFamily: getFontFamily(400),
-      fontSize: normalize(15),
+      fontSize: normalize(14),
       lineHeight: 14,
       color: "#000000",
       textAlign: "center",

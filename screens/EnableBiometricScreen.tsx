@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { FingerScan } from "iconsax-react-nativejs";
 import DeviceInfo from "react-native-device-info";
+import { getReadableDeviceName } from "../utlis/device";
 import {
   getFontFamily,
   normalize,
@@ -124,7 +125,7 @@ const BiometricsScreen = () => {
       setIsLoading(true);
 
       const [deviceName, deviceId] = await Promise.all([
-        DeviceInfo.getDeviceName(),
+        getReadableDeviceName(),
         DeviceInfo.getUniqueId(),
       ]);
       const publicKey = await BiometricService.createKeys();

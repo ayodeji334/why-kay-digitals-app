@@ -39,6 +39,7 @@ const ServicesSection = () => {
   const navigation: any = useNavigation();
   const colors = useColors();
   const styles = makeStyles(colors);
+
   const user = useUser();
   const { isPhoneVerified } = usePhoneVerification();
   const { openLiveChat } = useLiveChat();
@@ -214,17 +215,25 @@ const ServicesSection = () => {
           </AppText>
         </View>
         <View style={styles.servicesGrid}>
-          {mainServices.map(service => (
-            <TouchableOpacity
-              hitSlop={30}
-              activeOpacity={0.89}
-              key={service.id}
-              onPress={() => handleNavigation(service)}
-              style={styles.serviceItem}
-            >
-              <View style={styles.iconContainer}>{service.icon}</View>
-              <AppText style={styles.serviceText}>{service.title}</AppText>
-            </TouchableOpacity>
+          {chunk(mainServices, GRID_COLUMNS).map((row, rowIndex) => (
+            <View key={rowIndex} style={styles.servicesRow}>
+              {row.map(service => (
+                <TouchableOpacity
+                  hitSlop={30}
+                  activeOpacity={0.89}
+                  key={service.id}
+                  onPress={() => handleNavigation(service)}
+                  style={styles.serviceItem}
+                >
+                  <View style={styles.iconContainer}>{service.icon}</View>
+                  <AppText style={styles.serviceText}>{service.title}</AppText>
+                </TouchableOpacity>
+              ))}
+              {/* Invisible spacers keep a short last row's tiles the same width */}
+              {Array.from({ length: GRID_COLUMNS - row.length }, (_, i) => (
+                <View key={`spacer-${i}`} style={styles.serviceSpacer} />
+              ))}
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -268,18 +277,33 @@ const ServicesSection = () => {
   );
 };
 
+const GRID_COLUMNS = 3;
+const GRID_GAP = 15;
+
+// Splits items into rows of `size` (the last row may be shorter).
+const chunk = <T,>(items: T[], size: number): T[][] =>
+  Array.from({ length: Math.ceil(items.length / size) }, (_, i) =>
+    items.slice(i * size, i * size + size),
+  );
+
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: { flex: 1, marginBottom: normalizeSpacing(20) },
     servicesGrid: {
+      rowGap: GRID_GAP,
+    },
+    // Each row shares its width equally between GRID_COLUMNS tiles, so there
+    // are always exactly three per row, flush with both edges.
+    servicesRow: {
       flexDirection: "row",
-      flexWrap: "wrap",
-      justifyContent: "flex-start",
-      columnGap: 15,
-      rowGap: 15,
+      columnGap: GRID_GAP,
+    },
+    serviceSpacer: {
+      flex: 1,
     },
     serviceItem: {
-      minWidth: "30%",
+      flex: 1,
+      paddingHorizontal: normalizeSpacing(6),
       alignItems: "center",
       backgroundColor: colors.infoCardBackgroundColor,
       paddingVertical: normalizeSpacing(15),

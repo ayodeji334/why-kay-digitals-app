@@ -10,6 +10,7 @@ import { Alert, Linking, Platform } from "react-native";
 import { useAuthStore } from "../stores/authSlice";
 import useAxios from "./useAxios";
 import DeviceInfo from "react-native-device-info";
+import { getReadableDeviceName } from "../utlis/device";
 
 export const useBiometricEnrollment = () => {
   const { post, patch } = useAxios();
@@ -106,7 +107,7 @@ export const useBiometricEnrollment = () => {
         setIsLoading(true);
 
         const [deviceName, deviceId] = await Promise.all([
-          DeviceInfo.getDeviceName(),
+          getReadableDeviceName(),
           DeviceInfo.getUniqueId(),
         ]);
 
