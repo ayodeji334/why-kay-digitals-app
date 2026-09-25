@@ -23,70 +23,6 @@ export const useBiometricLogin = () => {
   const [isBusy, setIsBusy] = useState(false);
 
   /** Detect the sensor and whether a key pair + backend key id exist. */
-  // const refreshAvailability = useCallback(async () => {
-  //   try {
-  //     const { available, biometryType } =
-  //       await rnBiometrics.isSensorAvailable();
-
-  //     if (!available) {
-  //       setBiometryLabel(null);
-  //       setIsReady(false);
-  //       return;
-  //     }
-
-  //     setBiometryLabel(
-  //       biometryType === BiometryTypes.FaceID
-  //         ? "Face ID"
-  //         : biometryType === BiometryTypes.TouchID
-  //         ? "Touch ID"
-  //         : "Biometrics",
-  //     );
-
-  //     const { keysExist } = await rnBiometrics.biometricKeysExist();
-
-  //     const storedKeyId = storage.getString(STORAGE_KEYS.BIOMETRIC_KEY_ID);
-
-  //     setIsReady(keysExist && !!storedKeyId);
-
-  //     console.log("Key: ", keysExist, storedKeyId);
-
-  //     setIsReady(keysExist && !!storedKeyId);
-  //   } catch {
-  //     setBiometryLabel(null);
-  //     setIsReady(false);
-  //   }
-  // }, []);
-
-  // const refreshAvailability = useCallback(async () => {
-  //   try {
-  //     const { available, biometryType } =
-  //       await rnBiometrics.isSensorAvailable();
-  //     const { keysExist } = await rnBiometrics.biometricKeysExist();
-  //     const storedKeyId = storage.getString(STORAGE_KEYS.BIOMETRIC_KEY_ID);
-
-  //     console.log("[bio]", { available, biometryType, keysExist, storedKeyId });
-
-  //     if (!available) {
-  //       setBiometryLabel(null);
-  //       setIsReady(false);
-  //       return;
-  //     }
-
-  //     setBiometryLabel(
-  //       biometryType === BiometryTypes.FaceID
-  //         ? "Face ID"
-  //         : biometryType === BiometryTypes.TouchID
-  //         ? "Touch ID"
-  //         : "Biometrics",
-  //     );
-
-  //     setIsReady(keysExist && !!storedKeyId);
-  //   } catch (e) {
-  //     console.log("[bio] refresh threw", e); // <- don't swallow this
-  //     setBiometryLabel(null);
-  //     setIsReady(false);
-  //   }
-  // }, []);
 
   const refreshAvailability = useCallback(async () => {
     try {
@@ -171,19 +107,7 @@ export const useBiometricLogin = () => {
         device_name: DeviceInfo.getModel() ?? null,
       });
 
-      // return verified;
       const data = response?.data ?? null;
-
-      // if (!data?.verified) {
-      //   if (data?.is_locked) {
-      //     showError(
-      //       "Biometric login is temporarily locked. Use your password.",
-      //     );
-      //   } else {
-      //     showError("Biometric verification failed. Use your password.");
-      //   }
-      //   return null;
-      // }
 
       return data;
     } catch (err) {
@@ -218,11 +142,6 @@ export const useBiometricLogin = () => {
   );
 
   /** Remove local keys + stored id (call alongside your revoke endpoint). */
-  // const clearLocalBiometrics = async () => {
-  //   await rnBiometrics.deleteKeys();
-  //   storage.delete(STORAGE_KEYS.BIOMETRIC_KEY_ID);
-  //   await refreshAvailability();
-  // };
 
   const clearLocalBiometrics = async () => {
     await rnBiometrics.deleteKeys();

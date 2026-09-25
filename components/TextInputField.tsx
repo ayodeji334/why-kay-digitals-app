@@ -63,7 +63,6 @@ const TextInputField: React.FC<Props> = ({
       control={control}
       name={name}
       rules={rules}
-      // disabled={isEditable}
       render={({
         field: { onChange, onBlur, value },
         fieldState: { error },

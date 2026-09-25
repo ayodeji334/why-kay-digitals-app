@@ -483,98 +483,6 @@ const TransactionDetailScreen = () => {
     });
   };
 
-  // const shareAsPdf = async () => {
-  //   const filename = `Transaction-Receipt-${Date.now()}-${transaction?.uuid?.replace(
-  //     /-/g,
-  //     "",
-  //   )}`;
-
-  //   // Same capture as shareAsImage — guarantees pixel-identical output
-  //   // const base64Image = await captureRef(receiptCardRef, {
-  //   //   format: "png",
-  //   //   quality: 1,
-  //   //   result: "base64",
-  //   //   fileName: filename,
-  //   // });
-
-  //   const base64Image = await captureRef(receiptCardRef, {
-  //     format: "png",
-  //     quality: 1,
-  //     result: "base64",
-  //     width: RECEIPT_CARD_WIDTH * 3, // fixed 1020px wide
-  //     height: (receiptSize?.height ?? 700) * 3, // keep aspect from layout
-  //   });
-
-  //   const html = `
-  //   <html>
-  //     <body style="margin:0;padding:0;">
-  //       <img
-  //         src="data:image/png;base64,${base64Image}"
-  //         style="width:100%;height:100%;display:block;"
-  //       />
-  //     </body>
-  //   </html>
-  // `;
-
-  //   // const filename = `Transaction-Receipt-${Date.now()}-${transaction?.uuid?.replace(
-  //   //   /-/g,
-  //   //   "",
-  //   // )}`;
-
-  //   // Match the page to the card's aspect ratio so it fills one page cleanly.
-  //   // Scale factor keeps the PDF page at print-friendly dimensions.
-  //   const scale = 2;
-  //   const pdf = await generatePDF({
-  //     html,
-  //     fileName: filename,
-  //     base64: false,
-  //     width: (receiptSize?.width ?? RECEIPT_CARD_WIDTH) * scale,
-  //     height: (receiptSize?.height ?? 700) * scale,
-  //     padding: 0,
-  //   });
-
-  //   await ShareLib.open({
-  //     url: `file://${pdf.filePath}`,
-  //     type: "application/pdf",
-  //     filename: `${filename}.pdf`,
-  //     title: filename,
-  //     failOnCancel: false,
-  //   });
-  // };
-
-  // const shareAsPdf = async () => {
-  //   // 1. Fetch the PDF from the backend as a blob
-  //   const response = await apiGet(
-  //     `/transactions/${transaction.uuid}/download-receipt`,
-  //     { responseType: "blob" },
-  //   );
-
-  //   // 2. Blob → base64 via FileReader
-  //   const base64: string = await new Promise((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.onload = () => resolve((reader.result as string).split(",")[1]);
-  //     reader.onerror = () => reject(new Error("FileReader failed"));
-  //     reader.readAsDataURL(response.data);
-  //   });
-
-  //   // 3. react-native-share handles base64 data URIs on BOTH platforms
-  //   //    (the old built-in Share approach only worked on iOS)
-  //   await ShareLib.open({
-  //     url: `data:application/pdf;base64,${base64}`,
-  //     type: "application/pdf",
-  //     // Must end in .pdf — the extension is what tells "Save to Files"/other
-  //     // targets what kind of file this is. Avoid ":" — it's an invalid
-  //     // filename character on iOS/Android and can get silently stripped or
-  //     // produce an unopenable file.
-  //     filename: `Transaction-Receipt-${Date.now()}-${transaction?.uuid?.replace(
-  //       /-/g,
-  //       "",
-  //     )}.pdf`,
-  //     title: "Transaction Receipt",
-  //     failOnCancel: false,
-  //   });
-  // };
-
   const shareAsImage = async () => {
     const filename = `Transaction-Receipt-${Date.now()}-${transaction?.uuid?.replace(
       /-/g,
@@ -802,11 +710,6 @@ const TransactionDetailScreen = () => {
               truncate={false}
             />
           )}
-          {/* <DetailRow
-            label="Status"
-            value={isSuccess ? "Successful" : transaction?.status}
-            color={isSuccess ? "#059669" : isProcessing ? "#CA8A04" : "#DC2626"}
-          /> */}
           {transaction?.category === "WITHDRAWAL" && (
             <>
               <DetailRow
@@ -993,14 +896,6 @@ const TransactionDetailScreen = () => {
             <ArrowRight2 size={normalize(20)} color={COLORS.primary} />
           </TouchableOpacity>
         </View>
-        {/* 
-        <TouchableOpacity
-          style={styles.modalCancel}
-          activeOpacity={0.8}
-          onPress={() => setFormatModalVisible(false)}
-        >
-          <AppText style={styles.modalCancelText}>Cancel</AppText>
-        </TouchableOpacity> */}
       </CustomModal>
       {/* ============ Receipt image (off-screen, captured on share) ============ */}
       {/*  */}
@@ -1102,7 +997,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
       color: colors.textMuted,
       marginBottom: normalizeSpacing(14),
-      // lineHeight: normalize(20),
     },
     header: {
       justifyContent: "space-between",
@@ -1167,7 +1061,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(26),
       fontFamily: getFontFamily("400"),
       color: COLORS.primary,
-      // lineHeight: normalize(28),
     },
     headerTitle: {
       fontSize: normalize(18),
@@ -1212,7 +1105,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
       textAlign: "right",
-      // lineHeight: 17,
       color: colors.text,
     },
     copyButton: {

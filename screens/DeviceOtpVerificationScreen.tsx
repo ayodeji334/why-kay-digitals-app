@@ -244,15 +244,6 @@ export default function DeviceOtpVerificationScreen() {
           <AppText style={styles.buttonText}>Continue</AppText>
         </TouchableOpacity>
 
-        {/* <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={handleUseSelfie}
-        >
-          <AppText style={styles.secondaryButtonText}>
-            Use Selfie Instead
-          </AppText>
-        </TouchableOpacity> */}
-
         <TouchableOpacity
           style={styles.differentAccountButton}
           onPress={goBackToLogin}
@@ -352,6 +343,5 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(19),
       fontFamily: getFontFamily("700"),
       color: colors.text,
-      // textDecorationLine: "underline",
     },
   });

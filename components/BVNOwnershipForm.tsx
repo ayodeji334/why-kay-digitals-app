@@ -58,12 +58,7 @@ const BVNOwnershipForm = ({ bvn }: BVNOwnershipFormProps) => {
       setUser(response.data?.data?.user);
 
       showSuccess("BVN verified successfully");
-      //   navigation.goBack();
       navigation.pop(2);
-      //   navigation.reset({
-      //     index: 0,
-      //     routes: [{ name: "Verification" as never }],
-      //   });
     } catch (err: any) {
       console.log(err);
       if (err instanceof AxiosError) {

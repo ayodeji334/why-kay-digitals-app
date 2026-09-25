@@ -113,67 +113,6 @@ export function CryptoTransferForm({
   );
 }
 
-// export function CryptoTransferForm({
-//   control,
-//   userWallets,
-//   displayAmount,
-//   setDisplayAmount,
-//   errors,
-// }: CryptoTransferFormProps) {
-//   return (
-//     <>
-//       <TextInputField
-//         label="Username"
-//         control={control}
-//         name="username"
-//         placeholder="Enter recipient username"
-//       />
-
-//       <View style={{ marginVertical: 4 }}>
-//         <SelectInput
-//           control={control}
-//           name="asset_id"
-//           label="Choose Asset (Coin)"
-//           options={userWallets}
-//           placeholder="Select an asset (coin)"
-//           title="Select an asset"
-//           showWalletPrice={true}
-//         />
-//       </View>
-
-//       <View style={{ marginVertical: 4 }}>
-//         <AppText style={styles.label}>Amount in Dollars (USD)</AppText>
-//         <Controller
-//           control={control}
-//           name="amount"
-//           render={({ field: { onBlur, onChange } }) => (
-//             <View style={styles.inputContainer}>
-//               <AppText style={styles.dollarSign}>$</AppText>
-//               <TextInput
-//                 style={styles.input}
-//                 value={displayAmount}
-//                 placeholder="0.00"
-//                 placeholderTextColor="#999"
-//                 keyboardType="decimal-pad"
-//                 onBlur={onBlur}
-//                 onChangeText={text => {
-//                   const formatted = formatWithCommas(text);
-//                   const numeric = parseToNumber(formatted);
-//                   onChange(numeric);
-//                   setDisplayAmount(formatted);
-//                 }}
-//               />
-//             </View>
-//           )}
-//         />
-//         {errors.amount && (
-//           <AppText style={styles.error}>{errors?.amount?.message}</AppText>
-//         )}
-//       </View>
-//     </>
-//   );
-// }
-
 const styles = StyleSheet.create({
   label: {
     fontSize: 13,

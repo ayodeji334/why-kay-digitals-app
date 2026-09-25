@@ -171,54 +171,7 @@ export const useAuthStore = create<AuthState>()(
         set({ hasHydrated: true });
       },
     }),
-    // {
-    //   name: "auth-storage",
 
-    //   /**
-    //    * MMKV adapter
-    //    * IMPORTANT:
-    //    * - Zustand already serializes
-    //    * - MMKV stores raw strings
-    //    * - NEVER JSON.stringify here
-    //    */
-    //   storage: createJSONStorage(() => ({
-    //     getItem: key => {
-    //       const value = getItem(key);
-    //       return value ?? null;
-    //     },
-    //     setItem: (key, value) => {
-    //       setItem(key, value);
-    //     },
-    //     removeItem: key => {
-    //       removeItem(key);
-    //     },
-    //   })),
-
-    //   /**
-    //    * Persist ONLY what is needed
-    //    */
-    //   partialize: state => ({
-    //     token: state.token,
-    //     refreshToken: state.refreshToken,
-    //     user: state.user,
-    //     isBiometricEnabled: state.isBiometricEnabled,
-    //     isGoogleAuthenticatorEnabled: state.isGoogleAuthenticatorEnabled,
-    //   }),
-
-    //   /**
-    //    * Hydration callback (critical for real devices)
-    //    */
-    //   onRehydrateStorage: () => {
-    //     return (state, error) => {
-    //       if (error) {
-    //         console.log("an error happened during hydration", error);
-    //       } else {
-    //         state?.setHasHydrated;
-    //         console.log("hydration finished");
-    //       }
-    //     };
-    //   },
-    // },
     {
       name: "auth-storage",
 

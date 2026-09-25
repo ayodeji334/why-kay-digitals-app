@@ -51,32 +51,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// function MainApp() {
-//   const [isLoading, setIsLoading] = useState(true);
-//   const initializeAuth = useAuthStore(state => state.initializeAuth);
-
-//   useEffect(() => {
-//     const initializeApp = async () => {
-//       await initializeAuth();
-//       setIsLoading(false);
-//     };
-
-//     initializeApp();
-//   }, [initializeAuth]);
-
-//   if (isLoading) {
-//     return <SplashScreen />;
-//   }
-
-//   return (
-//     <SafeAreaProvider>
-//       <View style={styles.container}>
-//         <NavigationRoot />
-//       </View>
-//     </SafeAreaProvider>
-//   );
-// }
-
 function MainApp() {
   const [isLoading, setIsLoading] = useState(true);
   const initializeAuth = useAuthStore(state => state.initializeAuth);

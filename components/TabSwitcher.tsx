@@ -74,7 +74,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       backgroundColor: colors.inputBackground,
       borderRadius: 800,
       padding: normalizeSpacing(4),
-      // marginBottom: 20,
     },
     tab: {
       flex: 1,

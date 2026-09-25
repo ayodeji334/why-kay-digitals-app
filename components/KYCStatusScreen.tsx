@@ -17,7 +17,6 @@ export default function KYCStatusScreen() {
   const user = useAuthStore(state => state.user);
   const isAlreadyVerified = useMemo(
     () => user?.bvn_verification_status === "VERIFIED",
-    // user?.nin_verification_status === "VERIFIED",
     [user.bvn_verification_status],
   );
 
@@ -61,38 +60,6 @@ export default function KYCStatusScreen() {
                   </AppText>
                 </View>
               </View>
-
-              {/* <View style={styles.requirementRow}>
-                <View style={[styles.requirementIcon]}>
-                  <DocumentText
-                    size={15}
-                    color={COLORS.primary}
-                    variant="Outline"
-                  />
-                </View>
-                <View>
-                  <AppText style={styles.itemHeader}>Identity Information</AppText>
-                  <AppText style={styles.itemSub}>
-                    Provide a valid National Identification Number (NIN)
-                  </AppText>
-                </View>
-              </View> */}
-
-              {/* <View style={styles.requirementRow}>
-                <View style={[styles.requirementIcon]}>
-                  <TickCircle
-                    size={15}
-                    color={COLORS.primary}
-                    variant="Outline"
-                  />
-                </View>
-                <View>
-                  <AppText style={styles.itemHeader}>Selfie Verification</AppText>
-                  <AppText style={styles.itemSub}>
-                    A quick photo to confirm your identity
-                  </AppText>
-                </View>
-              </View> */}
             </View>
           </View>
         </View>
@@ -162,7 +129,6 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("400"),
     color: "#2e2f30ff",
     textAlign: "center",
-    // lineHeight: 22,
     paddingHorizontal: normalizeSpacing(10),
   },
   requirementsCard: {
@@ -271,6 +237,5 @@ const styles = StyleSheet.create({
     fontFamily: getFontFamily("400"),
     color: "#9CA3AF",
     textAlign: "center",
-    // lineHeight: 18,
   },
 });

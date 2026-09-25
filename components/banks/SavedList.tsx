@@ -56,9 +56,6 @@ export default function SavedBeneficiariesList({
         onPress={() => handleSelectBeneficiary(item)}
       >
         <View style={styles.row}>
-          {/* <View style={styles.avatar}>
-            <User width={20} height={20} stroke="#16a34a" />
-          </View> */}
           <View style={styles.info}>
             <View style={styles.rowBetween}>
               <AppText style={styles.name}>{item.meta.account_name}</AppText>

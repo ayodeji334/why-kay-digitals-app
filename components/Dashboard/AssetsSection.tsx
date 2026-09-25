@@ -69,18 +69,6 @@ const AssetsSection = () => {
     refetchIntervalInBackground: false,
   });
 
-  // const filteredAssets = useMemo(() => {
-  //   if (!Array.isArray(assets) || assets.length === 0) {
-  //     return [];
-  //   }
-
-  //   // return [...assets].sort((a, b) => {
-  //   //   const aPrice = Number(a?.market_current_value) || 0;
-  //   //   const bPrice = Number(b?.market_current_value) || 0;
-  //   //   return bPrice - aPrice;
-  //   // });
-  // }, [assets]);
-
   if (isLoading) {
     return <LoadingState message="Loading assets market rates..." />;
   }
@@ -333,7 +321,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.textMuted,
       textAlign: "center",
       marginBottom: normalizeSpacing(16),
-      // lineHeight: 16,
     },
     emptyButton: {
       backgroundColor: COLORS.secondary,

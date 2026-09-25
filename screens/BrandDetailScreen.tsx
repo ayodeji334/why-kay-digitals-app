@@ -749,7 +749,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(16),
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
-      // lineHeight: 18,
     },
     recipientSection: {
       borderWidth: 1,
@@ -920,7 +919,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "#DC2626",
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
-      // lineHeight: 20,
     },
 
     summaryPill: {

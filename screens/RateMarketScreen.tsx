@@ -111,10 +111,6 @@ export default function RateMarketScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <View>
-        {/* <AppText style={styles.note}>
-          Rates are quoted in Nigerian Naira (₦) per $1 USD equivalent.
-        </AppText> */}
-
         <AppText style={styles.note}>
           Rates are shown as $1 USD to its Naira (₦) equivalent.
         </AppText>
@@ -189,21 +185,6 @@ export default function RateMarketScreen() {
               <View style={styles.assetTextGroup}>
                 <AppText style={styles.symbol}>{asset.symbol}</AppText>
                 <AppText style={styles.name}>{asset.name}</AppText>
-                {/* <AppText style={styles.name} numberOfLines={1}></AppText> */}
-                {/* <View style={styles.marketValueRow}>
-                  <AppText style={styles.marketValue}>
-                    {formatAmount(parseFloat(asset.market_current_value || 0), {
-                      currency: "USD",
-                    })}
-                  </AppText>
-                  {asset?.price_status ? (
-                    asset.price_status === "up" ? (
-                      <ArrowUp size={11} color={COLORS.primary} />
-                    ) : (
-                      <ArrowDown size={11} color={COLORS.error} />
-                    )
-                  ) : null}
-                </View> */}
               </View>
             </View>
 

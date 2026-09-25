@@ -8,15 +8,6 @@ export default function LandingScreen() {
   const username = useAuthStore(state => state.user?.username);
   const uuid = useAuthStore(state => state.user?.uuid);
 
-  // useEffect(() => {
-  //   // Same branching as the old initialRouteName expression.
-  //   const target = username ? "ReturningLogin" : uuid ? "SignIn" : "Intro";
-
-  //   // replace, not navigate — Landing must not stay in the back stack,
-  //   // or the user can swipe back into a blank routing screen.
-  //   navigation.navigate(target);
-  // }, [navigation, username, uuid]);
-
   useEffect(() => {
     const target = username ? "ReturningLogin" : uuid ? "SignIn" : "Intro";
 

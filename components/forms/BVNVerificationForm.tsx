@@ -49,8 +49,6 @@ const BVNForm = () => {
         timeout: LONG_REQUEST_TIMEOUT_MS,
       });
 
-      // reset();
-
       navigation.navigate(
         "SelfieVerification" as never,
         { bvn: data?.bvn } as never,

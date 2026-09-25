@@ -210,7 +210,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       color: colors.textMuted,
       fontFamily: getFontFamily("700"),
-      // lineHeight: 18,
     },
     form: {
       gap: 20,
@@ -264,12 +263,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       padding: normalizeSpacing(20),
       paddingBottom: 30,
     },
-    //   submitBtn: {
-    //     backgroundColor: COLORS.primary,
-    //     paddingVertical: 15,
-    //     borderRadius: 12,
-    //     alignItems: "center",
-    //   },
     submitBtnDisabled: {
       opacity: 0.6,
     },

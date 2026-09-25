@@ -31,9 +31,6 @@ export default function BrandsScreen() {
   const navigation = useNavigation<any>();
   const { apiGet } = useAxios();
 
-  // const [countries, setCountries] = useState<Country[]>(
-  //   () => getCachedCountries() ?? [],
-  // );
   const [selectedCountry, setSelectedCountry] = useState<Country | undefined>();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -46,23 +43,6 @@ export default function BrandsScreen() {
       setSelectedCountry(countries.find(c => c.cca2 === "US"));
     }
   }, [countries, selectedCountry]);
-
-  // useEffect(() => {
-  //   let cancelled = false;
-
-  //   loadCountries()
-  //     .then(all => {
-  //       if (cancelled) return;
-  //       setCountries(all);
-  //       const def = all.find(c => c.cca2 === "US");
-  //       if (def) setSelectedCountry(def);
-  //     })
-  //     .catch(() => {});
-
-  //   return () => {
-  //     cancelled = true;
-  //   };
-  // }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 400);
@@ -177,13 +157,6 @@ export default function BrandsScreen() {
       <View style={styles.container}>
         <View style={styles.filterRow}>
           <View style={styles.countryPickerWrap}>
-            {/* <CountryPicker
-              countries={countries}
-              value={selectedCountry}
-              onChange={setSelectedCountry}
-              placeholder="Select country"
-              showCode
-            /> */}
             <CountryPicker
               countries={countries}
               value={selectedCountry}
@@ -321,6 +294,5 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.text,
       textAlign: "center",
-      // lineHeight: 22,
     },
   });

@@ -124,12 +124,6 @@ export function useCryptoTransfer({
 
     if (amountUSD > walletBalanceInUSD) {
       return false;
-      //   return {
-      //     isValid: false,
-      //     error: `Insufficient balance. Available: $${walletBalanceInUSD.toFixed(
-      //       2,
-      //     )}`,
-      //   };
     }
 
     return true;

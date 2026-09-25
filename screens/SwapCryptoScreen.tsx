@@ -266,16 +266,7 @@ export default function CryptoSwapScreen() {
   });
 
   const onSubmit = async (values: any) => {
-    // const payload = {
-    //   ...values,
-    //   amount: Number(values.amount),
-    //   url: "/wallets/user/swap-crypto",
-    // };
-
     swapMutation.mutate(values);
-    // navigation.navigate("ConfirmTransaction" as never, {
-    //   payload,
-    // });
   };
 
   const onRefresh = async () => {
@@ -358,7 +349,6 @@ export default function CryptoSwapScreen() {
                     : "Select an asset to convert to"
                 }
                 loading={isFetching}
-                // disabled={!fromAsset || isFetching}
                 title="Select an asset"
               />
             </View>
@@ -443,7 +433,6 @@ export default function CryptoSwapScreen() {
                   fontFamily: getFontFamily("400"),
                   textAlign: "center",
                   fontSize: normalize(18),
-                  // lineHeight: 15,
                 }}
               >
                 The market prices are volatile. Estimated amounts may change due
@@ -504,15 +493,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("700"),
       color: colors.text,
     },
-    // input: {
-    //   borderWidth: 1,
-    //   borderColor: "#ccc",
-    //   borderRadius: normalize(8),
-    //   padding: normalize(16),
-    //   fontSize: normalize(26),
-    //   fontFamily: getFontFamily("700"),
-    //   marginBottom: normalize(10),
-    // },
     error: {
       color: colors.error,
       fontSize: normalize(18),

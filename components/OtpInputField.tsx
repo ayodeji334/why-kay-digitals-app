@@ -149,7 +149,6 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
                     textContentType="oneTimeCode"
                     secureTextEntry={false}
                     selectionColor={COLORS.primary}
-                    // caretHidden={true}
                     autoCapitalize="none"
                     autoCorrect={false}
                     contextMenuHidden={false}
@@ -218,7 +217,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
       paddingTop: normalizeSpacing(0),
       paddingBottom: normalizeSpacing(0),
-      // lineHeight: 40,
     },
     boxText: {
       position: "absolute",

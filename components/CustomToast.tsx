@@ -134,10 +134,6 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: normalizeSpacing(20),
     paddingBottom: normalizeSpacing(16),
-    // shadowColor: "#000",
-    // shadowOffset: { width: 0, height: 4 },
-    // shadowOpacity: 0.2,
-    // shadowRadius: 8,
   },
   text: {
     color: "white",

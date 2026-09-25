@@ -263,7 +263,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     accordionContainer: {
       borderRadius: 12,
       overflow: "hidden",
-      // backgroundColor: "red",
       gap: 20,
     },
     accordionItem: {

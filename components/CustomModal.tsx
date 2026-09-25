@@ -77,16 +77,6 @@ const CustomModal: React.FC<CustomModalProps> = ({
           {title && <AppText style={styles.modalTitle}>{title}</AppText>}
 
           <View style={{ flex: 1 }}>{children}</View>
-
-          {/* {showCloseButton && (
-            <TouchableOpacity
-              activeOpacity={0.9}
-              style={[styles.closeButton, { marginTop: normalizeSpacing(20) }]}
-              onPress={onClose}
-            >
-              <AppText style={styles.closeButtonText}>Close</AppText>
-            </TouchableOpacity>
-          )} */}
         </View>
       </View>
     </Modal>

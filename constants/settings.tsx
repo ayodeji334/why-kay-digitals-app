@@ -1,14 +1,5 @@
 import { Dimensions, PixelRatio, Platform } from "react-native";
 
-// export const { width, height } = Dimensions.get("window");
-// const guidelineBaseWidth = 375;
-// const MAX_SCALE = 1.0; // tune this: caps how much bigger sizes get past phone width
-
-// export const normalize = (size: number) => {
-//   const scale = Math.min(width / guidelineBaseWidth, MAX_SCALE);
-//   return PixelRatio.roundToNearestPixel(scale * size);
-// };
-
 export const { width, height } = Dimensions.get("window");
 const guidelineBaseWidth = 375;
 const PHONE_MAX_SCALE = 0.89; // largest phones (e.g. Pro Max models)

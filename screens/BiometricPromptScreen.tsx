@@ -151,88 +151,6 @@ export default function BiometricPromptScreen() {
   );
 }
 
-// export default function BiometricPromptScreen() {
-//   const { enroll, isLoading, biometryType } = useBiometricEnrollment();
-//   const { markSkipped, markDeclinedForever, markEnrolled } =
-//     useBiometricPromptStore(s => s);
-//   const { isSecondAsk } = useShouldPromptBiometric();
-
-//   const label =
-//     biometryType === BiometryTypes.FaceID
-//       ? "Face ID"
-//       : biometryType === BiometryTypes.TouchID
-//       ? "Touch ID"
-//       : "biometrics";
-
-//   const handleEnable = async () => {
-//     const ok = await enroll();
-//     if (ok) await markEnrolled(); // nav gate flips, screen unmounts
-//   };
-
-//   return (
-//     <SafeAreaView
-//       edges={["top", "right", "bottom", "left"]}
-//       style={styles.container}
-//     >
-//       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
-//       <View style={styles.content}>
-//         <View style={styles.hero}>
-//           <View style={styles.iconContainer}>
-//             <FingerScan size={normalize(38)} color={COLORS.primary} />
-//           </View>
-
-//           <View style={styles.textContainer}>
-//             <AppText style={styles.title}>Sign in faster next time</AppText>
-//             <AppText style={styles.description}>
-//               Use {label} to log in without typing your password. You can change
-//               this anytime in Settings.
-//             </AppText>
-//           </View>
-//         </View>
-
-//         <View style={styles.buttonContainer}>
-//           <TouchableOpacity
-//             onPress={handleEnable}
-//             activeOpacity={0.98}
-//             hitSlop={10}
-//             style={[styles.primaryButton, isLoading && styles.buttonDisabled]}
-//             disabled={isLoading}
-//           >
-//             <AppText style={styles.primaryButtonText}>Enable {label}</AppText>
-//           </TouchableOpacity>
-
-//           <TouchableOpacity
-//             hitSlop={10}
-//             onPress={markSkipped}
-//             activeOpacity={0.98}
-//             style={styles.secondaryButton}
-//             disabled={isLoading}
-//           >
-//             <AppText style={styles.secondaryButtonText}>Not now</AppText>
-//           </TouchableOpacity>
-
-//           {isSecondAsk && (
-//             <TouchableOpacity
-//               hitSlop={5}
-//               onPress={markDeclinedForever}
-//               activeOpacity={0.9}
-//               style={styles.tertiaryButton}
-//               disabled={isLoading}
-//             >
-//               <AppText style={styles.tertiaryButtonText}>
-//                 Don't ask again
-//               </AppText>
-//             </TouchableOpacity>
-//           )}
-//         </View>
-//       </View>
-
-//       <CustomLoading loading={isLoading} />
-//     </SafeAreaView>
-//   );
-// }
-
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: {
@@ -274,7 +192,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     description: {
       fontSize: normalize(20),
-      // lineHeight: normalize(24),
       fontFamily: getFontFamily(400),
       color: colors.text,
       textAlign: "center",

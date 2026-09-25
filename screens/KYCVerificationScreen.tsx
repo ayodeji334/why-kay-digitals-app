@@ -203,21 +203,6 @@ export default function KYCVerificationScreen() {
             isLocked={isNinLocked}
             lockedMessage="Complete BVN verification first"
           />
-          {/* <MenuItem
-            title="Selfie Verification"
-            subtitle="Check your current transaction limits"
-            onPress={() => navigation.navigate("SelfieVerification" as never)}
-            IconComponent={
-              <CustomIcon
-                source={ShieldCheckIcon}
-                size={17}
-                fill={COLORS.primary}
-              />
-            }
-            isVerified={user?.selfie_verification_status === "VERIFIED"}
-            isLocked={isSelfieLocked}
-            lockedMessage="Complete BVN and NIN verification first"
-          /> */}
         </View>
       </ScrollView>
     </SafeAreaView>

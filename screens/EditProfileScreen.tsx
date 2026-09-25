@@ -23,8 +23,6 @@ import {
 import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
 import { useNavigation } from "@react-navigation/native";
-// import PhoneNumberInputField from "../components/PhoneNumberInputField";
-// import parsePhoneNumberFromString from "libphonenumber-js";
 import useAxios from "../hooks/useAxios";
 import { LONG_REQUEST_TIMEOUT_MS } from "../api/axios";
 import { AppText } from "../components/AppText";
@@ -36,30 +34,6 @@ const profileSchema = yup.object().shape({
   last_name: yup.string().required("Last Name is required"),
   username: yup.string().required("Username is required"),
   gender: yup.string().required("Gender is required"),
-  // phone_number: yup
-  //   .string()
-  //   .required("Phone number is required")
-  //   .test(
-  //     "is-valid-phone",
-  //     "Please provide a valid phone number",
-  //     function (value) {
-  //       if (!value) return false;
-
-  //       try {
-  //         // Remove any non-digit characters except + at the beginning
-  //         const cleanedValue = value.replace(/(?!^\+)[^\d]/g, "");
-
-  //         // Parse the phone number with Nigeria as default country
-  //         const phoneNumber = parsePhoneNumberFromString(cleanedValue, "NG");
-
-  //         // Return true if valid, false if invalid
-  //         return phoneNumber ? phoneNumber.isValid() : false;
-  //       } catch (error) {
-  //         // console.log("Phone number parsing error:", error);
-  //         return false;
-  //       }
-  //     },
-  //   ),
 });
 
 export default function EditProfileScreen() {
@@ -69,7 +43,6 @@ export default function EditProfileScreen() {
   const [loading, setLoading] = useState(false);
   const colors = useColors();
   const styles = makeStyles(colors);
-  // const [imageUri, setImageUri] = useState(user?.profile_picture);
 
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(profileSchema),
@@ -78,7 +51,6 @@ export default function EditProfileScreen() {
       last_name: user?.last_name || "",
       username: user?.username || "",
       gender: user?.gender || "",
-      // phone_number: user?.phone_number || "",
     },
   });
 
@@ -86,41 +58,10 @@ export default function EditProfileScreen() {
     setLoading(true);
 
     try {
-      // let uploadedImageUrl = imageUri;
-
-      // if (imageUri) {
-      //   const formData = new FormData();
-      //   formData.append("file", {
-      //     uri: uploadedImageUrl,
-      //     type: "image/jpeg",
-      //     name: `profile_${Date.now()}.jpg`,
-      //   } as any);
-
-      //   const res = await post(`${BASE_URL}/files/upload`, formData, {
-      //     headers: {
-      //       Accept: "application/json",
-      //       Authorization: `Bearer ${token}`,
-      //       "Content-Type": "multipart/form-data",
-      //       // "cache-control": "no-cache",
-      //     },
-      //   });
-
-      //   const result = res.data;
-
-      //   if (result?.success && result?.data?.secure_url) {
-      //     uploadedImageUrl = result.data.secure_url;
-      //   } else {
-      //     showError(result?.message || "Failed to upload image");
-      //     setLoading(false);
-      //     return;
-      //   }
-      // }
-
       const response = await patch(
         "/users/update-user-profile",
         {
           ...data,
-          // profile_picture_url: uploadedImageUrl,
         },
         { timeout: LONG_REQUEST_TIMEOUT_MS },
       );
@@ -141,61 +82,6 @@ export default function EditProfileScreen() {
       setLoading(false);
     }
   };
-
-  // const handleImagePick = async () => {
-  //   try {
-  //     const options: CameraOptions = {
-  //       mediaType: "photo",
-  //       includeBase64: false,
-  //       maxHeight: 2000,
-  //       maxWidth: 2000,
-  //     };
-
-  //     launchImageLibrary(options, response => {
-  //       if (response.didCancel) return;
-  //       if (response.errorCode)
-  //         return showError(response.errorMessage ?? "Failed to pick image");
-
-  //       if (response.assets && response.assets[0].uri) {
-  //         // const uri = response.assets[0].uri;
-  //         // setImageUri(uri);
-  //       }
-  //     });
-  //   } catch (error) {
-  //     showError("Failed to pick image");
-  //   }
-  // };
-
-  // const takePhoto = async () => {
-  //   try {
-  //     const options: CameraOptions = {
-  //       mediaType: "photo",
-  //       includeBase64: false,
-  //       saveToPhotos: true,
-  //       presentationStyle: "formSheet",
-  //     };
-
-  //     launchCamera(options, response => {
-  //       if (response.didCancel) return;
-  //       if (response.errorCode)
-  //         return showError(response.errorMessage ?? "Failed to take photo");
-
-  //       if (response.assets && response.assets[0].uri) {
-  //         // setImageUri(response.assets[0].uri);
-  //       }
-  //     });
-  //   } catch (error) {
-  //     showError("Failed to take photo");
-  //   }
-  // };
-
-  // const showImagePickerOptions = () => {
-  //   Alert.alert("Update Profile Picture", "Choose an option", [
-  //     { text: "Take Photo", onPress: takePhoto },
-  //     { text: "Choose from Gallery", onPress: handleImagePick },
-  //     { text: "Cancel", style: "cancel" },
-  //   ]);
-  // };
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
@@ -219,18 +105,6 @@ export default function EditProfileScreen() {
                 resizeMode="cover"
               />
             </View>
-            {/* <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => {
-                Alert.alert(
-                  "Coming Soon!",
-                  "The feature is not available for now. Kindly check back later",
-                );
-              }}
-              style={styles.changePhotoText}
-            >
-              <CardEdit size={16} color={COLORS.primary} />
-            </TouchableOpacity> */}
 
             {loading && (
               <View style={styles.imageOverlay}>
@@ -270,15 +144,6 @@ export default function EditProfileScreen() {
               { label: "Female", value: "FEMALE" },
             ]}
           />
-          {/* <PhoneNumberInputField
-            label="Phone Number"
-            control={control}
-            name="phone_number"
-            placeholder="Enter your phone number"
-            containerStyle={{
-              marginTop: normalizeSpacing(5),
-            }}
-          /> */}
         </View>
 
         <TouchableOpacity

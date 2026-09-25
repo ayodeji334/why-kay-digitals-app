@@ -134,11 +134,9 @@ export default function SettingsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const appVersion = DeviceInfo.getVersion();
-  // const buildNumber = DeviceInfo.getBuildNumber();
   const logout = useAuthStore(state => state.logout);
   const user = useAuthStore(state => state.user);
   const colors = useColors();
-  // const resolvedTheme = useResolvedTheme();
   const styles = makeStyles(colors);
 
   const handleEditInfo = () => {

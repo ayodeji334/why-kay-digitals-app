@@ -754,26 +754,6 @@ function LivenessCheckInner({ onSuccess, onCancel }: Props) {
           parse the text banner below. Only shown for the two active
           gestures — position/capturing already have the ring animation
           as their own feedback. */}
-      {/* {(step === "blink" || step === "gesture") && (
-        <View
-          style={[
-            styles.gestureAvatarWrap,
-            { top: ovalCy - ovalRy - normalizeSpacing(28) },
-          ]}
-        >
-          <View style={styles.gestureAvatarBadge}>
-            {step === "blink" ? (
-              <EyeSlash size={26} color={colors.primary} variant="Bold" />
-            ) : (
-              <ArrowSwapVertical
-                size={26}
-                color={colors.primary}
-                variant="Bold"
-              />
-            )}
-          </View>
-        </View>
-      )} */}
 
       <View style={styles.bannerContainer}>
         <AppText style={styles.bannerPrimary}>{banner.primary}</AppText>

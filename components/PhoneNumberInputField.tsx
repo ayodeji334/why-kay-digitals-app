@@ -63,7 +63,6 @@ const PhoneNumberInputField: React.FC<Props> = ({
   excludedCountryCodes = [],
   disableCodeSelector = false,
 }) => {
-  // const { data: allCountries } = useCountries();
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
 
@@ -99,19 +98,6 @@ const PhoneNumberInputField: React.FC<Props> = ({
       cancelled = true;
     };
   }, [defaultCountryCode, allCountries, excludedCountryCodes.length]);
-
-  // useEffect(() => {
-  //   let cancelled = false;
-
-  //   if (!cancelled) {
-  //     const def = allCountries?.find(c => c.cca2 === defaultCountryCode);
-  //     if (def) setSelectedCountry(def);
-  //   }
-
-  //   return () => {
-  //     cancelled = true;
-  //   };
-  // }, [defaultCountryCode, allCountries]);
 
   const filteredCountries = useMemo(() => {
     return countries.filter(
@@ -173,14 +159,6 @@ const PhoneNumberInputField: React.FC<Props> = ({
             onBlur?.();
             trigger?.(name); // trigger validation on blur
           }}
-          // onChangeText={text => {
-          //   const numericValue = text.replace(/[^0-9]/g, "");
-          //   const fullNumber = selectedCountry
-          //     ? `${selectedCountry.callingCode[0]}${numericValue}`
-          //     : numericValue;
-          //   onChange(fullNumber);
-          //   onChangeText?.(fullNumber);
-          // }}
           onChangeText={text => {
             let numericValue = text.replace(/[^0-9]/g, "");
             const code = selectedCountry?.callingCode?.[0] ?? "";
@@ -239,36 +217,6 @@ const PhoneNumberInputField: React.FC<Props> = ({
               allowFontScaling={false}
             />
 
-            {/* <FlatList
-              data={filteredCountries}
-              keyExtractor={item => item.cca2}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.countryRow}
-                  onPress={() => {
-                    setSelectedCountry(item);
-                    setModalVisible(false);
-                  }}
-                >
-                  <View style={styles.countryLeft}>
-                    {item.flag && (
-                      <Image
-                        source={{ uri: item.flag }}
-                        style={{
-                          width: 30,
-                          height: 20,
-                          resizeMode: "contain",
-                        }}
-                      />
-                    )}
-                    <AppText style={styles.countryName}>
-                      {getCountryName(item)} ({item.cca2})
-                    </AppText>
-                  </View>
-                  <AppText style={styles.callingCode}>+{item.callingCode[0]}</AppText>
-                </TouchableOpacity>
-              )}
-            /> */}
             <FlatList
               showsVerticalScrollIndicator={false}
               data={filteredCountries}

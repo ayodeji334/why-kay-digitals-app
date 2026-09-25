@@ -90,12 +90,6 @@ export default function ConfirmCryptoWithdrawScreen() {
 
       apiGet("walelts/crypto/refresh");
 
-      // showSuccess("Withdrawal verified successfully!");
-
-      // navigation.navigate("TransactionDetail", {
-      //   transaction: response?.data?.data,
-      // });
-
       navigation.dispatch((state: any) => {
         // Remove ConfirmTransaction (current screen) from the stack
         const routesWithoutConfirm = state.routes.filter(
@@ -159,8 +153,6 @@ export default function ConfirmCryptoWithdrawScreen() {
           <NumberInputField
             control={control}
             name="token"
-            // isSecuredText={false}
-            // boxes={6}
             maxLength={6}
             label="Verification Token"
             placeholder="Enter verification Token"
@@ -169,8 +161,6 @@ export default function ConfirmCryptoWithdrawScreen() {
           <NumberInputField
             control={control}
             name="googleCode"
-            // isSecuredText={false}
-            // boxes={6}
             maxLength={6}
             label="Authenticator Code"
             placeholder="Enter Authenticator Code"

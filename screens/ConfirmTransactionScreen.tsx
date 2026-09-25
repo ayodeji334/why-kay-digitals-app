@@ -181,8 +181,6 @@ export default function ConfirmTransactionScreen() {
         const backendRequiresStepUp =
           err.response?.data?.data?.requires_step_up === true;
 
-        // showError(err.response?.data?.message || "Something went wrong");
-
         if (backendRequiresStepUp) {
           setRequiresStepUp(true);
           setPendingPin(pin);

@@ -364,21 +364,6 @@ export function SelectInput({
                                   {formatAmount(item?.balance)}
                                 </AppText>
                               )}
-                              {/* {item?.total_price ? (
-                                <AppText style={styles.optionName}>
-                                  {`${formatAmount(item?.total_price ?? 0, {
-                                    currency: "USD",
-                                    decimalPlace: 2,
-                                  })}`}
-                                </AppText>
-                              ) : (
-                                <AppText style={styles.optionName}>
-                                  {`${formatAmount(item?.price ?? 0, {
-                                    currency: "USD",
-                                    decimalPlace: 2,
-                                  })}`}
-                                </AppText>
-                              )} */}
                             </View>
                           ) : undefined}
                         </View>

@@ -178,7 +178,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
       textAlign: "center",
       marginBottom: normalizeSpacing(24),
-      // lineHeight: 22,
     },
     button: {
       paddingVertical: normalizeSpacing(14),

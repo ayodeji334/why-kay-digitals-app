@@ -30,7 +30,6 @@ export interface CryptoOption {
   logo_url: string;
   symbol: string;
   market_value: number;
-  // rates: Rate[];
   is_buy_enabled: boolean;
   is_sell_enabled: boolean;
   buy_rate: number;

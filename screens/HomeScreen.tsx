@@ -116,8 +116,6 @@ const HomeScreen = () => {
 
         <AdvertsBanner />
 
-        {/* <AssetsSection /> */}
-
         {!hasCompleteVerification && (
           <Pressable
             style={styles.verificationBanner}
@@ -131,16 +129,6 @@ const HomeScreen = () => {
                 Kindly complete all KYC verification to unlock all the services
               </AppText>
             </View>
-            {/* <TouchableOpacity
-              activeOpacity={0.83}
-              onPress={() => navigation.navigate("Verification" as never)}
-              style={{
-                backgroundColor: COLORS.whiteBackground,
-                borderRadius: 20,
-                paddingHorizontal: normalizeSpacing(18),
-                paddingVertical: normalizeSpacing(7),
-              }}
-            > */}
             <ArrowRight2 size={normalize(20)} color="white" />
           </Pressable>
         )}
@@ -259,7 +247,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "#666",
       textAlign: "center",
       marginBottom: normalizeSpacing(16),
-      // lineHeight: 16,
     },
     emptyButton: {
       backgroundColor: "#FFA726",

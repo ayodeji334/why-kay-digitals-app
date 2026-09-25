@@ -49,10 +49,6 @@ export default function SavedBeneficiaries({
   const [search, setSearch] = useState("");
   const colors = useColors();
   const styles = makeStyles(colors);
-  // const previewData = useMemo(
-  //   () => data?.slice(0, PREVIEW_COUNT) ?? [],
-  //   [data],
-  // );
 
   const previewData = useMemo(() => {
     if (!data || data.length === 0) return [];

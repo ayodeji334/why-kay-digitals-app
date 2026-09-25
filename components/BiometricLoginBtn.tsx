@@ -17,7 +17,6 @@ import {
 import { AppText } from "./AppText";
 import { useBiometricLogin } from "../hooks/useBiometricLogin";
 import { useAuthStore } from "../stores/authSlice";
-// import { storage, STORAGE_KEYS } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 import { useColors } from "../hooks/useTheme";
 
@@ -49,17 +48,6 @@ const BiometricLoginButton = () => {
     if (updatedUser?.uuid) {
       setUser(updatedUser);
     }
-
-    // if (auth?.accessToken && auth?.refreshToken) {
-    //   setToken(auth.accessToken, auth.refreshToken);
-    // }
-
-    // // Warm the caches exactly like the password login does
-    // queryClient.prefetchQuery({ queryKey: ["assets"] });
-    // queryClient.prefetchQuery({ queryKey: ["banks"] });
-    // queryClient.prefetchQuery({ queryKey: ["supported-pairs"] });
-
-    // setIsAuthenticated(true);
 
     if (updatedUser.is_email_verified) {
       showError(
@@ -98,15 +86,6 @@ const BiometricLoginButton = () => {
       return;
     }
 
-    // Confirm with the user before firing the native biometric prompt
-    // Alert.alert(
-    //   `Log in with ${label}?`,
-    //   `Confirm to authenticate with ${label} and sign in to your account.`,
-    //   [
-    //     { text: "Cancel", style: "cancel" },
-    //     { text: "Continue", onPress: completeLogin },
-    //   ],
-    // );
     completeLogin();
   };
 

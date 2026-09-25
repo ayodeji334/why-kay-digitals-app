@@ -30,12 +30,6 @@ interface Voucher {
   };
 }
 
-// function getDelivery(v: Voucher): "code" | "url" | "unknown" {
-//   if (v.epin && v.epin.trim()) return "code";
-//   if (v.redemption_url && v.redemption_url.trim()) return "url";
-//   return "unknown";
-// }
-
 const VoucherCard = ({
   voucher,
   index,
@@ -233,7 +227,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
       marginBottom: normalizeSpacing(16),
-      // lineHeight: normalize(20),
     },
     card: {
       backgroundColor: colors.surface,
@@ -304,7 +297,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
-      // lineHeight: normalize(18),
     },
 
     // Copy button (inline for code, full-width for url)
@@ -342,7 +334,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(17),
       fontFamily: getFontFamily("400"),
       color: colors.warning,
-      // lineHeight: normalize(19),
     },
 
     // Info blocks
@@ -358,7 +349,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      // lineHeight: normalize(19),
     },
     mutedText: {
       fontSize: normalize(18),

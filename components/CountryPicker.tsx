@@ -131,34 +131,6 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
       {label && <AppText style={styles.label}>{label}</AppText>}
 
       {/* Selector box */}
-      {/* <Pressable
-        hitSlop={100}
-        style={[
-          styles.selectorBox,
-          error && styles.errorBorder,
-          disabled && styles.disabled,
-        ]}
-        onPress={openModal}
-      >
-        {selectedCountry ? (
-          <View style={styles.selectorContent}>
-            {selectedCountry.flag && (
-              <Image
-                source={{ uri: selectedCountry.flag }}
-                style={styles.flagImage}
-                resizeMode="contain"
-              />
-            )}
-            <AppText style={styles.selectorText}>
-              {getCountryName(selectedCountry)}
-              {showCode ? `  (${selectedCountry.cca2})` : ""}
-            </AppText>
-          </View>
-        ) : (
-          <AppText style={styles.placeholderText}>{placeholder}</AppText>
-        )}
-        <ArrowDown2 size={20} color="#374151" />
-      </Pressable> */}
       <Pressable
         hitSlop={100}
         style={[
@@ -238,28 +210,6 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
             />
 
             {/* List */}
-            {/* <FlatList
-              data={filteredCountries}
-              keyExtractor={item => item.cca2}
-              renderItem={({ item }) => (
-                <CountryRow
-                  item={item}
-                  getCountryName={getCountryName}
-                  onPress={handleSelect}
-                  isSelected={selectedCountry?.cca2 === item.cca2}
-                />
-              )}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-              initialNumToRender={20}
-              maxToRenderPerBatch={30}
-              windowSize={10}
-              getItemLayout={(_, index) => ({
-                length: 53,
-                offset: 53 * index,
-                index,
-              })}
-            /> */}
 
             <FlatList
               data={loading ? [] : filteredCountries}

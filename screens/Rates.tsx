@@ -55,71 +55,6 @@ export default function CryptoRatesScreen() {
     navigation.navigate("PhoneNumberVerification" as never);
   };
 
-  // const cryptoOptions = useMemo<CryptoOption[]>(() => {
-  //   if (!Array.isArray(data)) return [];
-  //   return data.map((asset: any) => ({
-  //     id: asset.uuid,
-  //     value: asset.uuid,
-  //     label: `${asset.symbol} (${asset.name})`,
-  //     logo_url: asset.logo_url,
-  //     symbol: asset.symbol,
-  //     market_value: Number(asset.market_current_value ?? 0),
-  //     rates: asset.rates ?? [],
-  //     is_buy_enabled: asset.is_buy_enabled,
-  //     is_sell_enabled: asset.is_sell_enabled,
-  //   }));
-  // }, [data]);
-
-  // const crypto = useMemo(
-  //   () => cryptoOptions.find(c => c.value === selectedCrypto) ?? null,
-  //   [cryptoOptions, selectedCrypto],
-  // );
-
-  // const amountNum = useMemo(() => {
-  //   const n = parseFloat(rawAmount);
-  //   return isNaN(n) || n <= 0 ? 0 : n;
-  // }, [rawAmount]);
-
-  // const rateInfo = useMemo(() => {
-  //   if (!crypto || !Array.isArray(crypto.rates)) return null;
-
-  //   const matchedRate = crypto.rates.find(r => r.type === activeTab);
-  //   if (!matchedRate) return null;
-
-  //   const defaultValue = parseFloat(matchedRate.default_value ?? "0");
-  //   // const categories = matchedRate.categories ?? [];
-
-  //   // Resolve effective rate — match category by amount range, fallback to default
-  //   let effectiveRate = defaultValue;
-  //   let categoryLabel = "Default rate";
-  //   let source: "category" | "default" = "default";
-
-  //   // if (categories.length > 0 && amountNum > 0) {
-  //   //   const matched = categories.find(
-  //   //     (cat: any) =>
-  //   //       amountNum >= parseFloat(cat.min_amount ?? "0") &&
-  //   //       amountNum <= parseFloat(cat.max_amount ?? "0"),
-  //   //   );
-
-  //   //   if (matched) {
-  //   //     effectiveRate = parseFloat(matched.value ?? "0");
-  //   //     categoryLabel = matched.label ?? "Category rate";
-  //   //     source = "category";
-  //   //   }
-  //   // }
-
-  //   return {
-  //     value: effectiveRate,
-  //     label: categoryLabel,
-  //     source,
-  //     totalNgn: amountNum > 0 ? amountNum * effectiveRate : 0,
-  //     coinAmount:
-  //       amountNum > 0 && crypto.market_value > 0
-  //         ? amountNum / crypto.market_value
-  //         : 0,
-  //   };
-  // }, [crypto, activeTab, amountNum]);
-
   const cryptoOptions = useMemo<CryptoOption[]>(() => {
     if (!Array.isArray(data)) return [];
 
@@ -207,31 +142,6 @@ export default function CryptoRatesScreen() {
     navigation,
   ]);
 
-  // const onPressTrade = useCallback(() => {
-  //   if (!selectedCrypto || !crypto) {
-  //     showError("Please select an asset");
-  //     return;
-  //   }
-
-  //   if (!amountNum) {
-  //     showError("Please enter the amount");
-  //     return;
-  //   }
-
-  //   const intent: TradeIntent = {
-  //     assetId: crypto.value,
-  //     symbol: crypto.symbol,
-  //     action: activeTab as any,
-  //     source: "rates",
-  //     amount: rawAmount,
-  //     rate: rateInfo?.totalNgn ?? 0,
-  //   };
-
-  //   navigation.navigate(activeTab === "buy" ? "BuyCrypto" : "SellCrypto", {
-  //     intent,
-  //   });
-  // }, [selectedCrypto, crypto, activeTab, rawAmount, rateInfo, navigation]);
-
   const resetStates = useCallback(() => {
     setActiveTab("sell");
     setSelectedCrypto(() => null);
@@ -264,24 +174,6 @@ export default function CryptoRatesScreen() {
           <AppText style={styles.marketLinkText}>View Market Table</AppText>
         </TouchableOpacity>
 
-        {/* {(["sell", "buy"] as TradeTab[]).map(tab => (
-            <TouchableOpacity
-              key={tab}
-              style={[styles.tab, activeTab === tab && styles.activeTab]}
-              onPress={() => setActiveTab(tab)}
-            >
-              <AppText
-                style={
-                  activeTab === tab
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                }
-              >
-                {tab === "sell" ? "Sell Rates" : "Buy Rates"}
-              </AppText>
-            </TouchableOpacity>
-          ))}
-           */}
         <TabSwitcher
           activeTab={activeTab}
           tabs={[
@@ -361,15 +253,6 @@ export default function CryptoRatesScreen() {
                   {formatAmount(rateInfo.value, { decimalPlace: 2 })}/$
                 </AppText>
               </View>
-
-              {/* <View style={styles.infoRow}>
-                <AppText style={styles.infoLabel}>Rate Category:</AppText>
-                <AppText style={styles.infoValue}>
-                  {rateInfo.source === "category"
-                    ? rateInfo.label
-                    : "Default rate"}
-                </AppText>
-              </View> */}
 
               <View style={styles.infoRow}>
                 <AppText style={styles.infoLabel}>Estimated Coin:</AppText>
@@ -490,14 +373,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("800"),
       color: colors.text,
     },
-    // input: {
-    //   width: "100%",
-    //   paddingVertical: 10,
-    //   color: "#1A1A1A",
-    //   fontFamily: getFontFamily("700"),
-    //   fontSize: normalize(28),
-    //   backgroundColor: "#FFFFFF",
-    // },
     infoContainer: {
       backgroundColor: colors.infoCardBackgroundColor,
       padding: normalizeSpacing(12),

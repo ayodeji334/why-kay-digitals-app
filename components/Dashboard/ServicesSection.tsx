@@ -157,34 +157,6 @@ const ServicesSection = () => {
     openLiveChat();
   };
 
-  // const handleNavigation = (service: (typeof mainServices)[0]) => {
-  //   if (!service.screenName) {
-  //     Alert.alert(
-  //       "Coming Soon",
-  //       "The screen is not available for now. Kindly check back later",
-  //     );
-  //     return;
-  //   }
-
-  //   if (!isPhoneVerified) {
-  //     setShowPhoneModal(true);
-  //     return;
-  //   }
-
-  //   if (service.action === "buy" || service.action === "sell") {
-  //     navigation.navigate(
-  //       service.screenName as never,
-  //       {
-  //         action: service.action,
-  //         source: "home",
-  //       } as never,
-  //     );
-  //     return;
-  //   }
-
-  //   navigation.navigate(service.screenName as never);
-  // };
-
   const handleNavigation = (service: (typeof mainServices)[0]) => {
     if (isSuspended) {
       setShowSuspendedModal(true);

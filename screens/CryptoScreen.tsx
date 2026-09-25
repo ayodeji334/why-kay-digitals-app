@@ -45,56 +45,10 @@ const CryptoWalletScreen = () => {
   const styles = makeStyles(colors);
   const resolvedTheme = useResolvedTheme();
 
-  // const mergedList = useMemo(() => {
-  //   const walletAssetIds = new Set((wallets ?? []).map((w: any) => w.asset_id));
-
-  //   const walletsWithBalance = (wallets ?? []).map((w: any) => ({
-  //     ...w,
-  //     uuid: w.asset_id,
-  //     logo_url: w.logo,
-  //     hasWallet: true,
-  //   }));
-
-  //   const assetsWithoutWallet = (assets ?? [])
-  //     .filter((a: any) => !walletAssetIds.has(a.uuid))
-  //     .map((a: any) => ({
-  //       ...a,
-  //       balance: "0.00000000",
-  //       value: "0.00000000",
-  //       price: a.market_current_value ?? "0",
-  //       hasWallet: false,
-  //     }));
-
-  //   return [...walletsWithBalance, ...assetsWithoutWallet];
-  // }, [wallets, assets]);
-
   const refetchData = () => {
     refetch();
     refetchWallets();
   };
-
-  // Filter + sort
-  // const filteredAssets = useMemo(() => {
-  //   const filtered = !searchQuery
-  //     ? mergedList
-  //     : mergedList.filter(
-  //         (item: any) =>
-  //           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //           item.symbol.toLowerCase().includes(searchQuery.toLowerCase()),
-  //       );
-
-  //   return [...filtered].sort((a: any, b: any) => {
-  //     const aValue = Number(a.value ?? 0);
-  //     const bValue = Number(b.value ?? 0);
-
-  //     if (aValue !== bValue) return bValue - aValue;
-
-  //     const aBalance = Number(a.balance ?? 0);
-  //     const bBalance = Number(b.balance ?? 0);
-
-  //     return bBalance - aBalance;
-  //   });
-  // }, [mergedList, searchQuery]);
 
   const mergedList = useMemo(() => {
     const walletAssetIds = new Set((wallets ?? []).map((w: any) => w.asset_id));
@@ -236,7 +190,6 @@ const CryptoWalletScreen = () => {
 
   const handleWhatsApp = () => {
     Linking.openURL("https://wa.me/2347018607772");
-    // navigation.navigate("ContactUs");
   };
 
   const renderEmptyState = () => (
@@ -253,60 +206,6 @@ const CryptoWalletScreen = () => {
   );
 
   return (
-    // <SafeAreaView edges={["left", "right"]} style={styles.container}>
-    //   <StatusBar
-    //     barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-    //     backgroundColor={colors.background}
-    //   />
-    //   <View style={styles.searchContainer}>
-    //     <TextInput
-    //       style={styles.searchInput}
-    //       placeholder="Search coin"
-    //       value={searchQuery}
-    //       onChangeText={setSearchQuery}
-    //       maxFontSizeMultiplier={1}
-    //       allowFontScaling={false}
-    //       placeholderTextColor="#6b6b6b"
-    //     />
-    //     <Text
-    //       style={{
-    //         fontSize: normalize(20),
-    //         fontFamily: getFontFamily("400"),
-    //         marginVertical: normalize(7),
-    //         paddingVertical: 5,
-    //         color: colors.text,
-    //       }}
-    //     >
-    //       Below are the supported coins. If the coin (or asset) is not listed
-    //       here. Kindly reach out to us through our support channel.
-    //       <Text
-    //         onPress={handleWhatsApp}
-    //         style={{ color: colors.primaryLight, paddingHorizontal: 8 }}
-    //       >
-    //         {" "}
-    //         Click here
-    //       </Text>
-    //     </Text>
-    //   </View>
-
-    //   <FlatList
-    //     refreshControl={
-    //       <RefreshControl
-    //         refreshing={isRefetching}
-    //         onRefresh={refetchData}
-    //         colors={[COLORS.primary]}
-    //       />
-    //     }
-    //     data={filteredAssets}
-    //     renderItem={renderCryptoItem}
-    //     keyExtractor={item => item.id}
-    //     showsVerticalScrollIndicator={false}
-    //     contentContainerStyle={styles.listContent}
-    //   />
-
-    //   <CustomLoading loading={isLoading} />
-    // </SafeAreaView>
-
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <StatusBar
         barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
@@ -368,59 +267,6 @@ const CryptoWalletScreen = () => {
 };
 
 export default CryptoWalletScreen;
-
-// const makeStyles = (colors: ReturnType<typeof useColors>) =>
-//   StyleSheet.create({
-//     container: { flex: 1, backgroundColor: colors.background },
-//     searchContainer: { paddingHorizontal: 16, paddingVertical: 12 },
-//     searchInput: {
-//       backgroundColor: colors.inputBackground,
-//       paddingVertical: normalize(12),
-//       paddingHorizontal: normalize(18),
-//       borderRadius: 100,
-//       fontSize: normalize(18),
-//       fontFamily: getFontFamily("700"),
-//       color: colors.text,
-//       borderColor: colors.border,
-//       borderWidth: 1,
-//     },
-//     listContent: { paddingHorizontal: 16 },
-//     cryptoItem: {
-//       flexDirection: "row",
-//       alignItems: "center",
-//       justifyContent: "space-between",
-//       paddingVertical: 16,
-//       borderBottomWidth: 1,
-//       borderBottomColor: colors.border,
-//     },
-//     cryptoLeft: { flexDirection: "row", alignItems: "center" },
-//     assetIcon: { width: 30, height: 30, borderRadius: 20, marginRight: 12 },
-//     cryptoInfo: { flexDirection: "column" },
-//     cryptoName: {
-//       fontSize: normalize(16),
-//       color: colors.text,
-//       fontFamily: getFontFamily(800),
-//     },
-//     cryptoSymbol: {
-//       fontSize: normalize(16),
-//       fontFamily: getFontFamily(400),
-//       color: colors.text,
-//     },
-//     cryptoRight: {
-//       alignItems: "flex-end",
-//       gap: 3,
-//     },
-//     cryptoBalance: {
-//       fontSize: normalize(17),
-//       fontFamily: getFontFamily(900),
-//       color: colors.text,
-//     },
-//     cryptoValue: {
-//       fontFamily: getFontFamily(900),
-//       fontSize: normalize(17),
-//       color: colors.text,
-//     },
-//   });
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({

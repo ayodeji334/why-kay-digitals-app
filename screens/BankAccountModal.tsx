@@ -135,93 +135,6 @@ export default function BankAccountModal({
   }, [visible]);
 
   return (
-    // <Modal visible={visible} animationType="slide" transparent={true}>
-    //   <SafeAreaView style={styles.safeArea}>
-    //     <View
-    //       style={[styles.container, { paddingTop: STATUS_BAR_PADDING + 10 }]}
-    //     >
-    //       <View style={styles.header}>
-    //         <TouchableOpacity onPress={onClose}>
-    //           <ArrowLeft2 size={20} color="#000" />
-    //         </TouchableOpacity>
-    //         <AppText style={styles.title}>Add Bank Account</AppText>
-    //       </View>
-
-    //       <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
-    //         <SelectInput
-    //           label="Select Bank"
-    //           value={selectedBank?.value}
-    //           options={bankOptions}
-    //           onSelect={option => setSelectedBank(option)}
-    //           placeholder="Select Beneficiary Bank"
-    //         />
-
-    //         <View style={styles.inputContainer}>
-    //           <AppText style={styles.label}>Account Number</AppText>
-    //           <TextInput
-    //             style={[error && styles.errorBorder, styles.input]}
-    //             value={accountNumber}
-    //             onChangeText={setAccountNumber}
-    //             placeholder="Enter 10-digit account number"
-    //             keyboardType="numeric"
-    //             maxLength={10}
-    //           />
-    //         </View>
-
-    //         {!validating && error ? (
-    //           <AppText style={[styles.text, { color: "red" }]}>{error}</AppText>
-    //         ) : null}
-    //         {!validating && success ? (
-    //           <AppText style={[styles.text, { color: "green" }]}>{success}</AppText>
-    //         ) : null}
-
-    //         {validating ? (
-    //           <AppText style={[styles.text, { color: "green" }]}>
-    //             Kindly wait while the system validate your the details
-    //           </AppText>
-    //         ) : null}
-
-    //         <TouchableOpacity
-    //           style={[
-    //             styles.button,
-    //             (!selectedBank ||
-    //               accountNumber.length !== 10 ||
-    //               validating ||
-    //               !!error) && {
-    //               backgroundColor: "#ccc",
-    //             },
-    //           ]}
-    //           onPress={handleSave}
-    //           disabled={
-    //             !selectedBank ||
-    //             accountNumber.length !== 10 ||
-    //             validating ||
-    //             !!error
-    //           }
-    //         >
-    //           <AppText style={styles.buttonText}>Save Recipient</AppText>
-    //         </TouchableOpacity>
-    //         <View style={{ marginVertical: 10 }}>
-    //           <SavedBeneficiaries
-    //             data={data ?? []}
-    //             isLoading={isLoading}
-    //             isRefetching={isRefetching}
-    //             isError={isError}
-    //             refetch={refetch}
-    //             onSelect={data => {
-    //               setAccountDetails(data);
-    //               handleSelect(data);
-    //               onClose();
-    //             }}
-    //             selectedBeneficiary={selectedBeneficiary}
-    //             onDeleteAll={deleteAll}
-    //             deleting={deleting}
-    //           />
-    //         </View>
-    //       </ScrollView>
-    //     </View>
-    //   </SafeAreaView>
-    // </Modal>
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View
         style={[
@@ -361,14 +274,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       marginBottom: normalizeSpacing(3),
       color: colors.text,
     },
-    // input: {
-    //   borderWidth: 1,
-    //   borderColor: "#e0e0e0",
-    //   borderRadius: 8,
-    //   padding: 14,
-    //   fontSize: normalize(16),
-    //   fontFamily: getFontFamily("400"),
-    // },
     input: {
       borderWidth: 1,
       borderColor: colors.border,
@@ -378,7 +283,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),
-      // backgroundColor: "#FFFFFF",
     },
     errorBorder: {
       borderColor: colors.error,

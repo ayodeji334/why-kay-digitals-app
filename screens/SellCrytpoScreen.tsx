@@ -65,24 +65,7 @@ function relativeChangeExceeded(
   return relativePercent > tolerancePercent;
 }
 
-// type FeeBreakdown = {
-//   coinAmount: string;
-//   grossUsd: number;
-//   netAmountUsd: string;
-//   netNgn: string;
-//   currentSellRate: number;
-//   currentMarketPrice: number;
-// };
-
 const STABLECOINS = ["USDT"];
-
-// const schema = Yup.object().shape({
-//   asset_id: Yup.string().required("Select the crypto you want to sell"),
-//   amount: Yup.number()
-//     .min(20, "The amount should not be less than $20")
-//     .typeError("Enter a valid amount")
-//     .required("Amount is required"),
-// });
 
 const DEFAULT_SELL_FEE_RATE = 0.001; // fallback decimal rate (0.1%) if backend charge isn't loaded yet
 
@@ -285,16 +268,6 @@ export default function CryptoSellScreen() {
     [isStablecoin, sellFeeRate],
   );
 
-  // Effect: recalculate on amount / market price / sell rate change
-  // useEffect(() => {
-  //   if (!assetDetails?.buy_rate || Number(marketPrice) <= 0) return;
-  //   if (rateOverriddenRef.current) return; // onSubmit owns the rate — don't overwrite
-
-  //   const sellRate = parseFloat(assetDetails.buy_rate);
-  //   if (!sellRate || sellRate <= 0) return;
-
-  //   recalculate(amount, Number(marketPrice), sellRate);
-  // }, [assetDetails?.buy_rate, amount, marketPrice, recalculate]);
   useEffect(() => {
     if (Number(marketPrice) <= 0) return;
 
@@ -325,12 +298,6 @@ export default function CryptoSellScreen() {
     recalculate(amount, Number(marketPrice), effectiveRate);
   }, [assetDetails?.rates?.buy, amount, marketPrice, recalculate]);
 
-  // Effect: seed acknowledged refs on mount
-  // useEffect(() => {
-  //   if (assetDetails?.buy_rate) {
-  //     acknowledgedSellRateRef.current = parseFloat(assetDetails.buy_rate);
-  //   }
-  // }, [assetDetails?.buy_rate]);
   useEffect(() => {
     if (assetDetails?.rates?.buy && amount >= 0) {
       acknowledgedSellRateRef.current = resolveRateFromCategories(
@@ -347,35 +314,6 @@ export default function CryptoSellScreen() {
       acknowledgedMarketPriceRef.current = Number(marketPrice);
     }
   }, [marketPrice]);
-
-  // Effect: pre-fill amount from intent
-  // useEffect(() => {
-  //   if (!intent?.amount) return;
-  //   const numericAmount = Number(intent.amount);
-  //   if (isNaN(numericAmount)) return;
-  //   setDisplayAmount(formatWithCommas(numericAmount.toString()));
-  //   setValue("amount", numericAmount);
-  // }, [intent?.amount]);
-
-  // // Focus refetch
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     refetch();
-  //   }, [refetch]),
-  // );
-
-  // // Reset on mount
-  // useResetFormOnMount(
-  //   reset,
-  //   { amount: 0, asset_id: intent.assetId ?? "" },
-  //   () => {
-  //     setDisplayAmount("");
-  //     setFeeBreakdown(null);
-  //     setAssetValueEquivalent(0);
-  //     setNgnAmount("0.00");
-  //     rateOverriddenRef.current = false;
-  //   },
-  // );
 
   useFocusEffect(
     useCallback(() => {
@@ -769,55 +707,6 @@ export default function CryptoSellScreen() {
                               )
                             </AppText>
                           </View>
-
-                          {/* {!feeBreakdown.isStablecoin && (
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <AppText style={styles.balance}>
-                                Platform Fee (
-                                {+(feeBreakdown.sellFeeRate * 100).toFixed(2)}
-                                %):
-                              </AppText>
-                              <AppText style={styles.balance}>
-                                +{feeBreakdown.platformFeeCoin}{" "}
-                                {assetDetails?.symbol} (≈{" "}
-                                {formatAmount(feeBreakdown.platformFeeUsd, {
-                                  currency: "USD",
-                                  maxDecimalPlace: 2,
-                                })}
-                                )
-                              </AppText>
-                            </View>
-                          )}
-
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <AppText
-                              style={[
-                                styles.balance,
-                                { fontFamily: getFontFamily("800") },
-                              ]}
-                            >
-                              Total Debit:
-                            </AppText>
-                            <AppText style={styles.balance}>
-                              {feeBreakdown.totalDebitCoin}{" "}
-                              {assetDetails?.symbol} (≈{" "}
-                              {formatAmount(feeBreakdown.totalDebitUsd, {
-                                currency: "USD",
-                                maxDecimalPlace: 2,
-                              })}
-                              )
-                            </AppText>
-                          </View> */}
 
                           <View
                             style={{

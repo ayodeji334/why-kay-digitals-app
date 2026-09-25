@@ -281,7 +281,6 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "center",
     marginBottom: normalizeSpacing(16),
-    // lineHeight: 16,
   },
   emptyButton: {
     backgroundColor: COLORS.secondary,

@@ -69,7 +69,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(17),
       fontFamily: getFontFamily("400"),
       color: colors.text,
-      // lineHeight: 20,
     },
     highlight: {
       color: COLORS.primary,

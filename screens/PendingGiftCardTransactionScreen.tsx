@@ -50,15 +50,6 @@ const PendingGiftCardScreen = () => {
           style={{ alignItems: "center", paddingTop: normalizeSpacing(40) }}
         >
           <Activity size={48} color={COLORS.primary} variant="Bold" />
-          {/* <Image
-            source={{ uri: transaction?.meta?.offer_snapshot?.brand_logo }}
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: 30,
-              marginBottom: normalizeSpacing(20),
-            }}
-          /> */}
           <AppText style={styles.title}>Gift Card Processing</AppText>
           <AppText style={styles.message}>
             Your purchase of {transaction?.meta?.quantity} ×{" "}

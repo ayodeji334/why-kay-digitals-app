@@ -174,7 +174,6 @@ export default function AccountSecurityScreen() {
             }}
             IconComponent={<CustomIcon source={FingerprintIcon} size={20} />}
             showSwitch={false}
-            // switchValue={isReady}
           />
           <MenuItem
             title="Show Balance"
