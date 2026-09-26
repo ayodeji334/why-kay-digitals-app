@@ -82,6 +82,9 @@ export const useBiometricLogin = () => {
       // push subscription id the backend's device_id needs to match what
       // OneSignal shows for this device.
       const devicePushSubscriptionId = await OneSignal.User.getOnesignalId();
+      const pushSubscriptionId = await OneSignal.User.pushSubscription
+        .getIdAsync()
+        .catch(() => null);
       // Sign a server-issued one-time challenge so the signature can't be
       // replayed. Legacy timestamp payload only while the endpoint rolls out.
       const challenge = await fetchBiometricChallenge(client, keyId, "login");
@@ -110,6 +113,8 @@ export const useBiometricLogin = () => {
         // Stable hardware id: the backend binds the session's refresh token to it.
         hardware_device_id: await DeviceInfo.getUniqueId(),
         device_name: deviceName,
+        // The real device-level push subscription id (see utlis/device.ts).
+        push_subscription_id: pushSubscriptionId,
       });
 
       const data = response?.data ?? null;

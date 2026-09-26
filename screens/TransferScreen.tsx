@@ -34,6 +34,7 @@ import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import { useWallets } from "../hooks/useWallet";
 import { useSummaryDetail } from "../hooks/useSummaryDetail";
 import useAxios from "../hooks/useAxios";
+import { showValue } from "../libs/requestError";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
@@ -210,7 +211,7 @@ export default function TransferScreen() {
     return wallets
       .map((asset: any) => ({
         ...asset,
-        label: `${asset?.name} (${asset?.symbol})`,
+        label: `${showValue(asset?.name)} (${showValue(asset?.symbol)})`,
         value: asset.asset_id ?? asset.uuid ?? "",
         symbol: asset.symbol ?? "",
         logo_url: asset.logo ?? "",

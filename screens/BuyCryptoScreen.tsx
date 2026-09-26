@@ -44,6 +44,8 @@ import { useColors } from "../hooks/useTheme";
 import { useCryptoLimits } from "../hooks/useCryptoLimits";
 import { useServiceCharges } from "../hooks/useServiceCharges";
 import NoWallet from "../components/NoWallet";
+import RequestErrorState from "../components/RequestErrorState";
+import { showValue } from "../libs/requestError";
 import { useAuthStore } from "../stores/authSlice";
 
 type CryptoBuyScreenParams = {
@@ -120,9 +122,19 @@ export default function CryptoBuyScreen() {
   const { intent } = route.params;
   const navigation: any = useNavigation();
   const selectedAssetUuid = intent.assetId ?? "";
-  const { fiatBalance } = useFiatBalance();
+  const {
+    fiatBalance,
+    isError: isBalanceError,
+    error: balanceError,
+    refetch: refetchBalance,
+  } = useFiatBalance();
   const { minBuyAmount } = useCryptoLimits();
-  const { getCharge, refetch: refetchServiceCharges } = useServiceCharges();
+  const {
+    getCharge,
+    refetch: refetchServiceCharges,
+    isError: isChargesError,
+    error: chargesError,
+  } = useServiceCharges();
   const refreshUser = useAuthStore(state => state.refreshUser);
   const buyFeeCharge = getCharge("crypto_buy_fee");
 
@@ -174,6 +186,8 @@ export default function CryptoBuyScreen() {
   const {
     data: assetDetails,
     isLoading,
+    isError,
+    error,
     refetch,
   } = useQuery({
     queryKey: ["asset-detail-buy", selectedAssetUuid],
@@ -423,13 +437,39 @@ export default function CryptoBuyScreen() {
     );
   }
 
+  // Failed to load: explain and offer a retry instead of rendering an empty
+  // form with missing prices and rates.
+  // Only block when there's nothing usable: a failed background refresh with
+  // cached data keeps working. Without the price, fee or balance the totals
+  // shown would be wrong, so each of them is required.
+  const loadError =
+    (isError && !assetDetails ? error : null) ??
+    (isChargesError ? chargesError : null) ??
+    (isBalanceError && fiatBalance === undefined ? balanceError : null);
+
+  if (loadError) {
+    return (
+      <RequestErrorState
+        error={loadError}
+        title="We couldn't load this coin"
+        onRetry={() =>
+          Promise.all([refetch(), refetchServiceCharges(), refetchBalance()])
+        }
+      />
+    );
+  }
+
   if (!assetDetails) {
-    <NoWallet
-      selectedAssetUuid={selectedAssetUuid}
-      onSuccess={() => {
-        refetch();
-      }}
-    />;
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <NoWallet
+          selectedAssetUuid={selectedAssetUuid}
+          onSuccess={() => {
+            refetch();
+          }}
+        />
+      </View>
+    );
   }
 
   return (
@@ -462,7 +502,10 @@ export default function CryptoBuyScreen() {
                 )}
                 <View style={styles.cryptoInfo}>
                   <AppText style={styles.optionName}>
-                    {assetDetails?.symbol} {`(${assetDetails?.asset_name})`}
+                    {showValue(assetDetails?.symbol, "")}{" "}
+                    {assetDetails?.asset_name
+                      ? `(${assetDetails.asset_name})`
+                      : ""}
                   </AppText>
                 </View>
               </View>

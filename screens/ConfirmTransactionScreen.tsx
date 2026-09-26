@@ -177,7 +177,6 @@ export default function ConfirmTransactionScreen() {
       settleIdempotencyKey(err);
       if (handleUnknownOutcome(err)) return;
       if (err instanceof AxiosError) {
-        console.log(err?.response?.data);
         const backendRequiresStepUp =
           err.response?.data?.data?.requires_step_up === true;
 

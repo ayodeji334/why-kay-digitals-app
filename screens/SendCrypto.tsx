@@ -38,6 +38,8 @@ import useAxios from "../hooks/useAxios";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import TextInputField from "../components/TextInputField";
 import NoWallet from "../components/NoWallet";
+import RequestErrorState from "../components/RequestErrorState";
+import { showValue } from "../libs/requestError";
 import InfoCard from "../components/InfoCard";
 import HalfScreenModal from "../components/HalfScreenModal";
 import { useAuthStore, useUser } from "../stores/authSlice";
@@ -165,7 +167,12 @@ export default function SendScreen() {
   // crypto_withdraw_charge isn't configured — same fallback value the
   // backend itself uses, so the preview matches what confirm will actually
   // charge whether or not the charge exists yet.
-  const { getCharge, refetch: refetchServiceCharges } = useServiceCharges();
+  const {
+    getCharge,
+    refetch: refetchServiceCharges,
+    isError: isChargesError,
+    error: chargesError,
+  } = useServiceCharges();
   const withdrawCharge = getCharge("crypto_withdrawal_fee");
 
   console.log("Withdraw charge:", withdrawCharge);
@@ -210,6 +217,9 @@ export default function SendScreen() {
   const {
     data: assetDetails,
     isFetching,
+    isLoading,
+    isError,
+    error,
     refetch,
   } = useQuery({
     queryKey: ["crypto-detail", selectedAssetUuid],
@@ -281,7 +291,9 @@ export default function SendScreen() {
       .filter((chain: any) => chain.withdraw_enabled)
       .map((chain: any) => ({
         ...chain,
-        label: `${chain?.chain} (${chain.chain_type?.toUpperCase()})`,
+        label: chain?.chain_type
+          ? `${showValue(chain?.chain)} (${chain.chain_type.toUpperCase()})`
+          : showValue(chain?.chain),
         value: chain?.chain,
         network_charges: chain?.withdraw_fee,
         // symbol: assetDetails?.symbol,
@@ -496,9 +508,40 @@ export default function SendScreen() {
   }
 
   const onRefresh = async () => {
-    refetch();
     await Promise.all([refetch(), refetchServiceCharges()]);
   };
+
+  // First load: show a spinner rather than flashing the "create wallet"
+  // prompt while the wallet is still being fetched.
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          backgroundColor: colors.background,
+        }}
+      >
+        <CustomLoading loading />
+      </View>
+    );
+  }
+
+  // A failed request isn't "no wallet". The withdrawal fee is required too,
+  // since the total deducted depends on it.
+  const loadError =
+    (isError && !assetDetails ? error : null) ??
+    (isChargesError ? chargesError : null);
+
+  if (loadError) {
+    return (
+      <RequestErrorState
+        error={loadError}
+        title="We couldn't load this wallet"
+        onRetry={onRefresh}
+      />
+    );
+  }
 
   return (
     <SafeAreaView

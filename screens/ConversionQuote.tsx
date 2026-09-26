@@ -16,6 +16,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import useAxios from "../hooks/useAxios";
+import RequestErrorState from "../components/RequestErrorState";
+import { showValue } from "../libs/requestError";
 import { useIdempotencyKey } from "../hooks/useIdempotencyKey";
 import CustomLoading from "../components/CustomLoading";
 import { useMutation } from "@tanstack/react-query";
@@ -185,6 +187,20 @@ export default function ConversionQuote() {
     }
   };
 
+  // The quote arrives via navigation; if it's missing or incomplete there's
+  // nothing to confirm, so send the user back to request a fresh one.
+  if (!quote?.uuid) {
+    return (
+      <RequestErrorState
+        title="This quote isn't available"
+        message="We couldn't load the details of this swap quote. Go back and request a new quote."
+        retryLabel="Request a new quote"
+        showBack={false}
+        onRetry={() => navigation.goBack()}
+      />
+    );
+  }
+
   return (
     <SafeAreaView edges={["bottom", "right"]} style={styles.container}>
       <StatusBar
@@ -220,7 +236,7 @@ export default function ConversionQuote() {
               </View>
               <View style={styles.assetAmount}>
                 <AppText style={styles.assetValue}>
-                  {quote?.from_amount}
+                  {showValue(quote?.from_amount)}
                 </AppText>
               </View>
             </View>
@@ -261,7 +277,9 @@ export default function ConversionQuote() {
                 </AppText>
               </View>
               <View style={styles.assetAmount}>
-                <AppText style={styles.assetValue}>{quote?.to_amount}</AppText>
+                <AppText style={styles.assetValue}>
+                  {showValue(quote?.to_amount)}
+                </AppText>
               </View>
             </View>
           </View>

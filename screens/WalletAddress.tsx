@@ -23,6 +23,7 @@ import { useNavigation } from "@react-navigation/native";
 import CustomIcon from "../components/CustomIcon";
 import { WalletIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
+import { showValue } from "../libs/requestError";
 import { AxiosError } from "axios";
 import { AppText } from "../components/AppText";
 import LogoPatternBackground, {
@@ -153,7 +154,9 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
 
   const buildShareMessage = () => {
     const lines = [
-      `${wallet?.name} (${wallet?.symbol}) deposit address — ${APP_NAME}`,
+      `${showValue(wallet?.name, "Crypto")} (${showValue(
+        wallet?.symbol,
+      )}) deposit address — ${APP_NAME}`,
       "",
       `Network: ${formattedNetworkName}`,
       `Address: ${walletDetail?.address ?? ""}`,
@@ -179,7 +182,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
         type: "image/png",
         message: buildShareMessage(),
         failOnCancel: false,
-        title: `${wallet?.symbol} deposit address`,
+        title: `${showValue(wallet?.symbol, "Crypto")} deposit address`,
       });
     } catch (err) {
       console.error("Image share failed, falling back to text:", err);

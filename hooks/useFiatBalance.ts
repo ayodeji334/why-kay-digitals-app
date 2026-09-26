@@ -13,6 +13,7 @@ export function useFiatBalance() {
     data: fiatBalance,
     isLoading,
     isError,
+    error,
     isRefetching,
     refetch,
   } = useQuery({
@@ -20,5 +21,5 @@ export function useFiatBalance() {
     queryFn: fetchFiatBalance,
   });
 
-  return { fiatBalance, isLoading, isError, refetch, isRefetching };
+  return { fiatBalance, isLoading, isError, error, refetch, isRefetching };
 }

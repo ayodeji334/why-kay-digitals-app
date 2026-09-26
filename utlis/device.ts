@@ -1,22 +1,8 @@
 import DeviceInfo from "react-native-device-info";
 import { OneSignal } from "react-native-onesignal";
 
-// The backend's DeviceService keys "is this a known device?" off whatever
-// value we send as device_id. Sending anything that isn't stable across
-// sessions (e.g. the OneSignal player id, which can rotate on its own —
-// re-registration, push token resets — independently of the physical
-// device) makes it flag a real device as "new" on every single login.
-//
-// DeviceInfo.getUniqueId() is generated once per install and persisted by
-// the OS/library itself (identifierForVendor on iOS, a generated + stored
-// id on Android) — exactly the "stable, persisted device_id" the login
-// flow needs, with no extra storage plumbing required. It's also already
-// the value sent for biometric enrollment (see
-// hooks/useBiometricEnrollment.ts), so login/device-verification and
-// biometrics agree on what "this device" means.
 export const getDeviceId = (): Promise<string> => DeviceInfo.getUniqueId();
 
-// Names iOS returns instead of the user's device name since iOS 16 (the real
 // name needs an Apple-approved entitlement), plus library placeholders.
 const GENERIC_DEVICE_NAMES = ["iphone", "ipad", "ipod touch", "unknown", ""];
 
@@ -63,20 +49,27 @@ export type DeviceMeta = {
   // hasn't finished creating the subscription yet (e.g. right after a
   // fresh install) or the lookup fails.
   push_subscription_id: string | null;
+  // OneSignal's user-level id. Not a stable identifier (it changes on
+  // account switches); sent only for backward compatibility.
+  onesignal_id: string | null;
 };
 
 /** device_id/device_name/device_os/push_subscription_id for the /auth/login payload. */
 export const getDeviceMeta = async (): Promise<DeviceMeta> => {
-  const [deviceId, deviceName, pushSubscriptionId] = await Promise.all([
-    DeviceInfo.getUniqueId(),
-    getReadableDeviceName(),
-    await OneSignal.User.getOnesignalId(),
-  ]);
+  const [deviceId, deviceName, pushSubscriptionId, onesignalId] =
+    await Promise.all([
+      DeviceInfo.getUniqueId(),
+      getReadableDeviceName(),
+      // The device-level subscription id OneSignal delivers push to.
+      OneSignal.User.pushSubscription.getIdAsync().catch(() => null),
+      OneSignal.User.getOnesignalId().catch(() => null),
+    ]);
 
   return {
     device_id: deviceId,
     device_name: deviceName,
     device_os: getDeviceOs(),
     push_subscription_id: pushSubscriptionId,
+    onesignal_id: onesignalId,
   };
 };

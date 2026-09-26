@@ -34,6 +34,7 @@ import { useAuthStore } from "../stores/authSlice";
 import { generatePDF } from "react-native-html-to-pdf";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
 import CustomModal from "../components/CustomModal";
+import { showValue } from "../libs/requestError";
 import LogoPatternBackground, {
   BRAND_LOGO,
 } from "../components/LogoPatternBackground";
@@ -237,9 +238,15 @@ const TransactionDetailScreen = () => {
             transaction?.meta?.offer_snapshot?.brand_name ?? "gift card"
           } purchase was successful`
         : transaction?.category === "CRYPTO_DEPOSIT"
-        ? `Your ${transaction?.meta?.asset_symbol} deposit was successful`
+        ? `Your ${showValue(
+            transaction?.meta?.asset_symbol,
+            "crypto",
+          )} deposit was successful`
         : transaction?.category === "CRYPTO_WITHDRAW"
-        ? `Your ${transaction?.meta?.asset_symbol} withdrawal was successful`
+        ? `Your ${showValue(
+            transaction?.meta?.asset_symbol,
+            "crypto",
+          )} withdrawal was successful`
         : transaction?.category === "CABLETV"
         ? "Your TV bill payment was successful"
         : transaction?.category === "MOBILEDATA"

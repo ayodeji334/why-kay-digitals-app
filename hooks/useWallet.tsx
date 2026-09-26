@@ -3,7 +3,7 @@ import useAxios from "./useAxios";
 
 export function useWallets() {
   const { apiGet } = useAxios();
-  const { data, isLoading, isError, refetch, isFetching, isRefetching } =
+  const { data, isLoading, isError, error, refetch, isFetching, isRefetching } =
     useQuery({
       queryKey: ["user-wallets"],
       queryFn: async () => {
@@ -20,6 +20,7 @@ export function useWallets() {
     data,
     isLoading,
     isError,
+    error,
     refetch,
     isFetching,
     isRefetching,

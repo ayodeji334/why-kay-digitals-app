@@ -29,13 +29,39 @@ interface AuthState {
   setHasHydrated: () => void;
 }
 
+// Pushes are addressed to the account (OneSignal external id = user uuid), not to a
+// device id we store. Linking the phone to the signed-in account makes OneSignal move this
+// phone's subscription to that account, so after an account switch the previous account's
+// notifications no longer arrive here. Called on every sign-in and on app start.
+const linkPushToAccount = (uuid?: string | null) => {
+  if (!uuid) return;
+  try {
+    OneSignal.login(String(uuid));
+  } catch {}
+};
+
 // Fields that must never be written to device storage, even the Keychain. Everything
 // else on the user object is display or status data.
 const SENSITIVE_USER_FIELDS = [
-  "bvn", "nin", "date_of_birth", "dob", "phone_number", "phone", "address",
-  "street", "city", "state", "postal_code", "next_of_kin", "security_pin",
-  "password", "two_factor_secret", "two_factor_recovery_codes", "selfie_url",
-  "bvn_verification_data", "nin_verification_data",
+  "bvn",
+  "nin",
+  "date_of_birth",
+  "dob",
+  "phone_number",
+  "phone",
+  "address",
+  "street",
+  "city",
+  "state",
+  "postal_code",
+  "next_of_kin",
+  "security_pin",
+  "password",
+  "two_factor_secret",
+  "two_factor_recovery_codes",
+  "selfie_url",
+  "bvn_verification_data",
+  "nin_verification_data",
 ];
 
 const persistableUser = (user: any | null) => {
@@ -83,6 +109,7 @@ export const useAuthStore = create<AuthState>()(
 
       setIsAuthenticated: value => {
         set({ isAuthenticated: value });
+        if (value) linkPushToAccount(get().user?.uuid);
       },
 
       setIsShowBalance: show => {
@@ -95,13 +122,11 @@ export const useAuthStore = create<AuthState>()(
         set({ isGoogleAuthenticatorEnabled: enabled }),
 
       logout: () => {
-        // Detach this phone's push subscription from the signed-out account: OneSignal
-        // then issues a fresh anonymous id, so the next person to log in here can't
-        // share (and receive) the previous account's notifications.
-        try {
-          OneSignal.logout();
-        } catch {}
-
+        // Deliberately does NOT call OneSignal.logout(): the phone stays linked
+        // to the last signed-in account, so that account keeps getting its
+        // notifications while signed out. When a different account signs in here,
+        // OneSignal.login(<its uuid>) (see linkPushToAccount) moves the phone to
+        // it, and the previous account's pushes stop arriving on this phone.
         set({
           token: null,
           refreshToken: null,
@@ -136,6 +161,8 @@ export const useAuthStore = create<AuthState>()(
               user: res.data.data,
               isAuthenticated: true,
             });
+            // Re-link on every app start (covers installs signed in before this change).
+            linkPushToAccount(res.data.data?.uuid);
           } else {
             throw new Error("Invalid session");
           }

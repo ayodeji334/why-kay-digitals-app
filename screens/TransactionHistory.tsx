@@ -349,13 +349,13 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
     emptyState: { alignItems: "center" },
     emptyTitle: {
-      fontSize: normalize(22),
+      fontSize: normalize(20),
       fontFamily: getFontFamily("700"),
       color: colors.text,
       marginVertical: normalizeSpacing(12),
     },
     emptyDescription: {
-      fontSize: normalize(18),
+      fontSize: normalize(17),
       fontFamily: getFontFamily("400"),
       color: colors.textMuted,
       textAlign: "center",

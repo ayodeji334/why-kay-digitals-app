@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import CustomLoading from "../components/CustomLoading";
+import RequestErrorState from "../components/RequestErrorState";
 import SaveAsBeneficiarySwitch from "../components/SaveAsBeneficiarySwitch";
 import { COLORS } from "../constants/colors";
 import {
@@ -59,6 +60,8 @@ export default function WithdrawScreen() {
 
   const {
     isLoading,
+    isError: isSummaryError,
+    error: summaryError,
     walletSummary,
     refetch: refetchWallet,
   } = useSummaryDetail();
@@ -79,7 +82,12 @@ export default function WithdrawScreen() {
     HIGH_VALUE_WITHDRAWAL_THRESHOLD;
 
   // Fetch withdrawal fee from backend
-  const { data: withdrawalChargeData, refetch } = useQuery({
+  const {
+    data: withdrawalChargeData,
+    isError: isChargeError,
+    error: chargeError,
+    refetch,
+  } = useQuery({
     queryKey: ["service-charge", "withdrawal_fee"],
     queryFn: async () => {
       const res = await apiGet("/service-charges", {
@@ -177,7 +185,12 @@ export default function WithdrawScreen() {
     return amount + monthVolume > monthlyLimit;
   }, [amount, monthlyLimit, monthVolume]);
 
-  const { data: banksData, refetch: refetchBanks } = useQuery({
+  const {
+    data: banksData,
+    isError: isBanksError,
+    error: banksError,
+    refetch: refetchBanks,
+  } = useQuery({
     queryKey: ["banks"],
     queryFn: async () => {
       return apiGet("/banks")
@@ -304,6 +317,29 @@ export default function WithdrawScreen() {
     setPendingPayload(null);
     setAmount("");
   });
+
+  // Without the wallet summary the balance and limits would fall back to
+  // made-up defaults (₦0 balance, ₦1,000,000 limit), without the fee the
+  // charge would be a guess, and without banks there's nothing to pick —
+  // so any of these failing (with nothing cached) blocks the form.
+  const loadError =
+    (isSummaryError && !walletSummary ? summaryError : null) ??
+    (isChargeError && withdrawalChargeData === undefined
+      ? chargeError
+      : null) ??
+    (isBanksError && !banksData ? banksError : null);
+
+  if (loadError) {
+    return (
+      <RequestErrorState
+        error={loadError}
+        title="We couldn't load withdrawal details"
+        onRetry={() =>
+          Promise.all([refetchWallet(), refetch(), refetchBanks()])
+        }
+      />
+    );
+  }
 
   return (
     <SafeAreaView

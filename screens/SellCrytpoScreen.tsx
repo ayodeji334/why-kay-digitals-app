@@ -35,6 +35,7 @@ import { useQuery } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
 import { formatWithCommas, parseToNumber } from "./SwapCryptoScreen";
 import NoWallet from "../components/NoWallet";
+import RequestErrorState from "../components/RequestErrorState";
 import CustomLoading from "../components/CustomLoading";
 import { TradeIntent } from "../libs/types";
 import { showError } from "../utlis/toast";
@@ -143,7 +144,12 @@ export default function CryptoSellScreen() {
   const { apiGet } = useAxios();
   const { intent } = route.params;
   const { minSellAmount } = useCryptoLimits();
-  const { getCharge, refetch: refetchServiceCharges } = useServiceCharges();
+  const {
+    getCharge,
+    refetch: refetchServiceCharges,
+    isError: isChargesError,
+    error: chargesError,
+  } = useServiceCharges();
   const sellFeeCharge = getCharge("crypto_sell_fee");
 
   // Same convention as crypto_buy_fee: backend returns a percentage (e.g. "1.8").
@@ -194,6 +200,8 @@ export default function CryptoSellScreen() {
   const {
     data: assetDetails,
     isLoading,
+    isError,
+    error,
     refetch,
   } = useQuery({
     queryKey: ["asset-detail-sell", selectedAssetUuid],
@@ -455,6 +463,23 @@ export default function CryptoSellScreen() {
     );
   }
 
+  // A failed request isn't "no wallet": explain it and offer a retry, rather
+  // than showing the create-wallet prompt or a form with missing rates. The
+  // sell fee is required too, since the debit shown depends on it.
+  const loadError =
+    (isError && !assetDetails ? error : null) ??
+    (isChargesError ? chargesError : null);
+
+  if (loadError) {
+    return (
+      <RequestErrorState
+        error={loadError}
+        title="We couldn't load this coin"
+        onRetry={() => Promise.all([refetch(), refetchServiceCharges()])}
+      />
+    );
+  }
+
   return (
     <SafeAreaView
       style={{
@@ -497,7 +522,7 @@ export default function CryptoSellScreen() {
                   <View style={styles.cryptoInfo}>
                     <AppText style={styles.optionName}>
                       {assetDetails?.asset_name}{" "}
-                      {assetDetails?.symbol && ` (${assetDetails?.symbol})`}
+                      {assetDetails?.symbol ? ` (${assetDetails.symbol})` : ""}
                     </AppText>
                   </View>
                 </View>

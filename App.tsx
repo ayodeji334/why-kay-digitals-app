@@ -54,6 +54,20 @@ const styles = StyleSheet.create({
 function MainApp() {
   const [isLoading, setIsLoading] = useState(true);
   const initializeAuth = useAuthStore(state => state.initializeAuth);
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const userUuid = useAuthStore(state => state.user?.uuid);
+
+  // Link this device's push subscription to the account (OneSignal
+  // external_id). Runs on every app start once the user is known and on
+  // every login / account switch, as OneSignal recommends. The backend can
+  // then target the user by external_id, which survives OneSignal id changes.
+  // There's deliberately no OneSignal.logout() on sign-out, so the device
+  // keeps receiving the account's notifications until another account logs in.
+  useEffect(() => {
+    if (isAuthenticated && userUuid) {
+      OneSignal.login(userUuid);
+    }
+  }, [isAuthenticated, userUuid]);
 
   useEffect(() => {
     const initializeApp = async () => {

@@ -10,6 +10,7 @@ export function useSummaryDetail() {
     isFetching,
     isLoading,
     isError,
+    error,
     isRefetching,
   } = useQuery({
     queryKey: ["wallet-summary"],
@@ -27,6 +28,7 @@ export function useSummaryDetail() {
     walletSummary,
     isLoading,
     isError,
+    error,
     refetch,
     isFetching,
     isRefetching,

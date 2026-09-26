@@ -14,7 +14,7 @@ export interface ServiceCharge {
 export function useServiceCharges() {
   const { apiGet } = useAxios();
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["service-charges"],
     queryFn: async () => {
       const res = await apiGet("/service-charges");
@@ -35,6 +35,9 @@ export function useServiceCharges() {
   return {
     serviceCharges: data ?? [],
     isLoading,
+    // True only when the fee schedule failed AND there's nothing cached to use.
+    isError: isError && !data,
+    error,
     refetch,
     getCharge,
   };

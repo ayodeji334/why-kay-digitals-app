@@ -20,6 +20,9 @@ const naturalDecimals = (value: number | string): number => {
   return Math.max(0, fractionDigits - exponent);
 };
 
+/** Shown in place of a number the server didn't send (instead of "NaN"). */
+export const MISSING_VALUE = "—";
+
 export const formatAmount = (
   amount: number,
   {
@@ -41,6 +44,11 @@ export const formatAmount = (
     maxDecimalPlace?: number;
   } = {},
 ): string => {
+  // API values often arrive as strings, and missing ones as undefined:
+  // format numeric strings, and never render "NaN" for missing data.
+  amount = Number(amount);
+  if (!Number.isFinite(amount)) return MISSING_VALUE;
+
   if (isDivideValue) {
     amount = amount / 100;
   }
@@ -102,6 +110,9 @@ export const formatNumber = (
     decimalPlace?: number;
   } = {},
 ): string => {
+  amount = Number(amount);
+  if (!Number.isFinite(amount)) return MISSING_VALUE;
+
   if (isDivideValue) {
     amount = amount / 100;
   }

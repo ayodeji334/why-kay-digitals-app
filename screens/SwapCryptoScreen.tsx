@@ -28,6 +28,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { showError } from "../utlis/toast";
 import { formatAmount } from "../libs/formatNumber";
 import { useQuoteStore } from "../stores/quoteStore";
+import RequestErrorState from "../components/RequestErrorState";
+import { showValue } from "../libs/requestError";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 
@@ -103,8 +105,19 @@ const schema = Yup.object().shape({
 export default function CryptoSwapScreen() {
   const [displayAmount, setDisplayAmount] = useState("");
   const navigation: any = useNavigation();
-  const { assets, isLoading, refetch } = useAssets();
-  const { data, refetch: refetchUserWallets } = useWallets();
+  const {
+    assets,
+    isLoading,
+    isError: isAssetsError,
+    error: assetsError,
+    refetch,
+  } = useAssets();
+  const {
+    data,
+    isError: isWalletsError,
+    error: walletsError,
+    refetch: refetchUserWallets,
+  } = useWallets();
   const axios = useAxios();
   const colors = useColors();
   const styles = makeStyles(colors);
@@ -132,7 +145,7 @@ export default function CryptoSwapScreen() {
 
         return {
           ...wallet,
-          label: `${wallet?.name} (${wallet?.symbol})`,
+          label: `${showValue(wallet?.name)} (${showValue(wallet?.symbol)})`,
           value: wallet?.asset_id ?? wallet?.uuid ?? "",
           symbol: wallet?.symbol ?? "",
           logo_url: wallet?.logo ?? "",
@@ -162,7 +175,13 @@ export default function CryptoSwapScreen() {
   const selectedSymbol = fromAsset?.symbol ?? "";
   const symbol = fromAsset?.symbol ?? "";
 
-  const { data: supportedPairs, isFetching } = useQuery({
+  const {
+    data: supportedPairs,
+    isFetching,
+    isError: isPairsError,
+    error: pairsError,
+    refetch: refetchPairs,
+  } = useQuery({
     queryKey: ["supported-pairs", symbol],
     queryFn: async () => {
       const response = await axios.apiGet("crypto/conversion/supported-pairs", {
@@ -270,8 +289,7 @@ export default function CryptoSwapScreen() {
   };
 
   const onRefresh = async () => {
-    refetch();
-    refetchUserWallets();
+    await Promise.all([refetch(), refetchUserWallets()]);
   };
 
   useEffect(() => {
@@ -297,6 +315,19 @@ export default function CryptoSwapScreen() {
 
   const canSubmit =
     isValid && !insufficientBalance && amount > 0 && !isCooldown;
+
+  // Without the coin list or the user's wallets there's nothing to swap from
+  // or to — explain and offer a retry instead of empty selectors.
+  const hasNoAssets = !Array.isArray(assets) || assets.length === 0;
+  if ((isAssetsError && hasNoAssets) || (isWalletsError && !data)) {
+    return (
+      <RequestErrorState
+        error={isAssetsError ? assetsError : walletsError}
+        title="We couldn't load your wallets"
+        onRetry={onRefresh}
+      />
+    );
+  }
 
   return (
     <SafeAreaView
@@ -351,6 +382,14 @@ export default function CryptoSwapScreen() {
                 loading={isFetching}
                 title="Select an asset"
               />
+              {isPairsError && !supportedPairs && !!fromAsset && (
+                <RequestErrorState
+                  compact
+                  error={pairsError}
+                  title={`We couldn't load what ${symbol} can be swapped to`}
+                  onRetry={() => refetchPairs()}
+                />
+              )}
             </View>
             <View style={{ marginVertical: normalizeSpacing(4) }}>
               <AppText style={styles.label}>Amount (USD)</AppText>
