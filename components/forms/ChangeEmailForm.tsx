@@ -27,6 +27,8 @@ const emailSchema = yup.object({
     .string()
     .email("Enter a valid email address")
     .required("Email address is required"),
+  // The server asks for the current password before moving the account to a new inbox.
+  password: yup.string().required("Enter your current password"),
 });
 
 const otpSchema = yup.object({
@@ -54,6 +56,8 @@ const ChangeEmailForm = ({ onStepChange }: ChangeEmailFormProps) => {
   const { post } = useAxios();
   const [step, setStepState] = useState<VerificationStep>("email");
   const [newEmail, setNewEmail] = useState("");
+  // Kept only for "Resend code", which the server also checks against the password.
+  const [password, setPassword] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -97,7 +101,7 @@ const ChangeEmailForm = ({ onStepChange }: ChangeEmailFormProps) => {
   const emailForm = useForm({
     resolver: yupResolver(emailSchema),
     mode: "onChange",
-    defaultValues: { newEmail: "" },
+    defaultValues: { newEmail: "", password: "" },
   });
 
   const otpForm = useForm({
@@ -114,10 +118,12 @@ const ChangeEmailForm = ({ onStepChange }: ChangeEmailFormProps) => {
     try {
       const response = await post("/users/email/change", {
         new_email: data.newEmail,
+        password: data.password,
       });
       const result = response.data?.data;
 
       setNewEmail(result?.newEmail ?? data.newEmail);
+      setPassword(data.password);
       setStep("otp");
       startResendCooldown();
 
@@ -147,6 +153,7 @@ const ChangeEmailForm = ({ onStepChange }: ChangeEmailFormProps) => {
 
       otpForm.reset();
       emailForm.reset();
+      setPassword("");
 
       showSuccess(
         response.data?.message ?? "Email address updated successfully",
@@ -178,6 +185,7 @@ const ChangeEmailForm = ({ onStepChange }: ChangeEmailFormProps) => {
     try {
       const response = await post("/users/email/change", {
         new_email: newEmail,
+        password,
       });
 
       startResendCooldown();
@@ -273,12 +281,21 @@ const ChangeEmailForm = ({ onStepChange }: ChangeEmailFormProps) => {
         keyboardType="email-address"
       />
 
+      <TextInputField
+        control={emailForm.control}
+        name="password"
+        label="Current Password"
+        placeholder="Enter your current password"
+        secureTextEntry
+      />
+
       <InfoCard
         IconComponent={<InfoCircle size={17} />}
         title="Why is this needed?"
         description={[
           "We'll send a verification code to the new address to confirm you own it.",
           "Your current email stays active and unchanged until the new one is verified.",
+          "For your security, withdrawals and transfers are paused for 24 hours after the change.",
         ]}
       />
 

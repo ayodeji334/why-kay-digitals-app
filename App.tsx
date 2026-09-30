@@ -8,6 +8,7 @@ import { authHydration, useAuthStore } from "./stores/authSlice";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./libs/queryClient";
 import { OneSignal, LogLevel } from "react-native-onesignal";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { Text, TextInput } from "react-native";
 import { ONE_SIGNAL_ID } from "./config";
 import { refreshBiometricState } from "./stores/biometricSlice";
@@ -34,7 +35,14 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <MainApp />
+      {/* Last-resort safety net for crashes outside a screen (providers,
+          navigator); screens have their own boundary in Navigation.tsx. */}
+      <ErrorBoundary
+        title="Something went wrong"
+        message="WhyKay ran into an unexpected problem. Tap Try again to reload."
+      >
+        <MainApp />
+      </ErrorBoundary>
       <ToastHost />
     </QueryClientProvider>
   );

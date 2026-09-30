@@ -31,6 +31,11 @@ import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
 import { usePhoneVerification } from "../../hooks/usePhoneVerification";
 import HalfScreenModal from "../HalfScreenModal";
+import {
+  RestrictedFeature,
+  getRestrictionMessage,
+  isFeatureRestricted,
+} from "../../libs/tierAccess";
 import { useUser } from "../../stores/authSlice";
 import { useLiveChat } from "../../context/LiveChatProvider";
 
@@ -46,13 +51,14 @@ const ServicesSection = () => {
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [showSuspendedModal, setShowSuspendedModal] = useState(false);
 
-  const [showTierModal, setShowTierModal] = useState(false);
+  // The feature the user tried to open that their tier doesn't allow.
+  const [restrictedFeature, setRestrictedFeature] =
+    useState<RestrictedFeature | null>(null);
 
   const isSuspended = user?.status === "SUSPEND";
-  const isTierOne = user?.tier_level === "TIER_1";
 
   const handleUpgradeTier = () => {
-    setShowTierModal(false);
+    setRestrictedFeature(null);
     setTimeout(() => navigation.navigate("Verification" as never), 600);
   };
 
@@ -169,8 +175,9 @@ const ServicesSection = () => {
       return;
     }
 
-    if (service.screenName === "BuyGiftCard" && isTierOne) {
-      setShowTierModal(true);
+    const feature = getServiceFeature(service);
+    if (feature && isFeatureRestricted(user?.tier_level, feature)) {
+      setRestrictedFeature(feature);
       return;
     }
 
@@ -263,18 +270,41 @@ const ServicesSection = () => {
       />
 
       <HalfScreenModal
-        isVisible={showTierModal}
-        onClose={() => setShowTierModal(false)}
+        isVisible={!!restrictedFeature}
+        onClose={() => setRestrictedFeature(null)}
         title="Upgrade Required"
-        description="Buying gift cards isn't available on your current account tier. Upgrade your account to unlock this service."
+        description={
+          restrictedFeature ? getRestrictionMessage(restrictedFeature) : ""
+        }
         buttonText="Upgrade Account"
         actionButton={handleUpgradeTier}
         secondaryButtonText="Maybe later"
-        secondaryAction={() => setShowTierModal(false)}
+        secondaryAction={() => setRestrictedFeature(null)}
         showCloseButton
       />
     </>
   );
+};
+
+// Which tier-restricted feature (if any) each Quick Action opens.
+const BILL_SCREENS = [
+  "BuyAirtime",
+  "BuyData",
+  "PayElectricityBills",
+  "FundBettingAccount",
+  "PayCableTVSubscription",
+];
+const getServiceFeature = (service: {
+  screenName: string;
+  action?: string;
+}): RestrictedFeature | null => {
+  if (service.action === "buy") return "buy_crypto";
+  if (service.action === "sell") return "sell_crypto";
+  if (service.screenName === "BuyGiftCard") return "gift_cards";
+  if (service.screenName === "SwapCrypto") return "swap_crypto";
+  if (service.screenName === "Transfer") return "transfer";
+  if (BILL_SCREENS.includes(service.screenName)) return "bill_payments";
+  return null;
 };
 
 const GRID_COLUMNS = 3;

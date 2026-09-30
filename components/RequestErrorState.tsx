@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { NavigationContext } from "@react-navigation/native";
 import { CloudCross, Danger, WifiSquare } from "iconsax-react-nativejs";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
@@ -52,7 +52,9 @@ const RequestErrorState: React.FC<Props> = ({
 }) => {
   const colors = useColors();
   const styles = makeStyles(colors);
-  const navigation: any = useNavigation();
+  // Read the context rather than useNavigation(), which throws outside a
+  // navigator — the app-level crash screen renders above navigation.
+  const navigation: any = useContext(NavigationContext);
   const [isRetrying, setIsRetrying] = useState(false);
 
   const kind = getRequestErrorKind(error);

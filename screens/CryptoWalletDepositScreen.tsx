@@ -24,6 +24,8 @@ import { showError } from "../utlis/toast";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import HalfScreenModal from "../components/HalfScreenModal";
+import CustomLoading from "../components/CustomLoading";
+import RequestErrorState from "../components/RequestErrorState";
 import { useAuthStore, useUser } from "../stores/authSlice";
 import { useLiveChat } from "../context/LiveChatProvider";
 
@@ -52,10 +54,11 @@ const CryptoWalletDepositScreen = () => {
     fn();
   };
 
-  const {
-    data: { wallets },
-    refetch,
-  } = useWallets();
+  // `data` is undefined while loading and after a failed request, so never
+  // destructure into it directly (that crashed with "Cannot read property
+  // 'wallets' of undefined").
+  const { data, isLoading, isError, error, refetch } = useWallets();
+  const wallets: any[] = Array.isArray(data?.wallets) ? data.wallets : [];
 
   const selectedAssetUuid = route.params?.crypto
     ? route.params?.crypto?.uuid
@@ -146,6 +149,24 @@ const CryptoWalletDepositScreen = () => {
       }),
     },
   ];
+
+  if (isLoading) {
+    return (
+      <View style={[styles.screen, { justifyContent: "center" }]}>
+        <CustomLoading loading />
+      </View>
+    );
+  }
+
+  if (isError && !data) {
+    return (
+      <RequestErrorState
+        error={error}
+        title="We couldn't load your wallet"
+        onRetry={refetch}
+      />
+    );
+  }
 
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.screen}>

@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../stores/authSlice";
 import { refreshBiometricState } from "../stores/biometricSlice";
@@ -13,9 +14,14 @@ type AuthTokens = { accessToken: string; refreshToken: string };
  * verification challenge (selfie/OTP) resolving to the exact same
  * user + auth shape. Centralized so the three call sites (LoginForm,
  * ReturningUserLoginForm, DeviceVerificationScreen) can't drift apart.
+ *
+ * An account without a transaction PIN (e.g. one created on the website) is sent to
+ * CreatePin with its tokens instead of straight into the app — the same hand-off new
+ * sign-ups get after verifying their email; ConfirmPin finishes the login.
  */
 export const useCompleteLogin = () => {
   const queryClient = useQueryClient();
+  const navigation: any = useNavigation();
   const setToken = useAuthStore(state => state.setToken);
   const setUser = useAuthStore(state => state.setUser);
   const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated);
@@ -23,6 +29,15 @@ export const useCompleteLogin = () => {
 
   return useCallback(
     async (auth: AuthTokens, user: any) => {
+      if (user && user.has_set_transaction_pin === false) {
+        navigation.navigate("CreatePin", {
+          user,
+          token: auth.accessToken,
+          refreshToken: auth.refreshToken,
+        });
+        return;
+      }
+
       queryClient.prefetchQuery({ queryKey: ["assets"] });
       queryClient.prefetchQuery({ queryKey: ["banks"] });
       queryClient.prefetchQuery({ queryKey: ["supported-pairs"] });
@@ -38,6 +53,7 @@ export const useCompleteLogin = () => {
     },
     [
       queryClient,
+      navigation,
       setToken,
       setUser,
       setIsAuthenticated,

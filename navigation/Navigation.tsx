@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { createStaticNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import CustomHeader from "../components/CustomHeader";
+import { withTierGate } from "../components/TierGate";
+import ErrorBoundary from "../components/ErrorBoundary";
 import SplashScreen from "../screens/SplashScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import IntroModalScreen from "../screens/IntroModalScreen";
@@ -94,6 +96,10 @@ const useIsInApp = () => {
 };
 
 const RootStack = createNativeStackNavigator({
+  // Every screen renders inside its own error boundary: a crash in one screen
+  // shows the error screen in its place (header and back still work) instead
+  // of taking down the whole app.
+  screenLayout: ({ children }) => <ErrorBoundary>{children}</ErrorBoundary>,
   groups: {
     SignedOut: {
       if: useIsSignedOut,
@@ -284,7 +290,7 @@ const RootStack = createNativeStackNavigator({
           },
         },
         ConversionQuote: {
-          screen: ConversionQuote,
+          screen: withTierGate("swap_crypto", ConversionQuote),
           options: {
             gestureEnabled: true,
             headerShown: true,
@@ -306,7 +312,7 @@ const RootStack = createNativeStackNavigator({
           },
         },
         PayElectricityBills: {
-          screen: PayElectricityBillsScreen,
+          screen: withTierGate("bill_payments", PayElectricityBillsScreen),
           options: {
             headerShown: true,
             header: () => (
@@ -315,7 +321,7 @@ const RootStack = createNativeStackNavigator({
           },
         },
         PayCableTVSubscription: {
-          screen: PayCableTVSubscriptionScreen,
+          screen: withTierGate("bill_payments", PayCableTVSubscriptionScreen),
           options: {
             header: () => <CustomHeader showTitle title="Pay Cable TV Bills" />,
           },
@@ -327,14 +333,14 @@ const RootStack = createNativeStackNavigator({
           },
         },
         BuyData: {
-          screen: BuyDataScreen,
+          screen: withTierGate("bill_payments", BuyDataScreen),
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Buy Data" />,
           },
         },
         BuyGiftCard: {
-          screen: BrandsScreen,
+          screen: withTierGate("gift_cards", BrandsScreen),
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Buy Gift Card" />,
@@ -359,7 +365,7 @@ const RootStack = createNativeStackNavigator({
           },
         },
         BrandDetail: {
-          screen: BrandDetailScreen,
+          screen: withTierGate("gift_cards", BrandDetailScreen),
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Brand Detail" />,
@@ -370,7 +376,7 @@ const RootStack = createNativeStackNavigator({
           options: { headerShown: false },
         },
         BuyAirtime: {
-          screen: BuyAirtimeScreen,
+          screen: withTierGate("bill_payments", BuyAirtimeScreen),
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Buy Airtime" />,
@@ -414,7 +420,7 @@ const RootStack = createNativeStackNavigator({
           },
         },
         FundBettingAccount: {
-          screen: FundBettingAccountScreen,
+          screen: withTierGate("bill_payments", FundBettingAccountScreen),
           options: {
             headerShown: true,
             header: () => (
@@ -483,7 +489,7 @@ const RootStack = createNativeStackNavigator({
           },
         },
         Deposit: {
-          screen: BankTransferScreen,
+          screen: withTierGate("deposit_fiat", BankTransferScreen),
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Deposit" />,
@@ -575,28 +581,28 @@ const RootStack = createNativeStackNavigator({
           }),
         },
         BuyCrypto: {
-          screen: CryptoBuyScreen,
+          screen: withTierGate("buy_crypto", CryptoBuyScreen),
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Buy Crypto" />,
           },
         },
         SellCrypto: {
-          screen: CryptoSellScreen,
+          screen: withTierGate("sell_crypto", CryptoSellScreen),
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Sell Crypto" />,
           },
         },
         SwapCrypto: {
-          screen: CryptoSwapScreen,
+          screen: withTierGate("swap_crypto", CryptoSwapScreen),
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Swap Crypto" />,
           },
         },
         Transfer: {
-          screen: TransferScreen,
+          screen: withTierGate("transfer", TransferScreen),
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Transfer" />,
@@ -621,7 +627,7 @@ const RootStack = createNativeStackNavigator({
           },
         },
         WithdrawalCrypto: {
-          screen: SendScreen,
+          screen: withTierGate("withdraw_crypto", SendScreen),
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Withdraw Crypto" />,

@@ -26,11 +26,18 @@ import CustomIcon from "../components/CustomIcon";
 import { CopyIcon } from "../assets";
 import { AppText } from "../components/AppText";
 import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import OtpInputField from "../components/OtpInputField";
+import { useForm } from "react-hook-form";
+import { AxiosError } from "axios";
+
+type DisableFormData = {
+  code: string;
+};
 
 const TwoFactorAuthenticationScreen = () => {
   const navigation = useNavigation();
   const resolvedTheme = useResolvedTheme();
-  const { apiGet } = useAxios();
+  const { apiGet, post } = useAxios();
   const user = useAuthStore(state => state.user);
   const setUser = useAuthStore(state => state.setUser);
   const { setIsGoogleAuthenticatorEnabled, isGoogleAuthenticatorEnabled } =
@@ -43,6 +50,11 @@ const TwoFactorAuthenticationScreen = () => {
     () => getItem("2fa_auth_url") ?? null,
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  // Turning 2FA off needs the current authenticator code (the server refuses without it).
+  const { control, handleSubmit, reset } = useForm<DisableFormData>({
+    defaultValues: { code: "" },
+  });
 
   const is2FAEnabled = user?.two_factor_enabled || isGoogleAuthenticatorEnabled;
   const hasQrUrl = !!otpauthUrl;
@@ -69,28 +81,41 @@ const TwoFactorAuthenticationScreen = () => {
       setItem("2fa_auth_url", url);
       showSuccess("Scan the QR code in Google Authenticator.");
       setUser(response?.data?.data);
-    } catch {
-      showError("Failed to fetch 2FA secret.");
+    } catch (err: unknown) {
+      const message =
+        err instanceof AxiosError ? err.response?.data?.message : undefined;
+      showError(message || "Failed to fetch 2FA secret.");
     } finally {
       setIsLoading(false);
     }
-  }, [apiGet]);
+  }, [apiGet, setUser]);
 
-  const handleDisable2FA = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const response = await apiGet("2fa-auth/disable");
-      setIsGoogleAuthenticatorEnabled(false);
-      setOtpauthUrl(null);
-      removeItem("2fa_auth_url");
-      showSuccess("2FA disabled successfully.");
-      setUser(response?.data?.data);
-    } catch {
-      showError("Failed to disable 2FA.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [apiGet, setIsGoogleAuthenticatorEnabled]);
+  const handleDisable2FA = useCallback(
+    async ({ code }: DisableFormData) => {
+      if (!code || code.length < 6) {
+        showError("Enter the 6-digit code from your authenticator app.");
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const response = await post("2fa-auth/disable", { code });
+        setIsGoogleAuthenticatorEnabled(false);
+        setOtpauthUrl(null);
+        removeItem("2fa_auth_url");
+        reset();
+        showSuccess("2FA disabled successfully.");
+        setUser(response?.data?.data);
+      } catch (err: unknown) {
+        const message =
+          err instanceof AxiosError ? err.response?.data?.message : undefined;
+        showError(message || "Failed to disable 2FA.");
+        reset();
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [post, reset, setIsGoogleAuthenticatorEnabled, setUser],
+  );
 
   const handleContinue = useCallback(() => {
     navigation.navigate("ConfirmTwoFactorAuthentication" as never);
@@ -104,7 +129,7 @@ const TwoFactorAuthenticationScreen = () => {
     if (is2FAEnabled) {
       return {
         label: "Disable Authenticator",
-        onPress: handleDisable2FA,
+        onPress: handleSubmit(handleDisable2FA),
         isDestructive: true,
       };
     }
@@ -124,6 +149,7 @@ const TwoFactorAuthenticationScreen = () => {
     is2FAEnabled,
     hasQrUrl,
     handleDisable2FA,
+    handleSubmit,
     handleContinue,
     handleGenerateQRCode,
   ]);
@@ -158,8 +184,10 @@ const TwoFactorAuthenticationScreen = () => {
                 </View>
               </View>
               <AppText style={styles.description}>
-                2FA is currently enabled. You can disable it below.
+                2FA is currently enabled. To disable it, enter the current code
+                from your authenticator app.
               </AppText>
+              <OtpInputField control={control} name="code" boxes={6} />
             </View>
           )}
 
