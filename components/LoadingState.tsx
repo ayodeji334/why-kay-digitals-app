@@ -7,6 +7,7 @@ import {
 } from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface LoadingProps {
   message?: string;
@@ -16,7 +17,7 @@ const LoadingState: React.FC<LoadingProps> = ({
   message = "Loading Data...",
 }) => {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={styles.loadingContainer}>

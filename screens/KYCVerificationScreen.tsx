@@ -20,6 +20,7 @@ import {
 import { AppText } from "../components/AppText";
 import { showError } from "../utlis/toast";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface MenuItemProps {
   title: string;
@@ -47,7 +48,7 @@ const MenuItem = ({
   lockedMessage,
 }: MenuItemProps) => {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handlePress = () => {
     if (isLocked) {
@@ -136,7 +137,7 @@ export default function KYCVerificationScreen() {
   const navigation = useNavigation();
   const user = useAuthStore(state => state.user);
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const isBvnVerified = user?.bvn_verification_status === "VERIFIED";
   const isPhoneNumberVerified = user?.phone_verified_at !== null;

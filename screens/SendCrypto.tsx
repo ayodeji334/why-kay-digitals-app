@@ -63,6 +63,7 @@ import {
   useServiceCharges,
   calculateServiceCharge,
 } from "../hooks/useServiceCharges";
+import { useStyles } from "../hooks/useStyles";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -129,8 +130,7 @@ export default function SendScreen() {
   const [showScanner, setShowScanner] = useState(false);
   const [showSuspendedModal, setShowSuspendedModal] = useState(false);
   const device = useCameraDevice("back");
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const user = useUser();
   const { openLiveChat } = useLiveChat();
   const refreshUser = useAuthStore(state => state.refreshUser);
@@ -487,7 +487,7 @@ export default function SendScreen() {
     }
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.flexOne}>
         <Camera
           device={device}
           isActive={showScanner}
@@ -515,13 +515,7 @@ export default function SendScreen() {
   // prompt while the wallet is still being fetched.
   if (isLoading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          backgroundColor: colors.background,
-        }}
-      >
+      <View style={styles.screenCentered}>
         <CustomLoading loading />
       </View>
     );
@@ -544,18 +538,15 @@ export default function SendScreen() {
   }
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      edges={["right", "left"]}
-    >
+    <SafeAreaView style={styles.screen} edges={["right", "left"]}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          flexGrow: 1,
-          paddingBottom: normalizeSpacing(40),
-        }}
+        contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl refreshing={isFetching} onRefresh={onRefresh} />
         }
@@ -579,7 +570,7 @@ export default function SendScreen() {
               </AppText>
             </View>
 
-            <View style={{ gap: 10, flex: 1 }}>
+            <View style={styles.flexOneGap}>
               <View>
                 <AppText style={styles.label}>
                   Enter the amount you want to withdrawal
@@ -627,7 +618,7 @@ export default function SendScreen() {
                 </AppText>
               </View>
               <View style={styles.walletAddressRow}>
-                <View style={{ flex: 1 }}>
+                <View style={styles.flexOne}>
                   <TextInputField
                     label="Wallet Address"
                     control={control}
@@ -659,7 +650,7 @@ export default function SendScreen() {
                 options={networkOptions}
               />
 
-              <View style={{ flex: 1 }}>
+              <View style={styles.flexOne}>
                 <NumberInputField
                   label="Tag/Memo (if required by the network)"
                   control={control}
@@ -809,6 +800,15 @@ export default function SendScreen() {
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
+    flexOne: { flex: 1 },
+    screenCentered: {
+      flex: 1,
+      justifyContent: "center",
+      backgroundColor: colors.background,
+    },
+    screen: { flex: 1, backgroundColor: colors.background },
+    scrollContent: { flexGrow: 1, paddingBottom: normalizeSpacing(40) },
+    flexOneGap: { gap: 10, flex: 1 },
     container: {
       flex: 1,
       paddingHorizontal: normalizeSpacing(20),

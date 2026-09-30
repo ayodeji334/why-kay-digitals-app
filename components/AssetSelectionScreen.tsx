@@ -4,7 +4,6 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  StatusBar,
   StyleSheet,
   TextInput,
   Animated,
@@ -90,7 +89,6 @@ const AssetSelectionScreen = ({
 
   return (
     <SafeAreaView edges={["bottom", "left", "right"]} style={styles.container}>
-      <StatusBar barStyle="dark-content" />
       <Animated.View
         style={{ flex: 1, transform: [{ translateX: slideAnim }] }}
       >
@@ -112,6 +110,7 @@ const AssetSelectionScreen = ({
           </View>
         ) : (
           <FlatList
+            keyboardShouldPersistTaps="handled"
             data={assets}
             renderItem={renderCryptoItem}
             keyExtractor={item => item.id}

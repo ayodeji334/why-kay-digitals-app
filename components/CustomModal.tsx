@@ -19,6 +19,7 @@ import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface CustomModalProps {
   visible: boolean;
@@ -39,8 +40,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   showCloseButton = true,
   height = 600,
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   // RN's <Modal onDismiss> only fires on iOS. On Android there's no native
   // presentation queue to wait out, so we call the same callback ourselves
   // right after the visible -> false transition commits.

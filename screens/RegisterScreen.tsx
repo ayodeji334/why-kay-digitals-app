@@ -1,7 +1,6 @@
 import {
   RefreshControl,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -19,14 +18,14 @@ import RegisterForm, {
   RegisterFormHandle,
 } from "../components/forms/RegisterForm";
 import { AppText } from "../components/AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 import { useCallback, useRef, useState } from "react";
 import LiveChatButton from "../components/LiveChatButton";
+import { useStyles } from "../hooks/useStyles";
 
 export default function RegisterScreen() {
   const colors = useColors();
-  const styles = makeStyles(colors);
-  const resolvedTheme = useResolvedTheme();
+  const styles = useStyles(makeStyles);
   const navigation = useNavigation();
   const formRef = useRef<RegisterFormHandle>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -43,11 +42,9 @@ export default function RegisterScreen() {
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardDismissMode="interactive"
         style={styles.scrollContainer}
         contentContainerStyle={{
           flexGrow: 1,

@@ -17,6 +17,7 @@ import {
 } from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface Props {
   control: any;
@@ -53,8 +54,7 @@ const EmailInputField: React.FC<Props> = ({
   textContentType = "emailAddress",
   showSuggestions = true,
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const [isFocused, setIsFocused] = useState(false);
   const commonDomains = [
     "gmail.com",

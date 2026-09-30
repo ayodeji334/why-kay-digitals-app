@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -7,7 +7,6 @@ import {
   Pressable,
   FlatList,
   ViewToken,
-  StatusBar,
   Platform,
   useWindowDimensions,
 } from "react-native";
@@ -22,7 +21,7 @@ import {
 } from "react-native-safe-area-context";
 import { ArrowRight2 } from "iconsax-react-nativejs";
 import { AppText } from "../components/AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 
 const slides = [
   {
@@ -63,11 +62,13 @@ const marginTop = Platform.select({
 export default function IntroModalScreen() {
   const navigation = useNavigation();
   const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
   // Single source of truth for both dimensions — reactive on rotation/split-view.
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const styles = makeStyles(colors, screenWidth, screenHeight, insets.top);
+  const styles = useMemo(
+    () => makeStyles(colors, screenWidth, screenHeight, insets.top),
+    [colors, screenWidth, screenHeight, insets.top],
+  );
   const flatListRef = useRef<FlatList>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -95,11 +96,6 @@ export default function IntroModalScreen() {
 
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
-
       <FlatList
         ref={flatListRef}
         data={slides}

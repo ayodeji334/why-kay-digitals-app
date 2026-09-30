@@ -21,6 +21,7 @@ import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
 import { normalizeNigerianPhoneNumber } from "../../utils/phoneNumber";
 import { useCompleteLogin } from "../../hooks/useCompleteLogin";
+import { useStyles } from "../../hooks/useStyles";
 
 const otpSchema = yup.object().shape({
   otp: yup
@@ -65,8 +66,7 @@ const VerificationForm = ({
   const queryClient = useQueryClient();
   const { countdown, reset, isActive } = useCountdown(20);
   const otp = watch("otp");
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const isPhoneFlow = !!phoneNumber;
 
@@ -185,7 +185,7 @@ const VerificationForm = ({
     if (!isActive && otp.length == 0) {
       reset();
     }
-  }, [otp.length]);
+  }, [isActive, otp.length, reset]);
 
   return (
     <View style={styles.container}>

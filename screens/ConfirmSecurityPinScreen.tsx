@@ -1,10 +1,4 @@
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import {
@@ -26,8 +20,9 @@ import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
 import { useBiometricPromptStore } from "../stores/biometricPromptSlice";
 import { refreshBiometricState } from "../stores/biometricSlice";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 import LiveChatButton from "../components/LiveChatButton";
+import { useStyles } from "../hooks/useStyles";
 
 type FormData = {
   pin: string;
@@ -50,8 +45,7 @@ export default function ConfirmSecurityPinScreen() {
   const { pin } = route.params;
   const { token, refreshToken, user } = route.params?.params;
   const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const { control, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
@@ -94,11 +88,10 @@ export default function ConfirmSecurityPinScreen() {
 
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}

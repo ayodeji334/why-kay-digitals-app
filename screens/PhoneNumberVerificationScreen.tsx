@@ -10,12 +10,12 @@ import { COLORS } from "../constants/colors";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import PhoneNumberForm from "../components/forms/PhoneVerificationForm";
+import { useStyles } from "../hooks/useStyles";
 
 type VerificationStep = "phone" | "otp";
 
 export default function PhoneNumberVerificationScreen() {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const [step, setStep] = useState<VerificationStep>("phone");
 
   const subtitle =

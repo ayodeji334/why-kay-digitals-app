@@ -7,6 +7,7 @@ import {
 } from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export type TabOption = {
   value: string;
@@ -34,8 +35,7 @@ const TabSwitcher: React.FC<TabSwitcherProps> = ({
   activeTabTextStyle = {},
   containerStyle = {},
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={[styles.container, containerStyle]}>

@@ -17,6 +17,7 @@ import {
 } from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface Props {
   control: any;
@@ -45,7 +46,7 @@ const NumberInputField: React.FC<Props> = ({
   secureTextEntry = false,
 }) => {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   // Secure fields (e.g. PINs) start hidden; the eye icon reveals them.
   const [isHidden, setIsHidden] = useState(true);
 

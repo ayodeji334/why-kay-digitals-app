@@ -28,6 +28,7 @@ import { AppText } from "../components/AppText";
 import { removeItem, setItem, STORAGE_KEYS } from "../utlis/storage";
 import { useBiometricLogin } from "../hooks/useBiometricLogin";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const BiometricsScreen = () => {
   const navigation = useNavigation();
@@ -36,8 +37,7 @@ const BiometricsScreen = () => {
     state => state,
   );
 
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const { isReady, refreshAvailability } = useBiometricLogin();
   const isBiometricEnabled = isReady;

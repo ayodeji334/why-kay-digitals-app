@@ -37,13 +37,14 @@ import { useColors } from "../../hooks/useTheme";
 import HalfScreenModal from "../HalfScreenModal";
 import { useAuthStore, useUser } from "../../stores/authSlice";
 import { useLiveChat } from "../../context/LiveChatProvider";
+import { useStyles } from "../../hooks/useStyles";
 
 const CryptoWalletSection = () => {
   const [showAddAssetWalletModal, setShowAddAssetWalletModal] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuspendedModal, setShowSuspendedModal] = useState(false);
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const user = useUser();
   const { openLiveChat } = useLiveChat();
   const isSuspended = user?.status === "SUSPEND";
@@ -358,8 +359,7 @@ const CryptoWalletSection = () => {
 };
 
 const ActionCard = React.memo(({ title, source, onPress }: any) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <TouchableOpacity
@@ -374,8 +374,7 @@ const ActionCard = React.memo(({ title, source, onPress }: any) => {
 });
 
 const AssetItem = React.memo(({ asset, onPress }: any) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <TouchableOpacity

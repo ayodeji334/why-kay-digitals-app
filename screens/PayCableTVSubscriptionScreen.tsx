@@ -39,6 +39,7 @@ import { useFiatBalance } from "../hooks/useFiatBalance";
 import { useColors } from "../hooks/useTheme";
 import { FundingSourceSelector } from "../components/FundSourceSelector";
 import { usePointsBalance } from "../hooks/usePointBalance";
+import { useStyles } from "../hooks/useStyles";
 
 // Validation Schema
 const schema = yup.object({
@@ -58,8 +59,7 @@ interface cardValidationStatusProps {
 
 const SmartCardValidationStatus = memo(
   ({ validating, cardDetail, hasInput }: cardValidationStatusProps) => {
-    const colors = useColors();
-    const styles = makeStyles(colors);
+    const styles = useStyles(makeStyles);
 
     if (!hasInput) return null;
 
@@ -113,8 +113,7 @@ export default function PayCableTVSubscriptionScreen() {
   const navigation: any = useNavigation();
   const [cardValid, setCardValid] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const {
     control,
     handleSubmit,
@@ -183,7 +182,7 @@ export default function PayCableTVSubscriptionScreen() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [smartcardNumber, selectedNetwork, plan]);
+  }, [smartcardNumber, selectedNetwork, plan, post]);
 
   const { data: tvPlans = [], isLoading } = useQuery({
     queryKey: ["tvPlans", selectedNetwork],
@@ -299,7 +298,7 @@ export default function PayCableTVSubscriptionScreen() {
       setCardValid(false);
       setCardDetails(null);
     },
-    [networks],
+    [setValue],
   );
 
   // Blended funding model, same as the other bill-purchase screens:
@@ -315,13 +314,7 @@ export default function PayCableTVSubscriptionScreen() {
 
     const numericBalance = parseFloat(fiatBalance);
     return !isNaN(numericBalance) && selectedPlan.amount > numericBalance;
-  }, [
-    selectedPlan?.id,
-    selectedPlan?.amount,
-    usePoints,
-    pointsWorth,
-    fiatBalance,
-  ]);
+  }, [selectedPlan, usePoints, fiatBalance, pointsWorth]);
 
   const isDisabled =
     !isValid ||
@@ -335,6 +328,9 @@ export default function PayCableTVSubscriptionScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

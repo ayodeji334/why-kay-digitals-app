@@ -19,12 +19,12 @@ import { useBiometricLogin } from "../hooks/useBiometricLogin";
 import { useAuthStore } from "../stores/authSlice";
 import { showError } from "../utlis/toast";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const BiometricLoginButton = () => {
   const queryClient = useQueryClient();
   const navigation: any = useNavigation();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const user = useAuthStore(state => state.user);
   const setUser = useAuthStore(state => state.setUser);
   const setToken = useAuthStore(state => state.setToken);

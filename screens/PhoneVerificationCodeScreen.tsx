@@ -10,6 +10,7 @@ import {
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import { maskNigerianPhoneNumber } from "../utils/phoneNumber";
+import { useStyles } from "../hooks/useStyles";
 
 // Utility function to mask email
 const maskEmail = (email: string) => {
@@ -31,7 +32,7 @@ export default function VerificationCodeScreen({ route }: any) {
   const isPhoneFlow = !!phoneNumber;
 
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const maskedDestination = isPhoneFlow
     ? maskNigerianPhoneNumber(phoneNumber)
@@ -42,6 +43,9 @@ export default function VerificationCodeScreen({ route }: any) {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}

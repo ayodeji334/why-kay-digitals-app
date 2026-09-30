@@ -30,6 +30,7 @@ import CustomLoading from "../components/CustomLoading";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const BANK_NAME = "Boost Microfinance Bank ( Boost MFB )";
 
@@ -40,8 +41,7 @@ const BankTransferScreen = () => {
   const user = useAuthStore(state => state.user);
   const refreshUser = useAuthStore(state => state.refreshUser);
   const navigation: any = useNavigation();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["userBankAccounts"],

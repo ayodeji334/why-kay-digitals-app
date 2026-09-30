@@ -24,12 +24,13 @@ import { AppText } from "../components/AppText";
 import { DEFAULT_IMAGE } from "./SettingsScreen";
 import { capitalizeFirst } from "../libs/helpers";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
   const userData = useAuthStore(state => state.user);
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handleEditProfile = () => {
     navigation.navigate("EditProfile" as unknown as never);

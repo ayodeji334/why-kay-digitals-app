@@ -17,6 +17,7 @@ import { showError } from "../../utlis/toast";
 import useAxios from "../../hooks/useAxios";
 import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
+import { useStyles } from "../../hooks/useStyles";
 
 const loginSchema = yup.object().shape({
   token: yup.string().max(6, "Invalid code").required("Token is required"),
@@ -49,8 +50,7 @@ const SetNewPasswordForm: React.FC<{
   } = useForm<SetNewPasswordFormInputs>({
     resolver: yupResolver(loginSchema),
   });
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const onSubmit = async (data: SetNewPasswordFormInputs) => {
     try {

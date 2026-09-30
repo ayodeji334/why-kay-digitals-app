@@ -15,6 +15,7 @@ import FiatWalletBalanceCard from "./FiatWalletBalanceCard";
 import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
 import { useAuthStore } from "../../stores/authSlice";
+import { useStyles } from "../../hooks/useStyles";
 
 const FiatWalletSection = () => {
   const { apiGet } = useAxios();
@@ -55,8 +56,7 @@ const FiatWalletSection = () => {
     refetchOnWindowFocus: true,
   });
 
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const transactions = useMemo(() => {
     return data?.pages.flatMap(page => page.data) ?? [];

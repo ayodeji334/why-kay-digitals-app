@@ -312,7 +312,10 @@ export default function BuyGiftCardScreen() {
   const [loadingRate, setLoadingRate] = useState(false);
   const [isForFriend, setIsForFriend] = useState(false);
 
-  const requiredFields = selectedOffer?.requiredFields ?? [];
+  const requiredFields: string[] = useMemo(
+    () => selectedOffer?.requiredFields ?? [],
+    [selectedOffer?.requiredFields],
+  );
 
   // Schema now lives inside the component so it can grow recipient-field
   // rules when "buying for a friend" is on and the selected offer requires
@@ -404,7 +407,7 @@ export default function BuyGiftCardScreen() {
     } finally {
       setLoadingOffers(false);
     }
-  }, [selectedCountry, selectedRegion]);
+  }, [apiGet, selectedCountry, selectedRegion, setValue]);
 
   useResetFormOnMount(reset, { offerId: "", quantity: 1, usdAmount: 0 }, () => {
     setLoadingOffers(true);
@@ -439,7 +442,7 @@ export default function BuyGiftCardScreen() {
         setLoadingRate(false);
       }
     })();
-  }, [selectedOffer]);
+  }, [apiGet, selectedOffer]);
 
   // ── Derived values
 
@@ -473,7 +476,7 @@ export default function BuyGiftCardScreen() {
     } finally {
       setRefreshing(false);
     }
-  }, [loadOffers, selectedOffer, refreshUser]);
+  }, [loadOffers, refreshUser, selectedOffer, apiGet]);
 
   // Submit
   // Re-fetches the rate at submission time and only interrupts the user if
@@ -539,6 +542,8 @@ export default function BuyGiftCardScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "left", "right"]}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}

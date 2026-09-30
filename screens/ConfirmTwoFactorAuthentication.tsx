@@ -1,10 +1,4 @@
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   getFontFamily,
@@ -23,7 +17,8 @@ import CustomLoading from "../components/CustomLoading";
 import { useAuthStore } from "../stores/authSlice";
 import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 type FormData = {
   pin: string;
@@ -41,9 +36,7 @@ export default function ConfirmTwoFactorAuthenticationScreen() {
   const { post } = useAxios();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const { control, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: { pin: "" },
@@ -78,11 +71,10 @@ export default function ConfirmTwoFactorAuthenticationScreen() {
 
   return (
     <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}

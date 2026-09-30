@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   StyleSheet,
   View,
-  StatusBar,
   ActivityIndicator,
   Text,
   TouchableOpacity,
@@ -17,7 +16,8 @@ import {
   normalizeSpacing,
 } from "../constants/settings";
 import { AppText } from "../components/AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface WebPageScreenProps {
   route: {
@@ -32,8 +32,7 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const colors = useColors();
-  const styles = makeStyles(colors);
-  const resolvedTheme = useResolvedTheme();
+  const styles = useStyles(makeStyles);
 
   const handleRetry = () => {
     setError(false);
@@ -42,10 +41,6 @@ export default function WebPageScreen({ route }: WebPageScreenProps) {
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       {error ? (
         <View style={styles.errorContainer}>
           <View style={styles.errorIconContainer}>

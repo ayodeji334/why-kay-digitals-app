@@ -21,6 +21,7 @@ import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../AppText";
 import { AxiosError } from "axios";
 import { useColors } from "../../hooks/useTheme";
+import { useStyles } from "../../hooks/useStyles";
 
 const emailSchema = yup.object({
   newEmail: yup
@@ -61,8 +62,7 @@ const ChangeEmailForm = ({ onStepChange }: ChangeEmailFormProps) => {
   const [resendCooldown, setResendCooldown] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const setStep = (next: VerificationStep) => {
     setStepState(next);
@@ -261,9 +261,7 @@ const ChangeEmailForm = ({ onStepChange }: ChangeEmailFormProps) => {
             otpForm.reset();
           }}
         >
-          <AppText style={styles.changeEmailText}>
-            Change email address
-          </AppText>
+          <AppText style={styles.changeEmailText}>Change email address</AppText>
         </TouchableOpacity>
 
         <CustomLoading loading={otpForm.formState.isSubmitting} />

@@ -28,14 +28,14 @@ import CustomLoading from "../components/CustomLoading";
 import RequestErrorState from "../components/RequestErrorState";
 import { useAuthStore, useUser } from "../stores/authSlice";
 import { useLiveChat } from "../context/LiveChatProvider";
+import { useStyles } from "../hooks/useStyles";
 
 const CryptoWalletDepositScreen = () => {
   const route: any = useRoute();
   const navigation = useNavigation<any>();
   const [refreshing, setRefreshing] = useState(false);
   const [showSuspendedModal, setShowSuspendedModal] = useState(false);
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const user = useUser();
   const { openLiveChat } = useLiveChat();
   const refreshUser = useAuthStore(state => state.refreshUser);
@@ -58,7 +58,10 @@ const CryptoWalletDepositScreen = () => {
   // destructure into it directly (that crashed with "Cannot read property
   // 'wallets' of undefined").
   const { data, isLoading, isError, error, refetch } = useWallets();
-  const wallets: any[] = Array.isArray(data?.wallets) ? data.wallets : [];
+  const wallets: any[] = useMemo(
+    () => (Array.isArray(data?.wallets) ? data.wallets : []),
+    [data?.wallets],
+  );
 
   const selectedAssetUuid = route.params?.crypto
     ? route.params?.crypto?.uuid

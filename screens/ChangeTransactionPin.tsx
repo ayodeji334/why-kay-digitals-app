@@ -26,13 +26,14 @@ import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import { useUser } from "../stores/authSlice";
+import { useStyles } from "../hooks/useStyles";
 
 export default function ChangeTransactionPinScreen() {
   const [step, setStep] = useState<"password" | "newPin">("password");
   const { post } = useAxios();
   const [loading, setIsLoading] = useState<boolean>(false);
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const user = useUser();
 
   const maskEmail = (email?: string) => {
@@ -74,6 +75,9 @@ export default function ChangeTransactionPinScreen() {
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}

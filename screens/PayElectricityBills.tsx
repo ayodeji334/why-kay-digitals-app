@@ -40,6 +40,7 @@ import { formatAmount } from "../libs/formatNumber";
 import { useColors } from "../hooks/useTheme";
 import { FundingSourceSelector } from "../components/FundSourceSelector";
 import { usePointsBalance } from "../hooks/usePointBalance";
+import { useStyles } from "../hooks/useStyles";
 
 interface ElectricityProvider {
   biller_code: string;
@@ -72,8 +73,7 @@ interface MeterValidationStatusProps {
 
 const MeterValidationStatus = memo(
   ({ validating, userDetail, hasInput }: MeterValidationStatusProps) => {
-    const colors = useColors();
-    const styles = makeStyles(colors);
+    const styles = useStyles(makeStyles);
 
     if (!hasInput) return null;
 
@@ -130,8 +130,7 @@ const PaymentTypeSelector = memo(
     disabled,
     onSelect,
   }: PaymentTypeSelectorProps) => {
-    const colors = useColors();
-    const styles = makeStyles(colors);
+    const styles = useStyles(makeStyles);
 
     return (
       <View style={styles.paymentTypeContainer}>
@@ -205,8 +204,7 @@ export default function PayElectricityBillsScreen() {
     null,
   );
 
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -392,7 +390,13 @@ export default function PayElectricityBillsScreen() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [meterNumber, providerCode, isPrepaid, selectedProviderItems]);
+  }, [
+    meterNumber,
+    providerCode,
+    isPrepaid,
+    selectedProviderItems,
+    validateMeter,
+  ]);
 
   const handleSelectBeneficiary = useCallback(
     async (item: any) => {
@@ -500,6 +504,8 @@ export default function PayElectricityBillsScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardDismissMode="interactive"
         style={styles.scrollView}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}

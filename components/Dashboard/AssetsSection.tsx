@@ -21,11 +21,11 @@ import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../hooks/useAxios";
 import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
+import { useStyles } from "../../hooks/useStyles";
 
 // Empty state
 const EmptyAssetsState = ({ refetch }: { refetch: () => void }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={styles.emptyState}>
@@ -47,8 +47,7 @@ const EmptyAssetsState = ({ refetch }: { refetch: () => void }) => {
 const AssetsSection = () => {
   const navigation = useNavigation();
   const { apiGet } = useAxios();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const {
     data: assets,

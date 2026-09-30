@@ -12,12 +12,12 @@ import { useColors } from "../hooks/useTheme";
 // KYC "verify your phone" prompt — reused as-is rather than duplicated,
 // this screen just frames it as an update to an existing number.
 import PhoneNumberForm from "../components/forms/PhoneVerificationForm";
+import { useStyles } from "../hooks/useStyles";
 
 type VerificationStep = "phone" | "otp";
 
 export default function ChangePhoneNumberScreen() {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const [step, setStep] = useState<VerificationStep>("phone");
 
   const subtitle =

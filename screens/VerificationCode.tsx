@@ -9,6 +9,7 @@ import {
 } from "../constants/settings";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 // Utility function to mask email
 const maskEmail = (email: string) => {
@@ -28,11 +29,14 @@ const maskEmail = (email: string) => {
 export default function VerificationCodeScreen({ route }: any) {
   const { email } = route.params;
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}

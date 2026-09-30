@@ -13,6 +13,7 @@ import {
 } from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 // Mirrors the backend request timeout (see createAxiosClient in
 // api/axios.ts) so the progress bar's pace actually reflects how long
@@ -34,7 +35,7 @@ const STEP_INTERVAL_MS = 3000;
 
 export default function IdentityVerifying({ loading }: { loading: boolean }) {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const [stepIndex, setStepIndex] = useState(0);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;

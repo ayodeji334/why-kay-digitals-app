@@ -17,6 +17,7 @@ import {
   getRestrictionMessage,
   isFeatureRestricted,
 } from "../libs/tierAccess";
+import { useStyles } from "../hooks/useStyles";
 
 /** True when the signed-in user's tier can't use `feature`. */
 export const useIsFeatureRestricted = (feature: RestrictedFeature) => {
@@ -30,8 +31,7 @@ export const TierRestrictedState = ({
 }: {
   feature: RestrictedFeature;
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const navigation: any = useNavigation();
 
   return (

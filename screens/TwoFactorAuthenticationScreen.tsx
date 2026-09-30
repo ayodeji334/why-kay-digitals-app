@@ -1,11 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import {
-  View,
-  TouchableOpacity,
-  StatusBar,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import QRCode from "react-native-qrcode-svg";
 import { useNavigation } from "@react-navigation/native";
@@ -25,10 +19,11 @@ import Clipboard from "@react-native-clipboard/clipboard";
 import CustomIcon from "../components/CustomIcon";
 import { CopyIcon } from "../assets";
 import { AppText } from "../components/AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 import OtpInputField from "../components/OtpInputField";
 import { useForm } from "react-hook-form";
 import { AxiosError } from "axios";
+import { useStyles } from "../hooks/useStyles";
 
 type DisableFormData = {
   code: string;
@@ -36,15 +31,13 @@ type DisableFormData = {
 
 const TwoFactorAuthenticationScreen = () => {
   const navigation = useNavigation();
-  const resolvedTheme = useResolvedTheme();
   const { apiGet, post } = useAxios();
   const user = useAuthStore(state => state.user);
   const setUser = useAuthStore(state => state.setUser);
   const { setIsGoogleAuthenticatorEnabled, isGoogleAuthenticatorEnabled } =
     useAuthStore();
 
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const [otpauthUrl, setOtpauthUrl] = useState<string | null>(
     () => getItem("2fa_auth_url") ?? null,
@@ -164,11 +157,10 @@ const TwoFactorAuthenticationScreen = () => {
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -288,8 +280,7 @@ const SetupRow = ({
   value: string;
   onCopy: () => void;
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View>

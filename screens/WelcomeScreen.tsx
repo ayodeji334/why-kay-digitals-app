@@ -5,7 +5,6 @@ import {
   Image,
   Pressable,
   ScrollView,
-  StatusBar,
   Dimensions,
 } from "react-native";
 import { COLORS } from "../constants/colors";
@@ -19,6 +18,7 @@ import {
 import { AppText } from "../components/AppText";
 import LiveChatButton from "../components/LiveChatButton";
 import { PRIVACY_WEB_URL, TERMS_WEB_URL } from "../config";
+import { FocusAwareStatusBar } from "../components/AppStatusBar";
 
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -30,7 +30,7 @@ const WelcomeScreen = () => {
       edges={["right", "bottom", "left", "top"]}
       style={styles.container}
     >
-      <StatusBar barStyle="light-content" backgroundColor={"#03001A"} />
+      <FocusAwareStatusBar barStyle="light-content" backgroundColor="#03001A" />
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}

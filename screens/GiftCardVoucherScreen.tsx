@@ -10,6 +10,7 @@ import {
 import { AppText } from "../components/AppText";
 import { DetailRow } from "./TransactionDetail";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface Voucher {
   unit: number;
@@ -39,8 +40,7 @@ const VoucherCard = ({
   index: number;
   total: number;
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={styles.card}>
@@ -127,8 +127,7 @@ const VoucherCard = ({
 export default function GiftCardVouchersScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const { vouchers } = route.params as {
     vouchers: Voucher[];

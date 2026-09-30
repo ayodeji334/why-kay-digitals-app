@@ -28,6 +28,7 @@ import { useColors } from "../hooks/useTheme";
 import TabSwitcher from "../components/TabSwitcher";
 import { usePhoneVerification } from "../hooks/usePhoneVerification";
 import HalfScreenModal from "../components/HalfScreenModal";
+import { useStyles } from "../hooks/useStyles";
 
 export default function CryptoRatesScreen() {
   const { isPhoneVerified } = usePhoneVerification();
@@ -36,8 +37,7 @@ export default function CryptoRatesScreen() {
   const [selectedCrypto, setSelectedCrypto] = useState<string | null>(null);
   const [rawAmount, setRawAmount] = useState("");
   const [formattedAmount, setFormattedAmount] = useState("");
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const { apiGet } = useAxios();
   const navigation: any = useNavigation();
@@ -154,6 +154,9 @@ export default function CryptoRatesScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         contentContainerStyle={{ paddingHorizontal: normalizeSpacing(16) }}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

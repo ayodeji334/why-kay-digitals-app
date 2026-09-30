@@ -1,12 +1,11 @@
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   FlatList,
   TextInput,
-  StatusBar,
   StyleSheet,
   Image,
   RefreshControl,
@@ -25,7 +24,8 @@ import { formatAmount } from "../libs/formatNumber";
 import { useWallets } from "../hooks/useWallet";
 import { TradeIntent } from "../libs/types";
 import { AppText } from "../components/AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 type CryptoWalletScreenRoute = {
   CryptoWallets: {
@@ -42,13 +42,12 @@ const CryptoWalletScreen = () => {
   const { data: { wallets = [] } = {}, refetch: refetchWallets } = useWallets();
 
   const colors = useColors();
-  const styles = makeStyles(colors);
-  const resolvedTheme = useResolvedTheme();
+  const styles = useStyles(makeStyles);
 
-  const refetchData = () => {
+  const refetchData = useCallback(() => {
     refetch();
     refetchWallets();
-  };
+  }, [refetch, refetchWallets]);
 
   const mergedList = useMemo(() => {
     const walletAssetIds = new Set((wallets ?? []).map((w: any) => w.asset_id));
@@ -184,9 +183,10 @@ const CryptoWalletScreen = () => {
     );
   };
 
+  // Refresh once on mount (refetchData is stable).
   useEffect(() => {
     refetchData();
-  }, []);
+  }, [refetchData]);
 
   const handleWhatsApp = () => {
     Linking.openURL("https://wa.me/2347018607772");
@@ -207,10 +207,6 @@ const CryptoWalletScreen = () => {
 
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -223,7 +219,7 @@ const CryptoWalletScreen = () => {
         />
         <Text
           style={{
-            fontSize: normalize(20),
+            fontSize: normalize(18),
             fontFamily: getFontFamily("400"),
             marginVertical: normalizeSpacing(7),
             paddingVertical: normalizeSpacing(5),
@@ -247,6 +243,7 @@ const CryptoWalletScreen = () => {
       </View>
 
       <FlatList
+        keyboardShouldPersistTaps="handled"
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}

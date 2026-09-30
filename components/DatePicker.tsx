@@ -15,6 +15,7 @@ import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
 import { Calendar } from "iconsax-react-nativejs";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useStyles } from "../hooks/useStyles";
 
 interface DatePickerFieldProps {
   label: string;
@@ -142,7 +143,7 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
       : today,
   );
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const toggle = () => setVisible(!visible);
 
@@ -157,15 +158,13 @@ const DatePicker: React.FC<DatePickerFieldProps> = ({
     toggle();
   };
 
-  const displayText = useMemo(
-    () =>
-      value
-        ? value
-        : `${String(today.getDate()).padStart(2, "0")}-${String(
-            today.getMonth() + 1,
-          ).padStart(2, "0")}-${today.getFullYear()}`,
-    [value],
-  );
+  const displayText = useMemo(() => {
+    if (value) return value;
+    const now = new Date();
+    return `${String(now.getDate()).padStart(2, "0")}-${String(
+      now.getMonth() + 1,
+    ).padStart(2, "0")}-${now.getFullYear()}`;
+  }, [value]);
 
   const dayOptions = useMemo(
     () => Array.from({ length: 31 }, (_, i) => String(i + 1)),

@@ -1,4 +1,4 @@
-import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import ForgotPasswordForm from "../components/forms/ForgotPasswordForm";
@@ -8,21 +8,21 @@ import {
   normalizeSpacing,
 } from "../constants/settings";
 import { AppText } from "../components/AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 import LiveChatButton from "../components/LiveChatButton";
+import { useStyles } from "../hooks/useStyles";
 
 export default function ForgetPasswordScreen() {
-  const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        style={styles.scrollContainer}
+      >
         <View style={styles.header}>
           <AppText style={styles.title}>Forgot Password</AppText>
           <AppText

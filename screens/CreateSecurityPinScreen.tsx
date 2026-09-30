@@ -1,7 +1,6 @@
 import {
   Alert,
   ScrollView,
-  StatusBar,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -19,8 +18,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import OtpInputField from "../components/OtpInputField";
 import { AppText } from "../components/AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 import LiveChatButton from "../components/LiveChatButton";
+import { useStyles } from "../hooks/useStyles";
 
 type FormData = {
   pin: string;
@@ -40,9 +40,7 @@ export default function CreateSecurityPinScreen() {
     resolver: yupResolver(schema),
     defaultValues: { pin: "" },
   });
-  const colors = useColors();
-  const styles = makeStyles(colors);
-  const resolvedTheme = useResolvedTheme();
+  const styles = useStyles(makeStyles);
 
   const onSubmit = (data: FormData) => {
     if (data.pin.length !== 4) {
@@ -58,11 +56,10 @@ export default function CreateSecurityPinScreen() {
 
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}

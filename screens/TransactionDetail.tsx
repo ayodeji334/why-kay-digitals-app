@@ -4,7 +4,6 @@ import {
   View,
   StyleSheet,
   ScrollView,
-  StatusBar,
   TouchableOpacity,
   Image,
   LayoutChangeEvent,
@@ -32,12 +31,13 @@ import { captureRef } from "react-native-view-shot";
 import ShareLib from "react-native-share";
 import { useAuthStore } from "../stores/authSlice";
 import { generatePDF } from "react-native-html-to-pdf";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 import CustomModal from "../components/CustomModal";
 import { showValue } from "../libs/requestError";
 import LogoPatternBackground, {
   BRAND_LOGO,
 } from "../components/LogoPatternBackground";
+import { useStyles } from "../hooks/useStyles";
 
 const APP_NAME = "WHYKAY";
 const RECEIPT_CARD_WIDTH = 340;
@@ -53,7 +53,7 @@ export const DetailRow: React.FC<{
 }> = ({ label, value, color, copyable = false, truncate = true }) => {
   const [copied, setCopied] = useState(false);
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const handleCopy = () => {
     if (value) {
       Clipboard.setString(String(value));
@@ -146,8 +146,7 @@ const TransactionDetailScreen = () => {
     height: number;
   } | null>(null);
   const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handleReceiptLayout = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout;
@@ -263,7 +262,14 @@ const TransactionDetailScreen = () => {
       : isProcessing
       ? "Your transaction is being processed"
       : "Transaction failed";
-  }, [transaction, isSuccess, isProcessing]);
+  }, [
+    isFlagged,
+    isSuccess,
+    transaction?.category,
+    transaction?.meta?.offer_snapshot?.brand_name,
+    transaction?.meta?.asset_symbol,
+    isProcessing,
+  ]);
 
   console.log(transaction);
   /**
@@ -442,7 +448,7 @@ const TransactionDetailScreen = () => {
       (row): row is ReceiptRow =>
         row !== null && row.value != null && row.value !== "",
     );
-  }, [transaction, isSuccess, isProcessing, user?.uuid]);
+  }, [transaction, user?.uuid]);
 
   const shareAsPdf = async () => {
     const filename = `Transaction-Receipt-${Date.now()}-${transaction?.uuid?.replace(
@@ -543,10 +549,6 @@ const TransactionDetailScreen = () => {
 
   return (
     <SafeAreaView edges={["right", "left", "bottom"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

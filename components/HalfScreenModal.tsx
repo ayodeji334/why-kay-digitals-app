@@ -16,6 +16,7 @@ import CustomIcon from "./CustomIcon";
 import { CloseIcon } from "../assets";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface HalfScreenModalProps {
   isVisible: boolean;
@@ -48,8 +49,7 @@ const HalfScreenModal = ({
   isDangerous = false,
   showCloseButton = false,
 }: HalfScreenModalProps) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   return (
     <Modal visible={isVisible} transparent animationType="fade">
       <View style={styles.overlay}>

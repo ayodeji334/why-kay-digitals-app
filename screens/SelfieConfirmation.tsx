@@ -17,6 +17,7 @@ import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import CustomLoading from "../components/CustomLoading";
 import IdentityVerifying from "../components/IdentityVerifying";
+import { useStyles } from "../hooks/useStyles";
 
 // By the time we get here, LivenessCheck has already run its full
 // align/capture/blink/turn challenge and handed back a ready-to-submit,
@@ -31,7 +32,7 @@ export default function SelfieConfirmationScreen() {
   const axiosInstance = useAxios();
   const setUser = useAuthStore(state => state.setUser);
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");

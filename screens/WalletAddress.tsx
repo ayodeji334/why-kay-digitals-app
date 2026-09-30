@@ -33,6 +33,7 @@ import { captureRef } from "react-native-view-shot";
 import ShareLib from "react-native-share";
 import { useColors } from "../hooks/useTheme";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useStyles } from "../hooks/useStyles";
 
 const APP_NAME = "WHYKAY";
 const SHARE_CARD_WIDTH = 340;
@@ -72,7 +73,7 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
     wallet?.chains?.[0]?.chain ?? "",
   );
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handleGenerateWallet = async () => {
     if (isGenerating) return;

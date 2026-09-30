@@ -1,4 +1,4 @@
-import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import {
@@ -13,16 +13,16 @@ import { AppText } from "../components/AppText";
 import BiometricLoginButton from "../components/BiometricLoginBtn";
 import { useBiometricLogin } from "../hooks/useBiometricLogin";
 import { capitalizeFirst } from "../libs/helpers";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 import LiveChatButton from "../components/LiveChatButton";
+import { useStyles } from "../hooks/useStyles";
 
 export default function ReturningUserLoginScreen() {
   const navigation = useNavigation();
   const user = useAuthStore(state => state.user);
   const { isReady } = useBiometricLogin();
   const colors = useColors();
-  const styles = makeStyles(colors);
-  const resolvedTheme = useResolvedTheme();
+  const styles = useStyles(makeStyles);
 
   const handleNavigate = () => {
     navigation.navigate("SignIn" as never);
@@ -30,11 +30,12 @@ export default function ReturningUserLoginScreen() {
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        style={styles.scrollContainer}
+      >
         <View style={styles.header}>
           <AppText style={styles.title}>
             Welcome Back,{" "}

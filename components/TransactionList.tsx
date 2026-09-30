@@ -20,6 +20,7 @@ import {
 import { EmptyTransactionState } from "../screens/TransactionHistory";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface TransactionSectionListProps {
   transactions: any[];
@@ -77,7 +78,7 @@ const TransactionItem = ({ item }: any) => {
   const navigation: any = useNavigation();
   const isCredit = item?.direction?.toUpperCase() === "CREDIT";
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <TouchableOpacity
@@ -142,8 +143,7 @@ const TransactionSectionList: React.FC<TransactionSectionListProps> = ({
   ListHeaderComponent,
   contentContainerStyle,
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const groupedTransactions = useMemo(
     () => groupTransactionsByDate(transactions),

@@ -23,6 +23,7 @@ import CustomIcon from "./CustomIcon";
 import { ArrowDown2 } from "iconsax-react-nativejs";
 import { Country, CountryPickerProps } from "../libs/types";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const defaultGetCountryName = (country: Country): string => {
   if (!country.name) return country.cca2;
@@ -39,8 +40,7 @@ interface CountryRowProps {
 
 const CountryRow = React.memo(
   ({ item, getCountryName, onPress, isSelected }: CountryRowProps) => {
-    const colors = useColors();
-    const styles = makeStyles(colors);
+    const styles = useStyles(makeStyles);
 
     return (
       <Pressable
@@ -94,8 +94,7 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const selectedCountry = value ?? defaultCountry;
 

@@ -12,16 +12,19 @@ import { useNavigation } from "@react-navigation/native";
 import ChangePasswordForm from "../components/forms/ChangePasswordForm";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export default function ChangePasswordScreen() {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const navigation = useNavigation();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}

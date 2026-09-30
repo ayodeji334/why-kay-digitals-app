@@ -36,6 +36,7 @@ import { useColors } from "../hooks/useTheme";
 import { usePointsBalance } from "../hooks/usePointBalance";
 import { FundingSourceSelector } from "../components/FundSourceSelector";
 import { useAuthStore } from "../stores/authSlice";
+import { useStyles } from "../hooks/useStyles";
 
 const schema = yup.object({
   phone: yup
@@ -92,8 +93,7 @@ export default function BuyDataScreen() {
     mode: "onChange",
   });
 
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const selectedNetwork = watch("network");
   const selectedPlanCode = watch("plan");
@@ -207,13 +207,7 @@ export default function BuyDataScreen() {
 
     const numericBalance = parseFloat(fiatBalance);
     return !isNaN(numericBalance) && selectedPlan.amount > numericBalance;
-  }, [
-    selectedPlan?.id,
-    selectedPlan?.amount,
-    usePoints,
-    pointsWorth,
-    fiatBalance,
-  ]);
+  }, [selectedPlan, usePoints, fiatBalance, pointsWorth]);
 
   const networks = [
     { id: "mtn", label: "MTN", logo: require("../assets/mtn-logo.webp") },
@@ -247,6 +241,9 @@ export default function BuyDataScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         style={styles.scrollView}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}

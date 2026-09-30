@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Modal,
   View,
@@ -21,6 +21,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export default function BankAccountModal({
   visible,
@@ -40,7 +41,7 @@ export default function BankAccountModal({
     null,
   );
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   // Fetch beneficiaries
   const { data, isLoading, isError, refetch, isRefetching } = useQuery({
@@ -78,7 +79,7 @@ export default function BankAccountModal({
     setValue("account_number", beneficiary?.identifier);
   };
 
-  const validateAccount = async () => {
+  const validateAccount = useCallback(async () => {
     if (!selectedBank || accountNumber.length !== 10) return;
     setValidating(true);
     setError("");
@@ -110,14 +111,14 @@ export default function BankAccountModal({
     } finally {
       setValidating(false);
     }
-  };
+  }, [selectedBank, accountNumber, post, setAccountDetails]);
 
   useEffect(() => {
     if (accountNumber.length === 10 && selectedBank) {
       const timer = setTimeout(() => validateAccount(), 500);
       return () => clearTimeout(timer);
     }
-  }, [accountNumber, selectedBank]);
+  }, [accountNumber, selectedBank, validateAccount]);
 
   const insets = useSafeAreaInsets();
 
@@ -132,7 +133,7 @@ export default function BankAccountModal({
     if (!visible) {
       refetch();
     }
-  }, [visible]);
+  }, [refetch, visible]);
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
@@ -153,6 +154,9 @@ export default function BankAccountModal({
         </View>
 
         <ScrollView
+          automaticallyAdjustKeyboardInsets
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           style={{ flex: 1, paddingHorizontal: normalizeSpacing(16) }}

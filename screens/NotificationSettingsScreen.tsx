@@ -20,6 +20,7 @@ import {
   PushSubscriptionChangedState,
 } from "react-native-onesignal";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export default function NotificationSettingsScreen() {
   const { patch } = useAxios();
@@ -27,8 +28,7 @@ export default function NotificationSettingsScreen() {
   const [isPushLoading, setIsPushLoading] = useState(false);
   const [isEmailLoading, setIsEmailLoading] = useState(false);
 
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const backendPushEnabled = userData?.is_push_notification_enabled ?? false;
 

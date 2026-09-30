@@ -1,6 +1,5 @@
 import {
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -31,12 +30,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { showError } from "../utlis/toast";
 import { AxiosError } from "axios";
 import { AppText } from "../components/AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 import StepUpVerificationModal, {
   StepUpResult,
 } from "../components/StepUpVerificationModal";
 import { useStepUpAvailability } from "../hooks/useStepUpAvailability";
 import { HIGH_VALUE_WITHDRAWAL_THRESHOLD } from "../constants/transactionLimits";
+import { useStyles } from "../hooks/useStyles";
 
 type FormData = {
   pin: string;
@@ -50,7 +50,6 @@ export default function ConfirmTransactionScreen() {
   const { post, apiGet } = useAxios();
   const { paymentRequestConfig, settleIdempotencyKey, handleUnknownOutcome } =
     useIdempotencyKey();
-  const resolvedTheme = useResolvedTheme();
 
   const navigation: any = useNavigation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -62,7 +61,7 @@ export default function ConfirmTransactionScreen() {
     defaultValues: { pin: "" },
   });
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   // WithdrawalScreen forwards the real threshold from the wallet summary
   // (`high_value_withdrawal_threshold`) — only fall back to the static
@@ -227,11 +226,10 @@ export default function ConfirmTransactionScreen() {
 
   return (
     <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}

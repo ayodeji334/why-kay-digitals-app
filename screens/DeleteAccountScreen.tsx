@@ -23,6 +23,7 @@ import { AccountDeleteIcon } from "../assets";
 import useAxios from "../hooks/useAxios";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const deleteReasons = [
   "I no longer need the account",
@@ -45,7 +46,7 @@ export default function DeleteAccountScreen() {
   const { setIsAuthenticated } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handleDeletePress = () => setModalVisible(true);
 
@@ -117,6 +118,7 @@ export default function DeleteAccountScreen() {
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
       <FlatList
+        keyboardShouldPersistTaps="handled"
         data={deleteReasons}
         keyExtractor={item => item}
         renderItem={renderReason}

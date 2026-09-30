@@ -23,6 +23,7 @@ import OtpInputField from "../OtpInputField";
 import PhoneNumberInputField from "../PhoneNumberInputField";
 import parsePhoneNumberFromString from "libphonenumber-js";
 import { useColors } from "../../hooks/useTheme";
+import { useStyles } from "../../hooks/useStyles";
 
 const NIGERIA_MOBILE_PREFIXES = [
   "0701",
@@ -131,7 +132,7 @@ const PhoneNumberForm = ({ onStepChange }: PhoneNumberFormProps) => {
 
   const colors = useColors();
 
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const startResendCooldown = () => {
     if (intervalRef.current) {

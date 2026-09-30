@@ -39,6 +39,7 @@ import { setItem } from "../utlis/storage";
 import { biometricPromptKey } from "../stores/biometricPromptSlice";
 import { useQueryClient } from "@tanstack/react-query";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export const DEFAULT_IMAGE = require("../assets/avatar.png");
 interface MenuItemProps {
@@ -55,8 +56,7 @@ interface MenuItemProps {
 }
 
 const Section = ({ title, children, style }: any) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={[styles.section, style]}>
@@ -78,7 +78,7 @@ const MenuItem = ({
   IconComponent = <ArrowRight2 />,
 }: MenuItemProps) => {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const bgColor = isDangerous ? "#DC262611" : "#EFF7EC";
   return (
     <TouchableOpacity
@@ -136,8 +136,7 @@ export default function SettingsScreen() {
   const appVersion = DeviceInfo.getVersion();
   const logout = useAuthStore(state => state.logout);
   const user = useAuthStore(state => state.user);
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handleEditInfo = () => {
     navigation.navigate("EditProfile" as never);

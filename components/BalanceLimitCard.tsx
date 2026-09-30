@@ -10,6 +10,7 @@ import { COLORS } from "../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export default function BalanceLimitCard({ walletSummary }: any) {
   const navigation = useNavigation<any>();
@@ -20,12 +21,11 @@ export default function BalanceLimitCard({ walletSummary }: any) {
 
   const monthlyProgress =
     walletSummary && walletSummary.monthly_limit
-      ? walletSummary.total_withdrawals_this_month /
-        walletSummary.monthly_limit
+      ? walletSummary.total_withdrawals_this_month / walletSummary.monthly_limit
       : 0;
 
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <>

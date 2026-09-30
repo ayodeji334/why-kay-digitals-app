@@ -11,6 +11,7 @@ import { CheckCircleIcon } from "../assets";
 import { AddCircle } from "iconsax-react-nativejs";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export default function BankAccountSelector({
   bankName,
@@ -23,8 +24,7 @@ export default function BankAccountSelector({
   accountNumber: string;
   setShowBankModal: Dispatch<SetStateAction<boolean>>;
 }) {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={styles.bankAccountSection}>

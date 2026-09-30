@@ -32,6 +32,7 @@ import { storage, STORAGE_KEYS } from "../utlis/storage";
 import { showError } from "../utlis/toast";
 import useAxios from "../hooks/useAxios";
 import { fetchBiometricChallenge } from "../utlis/biometricChallenge";
+import { useStyles } from "../hooks/useStyles";
 
 // Same instance shape as useBiometricLogin's — createSignature() is what
 // forces the OS Face ID/Touch ID prompt and only succeeds if it passes.
@@ -97,7 +98,7 @@ export default function StepUpVerificationModal({
 }: Props) {
   const { client } = useAxios();
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const { hasAuthenticator, hasBiometric, biometryLabel, hasAnyStepUpMethod } =
     useStepUpAvailability();
 

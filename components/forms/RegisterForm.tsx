@@ -29,10 +29,11 @@ import {
 import { SelectInput } from "../SelectInputField";
 import useAxios from "../../hooks/useAxios";
 import EmailInputField from "../EmailInputField";
-import { OneSignal } from "react-native-onesignal";
 import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
 import { getDeviceMeta } from "../../utlis/device";
+import { useStyles } from "../../hooks/useStyles";
+import { useUsernameAvailability } from "../../hooks/useUsernameAvailability";
 
 export interface RegisterFormHandle {
   refetchHeardAboutOptions: () => void;
@@ -56,28 +57,13 @@ const registerSchema = yup.object().shape({
   how_do_heard_about_us: yup.string().required("Please select an option"),
 });
 
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debouncedValue;
-}
-
 const RegisterForm = forwardRef<RegisterFormHandle>((_, ref) => {
   const { apiGet, post } = useAxios();
   const { showSuccess, showError } = useToastHelpers();
   const navigation: any = useNavigation();
   const [loading, setLoading] = useState(false);
-  const [checkingUsername, setCheckingUsername] = useState(false);
-  const [usernameStatus, setUsernameStatus] = useState<{
-    available?: boolean;
-    message?: string;
-  }>({});
 
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const {
     control,
@@ -91,7 +77,13 @@ const RegisterForm = forwardRef<RegisterFormHandle>((_, ref) => {
   });
 
   const username = useWatch({ control, name: "username" });
-  const debouncedUsername = useDebounce(username?.trim() ?? "", 500);
+  // Shared with Edit Profile: debounced availability check, and submit stays
+  // blocked while a check is pending/in flight or the name is taken.
+  const {
+    isChecking: checkingUsername,
+    status: usernameStatus,
+    isBlocking: usernameBlocksSubmit,
+  } = useUsernameAvailability({ username, setError, clearErrors });
 
   const {
     data: heardAboutOptions = [],
@@ -128,67 +120,9 @@ const RegisterForm = forwardRef<RegisterFormHandle>((_, ref) => {
     }
   }, [heardAboutOptionsFailed, showError]);
 
-  useEffect(() => {
-    setUsernameStatus({});
-  }, [username]);
-
-  useEffect(() => {
-    if (!debouncedUsername || debouncedUsername.length < 5) {
-      setUsernameStatus({});
-      clearErrors("username");
-      setCheckingUsername(false);
-      return;
-    }
-
-    let cancelled = false;
-    const controller = new AbortController();
-
-    setCheckingUsername(true);
-
-    apiGet(
-      `/auth/check-username?username=${encodeURIComponent(debouncedUsername)}`,
-      {
-        signal: controller.signal,
-      },
-    )
-      .then(res => {
-        if (cancelled) return;
-
-        const available = res.data.available;
-        setUsernameStatus({ available, message: res.data.message });
-
-        if (available === false) {
-          setError("username", {
-            type: "manual",
-            message: "Username is already taken",
-          });
-        } else {
-          clearErrors("username");
-        }
-      })
-      .catch(err => {
-        if (
-          cancelled ||
-          err.name === "CanceledError" ||
-          err.name === "AbortError"
-        )
-          return;
-        setUsernameStatus({
-          available: false,
-          message: "Couldn't check that username",
-        });
-      })
-      .finally(() => {
-        if (!cancelled) setCheckingUsername(false);
-      });
-
-    return () => {
-      cancelled = true;
-      controller.abort();
-    };
-  }, [debouncedUsername, apiGet, setError, clearErrors]);
-
   const handleRegister = async (values: any) => {
+    // The button is disabled while checking, but guard the submit path too.
+    if (usernameBlocksSubmit) return;
     const deviceMeta = await getDeviceMeta();
     try {
       setLoading(true);
@@ -212,8 +146,7 @@ const RegisterForm = forwardRef<RegisterFormHandle>((_, ref) => {
     }
   };
 
-  const disableSubmit =
-    loading || checkingUsername || usernameStatus.available === false;
+  const disableSubmit = loading || usernameBlocksSubmit;
 
   return (
     <View style={styles.container}>
@@ -282,7 +215,7 @@ const RegisterForm = forwardRef<RegisterFormHandle>((_, ref) => {
 
       <TouchableOpacity
         activeOpacity={0.8}
-        style={[styles.button, disableSubmit && { opacity: 0.6 }]}
+        style={[styles.button, disableSubmit && styles.buttonDisabled]}
         onPress={handleSubmit(handleRegister)}
         disabled={disableSubmit}
       >
@@ -302,6 +235,7 @@ export default RegisterForm;
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
+    buttonDisabled: { opacity: 0.6 },
     container: {
       paddingVertical: normalizeSpacing(20),
       flexGrow: 1,

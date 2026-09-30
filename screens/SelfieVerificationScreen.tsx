@@ -25,6 +25,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import LivenessCheck from "../components/LivenessCheck";
+import { useStyles } from "../hooks/useStyles";
 
 // What the user needs to know before starting, so the check passes on the
 // first try instead of failing (and forcing a retry) partway through.
@@ -57,8 +58,7 @@ export default function SelfieVerificationScreen() {
   const { bvn }: any = route.params ?? {};
   const [showCamera, setShowCamera] = useState(false);
   const [loading, setLoading] = useState(false);
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handleVerifyClick = async () => {
     setLoading(true);

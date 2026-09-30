@@ -28,6 +28,7 @@ import {
 import CustomIcon from "../components/CustomIcon";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface MenuItemProps {
   title: string;
@@ -56,7 +57,7 @@ export const MenuItem = ({
   disable = false,
 }: MenuItemProps) => {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <TouchableOpacity
@@ -111,8 +112,7 @@ export default function AccountSecurityScreen() {
     state => state?.isGoogleAuthenticatorEnabled,
   );
 
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const navigation = useNavigation();
   const setIsShowBalance = useAuthStore(state => state.setIsShowBalance);
   const isShowBalance = useAuthStore(state => state.isShowBalance);

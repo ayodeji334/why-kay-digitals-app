@@ -1,6 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
-  StatusBar,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -26,7 +25,47 @@ import { formatDate } from "../libs/formatDate";
 import { AppText } from "../components/AppText";
 import TabSwitcher from "../components/TabSwitcher";
 import { showError } from "../utlis/toast";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
+
+/** One notification. Memoised so paging in more doesn't re-render every row. */
+const NotificationRow = React.memo(
+  ({
+    item,
+    onPress,
+    styles,
+  }: {
+    item: any;
+    onPress: (item: any) => void;
+    styles: ReturnType<typeof makeStyles>;
+  }) => {
+    const isUnread = !item.is_read;
+    return (
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => onPress(item)}
+        style={[styles.notificationCard, isUnread && styles.unreadBackground]}
+        accessibilityRole="button"
+        accessibilityLabel={`${isUnread ? "Unread: " : ""}${item.title}`}
+      >
+        <View style={styles.assetLeft}>
+          <View style={styles.assetInfo}>
+            <AppText style={styles.assetName}>{item.title}</AppText>
+            <View style={styles.metaRow}>
+              {isUnread && <View style={styles.unreadDot} />}
+              <AppText style={styles.timeText}>
+                {formatDate(item?.created_at, { dateFormat: "relative" })}
+              </AppText>
+            </View>
+          </View>
+          <AppText style={styles.assetSymbol} numberOfLines={1}>
+            {item.message}
+          </AppText>
+        </View>
+      </TouchableOpacity>
+    );
+  },
+);
 
 export default function NotificationsScreen() {
   const { apiGet } = useAxios();
@@ -34,9 +73,7 @@ export default function NotificationsScreen() {
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
   const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
   const queryClient = useQueryClient();
-  const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const fetchNotifications = async ({ pageParam = 1 }) => {
     const res = await apiGet("/notifications/user", {
@@ -82,20 +119,23 @@ export default function NotificationsScreen() {
     });
   }, [allNotifications, activeTab]);
 
-  const handleNotificationClick = async (notification: any) => {
-    setSelectedNotification(notification);
+  const handleNotificationClick = useCallback(
+    async (notification: any) => {
+      setSelectedNotification(notification);
 
-    if (!notification.is_read) {
-      try {
-        await apiGet(`/notifications/${notification.id}/mark-as-read`);
-        refetch();
-        queryClient.invalidateQueries({ queryKey: ["unreadNotifications"] });
-      } catch (error) {
-        queryClient.invalidateQueries({ queryKey: ["unreadNotifications"] });
-        console.error("Failed to mark as read", error);
+      if (!notification.is_read) {
+        try {
+          await apiGet(`/notifications/${notification.id}/mark-as-read`);
+          refetch();
+          queryClient.invalidateQueries({ queryKey: ["unreadNotifications"] });
+        } catch (error) {
+          queryClient.invalidateQueries({ queryKey: ["unreadNotifications"] });
+          console.error("Failed to mark as read", error);
+        }
       }
-    }
-  };
+    },
+    [apiGet, refetch, queryClient],
+  );
 
   const handleMarkAllAsRead = async () => {
     if (isMarkingAllAsRead) return;
@@ -125,40 +165,16 @@ export default function NotificationsScreen() {
 
   const hasUnread = hasReadData?.has_unread ?? false;
 
-  const renderItem = ({ item }: { item: any }) => {
-    const isUnread = !item.is_read;
-
-    return (
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => handleNotificationClick(item)}
-        style={[styles.notificationCard, isUnread && styles.unreadBackground]}
-      >
-        <View style={styles.assetLeft}>
-          <View style={styles.assetInfo}>
-            <AppText style={styles.assetName}>{item.title}</AppText>
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 1 }}
-            >
-              {isUnread && <View style={styles.unreadDot} />}
-              <AppText
-                style={{
-                  fontSize: normalize(16),
-                  fontFamily: getFontFamily("800"),
-                  color: colors.text,
-                }}
-              >
-                {formatDate(item?.created_at, { dateFormat: "relative" })}
-              </AppText>
-            </View>
-          </View>
-          <AppText style={styles.assetSymbol} numberOfLines={1}>
-            {item.message}
-          </AppText>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+  const renderItem = useCallback(
+    ({ item }: { item: any }) => (
+      <NotificationRow
+        item={item}
+        onPress={handleNotificationClick}
+        styles={styles}
+      />
+    ),
+    [handleNotificationClick, styles],
+  );
 
   const renderFooter = () => {
     if (!isFetchingNextPage) return null;
@@ -173,10 +189,6 @@ export default function NotificationsScreen() {
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <View style={styles.headerRow}>
         <TouchableOpacity
           hitSlop={10}
@@ -268,6 +280,12 @@ export default function NotificationsScreen() {
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
+    metaRow: { flexDirection: "row", alignItems: "center", gap: 1 },
+    timeText: {
+      fontSize: normalize(16),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
     container: { flex: 1, backgroundColor: colors.background },
     scrollContainer: { flex: 1, paddingVertical: normalizeSpacing(20) },
     actionsContainer: {

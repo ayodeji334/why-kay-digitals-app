@@ -13,6 +13,7 @@ import useAxios from "../hooks/useAxios";
 import { showError, showSuccess } from "../utlis/toast";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface NoWalletProps {
   selectedAssetUuid: string;
@@ -23,8 +24,7 @@ const NoWallet: React.FC<NoWalletProps> = ({
   selectedAssetUuid,
   onSuccess,
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const [isGenerating, setIsGenerating] = useState(false);
   const { apiGet } = useAxios();
 
@@ -41,8 +41,7 @@ const NoWallet: React.FC<NoWalletProps> = ({
     } catch (err) {
       if (err instanceof AxiosError) {
         showError(
-          err.response?.data?.message ??
-            "Cannot generate wallet at the moment",
+          err.response?.data?.message ?? "Cannot generate wallet at the moment",
         );
       } else {
         showError("An unexpected error occurred. Please try again.");

@@ -47,6 +47,7 @@ import NoWallet from "../components/NoWallet";
 import RequestErrorState from "../components/RequestErrorState";
 import { showValue } from "../libs/requestError";
 import { useAuthStore } from "../stores/authSlice";
+import { useStyles } from "../hooks/useStyles";
 
 type CryptoBuyScreenParams = {
   CryptoBuy: {
@@ -164,8 +165,7 @@ export default function CryptoBuyScreen() {
   const acknowledgedMarketPriceRef = useRef<number>(0);
   const rateOverriddenRef = useRef(false);
 
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const {
     control,
@@ -425,13 +425,7 @@ export default function CryptoBuyScreen() {
 
   if (isLoading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          backgroundColor: colors.background,
-        }}
-      >
+      <View style={styles.screenCentered}>
         <CustomLoading loading={isLoading} />
       </View>
     );
@@ -461,7 +455,7 @@ export default function CryptoBuyScreen() {
 
   if (!assetDetails) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={styles.screen}>
         <NoWallet
           selectedAssetUuid={selectedAssetUuid}
           onSuccess={() => {
@@ -473,18 +467,14 @@ export default function CryptoBuyScreen() {
   }
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        paddingBottom: normalizeSpacing(20),
-        backgroundColor: colors.background,
-      }}
-      edges={["right", "left"]}
-    >
+    <SafeAreaView style={styles.safeArea} edges={["right", "left"]}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -575,25 +565,12 @@ export default function CryptoBuyScreen() {
                   </AppText>
                 )}
 
-                <View
-                  style={{
-                    marginVertical: normalizeSpacing(10),
-                    backgroundColor: colors.inputBackground,
-                    padding: normalizeSpacing(10),
-                    borderRadius: 10,
-                    gap: 8,
-                  }}
-                >
+                <View style={styles.breakdownCard}>
                   <AppText style={[styles.note]}>
                     Wallet Balance, Exchange Rate & Fee Breakdown
                   </AppText>
 
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
+                  <View style={styles.rowBetween}>
                     <AppText style={[styles.balance]}>Fiat Balance:</AppText>
                     <AppText style={styles.balance}>
                       {formatAmount(fiatBalance, {
@@ -603,14 +580,9 @@ export default function CryptoBuyScreen() {
                     </AppText>
                   </View>
 
-                  <View style={{ height: 1, backgroundColor: colors.border }} />
+                  <View style={styles.divider} />
 
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
+                  <View style={styles.rowBetween}>
                     <AppText style={[styles.balance]}>Buy Rate:</AppText>
                     <AppText style={styles.balance}>
                       {formatAmount(
@@ -622,12 +594,7 @@ export default function CryptoBuyScreen() {
                     </AppText>
                   </View>
 
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
+                  <View style={styles.rowBetween}>
                     <AppText style={[styles.balance]}>Market Price:</AppText>
                     <AppText style={styles.balance}>
                       {formatAmount(
@@ -643,16 +610,9 @@ export default function CryptoBuyScreen() {
 
                   {feeBreakdown && amount > 0 && (
                     <>
-                      <View
-                        style={{ height: 1, backgroundColor: colors.border }}
-                      />
+                      <View style={styles.divider} />
 
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                        }}
-                      >
+                      <View style={styles.rowBetween}>
                         <AppText style={[styles.balance]}>You Buy:</AppText>
                         <AppText style={styles.balance}>
                           {feeBreakdown.coinAmount} {assetDetails?.symbol} (≈{" "}
@@ -665,12 +625,7 @@ export default function CryptoBuyScreen() {
                       </View>
 
                       {!feeBreakdown.isStablecoin && (
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                          }}
-                        >
+                        <View style={styles.rowBetween}>
                           <AppText style={[styles.balance]}>
                             Operational Fee (
                             {(
@@ -687,33 +642,19 @@ export default function CryptoBuyScreen() {
                       )}
 
                       {feeBreakdown.isStablecoin && (
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                          }}
-                        >
+                        <View style={styles.rowBetween}>
                           <AppText style={[styles.balance]}>
                             Operational Fee:
                           </AppText>
-                          <AppText
-                            style={[styles.balance, { color: "#2e7d32" }]}
-                          >
+                          <AppText style={[styles.balance, styles.noFeeText]}>
                             No fee for {assetDetails?.symbol}
                           </AppText>
                         </View>
                       )}
 
-                      <View
-                        style={{ height: 1, backgroundColor: colors.border }}
-                      />
+                      <View style={styles.divider} />
 
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                        }}
-                      >
+                      <View style={styles.rowBetween}>
                         <AppText style={[styles.balance]}>
                           Total Cost (USD):
                         </AppText>
@@ -728,12 +669,7 @@ export default function CryptoBuyScreen() {
                         </AppText>
                       </View>
 
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                        }}
-                      >
+                      <View style={styles.rowBetween}>
                         <AppText style={[styles.balance]}>
                           You'll Pay (₦):
                         </AppText>
@@ -744,13 +680,7 @@ export default function CryptoBuyScreen() {
                 </View>
 
                 <View style={styles.paymentContainer}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      padding: normalizeSpacing(9),
-                    }}
-                  >
+                  <View style={styles.paymentRow}>
                     <AppText style={styles.ngn}>You're Paying:</AppText>
                     <AppText style={styles.ngn}>{ngnAmount}</AppText>
                   </View>
@@ -782,6 +712,33 @@ export default function CryptoBuyScreen() {
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
+    screenCentered: {
+      flex: 1,
+      justifyContent: "center",
+      backgroundColor: colors.background,
+    },
+    screen: { flex: 1, backgroundColor: colors.background },
+    safeArea: {
+      flex: 1,
+      paddingBottom: normalizeSpacing(20),
+      backgroundColor: colors.background,
+    },
+    scrollContent: { flexGrow: 1 },
+    breakdownCard: {
+      marginVertical: normalizeSpacing(10),
+      backgroundColor: colors.inputBackground,
+      padding: normalizeSpacing(10),
+      borderRadius: 10,
+      gap: 8,
+    },
+    rowBetween: { flexDirection: "row", justifyContent: "space-between" },
+    divider: { height: 1, backgroundColor: colors.border },
+    noFeeText: { color: "#2e7d32" },
+    paymentRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      padding: normalizeSpacing(9),
+    },
     container: {
       flex: 1,
       paddingHorizontal: normalizeSpacing(20),

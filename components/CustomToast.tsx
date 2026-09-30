@@ -91,8 +91,6 @@ export default function CustomToast({
 
   return (
     <>
-      <StatusBar barStyle="light-content" animated />
-
       <Animated.View
         pointerEvents="box-none"
         style={[

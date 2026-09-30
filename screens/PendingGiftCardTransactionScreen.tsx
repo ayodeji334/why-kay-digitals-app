@@ -15,13 +15,13 @@ import {
 import { AppText } from "../components/AppText";
 import { Activity } from "iconsax-react-nativejs";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const PendingGiftCardScreen = () => {
   const navigation: any = useNavigation();
   const route = useRoute();
   const { transaction }: any = route.params;
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handleContinue = () => {
     try {

@@ -23,6 +23,7 @@ import { CloseIcon } from "../assets";
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface Option {
   label: string;
@@ -79,7 +80,7 @@ export function SelectInput({
   );
 
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   useEffect(() => {
     setInternalValue(externalValue ?? null);
@@ -208,6 +209,7 @@ export function SelectInput({
               )}
 
               <FlatList
+                keyboardShouldPersistTaps="handled"
                 data={
                   loading
                     ? []

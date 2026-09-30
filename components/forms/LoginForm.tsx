@@ -22,6 +22,7 @@ import { useCompleteLogin } from "../../hooks/useCompleteLogin";
 import { useColors } from "../../hooks/useTheme";
 import { getDeviceMeta } from "../../utlis/device";
 import { resolveDefaultDeviceVerificationOption } from "../../utlis/deviceVerification";
+import { useStyles } from "../../hooks/useStyles";
 
 const loginSchema = yup.object().shape({
   login: yup.string().required("Email or Username is required"),
@@ -39,8 +40,7 @@ const LoginForm: React.FC = () => {
   const navigation: any = useNavigation();
   const [loading, setLoading] = useState<boolean>(false);
   const completeLogin = useCompleteLogin();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const { control, handleSubmit } = useForm<LoginFormInputs>({
     resolver: yupResolver(loginSchema),

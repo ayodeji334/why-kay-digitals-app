@@ -27,6 +27,7 @@ import { showError } from "../utlis/toast";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import TabSwitcher from "../components/TabSwitcher";
+import { useStyles } from "../hooks/useStyles";
 
 // Matches the real API response — status is "pending" | "rewarded" (not
 // "completed"), and value is expressed as points + naira_value, not a
@@ -53,8 +54,7 @@ interface ReferralResponse {
 
 const EmptyState: React.FC<{ type: "rewarded" | "pending" }> = ({ type }) => {
   const user = useAuthStore(state => state.user);
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handleShareCode = async () => {
     try {
@@ -96,8 +96,7 @@ const EmptyState: React.FC<{ type: "rewarded" | "pending" }> = ({ type }) => {
 };
 
 const ReferralCard: React.FC<{ item: ReferralItem }> = ({ item }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const nairaValue = item.points || 0;
 
   return (
@@ -140,8 +139,7 @@ const StatCard: React.FC<{
   value: string;
   direction?: "right" | "left" | "center";
 }> = ({ title, value, direction = "left" }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const align =
     direction === "center"
       ? "center"
@@ -176,8 +174,7 @@ const ReferralHistoryScreen: React.FC = () => {
     "rewarded",
   );
 
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const refreshUser = useAuthStore(state => state.refreshUser);
 
@@ -207,7 +204,10 @@ const ReferralHistoryScreen: React.FC = () => {
     }
   };
 
-  const referrals: ReferralItem[] = data?.data?.referrals ?? [];
+  const referrals: ReferralItem[] = useMemo(
+    () => data?.data?.referrals ?? [],
+    [data?.data?.referrals],
+  );
 
   const rewardedReferrals = useMemo(
     () => referrals.filter(r => r.status === "rewarded"),

@@ -9,6 +9,7 @@ import {
 import { COLORS } from "../constants/colors";
 import { useColors } from "../hooks/useTheme";
 import { formatAmount } from "../libs/formatNumber";
+import { useStyles } from "../hooks/useStyles";
 
 interface FundingSourceSelectorProps {
   usePoints: boolean;
@@ -36,8 +37,7 @@ export function FundingSourceSelector({
   fiatBalance,
   disabled = false,
 }: FundingSourceSelectorProps) {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const hasPoints = pointsWorth > 0;
   const fiatDisplay = formatAmount((fiatBalance as number) ?? 0, {

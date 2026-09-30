@@ -16,6 +16,7 @@ import {
 } from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface TextAreaInputProps extends TextInputProps {
   name: string;
@@ -32,8 +33,7 @@ const TextAreaInput = ({
   placeholder = "",
   ...rest
 }: TextAreaInputProps) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={{ marginVertical: normalizeSpacing(8) }}>

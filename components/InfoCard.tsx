@@ -15,6 +15,7 @@ import {
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface InfoCardProps {
   title: string;
@@ -38,7 +39,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
   style,
 }) => {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View

@@ -31,6 +31,7 @@ import { showError } from "../utlis/toast";
 import NumberInputField from "../components/NumberInputField";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const schema = yup.object().shape({
   token: yup
@@ -60,8 +61,7 @@ export default function ConfirmCryptoWithdrawScreen() {
   const navigation: any = useNavigation();
   const route: any = useRoute();
   const [isLoading, setIsLoading] = useState(false);
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const { payload, email } = route.params;
 
   const { control, handleSubmit } = useForm<FormData>({
@@ -127,6 +127,9 @@ export default function ConfirmCryptoWithdrawScreen() {
   return (
     <SafeAreaView edges={["left", "right", "bottom"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}

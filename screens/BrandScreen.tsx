@@ -24,8 +24,45 @@ import useAxios from "../hooks/useAxios";
 import { Country } from "../libs/types";
 import { useCountries } from "../hooks/useCountries";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const ITEMS_PER_PAGE = 20;
+
+/** One brand tile. Memoised so loading more pages doesn't re-render every tile. */
+const BrandCard = React.memo(
+  ({
+    item,
+    onPress,
+    styles,
+  }: {
+    item: any;
+    onPress: (item: any) => void;
+    styles: ReturnType<typeof makeStyles>;
+  }) => (
+    <TouchableOpacity
+      style={styles.brandCard}
+      activeOpacity={0.8}
+      onPress={() => onPress(item)}
+      accessibilityRole="button"
+      accessibilityLabel={item?.brand_name}
+    >
+      {item.brand_logo ? (
+        <Image
+          source={{ uri: item.brand_logo }}
+          style={styles.brandLogo}
+          resizeMode="contain"
+        />
+      ) : (
+        <View style={styles.brandLogoPlaceholder}>
+          <AppText style={styles.brandLogoInitial}>
+            {item?.brand_name?.charAt(0)}
+          </AppText>
+        </View>
+      )}
+      <AppText style={styles.brandName}>{item.brand_name}</AppText>
+    </TouchableOpacity>
+  ),
+);
 
 export default function BrandsScreen() {
   const navigation = useNavigation<any>();
@@ -35,8 +72,7 @@ export default function BrandsScreen() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const { data: countries = [] } = useCountries();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   useEffect(() => {
     if (!selectedCountry && countries.length) {
@@ -65,7 +101,7 @@ export default function BrandsScreen() {
         pagination: res.data?.data?.pagination,
       };
     },
-    [selectedCountry, debouncedSearch],
+    [selectedCountry, debouncedSearch, apiGet],
   );
 
   const {
@@ -94,38 +130,22 @@ export default function BrandsScreen() {
     [data?.pages],
   );
 
-  const renderBrand = ({ item }: { item: any }) => {
-    console.log("Item value", item);
-    return (
-      <TouchableOpacity
-        hitSlop={10}
-        style={styles.brandCard}
-        activeOpacity={0.8}
-        onPress={() =>
-          navigation.navigate("BrandDetail", {
-            brand: item,
-            country: selectedCountry?.cca2,
-            title: item?.brand_name ?? "Example Here",
-          })
-        }
-      >
-        {item.brand_logo ? (
-          <Image
-            source={{ uri: item.brand_logo }}
-            style={styles.brandLogo}
-            resizeMode="contain"
-          />
-        ) : (
-          <View style={styles.brandLogoPlaceholder}>
-            <AppText style={styles.brandLogoInitial}>
-              {item?.brand_name?.charAt(0)}
-            </AppText>
-          </View>
-        )}
-        <AppText style={styles.brandName}>{item.brand_name}</AppText>
-      </TouchableOpacity>
-    );
-  };
+  const openBrand = useCallback(
+    (item: any) =>
+      navigation.navigate("BrandDetail", {
+        brand: item,
+        country: selectedCountry?.cca2,
+        title: item?.brand_name ?? "Gift card",
+      }),
+    [navigation, selectedCountry?.cca2],
+  );
+
+  const renderBrand = useCallback(
+    ({ item }: { item: any }) => (
+      <BrandCard item={item} onPress={openBrand} styles={styles} />
+    ),
+    [openBrand, styles],
+  );
 
   const renderFooter = () => {
     if (!isFetchingNextPage) return null;
@@ -191,6 +211,7 @@ export default function BrandsScreen() {
           />
         ) : (
           <FlatList
+            keyboardShouldPersistTaps="handled"
             data={brands}
             keyExtractor={item => item.brand_code}
             renderItem={renderBrand}

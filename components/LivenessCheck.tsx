@@ -40,6 +40,7 @@ import {
 import { captureAndCompress } from "../utlis/imageCapture";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const { width, height } = Dimensions.get("window");
 
@@ -149,8 +150,7 @@ function LivenessCheckError({
   onRetry: () => void;
   onCancel: () => void;
 }) {
-  const colors = useColors();
-  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const styles = useStyles(makeStyles);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -196,7 +196,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 function LivenessCheckInner({ onSuccess, onCancel }: Props) {
   const device = useCameraDevice("front");
   const colors = useColors();
-  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const styles = useStyles(makeStyles);
   const cameraRef = useRef<VisionCamera>(null);
 
   // Call the native "detectFaces" plugin directly rather than through the

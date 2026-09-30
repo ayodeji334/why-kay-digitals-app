@@ -30,11 +30,12 @@ import { useColors } from "../hooks/useTheme";
 import { usePhoneVerification } from "../hooks/usePhoneVerification";
 import { TradeIntent } from "../libs/types";
 import { useAuthStore } from "../stores/authSlice";
+import { useStyles } from "../hooks/useStyles";
 
 export default function RateMarketScreen() {
   const { apiGet } = useAxios();
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const navigation: any = useNavigation();
   const { isPhoneVerified } = usePhoneVerification();
   const refreshUser = useAuthStore(state => state.refreshUser);

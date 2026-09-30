@@ -38,6 +38,7 @@ import { HIGH_VALUE_WITHDRAWAL_THRESHOLD } from "../constants/transactionLimits"
 import { useAuthStore, useUser } from "../stores/authSlice";
 import { useLiveChat } from "../context/LiveChatProvider";
 import HalfScreenModal from "../components/HalfScreenModal";
+import { useStyles } from "../hooks/useStyles";
 
 export default function WithdrawScreen() {
   const { apiGet } = useAxios();
@@ -52,7 +53,7 @@ export default function WithdrawScreen() {
   const [amountFormated, setAmount] = useState("");
   const [showSuspendedModal, setShowSuspendedModal] = useState(false);
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const user = useUser();
   const { openLiveChat } = useLiveChat();
   const refreshUser = useAuthStore(state => state.refreshUser);
@@ -351,6 +352,9 @@ export default function WithdrawScreen() {
       }}
     >
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}

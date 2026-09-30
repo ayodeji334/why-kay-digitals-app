@@ -1,7 +1,6 @@
 import {
   StyleSheet,
   ScrollView,
-  StatusBar,
   View,
   Image,
   RefreshControl,
@@ -26,17 +25,16 @@ import { useFiatBalance } from "../hooks/useFiatBalance";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppText } from "../components/AppText";
 import { DEFAULT_IMAGE } from "./SettingsScreen";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const HomeScreen = () => {
-  const colors = useColors();
   const user = useUser();
   const navigation = useNavigation();
   const { refetch, isRefetching } = useFiatBalance();
   const queryClient = useQueryClient();
   const refreshUser = useAuthStore(state => state.refreshUser);
-  const styles = makeStyles(colors);
-  const resolvedTheme = useResolvedTheme();
+  const styles = useStyles(makeStyles);
 
   const hasCompleteVerification = useMemo(
     () =>
@@ -75,10 +73,6 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView edges={["left", "right"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}

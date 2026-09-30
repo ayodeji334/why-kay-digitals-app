@@ -37,6 +37,7 @@ import { useFiatBalance } from "../hooks/useFiatBalance";
 import { showError } from "../utlis/toast";
 import { SelectInput } from "../components/SelectInputField";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface GiftCardOffer {
   offerId: string;
@@ -162,8 +163,7 @@ const FieldBlock = ({
   error?: string;
   children: React.ReactNode;
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={styles.fieldBlock}>
@@ -184,8 +184,7 @@ const BreakdownRow = ({
   value: string;
   bold?: boolean;
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={styles.breakdownRow}>
@@ -210,8 +209,7 @@ function PurchaseSection({
   setExchangeRate: (rate: number) => void;
   loadingRate: boolean;
 }) {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const axios = useAxios();
   const navigation = useNavigation<any>();
   const { fiatBalance } = useFiatBalance();
@@ -586,8 +584,7 @@ export default function BrandDetailScreen() {
   const route = useRoute<any>();
   const { brand, country } = route.params as { brand: any; country: string };
   const { apiGet } = useAxios();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const [selectedOffer, setSelectedOffer] = useState<GiftCardOffer | null>(
     null,

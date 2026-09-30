@@ -21,6 +21,7 @@ import {
   getDeviceVerificationErrorMessage,
   isDeviceVerificationExpired,
 } from "../utlis/deviceVerification";
+import { useStyles } from "../hooks/useStyles";
 
 type RouteParams = {
   image: { base64: string };
@@ -42,7 +43,7 @@ export default function DeviceSelfieResultScreen() {
   const { post } = useAxios();
   const completeLogin = useCompleteLogin();
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");

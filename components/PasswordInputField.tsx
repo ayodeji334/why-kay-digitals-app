@@ -10,6 +10,7 @@ import { Eye, EyeSlash } from "iconsax-react-nativejs";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
 import { COLORS } from "../constants/colors";
+import { useStyles } from "../hooks/useStyles";
 
 interface Props {
   control: any;
@@ -34,7 +35,7 @@ const PasswordInputField: React.FC<Props> = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const passwordValidations = [
     { label: "At least 8 characters", test: (val: string) => val.length >= 8 },

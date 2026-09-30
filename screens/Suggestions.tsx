@@ -23,6 +23,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { showError, showSuccess } from "../utlis/toast";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const schema = yup.object({
   description: yup
@@ -36,8 +37,7 @@ type FormValues = yup.InferType<typeof schema>;
 
 const SuggestionScreen = () => {
   const { post } = useAxios();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const {
     control,

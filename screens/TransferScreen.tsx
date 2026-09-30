@@ -38,6 +38,7 @@ import { showValue } from "../libs/requestError";
 import { useResetFormOnMount } from "../hooks/useResetFormOnMount";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface ValidationState {
   isChecking: boolean;
@@ -159,8 +160,7 @@ export default function TransferScreen() {
   const [pendingPayload, setPendingPayload] = useState<any>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [displayAmount, setDisplayAmount] = useState("");
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const { data: { wallets = [], totalAssetValueBalance = 0 } = {} } =
     useWallets();
@@ -253,7 +253,7 @@ export default function TransferScreen() {
     if (activeTab === "fiat") return amount > fiatBalance;
     if (!selectedCryptoWallet) return true;
     return amount > selectedCryptoWallet?.price;
-  }, [amount, activeTab, fiatBalance, selectedCryptoWallet?.price]);
+  }, [amount, activeTab, fiatBalance, selectedCryptoWallet]);
 
   const progress = dailyLimit
     ? (walletSummary?.total_fiat_transfer_today ?? 0) / dailyLimit
@@ -328,14 +328,7 @@ export default function TransferScreen() {
   });
 
   return (
-    <SafeAreaView
-      edges={["right", "bottom"]}
-      style={{
-        flex: 1,
-        backgroundColor: colors.background,
-        paddingHorizontal: normalizeSpacing(16),
-      }}
-    >
+    <SafeAreaView edges={["right", "bottom"]} style={styles.screenPadded}>
       <TabSwitcher
         tabs={tabOptions}
         activeTab={activeTab}
@@ -346,6 +339,9 @@ export default function TransferScreen() {
       />
 
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         refreshControl={
@@ -614,23 +610,16 @@ export default function TransferScreen() {
           onPress={handleSubmit(onSubmit)}
           disabled={isDisabled}
           hitSlop={10}
-          style={{
-            backgroundColor: isDisabled
-              ? colors.surfaceSecondary
-              : COLORS.secondary,
-            borderRadius: 100,
-            paddingVertical: normalizeSpacing(16),
-            marginVertical: normalizeSpacing(30),
-          }}
+          style={[
+            styles.continueButton,
+            isDisabled && styles.continueButtonDisabled,
+          ]}
         >
           <AppText
-            style={{
-              color: "#fff",
-              fontSize: normalize(18),
-              textAlign: "center",
-              fontFamily: getFontFamily("700"),
-              opacity: isDisabled ? 0.4 : 1,
-            }}
+            style={[
+              styles.continueButtonText,
+              isDisabled && styles.continueButtonTextDisabled,
+            ]}
           >
             Continue
           </AppText>
@@ -653,6 +642,25 @@ export default function TransferScreen() {
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
+    continueButton: {
+      backgroundColor: COLORS.secondary,
+      borderRadius: 100,
+      paddingVertical: normalizeSpacing(16),
+      marginVertical: normalizeSpacing(30),
+    },
+    continueButtonDisabled: { backgroundColor: colors.surfaceSecondary },
+    continueButtonText: {
+      color: "#fff",
+      fontSize: normalize(18),
+      textAlign: "center",
+      fontFamily: getFontFamily("700"),
+    },
+    continueButtonTextDisabled: { opacity: 0.4 },
+    screenPadded: {
+      flex: 1,
+      backgroundColor: colors.background,
+      paddingHorizontal: normalizeSpacing(16),
+    },
     limitContainer: {
       marginVertical: normalizeSpacing(10),
       backgroundColor: colors.infoCardBackgroundColor,

@@ -33,6 +33,7 @@ import { useFiatBalance } from "../hooks/useFiatBalance";
 import { useColors } from "../hooks/useTheme";
 import { FundingSourceSelector } from "../components/FundSourceSelector";
 import { usePointsBalance } from "../hooks/usePointBalance";
+import { useStyles } from "../hooks/useStyles";
 
 const schema = yup.object({
   phone: yup
@@ -68,8 +69,7 @@ export default function BuyAirtimeScreen() {
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<string | null>(
     null,
   );
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const {
     control,
@@ -212,6 +212,9 @@ export default function BuyAirtimeScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

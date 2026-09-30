@@ -16,7 +16,6 @@ import {
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
 import {
   useNavigation,
   RouteProp,
@@ -44,6 +43,7 @@ import { useColors } from "../hooks/useTheme";
 import { buildCryptoAmountSchema } from "./BuyCryptoScreen";
 import { useCryptoLimits } from "../hooks/useCryptoLimits";
 import { useServiceCharges } from "../hooks/useServiceCharges";
+import { useStyles } from "../hooks/useStyles";
 
 type CryptoSellScreenParams = {
   CryptoSell: {
@@ -177,7 +177,7 @@ export default function CryptoSellScreen() {
   const rateOverriddenRef = useRef(false);
 
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const {
     control,
@@ -451,13 +451,7 @@ export default function CryptoSellScreen() {
 
   if (isLoading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          backgroundColor: colors.background,
-        }}
-      >
+      <View style={styles.screenCentered}>
         <CustomLoading loading={isLoading} />
       </View>
     );
@@ -481,20 +475,14 @@ export default function CryptoSellScreen() {
   }
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        paddingBottom: normalizeSpacing(10),
-        backgroundColor: colors.background,
-      }}
-      edges={["right", "left"]}
-    >
+    <SafeAreaView style={styles.safeArea} edges={["right", "left"]}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          flexGrow: 1,
-        }}
+        contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -601,26 +589,12 @@ export default function CryptoSellScreen() {
 
                 {!isRateUnavailable ? (
                   <>
-                    <View
-                      style={{
-                        marginVertical: normalizeSpacing(10),
-                        backgroundColor: colors.inputBackground,
-                        padding: normalizeSpacing(13),
-                        borderRadius: 10,
-                        gap: 8,
-                      }}
-                    >
+                    <View style={styles.breakdownCard}>
                       <AppText style={[styles.note, { color: colors.text }]}>
                         Wallet Balance, Exchange Rate & Fee Breakdown
                       </AppText>
 
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: normalizeSpacing(2),
-                        }}
-                      >
+                      <View style={styles.rowBetweenSpaced}>
                         <AppText style={[styles.balance]}>
                           Wallet Balance:
                         </AppText>
@@ -629,13 +603,7 @@ export default function CryptoSellScreen() {
                         </AppText>
                       </View>
 
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: normalizeSpacing(2),
-                        }}
-                      >
+                      <View style={styles.rowBetweenSpaced}>
                         <AppText style={[styles.balance]}>
                           Balance in USD:
                         </AppText>
@@ -647,21 +615,9 @@ export default function CryptoSellScreen() {
                         </AppText>
                       </View>
 
-                      <View
-                        style={{
-                          height: 1,
-                          backgroundColor: colors.border,
-                          marginVertical: normalizeSpacing(4),
-                        }}
-                      />
+                      <View style={styles.dividerSpaced} />
 
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: normalizeSpacing(2),
-                        }}
-                      >
+                      <View style={styles.rowBetweenSpaced}>
                         <AppText
                           style={[
                             styles.balance,
@@ -675,13 +631,7 @@ export default function CryptoSellScreen() {
                         </AppText>
                       </View>
 
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: normalizeSpacing(2),
-                        }}
-                      >
+                      <View style={styles.rowBetweenSpaced}>
                         <AppText
                           style={[
                             styles.balance,
@@ -700,20 +650,9 @@ export default function CryptoSellScreen() {
 
                       {feeBreakdown && amount > 0 && (
                         <>
-                          <View
-                            style={{
-                              height: 1,
-                              backgroundColor: colors.border,
-                              marginVertical: normalizeSpacing(4),
-                            }}
-                          />
+                          <View style={styles.dividerSpaced} />
 
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "space-between",
-                            }}
-                          >
+                          <View style={styles.rowBetween}>
                             <AppText
                               style={[
                                 styles.balance,
@@ -733,20 +672,9 @@ export default function CryptoSellScreen() {
                             </AppText>
                           </View>
 
-                          <View
-                            style={{
-                              height: 1,
-                              backgroundColor: colors.border,
-                              marginVertical: normalizeSpacing(4),
-                            }}
-                          />
+                          <View style={styles.dividerSpaced} />
 
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "space-between",
-                            }}
-                          >
+                          <View style={styles.rowBetween}>
                             <AppText style={[styles.balance]}>
                               You'll Receive:
                             </AppText>
@@ -766,13 +694,7 @@ export default function CryptoSellScreen() {
                     </View>
 
                     <View style={styles.paymentContainer}>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingVertical: normalizeSpacing(2),
-                        }}
-                      >
+                      <View style={styles.rowBetweenSpaced}>
                         <AppText style={styles.ngn}>You’ll be paid:</AppText>
                         <AppText style={styles.ngn}>{ngnAmount}</AppText>
                       </View>
@@ -804,6 +726,35 @@ export default function CryptoSellScreen() {
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
+    screenCentered: {
+      flex: 1,
+      justifyContent: "center",
+      backgroundColor: colors.background,
+    },
+    safeArea: {
+      flex: 1,
+      paddingBottom: normalizeSpacing(10),
+      backgroundColor: colors.background,
+    },
+    scrollContent: { flexGrow: 1 },
+    breakdownCard: {
+      marginVertical: normalizeSpacing(10),
+      backgroundColor: colors.inputBackground,
+      padding: normalizeSpacing(13),
+      borderRadius: 10,
+      gap: 8,
+    },
+    rowBetweenSpaced: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingVertical: normalizeSpacing(2),
+    },
+    dividerSpaced: {
+      height: 1,
+      backgroundColor: colors.border,
+      marginVertical: normalizeSpacing(4),
+    },
+    rowBetween: { flexDirection: "row", justifyContent: "space-between" },
     container: {
       flex: 1,
       paddingHorizontal: normalizeSpacing(20),

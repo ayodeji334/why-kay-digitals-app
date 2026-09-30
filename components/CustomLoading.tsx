@@ -3,6 +3,7 @@ import { View, Modal, ActivityIndicator, StyleSheet } from "react-native";
 import { useColors } from "../hooks/useTheme";
 
 import { normalizeSpacing } from "../constants/settings";
+import { useStyles } from "../hooks/useStyles";
 type CustomLoadingProps = {
   loading: boolean;
   color?: string;
@@ -10,7 +11,7 @@ type CustomLoadingProps = {
 
 export default function CustomLoading({ loading, color }: CustomLoadingProps) {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <Modal

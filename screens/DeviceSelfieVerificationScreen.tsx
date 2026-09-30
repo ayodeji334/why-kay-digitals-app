@@ -26,6 +26,7 @@ import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import LivenessCheck from "../components/LivenessCheck";
 import { useBlockGoBack } from "../hooks/useBlockGoBack";
+import { useStyles } from "../hooks/useStyles";
 
 // Same checklist as the KYC selfie screen — it's the same liveness
 // challenge underneath, so the same conditions make it pass first try.
@@ -65,8 +66,7 @@ export default function DeviceSelfieVerificationScreen() {
     (route.params as RouteParams) ?? {};
   const [showCamera, setShowCamera] = useState(false);
   const [loading, setLoading] = useState(false);
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   // The verification challenge shouldn't be escapable back into the login
   // form by accident — only "Use a different account" below, or the
@@ -139,8 +139,7 @@ export default function DeviceSelfieVerificationScreen() {
         <AppText style={styles.title}>Verify This Device</AppText>
         <AppText style={styles.subtitle}>
           We don't recognize this device. Take a quick live selfie so we can
-          match it against the photo on file from your identity
-          verification.
+          match it against the photo on file from your identity verification.
         </AppText>
         <AppText style={styles.alertNote}>
           We've sent an alert to your email — if this wasn't you, ignore the

@@ -38,12 +38,13 @@ import {
 } from "../../libs/tierAccess";
 import { useUser } from "../../stores/authSlice";
 import { useLiveChat } from "../../context/LiveChatProvider";
+import { useStyles } from "../../hooks/useStyles";
 
 const ServicesSection = () => {
   const queryClient = useQueryClient();
   const navigation: any = useNavigation();
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const user = useUser();
   const { isPhoneVerified } = usePhoneVerification();
@@ -226,7 +227,6 @@ const ServicesSection = () => {
             <View key={rowIndex} style={styles.servicesRow}>
               {row.map(service => (
                 <TouchableOpacity
-                  hitSlop={30}
                   activeOpacity={0.89}
                   key={service.id}
                   onPress={() => handleNavigation(service)}

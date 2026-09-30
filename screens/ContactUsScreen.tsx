@@ -28,6 +28,7 @@ import { AppText } from "../components/AppText";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useColors } from "../hooks/useTheme";
 import { useLiveChat } from "../context/LiveChatProvider";
+import { useStyles } from "../hooks/useStyles";
 
 interface SectionProps {
   title: string;
@@ -49,8 +50,7 @@ interface MenuItemProps {
 }
 
 const Section: React.FC<SectionProps> = ({ title, children, style }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={[styles.section, style]}>
@@ -70,7 +70,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
   showArrow = true,
 }) => {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <TouchableOpacity
@@ -117,8 +117,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
 };
 
 const HelpSupportScreen: React.FC = () => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const { openLiveChat } = useLiveChat();
 
   const handleCall = () => {

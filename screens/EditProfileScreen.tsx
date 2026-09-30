@@ -12,7 +12,7 @@ import { COLORS } from "../constants/colors";
 import { showError, showSuccess } from "../utlis/toast";
 import TextInputField from "../components/TextInputField";
 import * as yup from "yup";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SelectInput } from "../components/SelectInputField";
 import {
@@ -28,11 +28,19 @@ import { LONG_REQUEST_TIMEOUT_MS } from "../api/axios";
 import { AppText } from "../components/AppText";
 import { DEFAULT_IMAGE } from "./SettingsScreen";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
+import { useUsernameAvailability } from "../hooks/useUsernameAvailability";
 
 const profileSchema = yup.object().shape({
   first_name: yup.string().required("First Name is required"),
   last_name: yup.string().required("Last Name is required"),
-  username: yup.string().required("Username is required"),
+  // Same rules as registration.
+  username: yup
+    .string()
+    .trim()
+    .min(5, "Your username is too short")
+    .max(30, "Your username is too long")
+    .required("Username is required"),
   gender: yup.string().required("Gender is required"),
 });
 
@@ -41,11 +49,11 @@ export default function EditProfileScreen() {
   const { user, setUser } = useAuthStore(state => state);
   const { patch } = useAxios();
   const [loading, setLoading] = useState(false);
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, setError, clearErrors } = useForm({
     resolver: yupResolver(profileSchema),
+    mode: "onChange",
     defaultValues: {
       first_name: user?.first_name || "",
       last_name: user?.last_name || "",
@@ -54,7 +62,25 @@ export default function EditProfileScreen() {
     },
   });
 
+  // Same availability check as registration; the user's current username is
+  // always allowed, so saving other fields doesn't need a check.
+  const username = useWatch({ control, name: "username" });
+  const {
+    isChecking: checkingUsername,
+    status: usernameStatus,
+    isBlocking: usernameBlocksSubmit,
+  } = useUsernameAvailability({
+    username,
+    currentUsername: user?.username,
+    setError,
+    clearErrors,
+  });
+
+  const disableSubmit = loading || usernameBlocksSubmit;
+
   const handleUpdateProfile = async (data: any) => {
+    // The button is disabled while checking, but guard the submit path too.
+    if (usernameBlocksSubmit) return;
     setLoading(true);
 
     try {
@@ -86,6 +112,9 @@ export default function EditProfileScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
@@ -135,6 +164,27 @@ export default function EditProfileScreen() {
             name="username"
             placeholder="Choose a username"
           />
+          {checkingUsername && (
+            <AppText style={styles.checkingText}>
+              Checking availability...
+            </AppText>
+          )}
+          {/* The field already shows errors such as "Username is already
+              taken", so this line only shows the success / couldn't-check state. */}
+          {!checkingUsername &&
+            usernameStatus.message &&
+            usernameStatus.available !== false && (
+              <AppText style={[styles.checkingText, styles.usernameAvailable]}>
+                {usernameStatus.message}
+              </AppText>
+            )}
+          {!checkingUsername &&
+            usernameStatus.available === false &&
+            usernameStatus.message === "Couldn't check that username" && (
+              <AppText style={[styles.checkingText, styles.usernameTaken]}>
+                {usernameStatus.message}. Please try again.
+              </AppText>
+            )}
           <SelectInput
             control={control}
             name="gender"
@@ -148,9 +198,12 @@ export default function EditProfileScreen() {
 
         <TouchableOpacity
           activeOpacity={0.87}
-          style={[styles.updateButton, loading && styles.updateButtonDisabled]}
+          style={[
+            styles.updateButton,
+            disableSubmit && styles.updateButtonDisabled,
+          ]}
           onPress={handleSubmit(handleUpdateProfile)}
-          disabled={loading}
+          disabled={disableSubmit}
         >
           <AppText style={styles.updateButtonText}>Update Profile</AppText>
         </TouchableOpacity>
@@ -211,6 +264,15 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       alignItems: "center",
     },
     updateButtonDisabled: { opacity: 0.6 },
+    checkingText: {
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("400"),
+      marginTop: normalizeSpacing(-5),
+      marginBottom: normalizeSpacing(10),
+      color: colors.textSecondary,
+    },
+    usernameAvailable: { color: colors.primaryLight },
+    usernameTaken: { color: colors.error },
     updateButtonText: {
       color: "white",
       fontSize: normalize(18),

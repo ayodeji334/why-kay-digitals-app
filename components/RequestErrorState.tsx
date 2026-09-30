@@ -19,6 +19,7 @@ import {
   getRequestErrorKind,
   getRequestErrorMessage,
 } from "../libs/requestError";
+import { useStyles } from "../hooks/useStyles";
 
 interface Props {
   /** The failed request's error; drives the icon and default message. */
@@ -51,7 +52,7 @@ const RequestErrorState: React.FC<Props> = ({
   compact = false,
 }) => {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   // Read the context rather than useNavigation(), which throws outside a
   // navigator — the app-level crash screen renders above navigation.
   const navigation: any = useContext(NavigationContext);

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { View, StyleSheet, StatusBar, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Filter, DocumentDownload } from "iconsax-react-nativejs";
@@ -21,12 +21,12 @@ import { AxiosError } from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
 import LoadingState from "../components/LoadingState";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 import { useAuthStore } from "../stores/authSlice";
+import { useStyles } from "../hooks/useStyles";
 
 export const EmptyTransactionState: React.FC = () => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={styles.emptyState}>
@@ -60,8 +60,7 @@ const TransactionHistoryScreen: React.FC = () => {
   const [filters, setFilters] = useState<FilterType>(defaultFilter);
   const [filterQuery, setFilterQuery] = useState<FilterType>(defaultFilter);
   const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const fetchTransactions = async ({
     pageParam = 1,
@@ -105,15 +104,17 @@ const TransactionHistoryScreen: React.FC = () => {
         : undefined,
   });
 
+  // React Query returns a new `pages` array whenever a page is added/refetched.
+  const pages = data?.pages;
   const transactions = useMemo(
-    () => data?.pages.flatMap(page => page.data) ?? [],
-    [data?.pages.length, data?.pages.at(-1)],
+    () => pages?.flatMap(page => page.data) ?? [],
+    [pages],
   );
 
-  const toggleFilterModal = () => {
+  const toggleFilterModal = useCallback(() => {
     setIsFilterVisible(prev => !prev);
     setFilterQuery(filters); // sync draft to committed filters on every open/close
-  };
+  }, [filters]);
 
   const handleApplyFilter = useCallback(
     (newFilters: typeof filterQuery) => {
@@ -176,10 +177,6 @@ const TransactionHistoryScreen: React.FC = () => {
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <View style={styles.topRow}>
         <TouchableOpacity
           activeOpacity={0.8}

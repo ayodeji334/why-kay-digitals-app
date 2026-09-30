@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   Image,
-  StatusBar,
 } from "react-native";
 import { ArrowDown } from "iconsax-react-nativejs";
 import {
@@ -25,7 +24,8 @@ import { formatNumber } from "../libs/formatNumber";
 import { showError } from "../utlis/toast";
 import { useQuoteStore } from "../stores/quoteStore";
 import { AppText } from "../components/AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export default function ConversionQuote() {
   const route = useRoute();
@@ -42,8 +42,7 @@ export default function ConversionQuote() {
   const isConfirmedRef = useRef(false);
   const [isCountdownStopped, setIsCountdownStopped] = useState(false);
   const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const cancelQuote = useCallback(
     async (quoteUuid: string) => {
@@ -78,7 +77,7 @@ export default function ConversionQuote() {
     });
 
     return unsubscribe;
-  }, [navigation, quote?.uuid, cancelQuote, isExpired]);
+  }, [navigation, quote?.uuid, cancelQuote, isExpired, setLastCancelledAt]);
 
   useEffect(() => {
     if (!isExpired || !quote?.uuid) return;
@@ -203,10 +202,6 @@ export default function ConversionQuote() {
 
   return (
     <SafeAreaView edges={["bottom", "right"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

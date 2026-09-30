@@ -16,10 +16,10 @@ import {
 import { COLORS } from "../constants/colors";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export default function BVNVerificationScreen() {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>

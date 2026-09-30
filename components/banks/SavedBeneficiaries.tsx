@@ -21,6 +21,7 @@ import { CloseIcon } from "../../assets";
 import CustomIcon from "../CustomIcon";
 import { AppText } from "../AppText";
 import { useColors } from "../../hooks/useTheme";
+import { useStyles } from "../../hooks/useStyles";
 
 const PREVIEW_COUNT = 2;
 
@@ -48,7 +49,7 @@ export default function SavedBeneficiaries({
   const [modalVisible, setModalVisible] = useState(false);
   const [search, setSearch] = useState("");
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const previewData = useMemo(() => {
     if (!data || data.length === 0) return [];

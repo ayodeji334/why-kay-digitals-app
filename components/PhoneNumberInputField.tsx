@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import {
   View,
   TextInput,
@@ -26,6 +32,7 @@ import { Country } from "../libs/types";
 import { TranslationLanguageCodeMap } from "react-native-country-picker-modal";
 import { allCountries } from "../hooks/useCountries";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface Props {
   control: Control<any>;
@@ -45,6 +52,51 @@ interface Props {
   excludedCountryCodes?: string[];
   disableCodeSelector?: boolean;
 }
+
+const getCountryName = (country: Country): string => {
+  if (typeof country.name === "string") return country.name;
+  const nameMap = country.name as TranslationLanguageCodeMap;
+  return (
+    (nameMap.common as string) || Object.values(nameMap)[0] || country.cca2
+  );
+};
+
+/** One country in the picker. Memoised: ~250 rows with flag images. */
+const PhoneCountryRow = React.memo(
+  ({
+    item,
+    name,
+    onSelect,
+    styles,
+  }: {
+    item: any;
+    name: string;
+    onSelect: (item: any) => void;
+    styles: ReturnType<typeof makeStyles>;
+  }) => (
+    <TouchableOpacity
+      activeOpacity={0.89}
+      style={styles.countryRow}
+      onPress={() => onSelect(item)}
+      accessibilityRole="button"
+      accessibilityLabel={`${name}, +${item?.callingCode?.[0] ?? ""}`}
+    >
+      <View style={styles.countryLeft}>
+        {item.flag && (
+          <Image
+            source={{ uri: item.flag }}
+            style={styles.flag}
+            resizeMode="contain"
+          />
+        )}
+        <AppText style={styles.countryName}>
+          {name} ({item.cca2})
+        </AppText>
+      </View>
+      <AppText style={styles.callingCode}>+{item?.callingCode?.[0]}</AppText>
+    </TouchableOpacity>
+  ),
+);
 
 const PhoneNumberInputField: React.FC<Props> = ({
   control,
@@ -70,23 +122,39 @@ const PhoneNumberInputField: React.FC<Props> = ({
     (allCountries ?? []).filter(c => !excludedCountryCodes.includes(c.cca2)),
   );
   const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
-  const getCountryName = (country: Country): string => {
-    if (typeof country.name === "string") return country.name;
-    const nameMap = country.name as TranslationLanguageCodeMap;
-    return (
-      (nameMap.common as string) || Object.values(nameMap)[0] || country.cca2
-    );
-  };
+  // Latest "country picked" handler. It needs the field's current value and
+  // onChange, which only exist inside Controller's render function, so rows
+  // call it through this ref and stay memoised.
+  const selectCountryRef = useRef<(item: any) => void>(() => {});
+  const handleSelectCountry = useCallback(
+    (item: any) => selectCountryRef.current(item),
+    [],
+  );
+  const renderCountry = useCallback(
+    ({ item }: { item: any }) => (
+      <PhoneCountryRow
+        item={item}
+        name={getCountryName(item)}
+        onSelect={handleSelectCountry}
+        styles={styles}
+      />
+    ),
+    [handleSelectCountry, styles],
+  );
+
+  // Callers often pass a new array literal each render; keying on its
+  // contents stops the effect from resetting the selected country every render.
+  const excludedKey = excludedCountryCodes.join(",");
 
   useEffect(() => {
     let cancelled = false;
 
     if (!cancelled) {
+      const excluded = excludedKey ? excludedKey.split(",") : [];
       const filtered = (allCountries ?? []).filter(
-        c => !excludedCountryCodes.includes(c.cca2),
+        c => !excluded.includes(c.cca2),
       );
       setCountries(filtered);
 
@@ -97,7 +165,7 @@ const PhoneNumberInputField: React.FC<Props> = ({
     return () => {
       cancelled = true;
     };
-  }, [defaultCountryCode, allCountries, excludedCountryCodes.length]);
+  }, [defaultCountryCode, excludedKey]);
 
   const filteredCountries = useMemo(() => {
     return countries.filter(
@@ -121,151 +189,138 @@ const PhoneNumberInputField: React.FC<Props> = ({
     onBlur?: () => void,
     val?: string,
     error?: any,
-  ) => (
-    <View style={[styles.container, containerStyle]}>
-      {showLabel && label && <AppText style={styles.label}>{label}</AppText>}
+  ) => {
+    // Same logic as before, now reached through the ref so rows stay memoised.
+    selectCountryRef.current = (item: any) => {
+      if (selectedCountry) {
+        const currentVal = val ?? "";
+        const oldCode = selectedCountry.callingCode[0] ?? "";
+        let newVal = currentVal;
+        if (currentVal.startsWith(oldCode)) {
+          newVal = currentVal.slice(oldCode.length);
+        }
+        const updatedVal = `${item?.callingCode[0] ?? ""}${newVal}`;
+        onChange(updatedVal);
+        onChangeText?.(updatedVal);
+      }
+      setSelectedCountry(item);
+      setModalVisible(false);
+    };
 
-      <View style={styles.row}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          disabled={disableCodeSelector}
-          style={[styles.countryBox, error && styles.errorBorder]}
-          onPress={() => setModalVisible(true)}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
-            {selectedCountry?.flag && (
-              <Image
-                source={{ uri: selectedCountry.flag }}
-                style={{ width: 25, height: 16, resizeMode: "contain" }}
-              />
-            )}
-            <AppText style={styles.countryCode}>
-              {selectedCountry
-                ? `+${selectedCountry.callingCode[0] ?? ""}`
-                : "+234"}
-            </AppText>
-          </View>
-        </TouchableOpacity>
+    return (
+      <View style={[styles.container, containerStyle]}>
+        {showLabel && label && <AppText style={styles.label}>{label}</AppText>}
 
-        <TextInput
-          style={[styles.input, error && styles.errorBorder, style]}
-          placeholder={placeholder}
-          placeholderTextColor={placeholderTextColor}
-          keyboardType="numeric"
-          maxLength={maxLength}
-          maxFontSizeMultiplier={1}
-          allowFontScaling={false}
-          onBlur={() => {
-            onBlur?.();
-            trigger?.(name); // trigger validation on blur
-          }}
-          onChangeText={text => {
-            let numericValue = text.replace(/[^0-9]/g, "");
-            const code = selectedCountry?.callingCode?.[0] ?? "";
-
-            if (code && numericValue.startsWith(code)) {
-              // Pasted number already includes the country code — don't double it.
-              numericValue = numericValue.slice(code.length);
-            } else if (numericValue.startsWith("0")) {
-              // User typed the local trunk prefix out of habit — international
-              // format drops it.
-              numericValue = numericValue.slice(1);
-            }
-
-            const fullNumber = code ? `${code}${numericValue}` : numericValue;
-            onChange(fullNumber);
-            onChangeText?.(fullNumber);
-          }}
-          // Display the number without the country calling code
-          value={
-            val
-              ? val.replace(
-                  new RegExp(`^${selectedCountry?.callingCode?.[0] ?? ""}`),
-                  "",
-                )
-              : ""
-          }
-        />
-      </View>
-
-      {error && <AppText style={styles.errorText}>{error.message}</AppText>}
-
-      {/* Country picker modal */}
-      <Modal visible={modalVisible} animationType="slide" transparent={false}>
-        <View style={styles.overlay}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <AppText style={styles.modalTitle}>Select Country</AppText>
-              <Pressable onPress={() => setModalVisible(false)}>
-                <CustomIcon
-                  source={CloseIcon}
-                  color={COLORS.primary}
-                  fill={COLORS.primary}
-                  overrideColor
-                  size={18}
+        <View style={styles.row}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            disabled={disableCodeSelector}
+            style={[styles.countryBox, error && styles.errorBorder]}
+            onPress={() => setModalVisible(true)}
+          >
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+            >
+              {selectedCountry?.flag && (
+                <Image
+                  source={{ uri: selectedCountry.flag }}
+                  style={{ width: 25, height: 16, resizeMode: "contain" }}
                 />
-              </Pressable>
-            </View>
-
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search country..."
-              placeholderTextColor="#989898ff"
-              value={searchText}
-              onChangeText={setSearchText}
-              maxFontSizeMultiplier={1}
-              allowFontScaling={false}
-            />
-
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              data={filteredCountries}
-              keyExtractor={item => item.cca2}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  activeOpacity={0.89}
-                  style={styles.countryRow}
-                  onPress={() => {
-                    if (selectedCountry) {
-                      const currentVal = val ?? "";
-                      const oldCode = selectedCountry.callingCode[0] ?? "";
-                      let newVal = currentVal;
-                      if (currentVal.startsWith(oldCode)) {
-                        newVal = currentVal.slice(oldCode.length);
-                      }
-                      const updatedVal = `${
-                        item?.callingCode[0] ?? ""
-                      }${newVal}`;
-                      onChange(updatedVal);
-                      onChangeText?.(updatedVal);
-                    }
-
-                    setSelectedCountry(item);
-                    setModalVisible(false);
-                  }}
-                >
-                  <View style={styles.countryLeft}>
-                    {item.flag && (
-                      <Image
-                        source={{ uri: item.flag }}
-                        style={{ width: 30, height: 20, resizeMode: "contain" }}
-                      />
-                    )}
-                    <AppText style={styles.countryName}>
-                      {getCountryName(item)} ({item.cca2})
-                    </AppText>
-                  </View>
-                  <AppText style={styles.callingCode}>
-                    +{item?.callingCode[0]}
-                  </AppText>
-                </TouchableOpacity>
               )}
-            />
-          </View>
+              <AppText style={styles.countryCode}>
+                {selectedCountry
+                  ? `+${selectedCountry.callingCode[0] ?? ""}`
+                  : "+234"}
+              </AppText>
+            </View>
+          </TouchableOpacity>
+
+          <TextInput
+            style={[styles.input, error && styles.errorBorder, style]}
+            placeholder={placeholder}
+            placeholderTextColor={placeholderTextColor}
+            keyboardType="numeric"
+            maxLength={maxLength}
+            maxFontSizeMultiplier={1}
+            allowFontScaling={false}
+            onBlur={() => {
+              onBlur?.();
+              trigger?.(name); // trigger validation on blur
+            }}
+            onChangeText={text => {
+              let numericValue = text.replace(/[^0-9]/g, "");
+              const code = selectedCountry?.callingCode?.[0] ?? "";
+
+              if (code && numericValue.startsWith(code)) {
+                // Pasted number already includes the country code — don't double it.
+                numericValue = numericValue.slice(code.length);
+              } else if (numericValue.startsWith("0")) {
+                // User typed the local trunk prefix out of habit — international
+                // format drops it.
+                numericValue = numericValue.slice(1);
+              }
+
+              const fullNumber = code ? `${code}${numericValue}` : numericValue;
+              onChange(fullNumber);
+              onChangeText?.(fullNumber);
+            }}
+            // Display the number without the country calling code
+            value={
+              val
+                ? val.replace(
+                    new RegExp(`^${selectedCountry?.callingCode?.[0] ?? ""}`),
+                    "",
+                  )
+                : ""
+            }
+          />
         </View>
-      </Modal>
-    </View>
-  );
+
+        {error && <AppText style={styles.errorText}>{error.message}</AppText>}
+
+        {/* Country picker modal */}
+        <Modal visible={modalVisible} animationType="slide" transparent={false}>
+          <View style={styles.overlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <AppText style={styles.modalTitle}>Select Country</AppText>
+                <Pressable onPress={() => setModalVisible(false)}>
+                  <CustomIcon
+                    source={CloseIcon}
+                    color={COLORS.primary}
+                    fill={COLORS.primary}
+                    overrideColor
+                    size={18}
+                  />
+                </Pressable>
+              </View>
+
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search country..."
+                placeholderTextColor="#989898ff"
+                value={searchText}
+                onChangeText={setSearchText}
+                maxFontSizeMultiplier={1}
+                allowFontScaling={false}
+              />
+
+              <FlatList
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                data={filteredCountries}
+                keyExtractor={item => item.cca2}
+                renderItem={renderCountry}
+                initialNumToRender={20}
+                maxToRenderPerBatch={30}
+                windowSize={10}
+              />
+            </View>
+          </View>
+        </Modal>
+      </View>
+    );
+  };
 
   return (
     <Controller
@@ -292,6 +347,7 @@ const PhoneNumberInputField: React.FC<Props> = ({
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
+    flag: { width: 30, height: 20 },
     container: { marginBottom: normalizeSpacing(10) },
     row: { flexDirection: "row", alignItems: "center", gap: 10 },
     countryBox: {

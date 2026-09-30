@@ -9,16 +9,19 @@ import {
 } from "../constants/settings";
 import { useColors } from "../hooks/useTheme";
 import BVNOwnershipForm from "../components/BVNOwnershipForm";
+import { useStyles } from "../hooks/useStyles";
 
 export default function BVNOwnershipConfirmationScreen() {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const route = useRoute<any>();
   const { bvn, maskedPhoneNumber } = route.params ?? {};
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

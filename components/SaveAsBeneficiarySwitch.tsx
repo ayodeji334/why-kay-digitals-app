@@ -8,6 +8,7 @@ import {
 } from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface SaveAsBeneficiarySwitchProps {
   label?: string;
@@ -22,8 +23,7 @@ const SaveAsBeneficiarySwitch: React.FC<SaveAsBeneficiarySwitchProps> = ({
   onValueChange,
   disabled = false,
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={styles.switchContainer}>

@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  StatusBar,
-  Image,
-} from "react-native";
+import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   getFontFamily,
@@ -19,15 +13,15 @@ import {
 } from "@react-navigation/native";
 import { ArrowRight } from "iconsax-react-nativejs";
 import { AppText } from "../components/AppText";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 const PendingSwapScreen = () => {
   const navigation: any = useNavigation();
   const route = useRoute();
   const { transaction }: any = route.params;
   const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handleContinue = () => {
     try {
@@ -52,10 +46,6 @@ const PendingSwapScreen = () => {
 
   return (
     <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <View style={styles.content}>
         <View
           style={{ alignItems: "center", paddingTop: normalizeSpacing(40) }}

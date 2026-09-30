@@ -9,12 +9,12 @@ import {
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import ChangeEmailForm from "../components/forms/ChangeEmailForm";
+import { useStyles } from "../hooks/useStyles";
 
 type VerificationStep = "email" | "otp";
 
 export default function ChangeEmailScreen() {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const [step, setStep] = useState<VerificationStep>("email");
 
   const subtitle =
@@ -25,6 +25,9 @@ export default function ChangeEmailScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

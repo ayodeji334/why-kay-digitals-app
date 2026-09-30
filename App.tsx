@@ -9,6 +9,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./libs/queryClient";
 import { OneSignal, LogLevel } from "react-native-onesignal";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { ThemedStatusBar } from "./components/AppStatusBar";
 import { Text, TextInput } from "react-native";
 import { ONE_SIGNAL_ID } from "./config";
 import { refreshBiometricState } from "./stores/biometricSlice";
@@ -101,6 +102,7 @@ function MainApp() {
 
   return (
     <SafeAreaProvider>
+      <ThemedStatusBar />
       <View style={styles.container}>
         <NavigationRoot />
       </View>

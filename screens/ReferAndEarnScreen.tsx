@@ -32,6 +32,7 @@ import { useColors } from "../hooks/useTheme";
 import { useServiceCharges } from "../hooks/useServiceCharges";
 import { formatAmount, formatNumber } from "../libs/formatNumber";
 import useAxios from "../hooks/useAxios";
+import { useStyles } from "../hooks/useStyles";
 
 interface StepCardProps {
   title: string;
@@ -39,8 +40,7 @@ interface StepCardProps {
 }
 
 const StepCard: React.FC<StepCardProps> = ({ title, description }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <View style={styles.stepCard}>
@@ -63,8 +63,7 @@ const ReferralAndEarnScreen: React.FC = () => {
   const { apiGet } = useAxios();
   const [isCopied, setIsCopied] = React.useState(false);
   const user = useAuthStore(state => state.user);
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const { getCharge } = useServiceCharges();
 

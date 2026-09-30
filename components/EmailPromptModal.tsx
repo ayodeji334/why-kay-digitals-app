@@ -13,6 +13,7 @@ import {
   normalizeSpacing,
 } from "../constants/settings";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 type Props = {
   visible: boolean;
@@ -26,7 +27,7 @@ const EmailPromptModal: React.FC<Props> = ({ visible, onClose, onSubmit }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handleSubmit = () => {
     if (!EMAIL_REGEX.test(email.trim())) {

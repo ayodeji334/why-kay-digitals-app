@@ -25,6 +25,7 @@ import {
   getDeviceVerificationErrorMessage,
   isDeviceVerificationExpired,
 } from "../utlis/deviceVerification";
+import { useStyles } from "../hooks/useStyles";
 
 type RouteParams = {
   verificationToken: string;
@@ -63,8 +64,7 @@ export default function DeviceOtpVerificationScreen() {
     (route.params as RouteParams) ?? {};
   const { post } = useAxios();
   const completeLogin = useCompleteLogin();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   useBlockGoBack(navigation);
 
@@ -197,6 +197,9 @@ export default function DeviceOtpVerificationScreen() {
       style={styles.container}
     >
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}

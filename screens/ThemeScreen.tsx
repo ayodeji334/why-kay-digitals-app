@@ -1,23 +1,13 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  StatusBar,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  useColors,
-  useResolvedTheme,
-  useSetThemeMode,
-  useThemeMode,
-} from "../hooks/useTheme";
+import { useColors, useSetThemeMode, useThemeMode } from "../hooks/useTheme";
 import {
   getFontFamily,
   normalize,
   normalizeSpacing,
 } from "../constants/settings";
+import { useStyles } from "../hooks/useStyles";
 
 type ThemeMode = "light" | "dark" | "system";
 
@@ -48,19 +38,13 @@ const OPTIONS: {
 ];
 
 export function ThemeScreen() {
-  const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
   const mode = useThemeMode();
   const setMode = useSetThemeMode();
 
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <SafeAreaView edges={["bottom", "right", "left"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
       <Text style={styles.label}>Change Theme</Text>
       <Text style={styles.sublabel}>
         Change the appearance of the app on your device

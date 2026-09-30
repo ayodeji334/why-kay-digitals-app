@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, StatusBar, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BiometryTypes } from "react-native-biometrics";
 import CustomLoading from "../components/CustomLoading";
@@ -14,16 +14,15 @@ import {
 } from "../constants/settings";
 import { AppText } from "../components/AppText";
 import { useBiometricEnrollment } from "../hooks/useBiometricEnrollment";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export default function BiometricPromptScreen() {
   const { enroll, isLoading, biometryType } = useBiometricEnrollment();
   const { markSkipped, markDeclinedForever, markEnrolled, setHoldGate } =
     useBiometricPromptStore(s => s);
   const { isSecondAsk } = useShouldPromptBiometric();
-  const colors = useColors();
-  const styles = makeStyles(colors);
-  const resolvedTheme = useResolvedTheme();
+  const styles = useStyles(makeStyles);
 
   const [enrolled, setEnrolled] = useState(false);
 
@@ -55,11 +54,6 @@ export default function BiometricPromptScreen() {
       edges={["top", "right", "bottom", "left"]}
       style={styles.container}
     >
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
-
       <View style={styles.content}>
         <View style={styles.hero}>
           <View

@@ -15,6 +15,7 @@ import {
 } from "../constants/settings";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface Props {
   control: any;
@@ -55,8 +56,7 @@ const TextInputField: React.FC<Props> = ({
   containerStyle,
   isEditable = true,
 }) => {
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <Controller

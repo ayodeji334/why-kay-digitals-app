@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import { PRIVACY_WEB_URL, TERMS_WEB_URL } from "../config";
+import { useStyles } from "../hooks/useStyles";
 
 interface MenuItemProps {
   title: string;
@@ -44,7 +45,7 @@ const MenuItem = ({
   IconComponent = ArrowRight2,
 }: MenuItemProps) => {
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const bgColor = isDangerous ? "#DC262611" : "#EFF7EC";
 
   return (
@@ -101,8 +102,7 @@ const MenuItem = ({
 
 export default function LegalScreen() {
   const navigation: any = useNavigation();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>

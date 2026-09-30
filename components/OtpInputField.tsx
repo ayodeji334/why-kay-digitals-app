@@ -18,6 +18,7 @@ import Clipboard from "@react-native-clipboard/clipboard";
 import { COLORS } from "../constants/colors";
 import { AppText } from "./AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 interface OtpInputFieldProps {
   control: any;
@@ -41,8 +42,7 @@ const OtpInputField: React.FC<OtpInputFieldProps> = ({
   boxStyle,
 }) => {
   const inputs = useRef<TextInput[]>([]);
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   return (
     <Controller

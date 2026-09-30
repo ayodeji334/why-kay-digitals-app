@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { StatusBar, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import CryptoWalletSection from "../components/wallet/CryptoWalletSection";
 import FiatWalletSection from "../components/wallet/FiatWalletSection";
 import TabSwitcher, { TabOption } from "../components/TabSwitcher";
-import { useColors, useResolvedTheme } from "../hooks/useTheme";
+import { useColors } from "../hooks/useTheme";
 import { normalizeSpacing } from "../constants/settings";
+import { useStyles } from "../hooks/useStyles";
 
 type WalletTab = "crypto" | "fiat";
 
@@ -17,9 +18,7 @@ const tabOptions: TabOption[] = [
 
 export default function WalletScreen() {
   const [activeTab, setActiveTab] = useState<WalletTab>("crypto");
-  const colors = useColors();
-  const resolvedTheme = useResolvedTheme();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab as WalletTab);
@@ -27,11 +26,6 @@ export default function WalletScreen() {
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
-      <StatusBar
-        barStyle={resolvedTheme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.background}
-      />
-
       <View style={styles.tabContainer}>
         <TabSwitcher
           tabs={tabOptions}

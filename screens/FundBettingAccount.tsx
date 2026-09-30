@@ -40,6 +40,7 @@ import { useFiatBalance } from "../hooks/useFiatBalance";
 import { useColors } from "../hooks/useTheme";
 import { usePointsBalance } from "../hooks/usePointBalance";
 import { FundingSourceSelector } from "../components/FundSourceSelector";
+import { useStyles } from "../hooks/useStyles";
 
 interface BettingProvider {
   biller_id: string;
@@ -78,8 +79,7 @@ interface CustomerValidationStatusProps {
 
 const CustomerValidationStatus = memo(
   ({ validating, userDetail, hasInput }: CustomerValidationStatusProps) => {
-    const colors = useColors();
-    const styles = makeStyles(colors);
+    const styles = useStyles(makeStyles);
 
     if (!hasInput) return null;
 
@@ -136,8 +136,7 @@ export default function FundBettingAccountScreen() {
     pointsWorth,
     refetch: refetchPoints,
   } = usePointsBalance();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
   const {
     control,
     handleSubmit,
@@ -393,6 +392,8 @@ export default function FundBettingAccountScreen() {
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
       <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardDismissMode="interactive"
         style={styles.scrollView}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}

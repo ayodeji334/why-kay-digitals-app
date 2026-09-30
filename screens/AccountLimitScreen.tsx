@@ -26,6 +26,7 @@ import CustomLoading from "../components/CustomLoading";
 import ErrorState from "../components/ErrorState";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 if (
   Platform.OS === "android" &&
@@ -99,7 +100,7 @@ const AccountLimitsScreen = () => {
   const [expandedTiers, setExpandedTiers] = useState<string[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const { data: rawTiers, isLoading, isError, refetch } = useAccountTiers();
 

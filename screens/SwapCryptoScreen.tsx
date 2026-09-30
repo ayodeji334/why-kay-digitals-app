@@ -6,7 +6,6 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
-  StatusBar,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -32,6 +31,7 @@ import RequestErrorState from "../components/RequestErrorState";
 import { showValue } from "../libs/requestError";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
+import { useStyles } from "../hooks/useStyles";
 
 export const formatWithCommas = (value: string) => {
   if (!value) return "";
@@ -119,8 +119,7 @@ export default function CryptoSwapScreen() {
     refetch: refetchUserWallets,
   } = useWallets();
   const axios = useAxios();
-  const colors = useColors();
-  const styles = makeStyles(colors);
+  const styles = useStyles(makeStyles);
 
   const {
     control,
@@ -311,7 +310,7 @@ export default function CryptoSwapScreen() {
     }, CANCEL_COOLDOWN_MS);
 
     return () => clearTimeout(timeout);
-  }, [lastCancelledAt]);
+  }, [lastCancelledAt, setLastCancelledAt]);
 
   const canSubmit =
     isValid && !insufficientBalance && amount > 0 && !isCooldown;
@@ -330,15 +329,12 @@ export default function CryptoSwapScreen() {
   }
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      edges={["right", "left"]}
-    >
+    <SafeAreaView style={styles.screen} edges={["right", "left"]}>
       <ScrollView
-        contentContainerStyle={{
-          backgroundColor: colors.background,
-          flexGrow: 1,
-        }}
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl onRefresh={onRefresh} refreshing={isLoading} />
         }
@@ -466,14 +462,7 @@ export default function CryptoSwapScreen() {
             </TouchableOpacity>
 
             <View style={{ paddingVertical: normalizeSpacing(20) }}>
-              <AppText
-                style={{
-                  color: colors.textMuted,
-                  fontFamily: getFontFamily("400"),
-                  textAlign: "center",
-                  fontSize: normalize(18),
-                }}
-              >
+              <AppText style={styles.helperText}>
                 The market prices are volatile. Estimated amounts may change due
                 to market fluctuations between initiating and completing your
                 swap.
@@ -489,6 +478,14 @@ export default function CryptoSwapScreen() {
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.background },
+    scrollContent: { backgroundColor: colors.background, flexGrow: 1 },
+    helperText: {
+      color: colors.textMuted,
+      fontFamily: getFontFamily("400"),
+      textAlign: "center",
+      fontSize: normalize(18),
+    },
     container: {
       flex: 1,
       padding: normalizeSpacing(20),
