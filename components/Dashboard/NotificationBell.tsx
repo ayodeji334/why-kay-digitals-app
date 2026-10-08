@@ -28,7 +28,7 @@ const NotificationBell = () => {
       onPress={() => navigation.navigate("Notifications" as never)}
       style={styles.notificationButton}
     >
-      <Notification size={22} color="#333" />
+      <Notification size={20} color="#333" />
       {hasUnread && (
         <View style={styles.redDot}>
           <AppText

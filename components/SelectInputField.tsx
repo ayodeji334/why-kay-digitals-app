@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Controller, Control } from "react-hook-form";
 import {
   Modal,
@@ -54,6 +54,40 @@ interface SelectInputProps {
   emptyText?: string;
 }
 
+/**
+ * An option's logo, or a placeholder with its first letter when there's no
+ * URL or the image fails to load.
+ */
+const OptionLogo = ({
+  uri,
+  label,
+  style,
+  placeholderStyle,
+  textStyle,
+}: {
+  uri?: string | null;
+  label?: string;
+  style: any;
+  placeholderStyle: any;
+  textStyle: any;
+}) => {
+  const [failed, setFailed] = useState(false);
+
+  if (uri && !failed) {
+    return (
+      <Image source={{ uri }} style={style} onError={() => setFailed(true)} />
+    );
+  }
+
+  return (
+    <View style={[style, placeholderStyle]}>
+      <AppText style={textStyle}>
+        {(label ?? "").trim().charAt(0).toUpperCase() || "?"}
+      </AppText>
+    </View>
+  );
+};
+
 export function SelectInput({
   name,
   control,
@@ -81,6 +115,13 @@ export function SelectInput({
 
   const colors = useColors();
   const styles = useStyles(makeStyles);
+  // Lists where some options have logos (e.g. providers) show a placeholder
+  // for the ones that don't, so every row lines up. Lists with no logos at
+  // all (e.g. gender) stay text-only.
+  const showLogos = useMemo(
+    () => options.some((opt: any) => !!opt?.logo_url),
+    [options],
+  );
 
   useEffect(() => {
     setInternalValue(externalValue ?? null);
@@ -121,10 +162,13 @@ export function SelectInput({
           disabled={isDisabled}
         >
           <View style={styles.selectedCryptoContainer}>
-            {selectedOption?.logo_url && (
-              <Image
-                source={{ uri: selectedOption.logo_url }}
+            {showLogos && selectedOption && (
+              <OptionLogo
+                uri={selectedOption.logo_url}
+                label={selectedOption.label}
                 style={styles.cryptoLogo}
+                placeholderStyle={styles.logoPlaceholder}
+                textStyle={styles.logoPlaceholderText}
               />
             )}
             <View style={styles.selectedCryptoInfo}>
@@ -233,10 +277,13 @@ export function SelectInput({
                     >
                       <View style={styles.optionContent}>
                         <View style={styles.cryptoRow}>
-                          {item.logo_url && (
-                            <Image
-                              source={{ uri: item.logo_url }}
+                          {showLogos && (
+                            <OptionLogo
+                              uri={item.logo_url}
+                              label={item.label}
                               style={styles.optionLogo}
+                              placeholderStyle={styles.logoPlaceholder}
+                              textStyle={styles.logoPlaceholderText}
                             />
                           )}
 
@@ -443,6 +490,17 @@ export function SelectInput({
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
+    logoPlaceholder: {
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.infoCardBackgroundColor,
+      borderColor: colors.border,
+    },
+    logoPlaceholderText: {
+      fontFamily: getFontFamily("800"),
+      fontSize: normalize(14),
+      color: colors.primaryLight,
+    },
     label: {
       fontFamily: getFontFamily("800"),
       fontSize: normalize(17),
@@ -471,8 +529,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     cryptoLogo: {
-      width: 26,
-      height: 26,
+      width: 46,
+      height: 46,
       borderRadius: 160,
       backgroundColor: "#F3F4F6",
     },

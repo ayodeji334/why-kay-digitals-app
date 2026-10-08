@@ -9,11 +9,9 @@ import {
 import { ArrowRight2 } from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
-import InfoCard from "../components/InfoCard";
 import CustomIcon from "../components/CustomIcon";
 import {
   ShieldCheckIcon,
-  UserIdCardIcon,
   UserVerificationShieldIcon,
   CallIcon,
 } from "../assets";
@@ -21,6 +19,13 @@ import { AppText } from "../components/AppText";
 import { showError } from "../utlis/toast";
 import { useColors } from "../hooks/useTheme";
 import { useStyles } from "../hooks/useStyles";
+import { usePhoneVerification } from "../hooks/usePhoneVerification";
+import {
+  ID_DOCS,
+  IdDocType,
+  isDocVerified,
+  nextDocToVerify,
+} from "../libs/kyc";
 
 interface MenuItemProps {
   title: string;
@@ -107,14 +112,14 @@ const MenuItem = ({
           style={{
             backgroundColor: "#80d09d34",
             paddingHorizontal: normalizeSpacing(10),
-            paddingVertical: normalizeSpacing(4),
+            paddingVertical: normalizeSpacing(3),
             borderRadius: 12,
           }}
         >
           <AppText
             style={{
               color: colors.primaryLight,
-              fontSize: normalize(15),
+              fontSize: normalize(13),
               fontFamily: getFontFamily(800),
             }}
           >
@@ -136,15 +141,19 @@ const MenuItem = ({
 export default function KYCVerificationScreen() {
   const navigation = useNavigation();
   const user = useAuthStore(state => state.user);
-  const colors = useColors();
   const styles = useStyles(makeStyles);
 
-  const isBvnVerified = user?.bvn_verification_status === "VERIFIED";
-  const isPhoneNumberVerified = user?.phone_verified_at !== null;
-  const isNinVerified = user?.nin_verification_status === "VERIFIED";
+  // Same check as the rest of the app (a missing value means "not verified").
+  const { isPhoneVerified: isPhoneNumberVerified } = usePhoneVerification();
 
-  const isNinLocked = !isBvnVerified;
-  const isBVNLocked = !isPhoneNumberVerified;
+  // BVN or NIN, in either order: one gives Tier 2, both give Tier 3.
+  const nextDoc = nextDocToVerify(user);
+  const docSubtitle = (doc: IdDocType) =>
+    isDocVerified(user, doc)
+      ? `Your ${ID_DOCS[doc].label} is verified`
+      : nextDoc === doc
+      ? "Verify to reach the highest tier and increase your limits"
+      : "Verify with either your BVN or NIN to upgrade your account";
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
@@ -152,17 +161,19 @@ export default function KYCVerificationScreen() {
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        <InfoCard
-          IconComponent={
-            <CustomIcon source={UserIdCardIcon} size={17} color={colors.text} />
-          }
-          title="Complete Your KYC!"
-          description={
-            "Verify your identity to unlock all features and enjoy a seamless, secure experience."
-          }
-        />
+        <View style={styles.intro}>
+          <AppText style={styles.introText}>
+            Verify your phone number, then confirm your identity with your BVN
+            or NIN. Add both to reach the highest tier and limits.
+          </AppText>
+        </View>
 
-        <View style={{ marginTop: normalizeSpacing(20) }}>
+        <View
+          style={{
+            gap: normalizeSpacing(10),
+            marginTop: normalizeSpacing(20),
+          }}
+        >
           <MenuItem
             title="Phone Number Verification"
             subtitle="Verify your phone number for account security"
@@ -176,9 +187,9 @@ export default function KYCVerificationScreen() {
           />
           <MenuItem
             title="BVN Verification"
-            subtitle="Link your BVN for account security"
-            onPress={() => navigation.navigate("BVNVerification" as never)}
-            isLocked={isBVNLocked}
+            subtitle={docSubtitle("bvn")}
+            onPress={() => navigation.navigate(ID_DOCS.bvn.route as never)}
+            isLocked={!isPhoneNumberVerified}
             IconComponent={
               <CustomIcon
                 source={UserVerificationShieldIcon}
@@ -186,13 +197,14 @@ export default function KYCVerificationScreen() {
                 color={COLORS.primary}
               />
             }
-            isVerified={isBvnVerified}
+            isVerified={isDocVerified(user, "bvn")}
             lockedMessage="Complete phone number verification first"
           />
           <MenuItem
-            title="Proof of Identity"
-            subtitle="Link your government-issued ID"
-            onPress={() => navigation.navigate("IdentityVerification" as never)}
+            title="NIN Verification"
+            subtitle={docSubtitle("nin")}
+            onPress={() => navigation.navigate(ID_DOCS.nin.route as never)}
+            isLocked={!isPhoneNumberVerified}
             IconComponent={
               <CustomIcon
                 source={ShieldCheckIcon}
@@ -200,9 +212,8 @@ export default function KYCVerificationScreen() {
                 fill={COLORS.primary}
               />
             }
-            isVerified={isNinVerified}
-            isLocked={isNinLocked}
-            lockedMessage="Complete BVN verification first"
+            isVerified={isDocVerified(user, "nin")}
+            lockedMessage="Complete phone number verification first"
           />
         </View>
       </ScrollView>
@@ -222,6 +233,21 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: 14,
       marginVertical: normalizeSpacing(10),
     },
+    intro: {
+      gap: normalizeSpacing(8),
+      marginTop: normalizeSpacing(10),
+      marginBottom: normalizeSpacing(24),
+    },
+    introTitle: {
+      fontSize: normalize(22),
+      fontFamily: getFontFamily("800"),
+      color: colors.text,
+    },
+    introText: {
+      fontSize: normalize(17),
+      fontFamily: getFontFamily("400"),
+      color: colors.textSecondary,
+    },
     scrollContainer: {
       flex: 1,
       paddingHorizontal: normalizeSpacing(20),
@@ -237,6 +263,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       marginVertical: normalizeSpacing(5),
       borderRadius: 8,
       backgroundColor: colors.inputBackground,
+      gap: 0.8,
     },
     menuItemLocked: {
       backgroundColor: colors.inputBackground,
@@ -246,7 +273,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       flex: 1,
     },
     menuItemTitle: {
-      fontSize: normalize(18),
+      fontSize: normalize(17),
       color: colors.text,
       fontFamily: getFontFamily("800"),
     },
@@ -254,10 +281,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: colors.text,
     },
     menuItemSubtitle: {
-      fontSize: normalize(17),
+      fontSize: normalize(16),
       color: colors.textMuted,
       fontFamily: getFontFamily("400"),
       marginTop: normalizeSpacing(2),
+      lineHeight: normalize(17),
     },
     menuItemSubtitleLocked: {
       color: colors.text,

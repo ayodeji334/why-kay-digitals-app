@@ -263,7 +263,7 @@ const RootStack = createNativeStackNavigator({
           },
         },
         Withdrawal: {
-          screen: WithdrawScreen,
+          screen: withTierGate("withdraw_fiat", WithdrawScreen),
           options: {
             headerBackTitle: ".",
             header: () => <CustomHeader showTitle title="Withdraw" />,
@@ -506,7 +506,7 @@ const RootStack = createNativeStackNavigator({
           screen: IdentityVerificationScreen,
           options: {
             headerShown: true,
-            header: () => <CustomHeader showTitle title="Proof of Identity" />,
+            header: () => <CustomHeader showTitle title="NIN Verification" />,
           },
         },
         TwoFactorAuthentication: {
@@ -622,7 +622,7 @@ const RootStack = createNativeStackNavigator({
           options: {
             headerShown: true,
             header: () => (
-              <CustomHeader showTitle title="Selfie Confirmation" />
+              <CustomHeader showTitle title="Identity Verification" />
             ),
           },
         },

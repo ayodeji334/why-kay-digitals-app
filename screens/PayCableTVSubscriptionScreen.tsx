@@ -342,7 +342,7 @@ export default function PayCableTVSubscriptionScreen() {
           name="smartcard_number"
           control={control}
         />
-        {/* Validation feedback */}
+
         <SmartCardValidationStatus
           validating={validatingCard}
           cardDetail={cardDetails}
@@ -473,7 +473,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      paddingTop: StatusBar.currentHeight || 0,
+      // paddingTop: StatusBar.currentHeight || 0,
     },
     validationRow: {
       marginVertical: normalizeSpacing(10),

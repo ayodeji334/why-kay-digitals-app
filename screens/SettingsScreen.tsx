@@ -14,7 +14,7 @@ import {
   normalize,
   normalizeSpacing,
 } from "../constants/settings";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { ArrowRight2, Message, Notification } from "iconsax-react-nativejs";
 import DeviceInfo from "react-native-device-info";
 import { useNavigation } from "@react-navigation/native";
@@ -40,6 +40,7 @@ import { biometricPromptKey } from "../stores/biometricPromptSlice";
 import { useQueryClient } from "@tanstack/react-query";
 import { useColors } from "../hooks/useTheme";
 import { useStyles } from "../hooks/useStyles";
+import { isFullyVerified } from "../libs/kyc";
 
 export const DEFAULT_IMAGE = require("../assets/avatar.png");
 interface MenuItemProps {
@@ -142,17 +143,9 @@ export default function SettingsScreen() {
     navigation.navigate("EditProfile" as never);
   };
 
-  const hasCompleteVerification = useMemo(
-    () =>
-      user?.nin_verification_status === "VERIFIED" &&
-      user?.bvn_verification_status === "VERIFIED" &&
-      user?.selfie_verification_status === "VERIFIED",
-    [
-      user?.nin_verification_status,
-      user?.bvn_verification_status,
-      user?.selfie_verification_status,
-    ],
-  );
+  // Fully verified = both BVN and NIN (Tier 3+). The selfie is part of the
+  // first verification, so it isn't checked separately.
+  const hasCompleteVerification = isFullyVerified(user);
 
   const handleLogout = async () => {
     const uuid = useAuthStore.getState().user?.uuid;
@@ -457,11 +450,11 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     },
     editButton: {
       backgroundColor: "#F0FDF4",
-      paddingHorizontal: normalizeSpacing(16),
-      paddingVertical: normalizeSpacing(14),
+      paddingHorizontal: normalizeSpacing(26),
+      paddingVertical: normalizeSpacing(7),
       borderRadius: 60,
       flexDirection: "row",
-      gap: 1,
+      gap: 4,
       alignItems: "center",
     },
     editButtonText: {

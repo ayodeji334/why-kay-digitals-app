@@ -1,13 +1,3 @@
-//   // Select from saved beneficiary
-
-//   // Amount
-
-//   // Submit
-
-//   // Reset on mount
-
-// // Styles
-
 import React, { useState, useCallback, useMemo, memo } from "react";
 import {
   View,
@@ -45,7 +35,7 @@ import { useStyles } from "../hooks/useStyles";
 interface BettingProvider {
   biller_id: string;
   name: string;
-  logo: string;
+  logo_url?: string | null;
   id: string;
   lookup_id: string;
 }
@@ -56,7 +46,6 @@ interface FormValues {
   amount: number;
 }
 
-// Schema
 const schema = yup.object({
   provider: yup.string().required("Please select a betting provider"),
   customer_id: yup
@@ -70,7 +59,6 @@ const schema = yup.object({
     .required("Amount is required"),
 });
 
-// Customer validation status
 interface CustomerValidationStatusProps {
   validating: boolean;
   userDetail: any;
@@ -169,8 +157,6 @@ export default function FundBettingAccountScreen() {
     refetchOnWindowFocus: true,
   });
 
-  console.log(providers);
-
   const {
     data: beneficiaries,
     isLoading: isLoadingSavedData,
@@ -216,7 +202,8 @@ export default function FundBettingAccountScreen() {
       providers.map((p: BettingProvider) => ({
         label: p.name,
         value: p.biller_id || p.id,
-        icon: p.logo,
+        // SelectInput shows `logo_url` in the list and the selected field.
+        logo_url: p.logo_url ?? undefined,
         id: p.lookup_id,
       })),
     [providers],

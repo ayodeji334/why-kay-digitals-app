@@ -123,7 +123,7 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       borderColor: colors.border,
       borderRadius: 8,
       paddingHorizontal: normalizeSpacing(16),
-      paddingVertical: normalizeSpacing(16),
+      paddingVertical: normalizeSpacing(14),
       color: colors.text,
       fontFamily: getFontFamily("400"),
       fontSize: normalize(18),

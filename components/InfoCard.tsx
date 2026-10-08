@@ -103,7 +103,7 @@ export default InfoCard;
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     title: {
-      fontSize: normalize(18),
+      fontSize: normalize(17),
       fontFamily: getFontFamily("800"),
       color: colors.text,
     },
@@ -117,6 +117,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.text,
       flexShrink: 1,
+      lineHeight: normalize(19),
+      marginBottom: normalizeSpacing(5),
     },
     editButton: {
       backgroundColor: COLORS.primary,

@@ -34,7 +34,7 @@ type Banner = {
 // phones, narrower relative to the screen on the iPhone's larger point
 // width. Sizing it as a percentage of the actual screen width keeps the
 // card (and its "peek" of the next card) visually consistent everywhere.
-const CARD_WIDTH_RATIO = 0.72;
+const CARD_WIDTH_RATIO = 0.68;
 const CARD_WIDTH = SCREEN_WIDTH * CARD_WIDTH_RATIO;
 const CARD_GAP = 12;
 const ITEM_STRIDE = CARD_WIDTH + CARD_GAP; // horizontal distance between card starts
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: CARD_WIDTH,
-    height: 109,
+    height: 80,
     borderRadius: 10,
     paddingVertical: normalizeSpacing(16),
     backgroundColor: "#e7e7e7",

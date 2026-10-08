@@ -55,7 +55,11 @@ const GUIDELINES = [
 export default function SelfieVerificationScreen() {
   const navigation: any = useNavigation();
   const route = useRoute();
-  const { bvn }: any = route.params ?? {};
+  // { idType, idNumber } from IdNumberForm. `bvn` is still accepted from
+  // older navigation paths.
+  const params: any = route.params ?? {};
+  const idType: "bvn" | "nin" = params.idType ?? "bvn";
+  const idNumber: string | undefined = params.idNumber ?? params.bvn;
   const [showCamera, setShowCamera] = useState(false);
   const [loading, setLoading] = useState(false);
   const styles = useStyles(makeStyles);
@@ -92,8 +96,10 @@ export default function SelfieVerificationScreen() {
   // image only once the whole challenge has passed.
   const handleLivenessSuccess = (base64Image: string) => {
     navigation.replace("SelfieConfirmation", {
+      idType,
+      idNumber,
+      requiresSelfie: true,
       image: { base64: base64Image },
-      bvn,
     });
   };
 

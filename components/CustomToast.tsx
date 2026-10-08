@@ -1,13 +1,6 @@
 import { useEffect, useRef } from "react";
-import {
-  Animated,
-  Easing,
-  Platform,
-  Pressable,
-  StatusBar,
-  StyleSheet,
-  Text,
-} from "react-native";
+import { Animated, Easing, Pressable, StyleSheet, Text } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ToastType } from "../hooks/useToast";
 import {
   getFontFamily,
@@ -15,17 +8,9 @@ import {
   normalizeSpacing,
 } from "../constants/settings";
 
-// ToastHost is mounted at the very root of the app (see App.tsx), outside
-// SafeAreaProvider, so useSafeAreaInsets isn't available here — fall back to
-// the same StatusBar.currentHeight pattern already used elsewhere in the app
-// (e.g. PayCableTVSubscriptionScreen) and a sane constant for iOS, where
-// currentHeight is always undefined.
-const STATUS_BAR_HEIGHT =
-  Platform.OS === "android" ? StatusBar.currentHeight ?? 24 : 58;
-
-// How far above the screen the toast starts before it slides down. Kept
-// larger than the status bar so the entrance is visibly "beyond" it.
-const OFFSCREEN_Y = -(STATUS_BAR_HEIGHT + 120);
+// How far above the screen the toast starts before it slides down: far enough
+// to be hidden even on devices with a tall notch.
+const OFFSCREEN_Y = -200;
 
 export interface CustomToastProps {
   message: string;
@@ -43,6 +28,11 @@ export default function CustomToast({
   duration = 3000,
   onHide,
 }: CustomToastProps) {
+  // Space the toast must leave for the status bar / notch. This is the real
+  // inset: the notch height on iOS, and 0 on Android here, because the app
+  // isn't edge-to-edge so its window already starts below the status bar
+  // (the old StatusBar.currentHeight padding doubled that gap on Android).
+  const { top: topInset } = useSafeAreaInsets();
   const translateY = useRef(new Animated.Value(OFFSCREEN_Y)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const dismissed = useRef(false);
@@ -103,7 +93,7 @@ export default function CustomToast({
           style={[
             styles.container,
             {
-              paddingTop: STATUS_BAR_HEIGHT + 14,
+              paddingTop: topInset + 14,
               backgroundColor: type === ToastType.ERROR ? "#D41111" : "green",
             },
           ]}

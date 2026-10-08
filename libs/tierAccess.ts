@@ -11,7 +11,8 @@ export type RestrictedFeature =
   | "bill_payments"
   | "gift_cards"
   | "swap_crypto"
-  | "transfer";
+  | "transfer"
+  | "withdraw_fiat";
 
 const TIER_RESTRICTIONS: Record<string, RestrictedFeature[]> = {
   TIER_1: [
@@ -23,6 +24,7 @@ const TIER_RESTRICTIONS: Record<string, RestrictedFeature[]> = {
     "gift_cards",
     "swap_crypto",
     "transfer",
+    "withdraw_fiat",
   ],
 };
 
@@ -36,6 +38,7 @@ export const FEATURE_LABELS: Record<RestrictedFeature, string> = {
   gift_cards: "Buying gift cards",
   swap_crypto: "Swapping crypto",
   transfer: "Making transfers",
+  withdraw_fiat: "Withdrawing to a bank account",
 };
 
 export const isFeatureRestricted = (

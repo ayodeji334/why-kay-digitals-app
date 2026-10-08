@@ -35,17 +35,17 @@ function App() {
   OneSignal.Notifications.requestPermission(false);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {/* Last-resort safety net for crashes outside a screen (providers,
-          navigator); screens have their own boundary in Navigation.tsx. */}
-      <ErrorBoundary
-        title="Something went wrong"
-        message="WhyKay ran into an unexpected problem. Tap Try again to reload."
-      >
-        <MainApp />
-      </ErrorBoundary>
-      <ToastHost />
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <ErrorBoundary
+          title="Something went wrong"
+          message="WhyKay ran into an unexpected problem. Tap Try again to reload."
+        >
+          <MainApp />
+        </ErrorBoundary>
+        <ToastHost />
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }
 
@@ -101,12 +101,12 @@ function MainApp() {
   if (isLoading) return <SplashScreen />;
 
   return (
-    <SafeAreaProvider>
+    <>
       <ThemedStatusBar />
       <View style={styles.container}>
         <NavigationRoot />
       </View>
-    </SafeAreaProvider>
+    </>
   );
 }
 

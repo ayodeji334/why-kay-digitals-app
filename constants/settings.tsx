@@ -27,7 +27,7 @@ const getScale = () =>
 export const normalize = (size: number) => {
   const scale = getScale();
 
-  const normalized = scale * (size - 1);
+  const normalized = scale * (size - 2);
   const corrected =
     Platform.OS === "android"
       ? normalized * ANDROID_FONT_CORRECTION

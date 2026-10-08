@@ -27,6 +27,7 @@ import { AppText } from "../components/AppText";
 import { DEFAULT_IMAGE } from "./SettingsScreen";
 import { useColors } from "../hooks/useTheme";
 import { useStyles } from "../hooks/useStyles";
+import { isFullyVerified } from "../libs/kyc";
 
 const HomeScreen = () => {
   const user = useUser();
@@ -36,17 +37,9 @@ const HomeScreen = () => {
   const refreshUser = useAuthStore(state => state.refreshUser);
   const styles = useStyles(makeStyles);
 
-  const hasCompleteVerification = useMemo(
-    () =>
-      user?.nin_verification_status === "VERIFIED" &&
-      user?.bvn_verification_status === "VERIFIED" &&
-      user?.selfie_verification_status === "VERIFIED",
-    [
-      user?.nin_verification_status,
-      user?.bvn_verification_status,
-      user?.selfie_verification_status,
-    ],
-  );
+  // Fully verified = both BVN and NIN (Tier 3+). The selfie is part of the
+  // first verification, so it isn't checked separately.
+  const hasCompleteVerification = isFullyVerified(user);
 
   const greeting = useMemo(() => {
     const h = new Date().getHours();

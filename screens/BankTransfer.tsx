@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
@@ -31,8 +32,13 @@ import { useNavigation } from "@react-navigation/native";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
 import { useStyles } from "../hooks/useStyles";
+import { hasVerifiedIdentity, latestVerificationTime } from "../libs/kyc";
 
 const BANK_NAME = "Boost Microfinance Bank ( Boost MFB )";
+
+// How long after verification an empty account means "still being created".
+const ACCOUNT_CREATION_WINDOW_MS = 10 * 60 * 1000;
+const ACCOUNT_POLL_INTERVAL_MS = 5000;
 
 const BankTransferScreen = () => {
   const { apiGet } = useAxios();
@@ -42,6 +48,15 @@ const BankTransferScreen = () => {
   const refreshUser = useAuthStore(state => state.refreshUser);
   const navigation: any = useNavigation();
   const styles = useStyles(makeStyles);
+
+  // BVN or NIN: either one gets the user a PalmPay virtual account.
+  const identityVerified = hasVerifiedIdentity(user);
+  // The account is created in the background a few seconds after
+  // verification, so for a short while after it an empty result means
+  // "still being created", not "failed".
+  const verifiedAt = latestVerificationTime(user);
+  const recentlyVerified =
+    verifiedAt !== null && Date.now() - verifiedAt < ACCOUNT_CREATION_WINDOW_MS;
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["userBankAccounts"],
@@ -54,11 +69,13 @@ const BankTransferScreen = () => {
         throw error;
       }
     },
-    enabled:
-      user?.bvn_verification_status &&
-      user?.bvn_verification_status === "VERIFIED" &&
-      user?.banks &&
-      user?.banks.length === 0,
+    enabled: identityVerified && user?.banks && user?.banks.length === 0,
+    // Keep checking while a just-verified user's account is being created.
+    refetchInterval: query => {
+      const account = query.state.data;
+      const empty = !account || Object.keys(account).length === 0;
+      return empty && recentlyVerified ? ACCOUNT_POLL_INTERVAL_MS : false;
+    },
   });
 
   const onRefresh = async () => {
@@ -120,9 +137,36 @@ const BankTransferScreen = () => {
   }
 
   const hasNoVirtualAccount =
-    user?.bvn_verification_status === "VERIFIED" &&
-    data &&
-    Object.keys(data).length <= 0;
+    identityVerified && data && Object.keys(data).length <= 0;
+
+  if (hasNoVirtualAccount && recentlyVerified) {
+    return (
+      <SafeAreaView
+        edges={["right", "bottom", "left"]}
+        style={styles.container}
+      >
+        <ScrollView
+          style={styles.flexOne}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.emptyContainer}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <View style={styles.emptyState}>
+            <ActivityIndicator size="large" color={COLORS.primary} />
+            <AppText style={styles.emptyTitle}>
+              Your account number is being created…
+            </AppText>
+            <AppText style={styles.emptyDescription}>
+              This usually takes a few seconds after verification. It will
+              appear here automatically.
+            </AppText>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   if (hasNoVirtualAccount) {
     return (
@@ -145,10 +189,9 @@ const BankTransferScreen = () => {
             </View>
             <AppText style={styles.emptyTitle}>No Virtual Account</AppText>
             <AppText style={styles.emptyDescription}>
-              You need to create a virtual account before you can make deposits.
-              This only takes a moment and is required for secure transactions.
-              Please ensure your BVN is verified to activate your virtual
-              account.
+              We couldn't set up your deposit account yet. Pull down or tap Try
+              again to check. If it still doesn't appear, contact our support
+              team.
             </AppText>
             <TouchableOpacity
               activeOpacity={0.89}
@@ -166,7 +209,7 @@ const BankTransferScreen = () => {
 
   return (
     <SafeAreaView edges={["right", "left"]} style={styles.container}>
-      {user?.bvn_verification_status !== "VERIFIED" ? (
+      {!identityVerified ? (
         <KYCStatusScreen />
       ) : (
         <ScrollView
@@ -234,6 +277,7 @@ const BankTransferScreen = () => {
 
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
+    flexOne: { flex: 1 },
     container: { flex: 1, backgroundColor: colors.background },
     buttonWrapper: {
       marginTop: normalizeSpacing(10),

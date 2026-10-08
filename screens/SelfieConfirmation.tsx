@@ -7,85 +7,113 @@ import {
   normalizeSpacing,
 } from "../constants/settings";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useQueryClient } from "@tanstack/react-query";
 import useAxios from "../hooks/useAxios";
 import { LONG_REQUEST_TIMEOUT_MS } from "../api/axios";
-import { showError } from "../utlis/toast";
 import { useAuthStore } from "../stores/authSlice";
 import { CloseCircle, TickCircle } from "iconsax-react-nativejs";
 import { AxiosError } from "axios";
 import { AppText } from "../components/AppText";
 import { useColors } from "../hooks/useTheme";
-import CustomLoading from "../components/CustomLoading";
 import IdentityVerifying from "../components/IdentityVerifying";
 import { useStyles } from "../hooks/useStyles";
+import { getRequestErrorMessage } from "../libs/requestError";
+import {
+  ID_DOCS,
+  IdDocType,
+  isFullyVerified,
+  nextDocToVerify,
+} from "../libs/kyc";
 
-// By the time we get here, LivenessCheck has already run its full
-// align/capture/blink/turn challenge and handed back a ready-to-submit,
-// already-compressed base64 image — a static, unchallenged photo can never
-// reach this screen. This screen's only job now is submitting it and
-// showing the outcome; there's no separate preview/confirm step to repeat
-// what LivenessCheck's own review ("Looks good / Retake") already covered.
+// Submits a BVN or NIN verification and shows the outcome.
+//
+// Reached two ways (see IdNumberForm):
+// - requires_selfie was true: from SelfieVerification with a liveness-checked
+//   image (LivenessCheck has already run align/capture/blink/turn), which is
+//   sent along.
+// - requires_selfie was false (the second document): directly, with no image,
+//   and `image` is left out of the request.
 export default function SelfieConfirmationScreen() {
   const route = useRoute();
   const navigation: any = useNavigation();
-  const { image, bvn }: any = route.params;
+  const params: any = route.params ?? {};
+  const idType: IdDocType = params.idType ?? "bvn";
+  // `bvn` is still accepted from older navigation paths.
+  const idNumber: string | undefined = params.idNumber ?? params.bvn;
+  const image: { base64?: string } | undefined = params.image;
+  const requiresSelfie: boolean = params.requiresSelfie ?? !!image;
+  const doc = ID_DOCS[idType];
+
   const axiosInstance = useAxios();
+  const queryClient = useQueryClient();
+  const user = useAuthStore(state => state.user);
   const setUser = useAuthStore(state => state.setUser);
   const colors = useColors();
   const styles = useStyles(makeStyles);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
-  // Only populated for a 400 response, whose message is specific enough
-  // (e.g. "face doesn't match BVN record") to show the user directly —
-  // every other failure (network error, 5xx, etc.) keeps the generic
-  // hardcoded description below instead.
+  // A specific message (backend 400s, missing data). Other failures fall
+  // back to the default description for the path that was taken.
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleRetake = () => {
-    // Keep the already-verified bvn — only the photo/liveness check needs redoing.
-    navigation.replace("SelfieVerification", { bvn });
+  const handleRetry = () => {
+    if (requiresSelfie) {
+      // Keep the number; only the selfie needs redoing.
+      navigation.replace("SelfieVerification", { idType, idNumber });
+    } else {
+      // Back to the number form (still filled in) to check it and resubmit.
+      navigation.goBack();
+    }
   };
+
+  // Back to the KYC hub, wherever the flow was started from.
+  const handleDone = () => navigation.popTo("Verification");
+
+  const handleVerifyOther = (next: IdDocType) =>
+    navigation.replace(ID_DOCS[next].route);
 
   const handleConfirm = async () => {
     try {
       setIsLoading(true);
 
-      if (!bvn) {
-        showError("Missing BVN — please restart verification.");
-        setStatus("error");
-        return;
-      }
-
-      const base64Image: string | undefined = image?.base64;
-      if (!base64Image) {
-        showError(
-          "Unable to process selfie verification. Kindly try again after some minutes",
+      if (!idNumber) {
+        setErrorMessage(
+          `Your ${doc.label} is missing. Please start the verification again.`,
         );
         setStatus("error");
         return;
       }
 
-      // Single combined call — backend matches this image against the
-      // pending BVN verification and writes both bvn + selfie data at once.
-      const payload = { bvn, image: base64Image };
-      const response = await axiosInstance.post(
-        "/kyc/verify-bvn-selfie",
-        payload,
-        { timeout: LONG_REQUEST_TIMEOUT_MS },
-      );
-
-      setStatus("success");
-      setUser(response.data.data?.user);
-    } catch (err: any) {
-      setStatus("error");
-      if (err instanceof AxiosError) {
-        const backendMessage = err.response?.data?.message;
-        if (err.response?.status === 400 && backendMessage) {
-          setErrorMessage(backendMessage);
-        }
-        showError(backendMessage || "Something went wrong. Try again.");
+      const base64Image: string | undefined = image?.base64;
+      if (requiresSelfie && !base64Image) {
+        setErrorMessage("We didn't receive your selfie. Please take it again.");
+        setStatus("error");
+        return;
       }
+
+      // `image` only when the usability check asked for a selfie.
+      const payload = {
+        [idType]: idNumber,
+        ...(requiresSelfie && base64Image ? { image: base64Image } : {}),
+      };
+      const response = await axiosInstance.post(doc.verifyPath, payload, {
+        timeout: LONG_REQUEST_TIMEOUT_MS,
+      });
+
+      const updatedUser = response.data?.data?.user;
+      if (updatedUser) setUser(updatedUser);
+      // The virtual account is created in the background after verification.
+      queryClient.invalidateQueries({ queryKey: ["userBankAccounts"] });
+      setStatus("success");
+    } catch (err: any) {
+      if (err instanceof AxiosError && err.response?.status === 400) {
+        const backendMessage = err.response?.data?.message;
+        if (backendMessage) setErrorMessage(backendMessage);
+      } else {
+        setErrorMessage(getRequestErrorMessage(err));
+      }
+      setStatus("error");
     } finally {
       setIsLoading(false);
     }
@@ -93,11 +121,18 @@ export default function SelfieConfirmationScreen() {
 
   useEffect(() => {
     handleConfirm();
-    // Submit exactly once on mount with the image/bvn this screen was
-    // opened with — deliberately not re-running if handleConfirm's
-    // identity changes on re-render.
+    // Submit exactly once on mount with the params this screen was opened
+    // with — deliberately not re-running if handleConfirm's identity changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // After success, `user` is the updated record from the verify response.
+  const fullyVerified = isFullyVerified(user);
+  const nextDoc = nextDocToVerify(user);
+
+  const defaultErrorDescription = requiresSelfie
+    ? "We couldn't get a clear match of your face. Please ensure you are in a well-lit area and your face is fully centered in the frame."
+    : `We couldn't verify your ${doc.label}. Please check the number and try again.`;
 
   return (
     <SafeAreaView edges={["top", "bottom"]} style={styles.container}>
@@ -105,53 +140,68 @@ export default function SelfieConfirmationScreen() {
         <IdentityVerifying loading={isLoading || status === "idle"} />
       ) : status === "success" ? (
         <View style={styles.statusContent}>
-          <View
-            style={{
-              justifyContent: "center",
-              alignContent: "center",
-              alignItems: "center",
-            }}
-          >
+          <View style={styles.statusCenter}>
             <TickCircle size={40} color={colors.primary} variant="Bold" />
-            <AppText style={styles.statusTitle}>Verification Complete</AppText>
+            <AppText style={styles.statusTitle}>{doc.label} verified</AppText>
             <AppText style={styles.statusDescription}>
-              Your identity has been successfully verified. You now have full
-              access to upgrade your account and increase your transaction
-              limits.
+              {fullyVerified
+                ? "Your identity is fully verified. You now have access to the highest account limits."
+                : nextDoc
+                ? `Your account has been upgraded. Verify your ${ID_DOCS[nextDoc].label} as well to reach the highest tier and increase your limits further.`
+                : "Your identity has been verified and your account has been upgraded."}
             </AppText>
           </View>
-          <TouchableOpacity
-            style={[
-              styles.confirmButton,
-              { marginLeft: normalizeSpacing(0), width: "100%" },
-            ]}
-            onPress={() => navigation.pop(2)}
-          >
-            <AppText style={styles.buttonText}>Continue</AppText>
-          </TouchableOpacity>
+          <View style={styles.actions}>
+            {nextDoc && !fullyVerified && (
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.primaryButton}
+                onPress={() => handleVerifyOther(nextDoc)}
+                accessibilityRole="button"
+              >
+                <AppText style={styles.buttonText}>
+                  Verify my {ID_DOCS[nextDoc].label}
+                </AppText>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={
+                nextDoc && !fullyVerified
+                  ? styles.secondaryButton
+                  : styles.primaryButton
+              }
+              onPress={handleDone}
+              accessibilityRole="button"
+            >
+              <AppText
+                style={
+                  nextDoc && !fullyVerified
+                    ? styles.secondaryButtonText
+                    : styles.buttonText
+                }
+              >
+                {nextDoc && !fullyVerified ? "Maybe later" : "Continue"}
+              </AppText>
+            </TouchableOpacity>
+          </View>
         </View>
       ) : status === "error" ? (
         <View style={styles.statusContent}>
-          <View
-            style={{
-              justifyContent: "center",
-              alignContent: "center",
-              alignItems: "center",
-            }}
-          >
+          <View style={styles.statusCenter}>
             <CloseCircle size={40} color={colors.error} variant="Bold" />
-            <AppText style={styles.statusTitle}>Verification Failed</AppText>
+            <AppText style={styles.statusTitle}>Verification failed</AppText>
             <AppText style={styles.statusDescription}>
-              {errorMessage ??
-                "We couldn't get a clear match of your face. Please ensure you are in a well-lit area and your face is fully centered in the frame."}
+              {errorMessage ?? defaultErrorDescription}
             </AppText>
           </View>
           <TouchableOpacity
             activeOpacity={0.8}
-            style={styles.retakeButton}
-            onPress={handleRetake}
+            style={styles.retryButton}
+            onPress={handleRetry}
+            accessibilityRole="button"
           >
-            <AppText style={styles.buttonText}>Try Again</AppText>
+            <AppText style={styles.buttonText}>Try again</AppText>
           </TouchableOpacity>
         </View>
       ) : null}
@@ -173,18 +223,28 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       paddingBottom: normalizeSpacing(60),
       paddingTop: normalizeSpacing(30),
     },
-    retakeButton: {
+    statusCenter: {
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    actions: { gap: normalizeSpacing(12) },
+    retryButton: {
       backgroundColor: colors.error,
       paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
-      marginRight: normalizeSpacing(8),
       alignItems: "center",
     },
-    confirmButton: {
+    primaryButton: {
       backgroundColor: colors.primary,
       paddingVertical: normalizeSpacing(14),
       borderRadius: 120,
-      marginLeft: normalizeSpacing(8),
+      alignItems: "center",
+    },
+    secondaryButton: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingVertical: normalizeSpacing(14),
+      borderRadius: 120,
       alignItems: "center",
     },
     buttonText: {
@@ -192,8 +252,10 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontSize: normalize(18),
       fontFamily: getFontFamily("700"),
     },
-    retakeText: {
-      color: colors.error,
+    secondaryButtonText: {
+      color: colors.text,
+      fontSize: normalize(18),
+      fontFamily: getFontFamily("700"),
     },
     statusTitle: {
       fontSize: normalize(18),

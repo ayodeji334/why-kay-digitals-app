@@ -198,7 +198,7 @@ const HelpSupportScreen: React.FC = () => {
             subtitle="@WhykayDigitals"
             onPress={handleFacebook}
             IconComponent={Facebook}
-          />{" "}
+          />
           <MenuItem
             title="X (Formerly Twitter)"
             subtitle="@WhykayDigitals"

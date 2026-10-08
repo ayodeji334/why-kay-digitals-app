@@ -1,6 +1,5 @@
 import {
   ScrollView,
-  StatusBar,
   StyleSheet,
   View,
   TouchableOpacity,
@@ -233,5 +232,6 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: getFontFamily("400"),
       color: colors.text,
       marginTop: normalizeSpacing(2),
+      lineHeight: normalize(10),
     },
   });
