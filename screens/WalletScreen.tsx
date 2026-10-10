@@ -69,7 +69,8 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
       color: "white",
     },
     scrollContainer: {
+      flexGrow: 1,
       paddingHorizontal: normalizeSpacing(20),
-      paddingTop: normalizeSpacing(20),
+      paddingTop: normalizeSpacing(10),
     },
   });

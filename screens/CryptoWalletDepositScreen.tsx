@@ -26,6 +26,7 @@ import { useColors } from "../hooks/useTheme";
 import HalfScreenModal from "../components/HalfScreenModal";
 import CustomLoading from "../components/CustomLoading";
 import RequestErrorState from "../components/RequestErrorState";
+import NoWallet from "../components/NoWallet";
 import { useAuthStore, useUser } from "../stores/authSlice";
 import { useLiveChat } from "../context/LiveChatProvider";
 import { useStyles } from "../hooks/useStyles";
@@ -187,10 +188,26 @@ const CryptoWalletDepositScreen = () => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
       >
-        <WalletDetails
-          wallet={selectedWallet}
-          refetchWallets={refreshWallets}
-        />
+        {!selectedAssetUuid ? (
+          <RequestErrorState
+            title="No coin selected"
+            message="Go back and choose the coin you want to deposit."
+            retryLabel="Go back"
+            showBack={false}
+            onRetry={() => navigation.goBack()}
+          />
+        ) : !selectedWallet ? (
+          // Wallets loaded but the user has none for this coin yet.
+          <NoWallet
+            selectedAssetUuid={selectedAssetUuid}
+            onSuccess={refreshWallets}
+          />
+        ) : (
+          <WalletDetails
+            wallet={selectedWallet}
+            refetchWallets={refreshWallets}
+          />
+        )}
       </ScrollView>
 
       <View style={styles.actionsRow}>

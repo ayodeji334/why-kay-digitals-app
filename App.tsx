@@ -39,7 +39,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ErrorBoundary
           title="Something went wrong"
-          message="WhyKay ran into an unexpected problem. Tap Try again to reload."
+          message="We ran into an unexpected problem. Tap Try again to reload."
         >
           <MainApp />
         </ErrorBoundary>

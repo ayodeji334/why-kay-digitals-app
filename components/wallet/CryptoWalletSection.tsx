@@ -54,8 +54,6 @@ const CryptoWalletSection = () => {
     openLiveChat();
   };
 
-  // The asset the user picked, waiting for the modal to finish dismissing.
-  // Using a ref (not state) because it shouldn't trigger a re-render.
   const pendingAssetIdRef = useRef<string | null>(null);
 
   const navigation = useNavigation<any>();
@@ -63,8 +61,6 @@ const CryptoWalletSection = () => {
   const { assets } = useAssets();
   const { data, isLoading, refetch, isRefetching } = useWallets();
 
-  // Memoized so it's not a brand-new array on every render
-  // (previously this invalidated the filteredWallets memo each time).
   const walletList = useMemo(() => {
     const wallets = Array.isArray(data?.wallets) ? data.wallets : [];
 
@@ -124,16 +120,11 @@ const CryptoWalletSection = () => {
     [apiGet, refetch, isGenerating],
   );
 
-  // User picked an asset: just close the modal and remember the choice.
-  // Generation starts in onModalDismissed, AFTER the native dismiss
-  // animation has fully completed — no guessed setTimeout.
   const handleSelectAsset = (assetId: string) => {
     pendingAssetIdRef.current = assetId;
     setShowAddAssetWalletModal(false);
   };
 
-  // Fired by the modal once iOS has truly finished dismissing it.
-  // (On Android, RN's Modal fires onDismiss as well when it unmounts.)
   const onModalDismissed = () => {
     const assetId = pendingAssetIdRef.current;
     pendingAssetIdRef.current = null;
@@ -142,7 +133,6 @@ const CryptoWalletSection = () => {
     }
   };
 
-  // Navigation helpers
   const navigateTrade = (action: TradeIntent["action"]) => {
     if (isSuspended && action !== "deposit") {
       setShowSuspendedModal(true);
@@ -236,7 +226,6 @@ const CryptoWalletSection = () => {
               />
             </View>
 
-            {/* Assets header */}
             <View style={styles.assetsHeader}>
               <AppText style={styles.sectionTitle}>Assets</AppText>
               <View
@@ -337,10 +326,6 @@ const CryptoWalletSection = () => {
         )}
       </CustomModal>
 
-      {/* Plain absolutely-positioned overlay instead of a second native
-          Modal — there is no UIViewController presentation to conflict
-          with the select-asset modal's dismissal on iOS. */}
-      {/* {isGenerating && ( */}
       <CustomLoading loading={isGenerating} />
 
       <HalfScreenModal
@@ -418,8 +403,9 @@ export default CryptoWalletSection;
 const makeStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     container: {
+      flex: 1,
       backgroundColor: colors.background,
-      paddingBottom: normalizeSpacing(50),
+      // paddingBottom: normalizeSpacing(50),
     },
     scrollContainer: { flex: 1, paddingBottom: normalizeSpacing(20) },
     tabContainer: {

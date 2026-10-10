@@ -217,6 +217,7 @@ const ServicesSection = () => {
               fontFamily: getFontFamily(800),
               fontSize: normalize(18),
               marginVertical: 10,
+              color: colors.text,
             }}
           >
             Quick Actions

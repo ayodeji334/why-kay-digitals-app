@@ -1,15 +1,18 @@
+import { useCallback } from "react";
 import { ToastType, useCustomToast, pushToast } from "../hooks/useToast";
 
 export const useToastHelpers = () => {
   const showToast = useCustomToast();
 
-  const showSuccess = (message: string) => {
-    showToast({ type: ToastType.SUCCESS, message });
-  };
+  const showSuccess = useCallback(
+    (message: string) => showToast({ type: ToastType.SUCCESS, message }),
+    [showToast],
+  );
 
-  const showError = (message: string) => {
-    showToast({ type: ToastType.ERROR, message });
-  };
+  const showError = useCallback(
+    (message: string) => showToast({ type: ToastType.ERROR, message }),
+    [showToast],
+  );
 
   return { showSuccess, showError };
 };

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
   View,
   TouchableOpacity,
@@ -54,7 +54,8 @@ interface Wallet {
 }
 
 interface WalletDetailsProps {
-  wallet: Wallet;
+  // Undefined while wallets load, or when the user has no wallet for the coin.
+  wallet?: Wallet | null;
   onNetworkChange?: (network: string) => Promise<void>;
   refetchWallets?: () => void;
 }
@@ -101,19 +102,28 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
     }
   };
 
-  const walletDetail = useMemo(() => {
-    if (!selectedNetwork) return null;
+  // Pick the first network once the wallet's chains arrive (the initial state
+  // only sees them if the wallet was already loaded on first render).
+  const firstChain = wallet?.chains?.[0]?.chain;
+  useEffect(() => {
+    if (!selectedNetwork && firstChain) setSelectedNetwork(firstChain);
+  }, [selectedNetwork, firstChain]);
 
-    const networkAddresses = wallet.addresses.filter(
-      addr => addr.chain === selectedNetwork,
+  const addresses = wallet?.addresses;
+  const walletDetail = useMemo(() => {
+    if (!selectedNetwork || !Array.isArray(addresses)) return null;
+
+    const networkAddresses = addresses.filter(
+      (addr: any) => addr?.chain === selectedNetwork,
     );
 
     if (!networkAddresses.length) return null;
 
     return (
-      networkAddresses.find(addr => addr.is_default) || networkAddresses[0]
+      networkAddresses.find((addr: any) => addr?.is_default) ||
+      networkAddresses[0]
     );
-  }, [wallet.addresses, selectedNetwork]);
+  }, [addresses, selectedNetwork]);
 
   const formattedNetworkName = useMemo(() => {
     return selectedNetwork ? selectedNetwork.toUpperCase() : "Not Provided";
@@ -197,8 +207,6 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
       setIsSharing(false);
     }
   };
-
-  console.log(wallet.chains);
 
   return (
     <SafeAreaView style={styles.container} edges={["left"]}>
@@ -330,12 +338,14 @@ const WalletDetails: React.FC<WalletDetailsProps> = ({
             </View>
             <View style={styles.infoRow}>
               <AppText style={styles.infoLabel}>Wallet Balance</AppText>
-              <AppText style={styles.infoValue}>{wallet.balance}</AppText>
+              <AppText style={styles.infoValue}>
+                {showValue(wallet?.balance, "0")}
+              </AppText>
             </View>
             <View style={styles.infoRow}>
               <AppText style={styles.infoLabel}>Market Value</AppText>
               <AppText style={styles.infoValue}>
-                {formatAmount(parseFloat(wallet.price) || 0, {
+                {formatAmount(parseFloat(wallet?.price ?? "") || 0, {
                   currency: "USD",
                 })}
               </AppText>

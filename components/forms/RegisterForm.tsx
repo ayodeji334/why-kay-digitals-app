@@ -114,7 +114,6 @@ const RegisterForm = forwardRef<RegisterFormHandle>((_, ref) => {
   }));
 
   useEffect(() => {
-    console.log(heardAboutOptionsFailed);
     if (heardAboutOptionsFailed) {
       showError("Couldn't load 'how did you hear about us' options.");
     }
