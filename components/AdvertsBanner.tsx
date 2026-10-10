@@ -29,9 +29,9 @@ type Banner = {
   linking_type: "internal" | "external";
 };
 
-const CARD_WIDTH_RATIO = 0.6;
+const CARD_WIDTH_RATIO = 0.46;
 const CARD_WIDTH = SCREEN_WIDTH * CARD_WIDTH_RATIO;
-const CARD_GAP = 12;
+const CARD_GAP = 20;
 const ITEM_STRIDE = CARD_WIDTH + CARD_GAP; // horizontal distance between card starts
 const AUTO_SCROLL_INTERVAL_MS = 4000;
 
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: CARD_WIDTH,
-    height: 95,
+    height: 70,
     borderRadius: 10,
     paddingVertical: normalizeSpacing(16),
     backgroundColor: "#e7e7e7",
