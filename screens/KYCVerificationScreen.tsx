@@ -10,22 +10,13 @@ import { ArrowRight2 } from "iconsax-react-nativejs";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/authSlice";
 import CustomIcon from "../components/CustomIcon";
-import {
-  ShieldCheckIcon,
-  UserVerificationShieldIcon,
-  CallIcon,
-} from "../assets";
+import { UserVerificationShieldIcon, CallIcon } from "../assets";
 import { AppText } from "../components/AppText";
 import { showError } from "../utlis/toast";
 import { useColors } from "../hooks/useTheme";
 import { useStyles } from "../hooks/useStyles";
 import { usePhoneVerification } from "../hooks/usePhoneVerification";
-import {
-  ID_DOCS,
-  IdDocType,
-  isDocVerified,
-  nextDocToVerify,
-} from "../libs/kyc";
+import { ID_DOCS, isFullyVerified, nextDocToVerify } from "../libs/kyc";
 
 interface MenuItemProps {
   title: string;
@@ -40,7 +31,7 @@ interface MenuItemProps {
   lockedMessage?: string;
 }
 
-const MenuItem = ({
+export const MenuItem = ({
   title,
   subtitle,
   onPress,
@@ -147,13 +138,13 @@ export default function KYCVerificationScreen() {
   const { isPhoneVerified: isPhoneNumberVerified } = usePhoneVerification();
 
   // BVN or NIN, in either order: one gives Tier 2, both give Tier 3.
+  const fullyVerified = isFullyVerified(user);
   const nextDoc = nextDocToVerify(user);
-  const docSubtitle = (doc: IdDocType) =>
-    isDocVerified(user, doc)
-      ? `Your ${ID_DOCS[doc].label} is verified`
-      : nextDoc === doc
-      ? "Verify to reach the highest tier and increase your limits"
-      : "Verify with either your BVN or NIN to upgrade your account";
+  const identitySubtitle = fullyVerified
+    ? "Your BVN and NIN are verified"
+    : nextDoc
+    ? `Add your ${ID_DOCS[nextDoc].label} to reach the highest tier`
+    : "Verify with your BVN or NIN";
 
   return (
     <SafeAreaView edges={["right", "bottom", "left"]} style={styles.container}>
@@ -186,9 +177,9 @@ export default function KYCVerificationScreen() {
             isVerified={isPhoneNumberVerified}
           />
           <MenuItem
-            title="BVN Verification"
-            subtitle={docSubtitle("bvn")}
-            onPress={() => navigation.navigate(ID_DOCS.bvn.route as never)}
+            title="Identity Verification"
+            subtitle={identitySubtitle}
+            onPress={() => navigation.navigate("IdentityOptions" as never)}
             isLocked={!isPhoneNumberVerified}
             IconComponent={
               <CustomIcon
@@ -197,22 +188,7 @@ export default function KYCVerificationScreen() {
                 color={COLORS.primary}
               />
             }
-            isVerified={isDocVerified(user, "bvn")}
-            lockedMessage="Complete phone number verification first"
-          />
-          <MenuItem
-            title="NIN Verification"
-            subtitle={docSubtitle("nin")}
-            onPress={() => navigation.navigate(ID_DOCS.nin.route as never)}
-            isLocked={!isPhoneNumberVerified}
-            IconComponent={
-              <CustomIcon
-                source={ShieldCheckIcon}
-                size={17}
-                fill={COLORS.primary}
-              />
-            }
-            isVerified={isDocVerified(user, "nin")}
+            isVerified={fullyVerified}
             lockedMessage="Complete phone number verification first"
           />
         </View>

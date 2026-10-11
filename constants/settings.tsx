@@ -26,7 +26,7 @@ export const normalize = (size: number) => {
 };
 
 export const normalizeSpacing = (size: number) =>
-  PixelRatio.roundToNearestPixel(getScale() * size);
+  PixelRatio.roundToNearestPixel(getScale() * size - 1);
 
 export const getFontFamily = (weight: string | number) => {
   const fontWeights: any = {

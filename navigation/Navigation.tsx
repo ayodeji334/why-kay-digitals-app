@@ -36,6 +36,7 @@ import ReferralHistoryScreen from "../screens/ReferralHistoryScreen";
 import BankTransferScreen from "../screens/BankTransfer";
 import BVNVerificationScreen from "../screens/BVNVerificationScreen";
 import IdentityVerificationScreen from "../screens/IdentityVerificationScreen";
+import IdentityOptionsScreen from "../screens/IdentityOptionsScreen";
 import TwoFactorAuthenticationScreen from "../screens/TwoFactorAuthenticationScreen";
 import ConfirmTwoFactorAuthenticationScreen from "../screens/ConfirmTwoFactorAuthentication";
 import AccountLimitsScreen from "../screens/AccountLimitScreen";
@@ -493,6 +494,15 @@ const RootStack = createNativeStackNavigator({
           options: {
             headerShown: true,
             header: () => <CustomHeader showTitle title="Deposit" />,
+          },
+        },
+        IdentityOptions: {
+          screen: IdentityOptionsScreen,
+          options: {
+            headerShown: true,
+            header: () => (
+              <CustomHeader showTitle title="Identity Verification" />
+            ),
           },
         },
         BVNVerification: {
